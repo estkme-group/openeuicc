@@ -1,0 +1,36 @@
+apply plugin: 'java'
+
+configurations {
+    tool
+}
+
+dependencies {
+    tool 'javax.xml.bind:jaxb-api:2.3.0'
+    tool 'com.beanit:asn1bean-compiler:1.13.0'
+    implementation 'com.beanit:asn1bean:1.13.0'
+    implementation 'com.fazecast:jSerialComm:1.3.11'
+    implementation 'org.apache.commons:commons-lang3:3.7'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'commons-codec:commons-codec:1.11'
+    implementation 'com.google.code.gson:gson:2.8.4'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-all:1.10.19'
+    testImplementation 'com.github.tomakehurst:wiremock:2.17.0'
+}
+
+sourceSets.main.java.srcDirs = ['build/generated-sources/asn1','src/main/java']
+
+task genAsn1(type: JavaExec) {
+    mainClass = 'com.beanit.asn1bean.compiler.Compiler'
+    args "-o", "$projectDir/build/generated-sources/asn1", "-p", "com.truphone.rsp.dto.asn1", "-f", "$projectDir/src/main/resources/PKIXExplicit88.asn", "$projectDir/src/main/resources/PKIXImplicit88.asn", "$projectDir/src/main/resources/rsp.asn"
+    classpath configurations.tool
+}
+
+compileJava.dependsOn genAsn1
+
+description = 'LPAd SM-DP+ Connector'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}

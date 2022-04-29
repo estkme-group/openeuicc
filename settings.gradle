@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "OpenEUICC"
-include ':app'
+include ':app', ':libs:lpad-sm-dp-plus-connector'
