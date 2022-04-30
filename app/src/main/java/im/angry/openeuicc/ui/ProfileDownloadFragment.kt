@@ -8,13 +8,15 @@ import androidx.fragment.app.DialogFragment
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import im.angry.openeuicc.R
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.databinding.FragmentProfileDownloadBinding
 import im.angry.openeuicc.util.setWidthPercent
 
-class ProfileDownloadFragment(val channel: EuiccChannel) : DialogFragment(), Toolbar.OnMenuItemClickListener {
+class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.OnMenuItemClickListener {
     companion object {
         const val TAG = "ProfileDownloadFragment"
+
+        fun newInstance(slotId: Int): ProfileDownloadFragment =
+            newInstanceEuicc(ProfileDownloadFragment::class.java, slotId)
     }
 
     private var _binding: FragmentProfileDownloadBinding? = null
