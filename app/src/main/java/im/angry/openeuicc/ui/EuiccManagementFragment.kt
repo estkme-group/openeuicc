@@ -3,22 +3,30 @@ package im.angry.openeuicc.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.truphone.lpad.progress.Progress
 import im.angry.openeuicc.R
 import im.angry.openeuicc.databinding.EuiccProfileBinding
 import im.angry.openeuicc.databinding.FragmentEuiccBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesChangedListener {
     companion object {
+        const val TAG = "EuiccManagementFragment"
+
         fun newInstance(slotId: Int): EuiccManagementFragment =
             newInstanceEuicc(EuiccManagementFragment::class.java, slotId)
     }
@@ -61,6 +69,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
     @SuppressLint("NotifyDataSetChanged")
     private fun refresh() {
+        if (binding.swipeRefresh.isRefreshing) return
         binding.swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
@@ -76,6 +85,33 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         }
     }
 
+    private fun enableProfile(iccid: String) {
+        if (binding.swipeRefresh.isRefreshing) return
+
+        binding.swipeRefresh.isRefreshing = true
+        binding.fab.isEnabled = false
+
+        lifecycleScope.launch {
+            try {
+                doEnableProfile(iccid)
+                Toast.makeText(context, R.string.toast_profile_enabled, Toast.LENGTH_LONG).show()
+                // The APDU channel will be invalid when the SIM reboots. For now, just exit the app
+                // TODO: implement proper reloading? We need it anyway because the application object may be kept
+                requireActivity().finish()
+            } catch (e: Exception) {
+                Log.d(TAG, "Failed to enable profile $iccid")
+                Log.d(TAG, Log.getStackTraceString(e))
+                binding.fab.isEnabled = true
+                Toast.makeText(context, R.string.toast_profile_enable_failed, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private suspend fun doEnableProfile(iccid: String) =
+        withContext(Dispatchers.IO) {
+            channel.lpa.enableProfile(iccid, Progress())
+        }
+
     inner class ViewHolder(private val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.iccid.setOnClickListener {
@@ -85,6 +121,8 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                     binding.iccid.transformationMethod = null
                 }
             }
+
+            binding.profileMenu.setOnClickListener { showOptionsMenu() }
         }
 
         private lateinit var profile: Map<String, String>
@@ -94,7 +132,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             // TODO: The library is not exposing the nicknames. Expose them so that we can do something here.
             binding.name.text = profile["NAME"]
             binding.state.setText(
-                if (profile["STATE"]?.lowercase() == "enabled") {
+                if (isEnabled()) {
                     R.string.enabled
                 } else {
                     R.string.disabled
@@ -104,6 +142,29 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             binding.iccid.text = profile["ICCID"]
             binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
         }
+
+        private fun isEnabled(): Boolean =
+            profile["STATE"]?.lowercase() == "enabled"
+
+        private fun showOptionsMenu() {
+            PopupMenu(binding.root.context, binding.profileMenu).apply {
+                setOnMenuItemClickListener(::onMenuItemClicked)
+                inflate(R.menu.profile_options)
+                if (isEnabled()) {
+                    menu.findItem(R.id.enable).isVisible = false
+                }
+                show()
+            }
+        }
+
+        private fun onMenuItemClicked(item: MenuItem): Boolean =
+            when (item.itemId) {
+                R.id.enable -> {
+                    enableProfile(profile["ICCID"]!!)
+                    true
+                }
+                else -> false
+            }
     }
 
     inner class EuiccProfileAdapter(var profiles: List<Map<String, String>>) : RecyclerView.Adapter<ViewHolder>() {

@@ -8,6 +8,12 @@
     <string name="provider">Provider:</string>
     <string name="iccid">ICCID:</string>
 
+    <string name="enable">Enable</string>
+    <string name="delete">Delete</string>
+
+    <string name="toast_profile_enabled">eSIM profile switched. Please wait for a while when the card is restarting.</string>
+    <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
+
     <string name="profile_download">New eSIM</string>
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>
     <string name="profile_download_code">Activation Code</string>
