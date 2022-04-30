@@ -66,7 +66,17 @@ class EuiccManagementFragment(private val channel: EuiccChannel) : Fragment() {
 
 class EuiccProfileAdapter(var profiles: List<Map<String, String>>) :
         RecyclerView.Adapter<EuiccProfileAdapter.ViewHolder>() {
-    data class ViewHolder(val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root)
+    data class ViewHolder(val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.iccid.setOnClickListener {
+                if (binding.iccid.transformationMethod == null) {
+                    binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
+                } else {
+                    binding.iccid.transformationMethod = null
+                }
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding =
@@ -86,7 +96,7 @@ class EuiccProfileAdapter(var profiles: List<Map<String, String>>) :
         )
         holder.binding.provider.text = profiles[position]["PROVIDER_NAME"]
         holder.binding.iccid.text = profiles[position]["ICCID"]
-        holder.binding.iccid.transformationMethod = PasswordTransformationMethod()
+        holder.binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
     }
 
     override fun getItemCount(): Int = profiles.size
