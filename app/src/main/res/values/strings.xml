@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">OpenEUICC</string>
+
+    <string name="no_euicc">No eUICC found on this device.</string>
+
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+    <string name="provider">Provider:</string>
+    <string name="iccid">ICCID:</string>
 </resources>

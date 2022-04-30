@@ -7,8 +7,17 @@ class EuiccChannelRepositoryProxy(context: Context) : EuiccChannelRepository {
     // TODO: Make this pluggable
     private val inner: EuiccChannelRepository = OmapiEuiccChannelRepository(context)
 
-    override suspend fun load() = inner.load()
+    private var loaded = false
 
-    override val availableChannels: List<EuiccChannel>?
-        get() = inner.availableChannels
+    override suspend fun load() {
+        inner.load()
+        loaded = true
+    }
+
+    override val availableChannels: List<EuiccChannel>
+        get() = if (loaded) {
+            inner.availableChannels
+        } else {
+            throw IllegalStateException("Not loaded yet")
+        }
 }

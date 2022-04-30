@@ -9,5 +9,5 @@ data class EuiccChannel(
 
 interface EuiccChannelRepository {
     suspend fun load()
-    val availableChannels: List<EuiccChannel>?
+    val availableChannels: List<EuiccChannel>
 }
