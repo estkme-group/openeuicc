@@ -9,8 +9,21 @@
         <item name="colorSecondary">@color/pink_600</item>
         <item name="colorSecondaryVariant">@color/pink_800</item>
         <item name="colorOnSecondary">@color/white</item>
+        <item name="colorAccent">?attr/colorSecondary</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.OpenEUICC.Input.Cursor" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="colorControlActivated">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Widget.OpenEUICC.Input" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="boxStrokeColor">?attr/colorSecondary</item>
+        <item name="hintTextColor">?attr/colorSecondary</item>
+    </style>
+
+
 </resources>

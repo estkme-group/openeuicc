@@ -7,4 +7,8 @@
     <string name="disabled">Disabled</string>
     <string name="provider">Provider:</string>
     <string name="iccid">ICCID:</string>
+
+    <string name="profile_download">New eSIM</string>
+    <string name="profile_download_server">Server (RSP / SM-DP+)</string>
+    <string name="profile_download_code">Activation Code</string>
 </resources>

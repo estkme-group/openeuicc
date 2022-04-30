@@ -39,6 +39,10 @@ class EuiccManagementFragment(private val channel: EuiccChannel) : Fragment() {
         binding.profileList.adapter = adapter
         binding.profileList.layoutManager =
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
+
+        binding.fab.setOnClickListener {
+            ProfileDownloadFragment(channel).show(childFragmentManager, ProfileDownloadFragment.TAG)
+        }
     }
 
     override fun onStart() {
