@@ -69,7 +69,6 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
     @SuppressLint("NotifyDataSetChanged")
     private fun refresh() {
-        if (binding.swipeRefresh.isRefreshing) return
         binding.swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
@@ -86,9 +85,8 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
     }
 
     private fun enableProfile(iccid: String) {
-        if (binding.swipeRefresh.isRefreshing) return
-
         binding.swipeRefresh.isRefreshing = true
+        binding.swipeRefresh.isEnabled = false
         binding.fab.isEnabled = false
 
         lifecycleScope.launch {
@@ -96,12 +94,12 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                 doEnableProfile(iccid)
                 Toast.makeText(context, R.string.toast_profile_enabled, Toast.LENGTH_LONG).show()
                 // The APDU channel will be invalid when the SIM reboots. For now, just exit the app
-                // TODO: implement proper reloading? We need it anyway because the application object may be kept
                 requireActivity().finish()
             } catch (e: Exception) {
                 Log.d(TAG, "Failed to enable profile $iccid")
                 Log.d(TAG, Log.getStackTraceString(e))
                 binding.fab.isEnabled = true
+                binding.swipeRefresh.isEnabled = true
                 Toast.makeText(context, R.string.toast_profile_enable_failed, Toast.LENGTH_LONG).show()
             }
         }
