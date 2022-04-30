@@ -75,11 +75,8 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             }
         }
     }
-}
 
-class EuiccProfileAdapter(var profiles: List<Map<String, String>>) :
-        RecyclerView.Adapter<EuiccProfileAdapter.ViewHolder>() {
-    data class ViewHolder(val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.iccid.setOnClickListener {
                 if (binding.iccid.transformationMethod == null) {
@@ -91,26 +88,28 @@ class EuiccProfileAdapter(var profiles: List<Map<String, String>>) :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding =
-            EuiccProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
-    }
+    inner class EuiccProfileAdapter(var profiles: List<Map<String, String>>) : RecyclerView.Adapter<ViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val binding =
+                EuiccProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ViewHolder(binding)
+        }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // TODO: The library is not exposing the nicknames. Expose them so that we can do something here.
-        holder.binding.name.text = profiles[position]["NAME"]
-        holder.binding.state.setText(
-            if (profiles[position]["STATE"]?.lowercase() == "enabled") {
-                R.string.enabled
-            } else {
-                R.string.disabled
-            }
-        )
-        holder.binding.provider.text = profiles[position]["PROVIDER_NAME"]
-        holder.binding.iccid.text = profiles[position]["ICCID"]
-        holder.binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
-    }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            // TODO: The library is not exposing the nicknames. Expose them so that we can do something here.
+            holder.binding.name.text = profiles[position]["NAME"]
+            holder.binding.state.setText(
+                if (profiles[position]["STATE"]?.lowercase() == "enabled") {
+                    R.string.enabled
+                } else {
+                    R.string.disabled
+                }
+            )
+            holder.binding.provider.text = profiles[position]["PROVIDER_NAME"]
+            holder.binding.iccid.text = profiles[position]["ICCID"]
+            holder.binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
+        }
 
-    override fun getItemCount(): Int = profiles.size
+        override fun getItemCount(): Int = profiles.size
+    }
 }
