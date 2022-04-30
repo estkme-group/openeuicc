@@ -9,8 +9,9 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import im.angry.openeuicc.OpenEUICCApplication
 import im.angry.openeuicc.R
-import im.angry.openeuicc.core.EuiccChannelRepositoryProxy
+import im.angry.openeuicc.core.EuiccChannelRepository
 import im.angry.openeuicc.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "MainActivity"
     }
 
-    private val repo = EuiccChannelRepositoryProxy(this)
+    private lateinit var repo: EuiccChannelRepository
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private lateinit var spinner: Spinner
@@ -34,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        repo = (application as OpenEUICCApplication).euiccChannelRepo
 
         spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
