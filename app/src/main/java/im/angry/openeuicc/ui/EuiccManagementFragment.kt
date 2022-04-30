@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import im.angry.openeuicc.OpenEUICCApplication
 import im.angry.openeuicc.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.databinding.EuiccProfileBinding
@@ -18,7 +19,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class EuiccManagementFragment(private val channel: EuiccChannel) : Fragment() {
+class EuiccManagementFragment : Fragment() {
+    companion object {
+        fun newInstance(slotId: Int): EuiccManagementFragment {
+            val instance = EuiccManagementFragment()
+            instance.arguments = Bundle().apply {
+                putInt("slotId", slotId)
+            }
+            return instance
+        }
+    }
+
+    private lateinit var channel: EuiccChannel
+
     private var _binding: FragmentEuiccBinding? = null
     private val binding get() = _binding!!
 
@@ -47,6 +60,8 @@ class EuiccManagementFragment(private val channel: EuiccChannel) : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        val slotId = requireArguments().getInt("slotId")
+        channel = (requireActivity().application as OpenEUICCApplication).euiccChannelRepo.availableChannels[slotId]
         refresh()
     }
 

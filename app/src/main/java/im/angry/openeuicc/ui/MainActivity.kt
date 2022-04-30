@@ -78,9 +78,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         withContext(Dispatchers.Main) {
-            repo.availableChannels.forEach {
-                spinnerAdapter.add(it.name)
-                fragments.add(EuiccManagementFragment(it))
+            repo.availableChannels.forEachIndexed { idx, channel ->
+                spinnerAdapter.add(channel.name)
+                fragments.add(EuiccManagementFragment.newInstance(idx))
             }
 
             if (fragments.isNotEmpty()) {
