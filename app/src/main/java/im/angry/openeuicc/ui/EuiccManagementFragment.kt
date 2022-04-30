@@ -69,7 +69,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             }
 
             withContext(Dispatchers.Main) {
-                adapter.profiles = profiles
+                adapter.profiles = profiles.filter { it["PROFILE_CLASS"] != "0" }
                 adapter.notifyDataSetChanged()
                 binding.swipeRefresh.isRefreshing = false
             }
