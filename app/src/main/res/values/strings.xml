@@ -11,4 +11,5 @@
     <string name="profile_download">New eSIM</string>
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>
     <string name="profile_download_code">Activation Code</string>
+    <string name="profile_download_scan">Scan QR Code</string>
 </resources>

@@ -3,11 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/ic_add.xml" value="0.2015" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19375" />
         <entry key="app/src/main/res/layout/euicc_profile.xml" value="0.19375" />
         <entry key="app/src/main/res/layout/fragment_euicc.xml" value="0.19375" />
         <entry key="app/src/main/res/layout/fragment_profile_download.xml" value="0.19375" />
         <entry key="app/src/main/res/menu/activity_main_slot_spinner.xml" value="0.19375" />
+        <entry key="app/src/main/res/menu/fragment_profile_download.xml" value="0.19375" />
       </map>
     </option>
   </component>
