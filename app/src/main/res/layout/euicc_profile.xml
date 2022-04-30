@@ -23,9 +23,21 @@
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:singleLine="true"
+                android:ellipsize="marquee"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/profile_menu"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/state"/>
+                app:layout_constraintBottom_toTopOf="@+id/state"
+                app:layout_constraintHorizontal_bias="0" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/profile_menu"
+                android:layout_width="32dp"
+                android:layout_height="25dp"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_menu_black"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
 
             <TextView
                 android:id="@+id/state"
