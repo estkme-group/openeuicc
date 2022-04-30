@@ -21,3 +21,7 @@ val <T> T.slotId: Int where T: Fragment, T: EuiccFragmentMarker
 val <T> T.channel: EuiccChannel where T: Fragment, T: EuiccFragmentMarker
     get() =
         (requireActivity().application as OpenEUICCApplication).euiccChannelRepo.availableChannels[slotId]
+
+interface EuiccProfilesChangedListener {
+    fun onEuiccProfilesChanged()
+}

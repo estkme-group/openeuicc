@@ -6,4 +6,10 @@
         android:icon="@drawable/ic_scan_black"
         android:title="@string/profile_download_scan"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/ok"
+        android:icon="@drawable/ic_check_black"
+        android:title="@string/profile_download_ok"
+        app:showAsAction="ifRoom"/>
 </menu>

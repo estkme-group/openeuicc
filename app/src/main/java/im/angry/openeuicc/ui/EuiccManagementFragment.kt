@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class EuiccManagementFragment : Fragment(), EuiccFragmentMarker {
+class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesChangedListener {
     companion object {
         fun newInstance(slotId: Int): EuiccManagementFragment =
             newInstanceEuicc(EuiccManagementFragment::class.java, slotId)
@@ -52,6 +52,10 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker {
 
     override fun onStart() {
         super.onStart()
+        refresh()
+    }
+
+    override fun onEuiccProfilesChanged() {
         refresh()
     }
 
