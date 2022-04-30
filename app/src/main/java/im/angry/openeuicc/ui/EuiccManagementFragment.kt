@@ -76,7 +76,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         }
     }
 
-    inner class ViewHolder(val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.iccid.setOnClickListener {
                 if (binding.iccid.transformationMethod == null) {
@@ -85,6 +85,24 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                     binding.iccid.transformationMethod = null
                 }
             }
+        }
+
+        private lateinit var profile: Map<String, String>
+
+        fun setProfile(profile: Map<String, String>) {
+            this.profile = profile
+            // TODO: The library is not exposing the nicknames. Expose them so that we can do something here.
+            binding.name.text = profile["NAME"]
+            binding.state.setText(
+                if (profile["STATE"]?.lowercase() == "enabled") {
+                    R.string.enabled
+                } else {
+                    R.string.disabled
+                }
+            )
+            binding.provider.text = profile["PROVIDER_NAME"]
+            binding.iccid.text = profile["ICCID"]
+            binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
         }
     }
 
@@ -96,18 +114,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            // TODO: The library is not exposing the nicknames. Expose them so that we can do something here.
-            holder.binding.name.text = profiles[position]["NAME"]
-            holder.binding.state.setText(
-                if (profiles[position]["STATE"]?.lowercase() == "enabled") {
-                    R.string.enabled
-                } else {
-                    R.string.disabled
-                }
-            )
-            holder.binding.provider.text = profiles[position]["PROVIDER_NAME"]
-            holder.binding.iccid.text = profiles[position]["ICCID"]
-            holder.binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
+            holder.setProfile(profiles[position])
         }
 
         override fun getItemCount(): Int = profiles.size
