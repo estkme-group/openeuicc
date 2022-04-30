@@ -46,6 +46,7 @@ class OmapiEuiccChannelRepository(private val context: Context) : EuiccChannelRe
     }
 
     override suspend fun load() {
+        channels.clear()
         val service = connectSEService()
 
         for (slotId in 1..3) {
