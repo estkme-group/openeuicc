@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.R
@@ -81,6 +82,10 @@ class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
 
     private fun rename() {
         val name = binding.profileRenameNewName.editText!!.text.toString().trim()
+        if (name.length >= 64) {
+            Toast.makeText(context, R.string.toast_profile_name_too_long, Toast.LENGTH_LONG).show()
+            return
+        }
 
         renaming = true
         binding.progress.isIndeterminate = true
