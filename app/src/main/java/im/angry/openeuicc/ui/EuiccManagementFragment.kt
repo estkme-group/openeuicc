@@ -128,8 +128,12 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
         fun setProfile(profile: Map<String, String>) {
             this.profile = profile
-            // TODO: The library is not exposing the nicknames. Expose them so that we can do something here.
-            binding.name.text = profile[NAME.name]
+            binding.name.text =
+                if (profile[NICKNAME.name].isNullOrEmpty()) {
+                    profile[NAME.name]
+                } else {
+                    profile[NICKNAME.name]
+                }
             binding.state.setText(
                 if (isEnabled()) {
                     R.string.enabled
