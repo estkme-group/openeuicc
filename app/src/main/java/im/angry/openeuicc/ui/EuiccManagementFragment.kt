@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.truphone.lpa.impl.ProfileKey.*
 import com.truphone.lpad.progress.Progress
 import im.angry.openeuicc.R
 import im.angry.openeuicc.databinding.EuiccProfileBinding
@@ -77,7 +78,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             }
 
             withContext(Dispatchers.Main) {
-                adapter.profiles = profiles.filter { it["PROFILE_CLASS"] != "0" }
+                adapter.profiles = profiles.filter { it[PROFILE_CLASS.name] != "0" }
                 adapter.notifyDataSetChanged()
                 binding.swipeRefresh.isRefreshing = false
             }
@@ -128,7 +129,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         fun setProfile(profile: Map<String, String>) {
             this.profile = profile
             // TODO: The library is not exposing the nicknames. Expose them so that we can do something here.
-            binding.name.text = profile["NAME"]
+            binding.name.text = profile[NAME.name]
             binding.state.setText(
                 if (isEnabled()) {
                     R.string.enabled
@@ -136,13 +137,13 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                     R.string.disabled
                 }
             )
-            binding.provider.text = profile["PROVIDER_NAME"]
-            binding.iccid.text = profile["ICCID"]
+            binding.provider.text = profile[PROVIDER_NAME.name]
+            binding.iccid.text = profile[ICCID.name]
             binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
         }
 
         private fun isEnabled(): Boolean =
-            profile["STATE"]?.lowercase() == "enabled"
+            profile[STATE.name]?.lowercase() == "enabled"
 
         private fun showOptionsMenu() {
             PopupMenu(binding.root.context, binding.profileMenu).apply {
@@ -158,7 +159,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         private fun onMenuItemClicked(item: MenuItem): Boolean =
             when (item.itemId) {
                 R.id.enable -> {
-                    enableProfile(profile["ICCID"]!!)
+                    enableProfile(profile[ICCID.name]!!)
                     true
                 }
                 else -> false
