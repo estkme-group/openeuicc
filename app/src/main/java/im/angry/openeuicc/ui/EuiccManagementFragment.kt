@@ -128,12 +128,8 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
         fun setProfile(profile: Map<String, String>) {
             this.profile = profile
-            binding.name.text =
-                if (profile[NICKNAME.name].isNullOrEmpty()) {
-                    profile[NAME.name]
-                } else {
-                    profile[NICKNAME.name]
-                }
+            binding.name.text = getName()
+
             binding.state.setText(
                 if (isEnabled()) {
                     R.string.enabled
@@ -148,6 +144,13 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
         private fun isEnabled(): Boolean =
             profile[STATE.name]?.lowercase() == "enabled"
+
+        private fun getName(): String =
+            if (profile[NICKNAME.name].isNullOrEmpty()) {
+                profile[NAME.name]
+            } else {
+                profile[NICKNAME.name]
+            }!!
 
         private fun showOptionsMenu() {
             PopupMenu(binding.root.context, binding.profileMenu).apply {
@@ -164,6 +167,11 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             when (item.itemId) {
                 R.id.enable -> {
                     enableProfile(profile[ICCID.name]!!)
+                    true
+                }
+                R.id.rename -> {
+                    ProfileRenameFragment.newInstance(slotId, profile[ICCID.name]!!, getName())
+                        .show(childFragmentManager, ProfileRenameFragment.TAG)
                     true
                 }
                 else -> false

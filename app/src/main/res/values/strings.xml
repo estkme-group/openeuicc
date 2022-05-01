@@ -10,6 +10,7 @@
 
     <string name="enable">Enable</string>
     <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
 
     <string name="toast_profile_enabled">eSIM profile switched. Please wait for a while when the card is restarting.</string>
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
@@ -20,4 +21,6 @@
     <string name="profile_download_scan">Scan QR Code</string>
     <string name="profile_download_ok">Download</string>
     <string name="profile_download_failed">Failed to download eSIM. Check your activation / QR code.</string>
+
+    <string name="profile_rename_new_name">New nickname</string>
 </resources>

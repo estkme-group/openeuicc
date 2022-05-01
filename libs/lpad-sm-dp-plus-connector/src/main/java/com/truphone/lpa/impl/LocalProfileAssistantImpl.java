@@ -136,6 +136,11 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
 
     }
 
+    @Override
+    public boolean setNickname(String iccid, String nickname) {
+        return new SetNicknameWorker(iccid, nickname, apduChannel).run();
+    }
+
     public void smdsRetrieveEvents(Progress progress) {
 //        return new SmdsRetrieveEvents();
     }

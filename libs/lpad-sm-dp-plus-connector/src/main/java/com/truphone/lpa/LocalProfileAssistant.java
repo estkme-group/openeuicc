@@ -37,4 +37,6 @@ public interface LocalProfileAssistant {
     String allocateProfile(String mcc);
 
     void processPendingNotifications();
+
+    boolean setNickname(String iccid, String nickname);
 }
