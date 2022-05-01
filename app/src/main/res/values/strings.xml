@@ -24,4 +24,6 @@
     <string name="profile_download_failed">Failed to download eSIM. Check your activation / QR code.</string>
 
     <string name="profile_rename_new_name">New nickname</string>
+
+    <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
 </resources>

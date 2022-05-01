@@ -158,6 +158,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                 inflate(R.menu.profile_options)
                 if (isEnabled()) {
                     menu.findItem(R.id.enable).isVisible = false
+                    menu.findItem(R.id.delete).isVisible = false
                 }
                 show()
             }
@@ -172,6 +173,11 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                 R.id.rename -> {
                     ProfileRenameFragment.newInstance(slotId, profile[ICCID.name]!!, getName())
                         .show(childFragmentManager, ProfileRenameFragment.TAG)
+                    true
+                }
+                R.id.delete -> {
+                    ProfileDeleteFragment.newInstance(slotId, profile[ICCID.name]!!, getName())
+                        .show(childFragmentManager, ProfileDeleteFragment.TAG)
                     true
                 }
                 else -> false
