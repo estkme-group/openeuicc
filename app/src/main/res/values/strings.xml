@@ -9,6 +9,7 @@
     <string name="iccid">ICCID:</string>
 
     <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
 

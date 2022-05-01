@@ -5,6 +5,10 @@
         android:title="@string/enable"/>
 
     <item
+        android:id="@+id/disable"
+        android:title="@string/disable"/>
+
+    <item
         android:id="@+id/rename"
         android:title="@string/rename"/>
 

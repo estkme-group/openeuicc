@@ -85,19 +85,23 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         }
     }
 
-    private fun enableProfile(iccid: String) {
+    private fun enableOrDisableProfile(iccid: String, enable: Boolean) {
         binding.swipeRefresh.isRefreshing = true
         binding.swipeRefresh.isEnabled = false
         binding.fab.isEnabled = false
 
         lifecycleScope.launch {
             try {
-                doEnableProfile(iccid)
+                if (enable) {
+                    doEnableProfile(iccid)
+                } else {
+                    doDisableProfile(iccid)
+                }
                 Toast.makeText(context, R.string.toast_profile_enabled, Toast.LENGTH_LONG).show()
                 // The APDU channel will be invalid when the SIM reboots. For now, just exit the app
                 requireActivity().finish()
             } catch (e: Exception) {
-                Log.d(TAG, "Failed to enable profile $iccid")
+                Log.d(TAG, "Failed to enable / disable profile $iccid")
                 Log.d(TAG, Log.getStackTraceString(e))
                 binding.fab.isEnabled = true
                 binding.swipeRefresh.isEnabled = true
@@ -109,6 +113,11 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
     private suspend fun doEnableProfile(iccid: String) =
         withContext(Dispatchers.IO) {
             channel.lpa.enableProfile(iccid, Progress())
+        }
+
+    private suspend fun doDisableProfile(iccid: String) =
+        withContext(Dispatchers.IO) {
+            channel.lpa.disableProfile(iccid, Progress())
         }
 
     inner class ViewHolder(private val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -159,6 +168,8 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                 if (isEnabled()) {
                     menu.findItem(R.id.enable).isVisible = false
                     menu.findItem(R.id.delete).isVisible = false
+                } else {
+                    menu.findItem(R.id.disable).isVisible = false
                 }
                 show()
             }
@@ -167,7 +178,11 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         private fun onMenuItemClicked(item: MenuItem): Boolean =
             when (item.itemId) {
                 R.id.enable -> {
-                    enableProfile(profile[ICCID.name]!!)
+                    enableOrDisableProfile(profile[ICCID.name]!!, true)
+                    true
+                }
+                R.id.disable -> {
+                    enableOrDisableProfile(profile[ICCID.name]!!, false)
                     true
                 }
                 R.id.rename -> {
