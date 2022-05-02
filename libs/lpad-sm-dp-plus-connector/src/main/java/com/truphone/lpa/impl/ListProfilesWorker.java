@@ -41,6 +41,7 @@ class ListProfilesWorker {
 
                 profileMap.put(ProfileKey.STATE.name(), LocalProfileAssistantImpl.DISABLED_STATE.equals(info.getProfileState().toString()) ? "Disabled" : "Enabled");
                 profileMap.put(ProfileKey.ICCID.name(), info.getIccid().toString());
+                profileMap.put(ProfileKey.ICCID_LITTLE.name(), iccidBigToLittle(info.getIccid().toString()));
                 profileMap.put(ProfileKey.NAME.name(), (info.getProfileName()!=null)?info.getProfileName().toString():"");
                 profileMap.put(ProfileKey.NICKNAME.name(), (info.getProfileNickname()!=null)?info.getProfileNickname().toString():"");
                 profileMap.put(ProfileKey.PROVIDER_NAME.name(), (info.getServiceProviderName()!=null)?info.getServiceProviderName().toString():"");
@@ -92,5 +93,15 @@ class ListProfilesWorker {
         }
 
         return apduChannel.transmitAPDU(apdu);
+    }
+
+    private String iccidBigToLittle(String iccid) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < iccid.length() / 2; i++) {
+            builder.append(iccid.charAt(i * 2 + 1));
+            if (iccid.charAt(i * 2) != 'F')
+                builder.append(iccid.charAt(i * 2));
+        }
+        return builder.toString();
     }
 }

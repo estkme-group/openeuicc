@@ -147,7 +147,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                 }
             )
             binding.provider.text = profile[PROVIDER_NAME.name]
-            binding.iccid.text = profile[ICCID.name]
+            binding.iccid.text = profile[ICCID_LITTLE.name]!!
             binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
         }
 

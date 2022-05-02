@@ -2,6 +2,7 @@ package com.truphone.lpa.impl;
 
 public enum ProfileKey {
     ICCID,
+    ICCID_LITTLE, // Little Endian
     STATE,
     NAME,
     NICKNAME,
