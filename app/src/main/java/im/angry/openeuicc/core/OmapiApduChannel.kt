@@ -14,12 +14,20 @@ class OmapiApduChannel(private val channel: Channel) : ApduChannel {
         private const val TAG = "OmapiApduChannel"
         private val APPLET_ID = byteArrayOf(-96, 0, 0, 5, 89, 16, 16, -1, -1, -1, -1, -119, 0, 0, 1, 0)
 
-        fun tryConnectUiccSlot(service: SEService, slotId: Int): OmapiApduChannel? {
+        fun tryConnectUiccSlot(service: SEService, slotId: Int): Pair<ApduChannel, EuiccChannelStateManager>? {
             try {
                 val reader = service.getUiccReader(slotId + 1) // slotId from telephony starts from 0
                 val session = reader.openSession()
                 val channel = session.openLogicalChannel(APPLET_ID) ?: return null
-                return OmapiApduChannel(channel)
+                val stateManager = object : EuiccChannelStateManager {
+                    override val valid: Boolean
+                        get() = channel.isOpen
+
+                    override fun destroy() {
+                        channel.close()
+                    }
+                }
+                return Pair(OmapiApduChannel(channel), stateManager)
             } catch (e: Exception) {
                 Log.e(TAG, "Unable to open eUICC channel for slot ${slotId}, skipping")
                 Log.e(TAG, Log.getStackTraceString(e))

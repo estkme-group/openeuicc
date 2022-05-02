@@ -41,16 +41,23 @@ class EuiccChannelManager(private val context: Context) {
     private suspend fun findEuiccChannelBySlot(slotId: Int): EuiccChannel? {
         ensureSEService()
         val existing = channels.find { it.slotId == slotId }
-        if (existing != null) return existing
-
-        var apduChannel: ApduChannel?
-        apduChannel = OmapiApduChannel.tryConnectUiccSlot(seService!!, slotId)
-
-        if (apduChannel == null) {
-            return null
+        if (existing != null) {
+            if (existing.stateManager.valid) {
+                return existing
+            } else {
+                existing.stateManager.destroy()
+                channels.remove(existing)
+            }
         }
 
-        val channel = EuiccChannel(slotId, "SIM $slotId", LocalProfileAssistantImpl(apduChannel))
+        var apduChannel: ApduChannel? = null
+        var stateManager: EuiccChannelStateManager? = null
+        OmapiApduChannel.tryConnectUiccSlot(seService!!, slotId)?.let { (_apduChannel, _stateManager) ->
+            apduChannel = _apduChannel
+            stateManager = _stateManager
+        } ?: return null
+
+        val channel = EuiccChannel(slotId, "SIM $slotId", LocalProfileAssistantImpl(apduChannel), stateManager!!)
         channels.add(channel)
         return channel
     }
@@ -77,6 +84,10 @@ class EuiccChannelManager(private val context: Context) {
         get() = channels.toList()
 
     fun invalidate() {
+        for (channel in channels) {
+            channel.stateManager.destroy()
+        }
+
         channels.clear()
         seService?.shutdown()
         seService = null
