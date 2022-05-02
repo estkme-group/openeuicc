@@ -99,6 +99,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                 }
                 Toast.makeText(context, R.string.toast_profile_enabled, Toast.LENGTH_LONG).show()
                 // The APDU channel will be invalid when the SIM reboots. For now, just exit the app
+                euiccChannelManager.invalidate()
                 requireActivity().finish()
             } catch (e: Exception) {
                 Log.d(TAG, "Failed to enable / disable profile $iccid")

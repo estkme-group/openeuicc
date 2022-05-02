@@ -7,8 +7,3 @@ data class EuiccChannel(
     val name: String,
     val lpa: LocalProfileAssistant
 )
-
-interface EuiccChannelRepository {
-    suspend fun load()
-    val availableChannels: List<EuiccChannel>
-}

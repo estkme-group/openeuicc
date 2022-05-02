@@ -1,8 +1,8 @@
 package im.angry.openeuicc
 
 import android.app.Application
-import im.angry.openeuicc.core.EuiccChannelRepositoryProxy
+import im.angry.openeuicc.core.EuiccChannelManager
 
 class OpenEUICCApplication : Application() {
-    val euiccChannelRepo = EuiccChannelRepositoryProxy(this)
+    val euiccChannelManager = EuiccChannelManager(this)
 }

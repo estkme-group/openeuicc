@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.OpenEUICCApplication
 import im.angry.openeuicc.R
-import im.angry.openeuicc.core.EuiccChannelRepository
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.databinding.ActivityMainBinding
 import im.angry.openeuicc.util.dsdsEnabled
 import im.angry.openeuicc.util.supportsDSDS
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "MainActivity"
     }
 
-    private lateinit var repo: EuiccChannelRepository
+    private lateinit var manager: EuiccChannelManager
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private lateinit var spinner: Spinner
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         tm = getSystemService(TelephonyManager::class.java)
 
-        repo = (application as OpenEUICCApplication).euiccChannelRepo
+        manager = (application as OpenEUICCApplication).euiccChannelManager
 
         spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 
@@ -95,17 +95,17 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun init() {
         withContext(Dispatchers.IO) {
-            repo.load()
-            repo.availableChannels.forEach {
+            manager.enumerateEuiccChannels()
+            manager.knownChannels.forEach {
                 Log.d(TAG, it.name)
                 Log.d(TAG, it.lpa.eid)
             }
         }
 
         withContext(Dispatchers.Main) {
-            repo.availableChannels.forEachIndexed { idx, channel ->
+            manager.knownChannels.forEach { channel ->
                 spinnerAdapter.add(channel.name)
-                fragments.add(EuiccManagementFragment.newInstance(idx))
+                fragments.add(EuiccManagementFragment.newInstance(channel.slotId))
             }
 
             if (fragments.isNotEmpty()) {
