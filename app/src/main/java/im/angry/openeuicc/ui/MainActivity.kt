@@ -1,18 +1,23 @@
 package im.angry.openeuicc.ui
 
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.OpenEUICCApplication
 import im.angry.openeuicc.R
 import im.angry.openeuicc.core.EuiccChannelRepository
 import im.angry.openeuicc.databinding.ActivityMainBinding
+import im.angry.openeuicc.util.dsdsEnabled
+import im.angry.openeuicc.util.supportsDSDS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,10 +36,14 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private lateinit var tm: TelephonyManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        tm = getSystemService(TelephonyManager::class.java)
 
         repo = (application as OpenEUICCApplication).euiccChannelRepo
 
@@ -46,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.activity_main_slot_spinner, menu)
+        menuInflater.inflate(R.menu.activity_main, menu)
 
         spinner = menu.findItem(R.id.spinner).actionView as Spinner
         spinner.adapter = spinnerAdapter
@@ -65,7 +74,23 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        if (tm.supportsDSDS) {
+            val dsds = menu.findItem(R.id.dsds)
+            dsds.isVisible = true
+            dsds.isChecked = tm.dsdsEnabled
+        }
+
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.dsds -> {
+            tm.dsdsEnabled = !item.isChecked
+            Toast.makeText(this, R.string.toast_dsds_switched, Toast.LENGTH_LONG).show()
+            finish()
+            true
+        }
+        else -> false
     }
 
     private suspend fun init() {
