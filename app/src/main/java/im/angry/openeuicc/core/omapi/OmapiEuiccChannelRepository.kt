@@ -37,7 +37,7 @@ class OmapiEuiccChannelRepository(private val context: Context) : EuiccChannelRe
             val apduChannel = OmapiApduChannel(channel)
             val lpa = LocalProfileAssistantImpl(apduChannel)
 
-            return EuiccChannel(reader.name, lpa)
+            return EuiccChannel(slotId, reader.name, lpa)
         } catch (e: Exception) {
             Log.e(TAG, "Unable to open eUICC channel for slot ${slotId}, skipping")
             Log.e(TAG, Log.getStackTraceString(e))
