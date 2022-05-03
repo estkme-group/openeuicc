@@ -32,14 +32,17 @@ class OpenEuiccService : EuiccService() {
         subscription: DownloadableSubscription?,
         forceDeactivateSim: Boolean
     ): GetDownloadableSubscriptionMetadataResult {
-        TODO("Not yet implemented")
+        // Stub: return as-is and do not fetch anything
+        // This is incompatible with carrier eSIM apps; should we make it compatible?
+        return GetDownloadableSubscriptionMetadataResult(RESULT_OK, subscription)
     }
 
     override fun onGetDefaultDownloadableSubscriptionList(
         slotId: Int,
         forceDeactivateSim: Boolean
     ): GetDefaultDownloadableSubscriptionListResult {
-        TODO("Not yet implemented")
+        // Stub: we do not implement this (as this would require phoning in a central GSMA server)
+        return GetDefaultDownloadableSubscriptionListResult(RESULT_OK, arrayOf())
     }
 
     override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult? {
@@ -70,7 +73,7 @@ class OpenEuiccService : EuiccService() {
     }
 
     override fun onGetEuiccInfo(slotId: Int): EuiccInfo {
-        TODO("Not yet implemented")
+        return EuiccInfo("Unknown") // TODO: Can we actually implement this?
     }
 
     override fun onDeleteSubscription(slotId: Int, iccid: String?): Int {
@@ -92,10 +95,12 @@ class OpenEuiccService : EuiccService() {
 
     @Deprecated("Deprecated in Java")
     override fun onEraseSubscriptions(slotId: Int): Int {
-        TODO("Not yet implemented")
+        // No-op
+        return RESULT_FIRST_USER
     }
 
     override fun onRetainSubscriptionsForFactoryReset(slotId: Int): Int {
-        TODO("Not yet implemented")
+        // No-op -- we do not care
+        return RESULT_FIRST_USER
     }
 }
