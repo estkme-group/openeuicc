@@ -35,7 +35,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     private val barcodeScannerLauncher = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { content ->
             val components = content.split("$")
-            if (components.size != 3 || components[0] != "LPA:1") return@registerForActivityResult
+            if (components.size < 3 || components[0] != "LPA:1") return@registerForActivityResult
             binding.profileDownloadServer.editText?.setText(components[1])
             binding.profileDownloadCode.editText?.setText(components[2])
         }
