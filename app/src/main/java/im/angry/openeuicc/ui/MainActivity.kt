@@ -12,11 +12,11 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import im.angry.openeuicc.OpenEUICCApplication
 import im.angry.openeuicc.R
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.databinding.ActivityMainBinding
 import im.angry.openeuicc.util.dsdsEnabled
+import im.angry.openeuicc.util.openEuiccApplication
 import im.angry.openeuicc.util.supportsDSDS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,9 +43,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        tm = getSystemService(TelephonyManager::class.java)
+        tm = openEuiccApplication.telephonyManager
 
-        manager = (application as OpenEUICCApplication).euiccChannelManager
+        manager = openEuiccApplication.euiccChannelManager
 
         spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
 

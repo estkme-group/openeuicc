@@ -1,9 +1,18 @@
 package im.angry.openeuicc.util
 
+import android.app.Activity
 import android.content.res.Resources
 import android.graphics.Rect
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import im.angry.openeuicc.OpenEUICCApplication
+
+val Activity.openEuiccApplication: OpenEUICCApplication
+    get() = application as OpenEUICCApplication
+
+val Fragment.openEuiccApplication: OpenEUICCApplication
+    get() = requireActivity().openEuiccApplication
 
 // Source: <https://stackoverflow.com/questions/12478520/how-to-set-dialogfragments-width-and-height>
 /**
