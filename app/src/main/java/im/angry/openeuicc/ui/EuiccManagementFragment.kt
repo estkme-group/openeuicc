@@ -19,6 +19,8 @@ import com.truphone.lpad.progress.Progress
 import im.angry.openeuicc.R
 import im.angry.openeuicc.databinding.EuiccProfileBinding
 import im.angry.openeuicc.databinding.FragmentEuiccBinding
+import im.angry.openeuicc.util.openEuiccApplication
+import im.angry.openeuicc.util.tryRefreshCachedEuiccInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -74,6 +76,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
         lifecycleScope.launch {
             val profiles = withContext(Dispatchers.IO) {
+                openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
                 channel.lpa.profiles
             }
 
