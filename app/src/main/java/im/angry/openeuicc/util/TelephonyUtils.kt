@@ -1,7 +1,9 @@
 package im.angry.openeuicc.util
 
 import android.telephony.IccOpenLogicalChannelResponse
+import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import java.lang.Exception
 import java.lang.reflect.Method
 
 val TelephonyManager.supportsDSDS: Boolean
@@ -12,6 +14,16 @@ var TelephonyManager.dsdsEnabled: Boolean
     set(value) {
         switchMultiSimConfig(if (value) { 2 } else {1})
     }
+
+fun SubscriptionManager.tryRefreshCachedEuiccInfo(cardId: Int) {
+    if (cardId != 0) {
+        try {
+            requestEmbeddedSubscriptionInfoListRefresh(cardId)
+        } catch (e: Exception) {
+            // Ignore
+        }
+    }
+}
 
 // Hidden APIs via reflection to enable building without AOSP source tree
 private val iccOpenLogicalChannelBySlot: Method by lazy {
@@ -49,3 +61,11 @@ fun TelephonyManager.iccTransmitApduLogicalChannelBySlot(
     iccTransmitApduLogicalChannelBySlot.invoke(
         this, slotId, channel, cla, instruction, p1, p2, p3, data
     ) as String?
+
+private val requestEmbeddedSubscriptionInfoListRefresh: Method by lazy {
+    SubscriptionManager::class.java.getMethod("requestEmbeddedSubscriptionInfoListRefresh", Int::class.java)
+}
+
+fun SubscriptionManager.requestEmbeddedSubscriptionInfoListRefresh(cardId: Int): Unit {
+    requestEmbeddedSubscriptionInfoListRefresh.invoke(this, cardId)
+}

@@ -56,10 +56,10 @@ class EuiccChannelManager(private val context: Context) {
             }
         }
 
-        val shouldTryTelephonyManager =
+        val (shouldTryTelephonyManager, cardId) =
             tm.uiccCardsInfo.find { it.slotIndex == slotId }?.let {
-                it.isEuicc && !it.isRemovable
-            } ?: false
+                Pair(it.isEuicc && !it.isRemovable, it.cardId)
+            } ?: Pair(false, 0)
 
         var apduChannel: ApduChannel? = null
         var stateManager: EuiccChannelStateManager? = null
@@ -81,7 +81,11 @@ class EuiccChannelManager(private val context: Context) {
                 } ?: return null
         }
 
-        val channel = EuiccChannel(slotId, "SIM $slotId", LocalProfileAssistantImpl(apduChannel), stateManager!!)
+        val channel = EuiccChannel(
+            slotId, cardId,
+            "SIM $slotId",
+            LocalProfileAssistantImpl(apduChannel),
+            stateManager!!)
         channels.add(channel)
         return channel
     }

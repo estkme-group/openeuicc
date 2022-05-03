@@ -9,6 +9,7 @@ interface EuiccChannelStateManager {
 
 data class EuiccChannel(
     val slotId: Int,
+    val cardId: Int,
     val name: String,
     val lpa: LocalProfileAssistant,
     val stateManager: EuiccChannelStateManager

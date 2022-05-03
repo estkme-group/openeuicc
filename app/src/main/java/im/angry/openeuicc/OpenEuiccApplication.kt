@@ -1,6 +1,7 @@
 package im.angry.openeuicc
 
 import android.app.Application
+import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
@@ -13,6 +14,10 @@ class OpenEuiccApplication : Application() {
 
     val euiccChannelManager by lazy {
         EuiccChannelManager(this)
+    }
+
+    val subscriptionManager by lazy {
+        getSystemService(SubscriptionManager::class.java)!!
     }
 
     override fun onCreate() {

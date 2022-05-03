@@ -15,9 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.R
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.databinding.ActivityMainBinding
-import im.angry.openeuicc.util.dsdsEnabled
-import im.angry.openeuicc.util.openEuiccApplication
-import im.angry.openeuicc.util.supportsDSDS
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -99,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             manager.knownChannels.forEach {
                 Log.d(TAG, it.name)
                 Log.d(TAG, it.lpa.eid)
+                openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(it.cardId)
             }
         }
 
