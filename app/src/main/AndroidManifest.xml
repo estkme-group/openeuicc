@@ -29,6 +29,15 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".service.OpenEuiccService"
+            android:exported="true"
+            android:permission="android.permission.BIND_EUICC_SERVICE">
+            <intent-filter android:priority="100">
+                <action android:name="android.service.euicc.EuiccService" />
+            </intent-filter>
+        </service>
+
         <activity android:name=".ui.LuiActivity"
             android:exported="true"
             android:permission="android.permission.BIND_EUICC_SERVICE">

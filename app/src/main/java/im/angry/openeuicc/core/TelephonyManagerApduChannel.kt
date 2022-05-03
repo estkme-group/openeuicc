@@ -33,11 +33,15 @@ class TelephonyManagerApduChannel(
         // TODO: On Tiramisu, we need to specify the portId also if we want MEP support
         fun tryConnectUiccSlot(tm: TelephonyManager, slotId: Int): Pair<ApduChannel, EuiccChannelStateManager>? {
             try {
+                // FIXME: Clean up previously opened channels across restarts
+                iccCloseLogicalChannelBySlot.invoke(tm, slotId, 1)
                 val channel = iccOpenLogicalChannelBySlot.invoke(tm, slotId, EUICC_APP_ID, 0) as IccOpenLogicalChannelResponse
                 if (channel.status != STATUS_NO_ERROR || channel.channel == INVALID_CHANNEL) {
-                    Log.e(TAG, "Unable to open eUICC channel for slot ${slotId} via TelephonyManager")
+                    Log.e(TAG, "Unable to open eUICC channel for slot ${slotId} via TelephonyManager: ${channel.status}")
                     return null
                 }
+
+                Log.d(TAG, "channel: ${channel.channel}")
 
                 val stateManager = object : EuiccChannelStateManager {
                     override val valid: Boolean
