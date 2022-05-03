@@ -15,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.truphone.lpa.LocalProfileInfo
-import com.truphone.lpa.impl.ProfileKey.*
 import com.truphone.lpad.progress.Progress
 import im.angry.openeuicc.R
 import im.angry.openeuicc.databinding.EuiccProfileBinding
