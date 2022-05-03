@@ -3,6 +3,7 @@ package com.truphone.lpa.impl;
 import com.truphone.es9plus.Es9PlusImpl;
 import com.truphone.lpa.ApduChannel;
 import com.truphone.lpa.LocalProfileAssistant;
+import com.truphone.lpa.LocalProfileInfo;
 import com.truphone.lpa.apdu.ApduUtils;
 import com.truphone.lpa.apdu.NotificationType;
 import com.truphone.lpa.progress.DownloadProgress;
@@ -90,8 +91,7 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
     }
 
     @Override
-    public List<Map<String, String>> getProfiles() {
-
+    public List<LocalProfileInfo> getProfiles() {
         return new ListProfilesWorker(apduChannel).run();
     }
 

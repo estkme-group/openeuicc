@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.truphone.lpa.LocalProfileInfo
 import com.truphone.lpa.impl.ProfileKey.*
 import com.truphone.lpad.progress.Progress
 import im.angry.openeuicc.R
@@ -78,7 +79,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             }
 
             withContext(Dispatchers.Main) {
-                adapter.profiles = profiles.filter { it[PROFILE_CLASS.name] != "0" }
+                adapter.profiles = profiles.filter { it.profileClass != LocalProfileInfo.Clazz.Testing }
                 adapter.notifyDataSetChanged()
                 binding.swipeRefresh.isRefreshing = false
             }
@@ -134,9 +135,9 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             binding.profileMenu.setOnClickListener { showOptionsMenu() }
         }
 
-        private lateinit var profile: Map<String, String>
+        private lateinit var profile: LocalProfileInfo
 
-        fun setProfile(profile: Map<String, String>) {
+        fun setProfile(profile: LocalProfileInfo) {
             this.profile = profile
             binding.name.text = getName()
 
@@ -147,20 +148,18 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                     R.string.disabled
                 }
             )
-            binding.provider.text = profile[PROVIDER_NAME.name]
-            binding.iccid.text = profile[ICCID_LITTLE.name]!!
+            binding.provider.text = profile.providerName
+            binding.iccid.text = profile.iccidLittleEndian
             binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
         }
 
         private fun isEnabled(): Boolean =
-            profile[STATE.name]?.lowercase() == "enabled"
+            profile.state == LocalProfileInfo.State.Enabled
 
         private fun getName(): String =
-            if (profile[NICKNAME.name].isNullOrEmpty()) {
-                profile[NAME.name]
-            } else {
-                profile[NICKNAME.name]
-            }!!
+            profile.nickName.ifEmpty {
+                profile.name
+            }
 
         private fun showOptionsMenu() {
             PopupMenu(binding.root.context, binding.profileMenu).apply {
@@ -179,20 +178,20 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         private fun onMenuItemClicked(item: MenuItem): Boolean =
             when (item.itemId) {
                 R.id.enable -> {
-                    enableOrDisableProfile(profile[ICCID.name]!!, true)
+                    enableOrDisableProfile(profile.iccid, true)
                     true
                 }
                 R.id.disable -> {
-                    enableOrDisableProfile(profile[ICCID.name]!!, false)
+                    enableOrDisableProfile(profile.iccid, false)
                     true
                 }
                 R.id.rename -> {
-                    ProfileRenameFragment.newInstance(slotId, profile[ICCID.name]!!, getName())
+                    ProfileRenameFragment.newInstance(slotId, profile.iccid, getName())
                         .show(childFragmentManager, ProfileRenameFragment.TAG)
                     true
                 }
                 R.id.delete -> {
-                    ProfileDeleteFragment.newInstance(slotId, profile[ICCID.name]!!, getName())
+                    ProfileDeleteFragment.newInstance(slotId, profile.iccid, getName())
                         .show(childFragmentManager, ProfileDeleteFragment.TAG)
                     true
                 }
@@ -200,7 +199,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             }
     }
 
-    inner class EuiccProfileAdapter(var profiles: List<Map<String, String>>) : RecyclerView.Adapter<ViewHolder>() {
+    inner class EuiccProfileAdapter(var profiles: List<LocalProfileInfo>) : RecyclerView.Adapter<ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val binding =
                 EuiccProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)

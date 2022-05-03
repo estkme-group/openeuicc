@@ -21,7 +21,7 @@ public interface LocalProfileAssistant {
     
     void downloadProfile(String matchingId, DownloadProgress progress) throws Exception;
     
-    List<Map<String, String>> getProfiles();
+    List<LocalProfileInfo> getProfiles();
 
     /**
      * Gets the EID from the eUICC
@@ -38,5 +38,6 @@ public interface LocalProfileAssistant {
 
     void processPendingNotifications();
 
-    boolean setNickname(String iccid, String nickname);
+    boolean setNickname(String iccid, String nickname
+    );
 }

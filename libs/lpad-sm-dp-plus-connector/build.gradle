@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'kotlin'
 
 configurations {
     tool
@@ -27,6 +28,7 @@ task genAsn1(type: JavaExec) {
 }
 
 compileJava.dependsOn genAsn1
+compileKotlin.dependsOn genAsn1
 
 description = 'LPAd SM-DP+ Connector'
 
