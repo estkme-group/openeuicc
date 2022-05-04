@@ -82,8 +82,28 @@ class OpenEuiccService : EuiccService() {
         return EuiccInfo("Unknown") // TODO: Can we actually implement this?
     }
 
-    override fun onDeleteSubscription(slotId: Int, iccid: String?): Int {
-        TODO("Not yet implemented")
+    override fun onDeleteSubscription(slotId: Int, iccid: String): Int {
+        try {
+            val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
+            val iccidBig = TextUtil.iccidLittleToBig(iccid)
+
+            val profile = channel.lpa.profiles.find {
+                it.iccid == iccidBig
+            } ?: return RESULT_FIRST_USER
+
+            if (profile.state == LocalProfileInfo.State.Enabled) {
+                // Must disable the profile first
+                return RESULT_FIRST_USER
+            }
+
+            return if (channel.lpa.deleteProfile(iccidBig, Progress()) == "0") {
+                RESULT_OK
+            } else {
+                RESULT_FIRST_USER
+            }
+        } catch (e: Exception) {
+            return RESULT_FIRST_USER
+        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -96,9 +116,9 @@ class OpenEuiccService : EuiccService() {
             val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
             if (iccid == null) {
                 // Disable active profile
-                val activeProfile = channel.lpa.profiles.filter {
+                val activeProfile = channel.lpa.profiles.find {
                     it.state == LocalProfileInfo.State.Enabled
-                }[0] ?: return RESULT_OK
+                } ?: return RESULT_OK
 
                 return if (channel.lpa.disableProfile(activeProfile.iccid, Progress()) == "0") {
                     RESULT_OK
