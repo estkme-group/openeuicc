@@ -14,8 +14,8 @@
 
 package com.truphone.lpa
 
+import com.truphone.util.TextUtil.iccidBigToLittle
 import java.lang.IllegalArgumentException
-import java.lang.StringBuilder
 
 data class LocalProfileInfo(
     val iccid: String,
@@ -56,14 +56,5 @@ data class LocalProfileInfo(
                 "2" -> Clazz.Operational
                 else -> throw IllegalArgumentException("Unknown profile class $clazz")
             }
-
-        private fun iccidBigToLittle(iccid: String): String {
-            val builder = StringBuilder()
-            for (i in 0 until iccid.length / 2) {
-                builder.append(iccid[i * 2 + 1])
-                if (iccid[i * 2] != 'F') builder.append(iccid[i * 2])
-            }
-            return builder.toString()
-        }
     }
 }
