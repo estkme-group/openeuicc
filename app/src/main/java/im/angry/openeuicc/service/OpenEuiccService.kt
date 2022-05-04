@@ -75,6 +75,7 @@ class OpenEuiccService : EuiccService() {
             }.build()
         }
 
+        // TODO: Does isRemovable matter? Will Android even query us for removable SIMs?
         return GetEuiccProfileInfoListResult(RESULT_OK, profiles.toTypedArray(), false)
     }
 
@@ -106,6 +107,9 @@ class OpenEuiccService : EuiccService() {
         }
     }
 
+    // TODO: on some devices we need to update the mapping (and potentially disable a pSIM)
+    //       for eSIM to be usable, in which case we will have to respect forceDeactivateSim.
+    //       This is the same for our custom LUI. Both have to take this into consideration.
     @Deprecated("Deprecated in Java")
     override fun onSwitchToSubscription(
         slotId: Int,
