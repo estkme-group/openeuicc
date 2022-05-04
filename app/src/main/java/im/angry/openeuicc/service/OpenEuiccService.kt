@@ -4,6 +4,7 @@ import android.service.euicc.*
 import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
 import com.truphone.lpa.LocalProfileInfo
+import com.truphone.lpad.progress.Progress
 import com.truphone.util.TextUtil
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
@@ -91,7 +92,32 @@ class OpenEuiccService : EuiccService() {
         iccid: String?,
         forceDeactivateSim: Boolean
     ): Int {
-        TODO("Not yet implemented")
+        try {
+            val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
+            if (iccid == null) {
+                // Disable active profile
+                val activeProfile = channel.lpa.profiles.filter {
+                    it.state == LocalProfileInfo.State.Enabled
+                }[0] ?: return RESULT_OK
+
+                return if (channel.lpa.disableProfile(activeProfile.iccid, Progress()) == "0") {
+                    RESULT_OK
+                } else {
+                    RESULT_FIRST_USER
+                }
+            } else {
+                val iccidBig = TextUtil.iccidLittleToBig(iccid)
+                return if (channel.lpa.enableProfile(iccidBig, Progress()) == "0") {
+                    RESULT_OK
+                } else {
+                    RESULT_FIRST_USER
+                }
+            }
+        } catch (e: Exception) {
+            return RESULT_FIRST_USER
+        } finally {
+            openEuiccApplication.euiccChannelManager.invalidate()
+        }
     }
 
     override fun onUpdateSubscriptionNickname(slotId: Int, iccid: String, nickname: String?): Int {
