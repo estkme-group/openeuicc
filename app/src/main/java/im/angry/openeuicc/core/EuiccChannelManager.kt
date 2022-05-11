@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.se.omapi.SEService
+import android.telephony.UiccCardInfo
 import android.util.Log
 import im.angry.openeuicc.OpenEuiccApplication
 import kotlinx.coroutines.Dispatchers
@@ -41,9 +42,9 @@ class EuiccChannelManager(private val context: Context) {
          }
     }
 
-    private suspend fun findEuiccChannelBySlot(slotId: Int): EuiccChannel? {
+    private suspend fun tryOpenEuiccChannel(uiccInfo: UiccCardInfo): EuiccChannel? {
         ensureSEService()
-        val existing = channels.find { it.slotId == slotId }
+        val existing = channels.find { it.slotId == uiccInfo.slotIndex }
         if (existing != null) {
             if (existing.valid) {
                 return existing
@@ -53,21 +54,14 @@ class EuiccChannelManager(private val context: Context) {
             }
         }
 
-        val cardInfo = tm.uiccCardsInfo.find { it.slotIndex == slotId } ?: return null
-
         val channelInfo = EuiccChannelInfo(
-            slotId, cardInfo.cardId, "SIM $slotId", cardInfo.isRemovable
+            uiccInfo.slotIndex, uiccInfo.cardId, "SIM ${uiccInfo.slotIndex}", uiccInfo.isRemovable
         )
-
-        val (shouldTryTelephonyManager, cardId) =
-            cardInfo.let {
-                Pair(it.isEuicc && !it.isRemovable, it.cardId)
-            }
 
         var euiccChannel: EuiccChannel? = null
 
-        if (shouldTryTelephonyManager) {
-            Log.d(TAG, "Using TelephonyManager for slot $slotId")
+        if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
+            Log.d(TAG, "Using TelephonyManager for slot ${uiccInfo.slotIndex}")
             // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
             euiccChannel = TelephonyManagerChannel.tryConnect(tm, channelInfo)
         }
@@ -83,6 +77,12 @@ class EuiccChannelManager(private val context: Context) {
         return euiccChannel
     }
 
+    private suspend fun findEuiccChannelBySlot(slotId: Int): EuiccChannel? {
+        return tm.uiccCardsInfo.find { it.slotIndex == slotId }?.let {
+            tryOpenEuiccChannel(it)
+        }
+    }
+
     fun findEuiccChannelBySlotBlocking(slotId: Int): EuiccChannel? = runBlocking {
         withContext(Dispatchers.IO) {
             findEuiccChannelBySlot(slotId)
@@ -93,9 +93,9 @@ class EuiccChannelManager(private val context: Context) {
         withContext(Dispatchers.IO) {
             ensureSEService()
 
-            for (slotId in 0 until MAX_SIMS) {
-                if (findEuiccChannelBySlot(slotId) != null) {
-                    Log.d(TAG, "Found eUICC on slot $slotId")
+            for (uiccInfo in tm.uiccCardsInfo) {
+                if (tryOpenEuiccChannel(uiccInfo) != null) {
+                    Log.d(TAG, "Found eUICC on slot ${uiccInfo.slotIndex}")
                 }
             }
         }
