@@ -2,15 +2,24 @@ package im.angry.openeuicc.core
 
 import com.truphone.lpa.LocalProfileAssistant
 
-interface EuiccChannelStateManager {
-    val valid: Boolean
-    fun destroy()
-}
-
-data class EuiccChannel(
+// A custom type to avoid compatibility issues with UiccCardInfo / UiccPortInfo
+data class EuiccChannelInfo(
     val slotId: Int,
     val cardId: Int,
     val name: String,
-    val lpa: LocalProfileAssistant,
-    val stateManager: EuiccChannelStateManager
+    val removable: Boolean,
 )
+
+abstract class EuiccChannel(
+    info: EuiccChannelInfo
+) {
+    val slotId = info.slotId
+    val cardId = info.cardId
+    val name = info.name
+    val removable = info.removable
+
+    abstract val lpa: LocalProfileAssistant
+    abstract val valid: Boolean
+
+    abstract fun close()
+}

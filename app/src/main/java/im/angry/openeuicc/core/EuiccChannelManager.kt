@@ -4,10 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.se.omapi.SEService
-import android.telephony.TelephonyManager
 import android.util.Log
-import com.truphone.lpa.ApduChannel
-import com.truphone.lpa.impl.LocalProfileAssistantImpl
 import im.angry.openeuicc.OpenEuiccApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -48,46 +45,42 @@ class EuiccChannelManager(private val context: Context) {
         ensureSEService()
         val existing = channels.find { it.slotId == slotId }
         if (existing != null) {
-            if (existing.stateManager.valid) {
+            if (existing.valid) {
                 return existing
             } else {
-                existing.stateManager.destroy()
+                existing.close()
                 channels.remove(existing)
             }
         }
 
-        val (shouldTryTelephonyManager, cardId) =
-            tm.uiccCardsInfo.find { it.slotIndex == slotId }?.let {
-                Pair(it.isEuicc && !it.isRemovable, it.cardId)
-            } ?: Pair(false, 0)
+        val cardInfo = tm.uiccCardsInfo.find { it.slotIndex == slotId } ?: return null
 
-        var apduChannel: ApduChannel? = null
-        var stateManager: EuiccChannelStateManager? = null
+        val channelInfo = EuiccChannelInfo(
+            slotId, cardInfo.cardId, "SIM $slotId", cardInfo.isRemovable
+        )
+
+        val (shouldTryTelephonyManager, cardId) =
+            cardInfo.let {
+                Pair(it.isEuicc && !it.isRemovable, it.cardId)
+            }
+
+        var euiccChannel: EuiccChannel? = null
 
         if (shouldTryTelephonyManager) {
             Log.d(TAG, "Using TelephonyManager for slot $slotId")
             // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
-            TelephonyManagerApduChannel.tryConnectUiccSlot(tm, slotId)?.let { (_apduChannel, _stateManager) ->
-                apduChannel = _apduChannel
-                stateManager = _stateManager
-            }
+            euiccChannel = TelephonyManagerChannel.tryConnect(tm, channelInfo)
         }
 
-        if (apduChannel == null || stateManager == null) {
-            OmapiApduChannel.tryConnectUiccSlot(seService!!, slotId)
-                ?.let { (_apduChannel, _stateManager) ->
-                    apduChannel = _apduChannel
-                    stateManager = _stateManager
-                } ?: return null
+        if (euiccChannel == null) {
+            euiccChannel = OmapiChannel.tryConnect(seService!!, channelInfo)
         }
 
-        val channel = EuiccChannel(
-            slotId, cardId,
-            "SIM $slotId",
-            LocalProfileAssistantImpl(apduChannel),
-            stateManager!!)
-        channels.add(channel)
-        return channel
+        if (euiccChannel != null) {
+            channels.add(euiccChannel)
+        }
+
+        return euiccChannel
     }
 
     fun findEuiccChannelBySlotBlocking(slotId: Int): EuiccChannel? = runBlocking {
@@ -113,7 +106,7 @@ class EuiccChannelManager(private val context: Context) {
 
     fun invalidate() {
         for (channel in channels) {
-            channel.stateManager.destroy()
+            channel.close()
         }
 
         channels.clear()
