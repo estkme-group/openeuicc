@@ -13,6 +13,8 @@ import com.truphone.lpad.worker.DeleteProfileWorker;
 import com.truphone.lpad.worker.GetEidLpadWorker;
 import com.truphone.lpad.worker.LpadWorkerExchange;
 import com.truphone.util.LogStub;
+import com.truphone.util.TextUtil;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -30,24 +32,9 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
     private final ApduChannel apduChannel;
     private Es9PlusImpl es9Module;
 
-//    public LocalProfileAssistantImpl(final ApduChannel apduChannel,
-//                                     final String rspServerUrl) {
     public LocalProfileAssistantImpl(final ApduChannel apduChannel){
         this.apduChannel = apduChannel;
         es9Module = new Es9PlusImpl();
-
-        //LOG.info(LogStub.getInstance().getTag() + " - Init SM-DP connection - " + rspServerUrl);
-
-//        if (!StringUtils.isNotBlank(rspServerUrl) || !checkRspServerURL(rspServerUrl)) {
-//            if (LogStub.getInstance().isDebugEnabled()) {
-//                LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - Fixing RSP Server URL to default - " + rspServerUrl);
-//            }
-//
-//            throw new IllegalArgumentException("RSP Server URL is invalid: " + rspServerUrl);
-//        }
-
-//        es9Module.configure(rspServerUrl);
-        //es9Module.configure();
         LOG.log(Level.INFO, LogStub.getInstance().getTag() + " - SM-DP connection initiated.");
     }
 
@@ -60,14 +47,14 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
     public String enableProfile(final String iccid,
                                 final Progress progress) {
 
-        return new EnableProfileWorker(iccid, progress, apduChannel).run();
+        return new EnableProfileWorker(TextUtil.iccidLittleToBig(iccid), progress, apduChannel).run();
     }
 
     @Override
     public String disableProfile(final String iccid,
                                  final Progress progress) {
 
-        return new DisableProfileWorker(iccid, progress, apduChannel).run();
+        return new DisableProfileWorker(TextUtil.iccidLittleToBig(iccid), progress, apduChannel).run();
     }
 
     @Override
@@ -77,7 +64,7 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
         DeleteProfileWorker deleteProfileWorker = new DeleteProfileWorker(progress, apduChannel);
 
         LpadWorkerExchange<DeleteProfileWorker.DeleteProfileInputParams> exchange =
-                new LpadWorkerExchange<>(deleteProfileWorker.new DeleteProfileInputParams(iccid));
+                new LpadWorkerExchange<>(deleteProfileWorker.new DeleteProfileInputParams(TextUtil.iccidLittleToBig(iccid)));
 
         return deleteProfileWorker.run(exchange);
 
@@ -138,7 +125,7 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
 
     @Override
     public boolean setNickname(String iccid, String nickname) {
-        return new SetNicknameWorker(iccid, nickname, apduChannel).run();
+        return new SetNicknameWorker(TextUtil.iccidLittleToBig(iccid), nickname, apduChannel).run();
     }
 
     public void smdsRetrieveEvents(Progress progress) {

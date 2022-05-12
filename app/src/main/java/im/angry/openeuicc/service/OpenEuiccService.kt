@@ -5,7 +5,6 @@ import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
 import com.truphone.lpa.LocalProfileInfo
 import com.truphone.lpad.progress.Progress
-import com.truphone.util.TextUtil
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
@@ -54,7 +53,7 @@ class OpenEuiccService : EuiccService() {
     override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult? {
         val channel = findChannel(slotId) ?: return null
         val profiles = channel.lpa.profiles.operational.map {
-            EuiccProfileInfo.Builder(it.iccidLittleEndian).apply {
+            EuiccProfileInfo.Builder(it.iccid).apply {
                 setProfileName(it.name)
                 setNickname(it.displayName)
                 setServiceProviderName(it.providerName)
@@ -84,10 +83,9 @@ class OpenEuiccService : EuiccService() {
     override fun onDeleteSubscription(slotId: Int, iccid: String): Int {
         try {
             val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
-            val iccidBig = TextUtil.iccidLittleToBig(iccid)
 
             val profile = channel.lpa.profiles.find {
-                it.iccid == iccidBig
+                it.iccid == iccid
             } ?: return RESULT_FIRST_USER
 
             if (profile.state == LocalProfileInfo.State.Enabled) {
@@ -95,7 +93,7 @@ class OpenEuiccService : EuiccService() {
                 return RESULT_FIRST_USER
             }
 
-            return if (channel.lpa.deleteProfile(iccidBig, Progress()) == "0") {
+            return if (channel.lpa.deleteProfile(iccid, Progress()) == "0") {
                 RESULT_OK
             } else {
                 RESULT_FIRST_USER
@@ -128,8 +126,7 @@ class OpenEuiccService : EuiccService() {
                     RESULT_FIRST_USER
                 }
             } else {
-                val iccidBig = TextUtil.iccidLittleToBig(iccid)
-                return if (channel.lpa.enableProfile(iccidBig, Progress()) == "0") {
+                return if (channel.lpa.enableProfile(iccid, Progress()) == "0") {
                     RESULT_OK
                 } else {
                     RESULT_FIRST_USER
@@ -145,7 +142,7 @@ class OpenEuiccService : EuiccService() {
     override fun onUpdateSubscriptionNickname(slotId: Int, iccid: String, nickname: String?): Int {
         val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
         val success = channel.lpa
-            .setNickname(TextUtil.iccidLittleToBig(iccid), nickname)
+            .setNickname(iccid, nickname)
         openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
         return if (success) {
             RESULT_OK

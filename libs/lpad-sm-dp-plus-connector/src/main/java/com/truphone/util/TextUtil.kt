@@ -49,6 +49,7 @@ object TextUtil {
      *
      * @param iccid The ICCID to be converted
      */
+    @JvmStatic
     fun iccidBigToLittle(iccid: String): String {
         val builder = StringBuilder()
         for (i in 0 until iccid.length / 2) {
@@ -63,6 +64,7 @@ object TextUtil {
      *
      * @param iccid The ICCID to be converted
      */
+    @JvmStatic
     fun iccidLittleToBig(iccidLittle: String): String {
         val builder = StringBuilder()
         for (i in 0 until iccidLittle.length / 2) {

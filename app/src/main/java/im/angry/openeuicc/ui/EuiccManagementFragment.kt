@@ -150,7 +150,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                 }
             )
             binding.provider.text = profile.providerName
-            binding.iccid.text = profile.iccidLittleEndian
+            binding.iccid.text = profile.iccid
             binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
         }
 

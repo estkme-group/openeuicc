@@ -21,6 +21,7 @@ import com.truphone.util.LogStub
 import org.apache.commons.codec.DecoderException
 import org.apache.commons.codec.binary.Hex
 import com.truphone.lpa.apdu.ApduUtils
+import com.truphone.util.TextUtil.iccidBigToLittle
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -38,7 +39,7 @@ internal class ListProfilesWorker(private val apduChannel: ApduChannel) {
             for (info in profiles.profileInfoListOk.profileInfo) {
                 profileList.add(
                     LocalProfileInfo(
-                        iccid = info.iccid.toString(),
+                        iccid = iccidBigToLittle(info.iccid.toString()),
                         state = LocalProfileInfo.stateFromString(info.profileState?.toString()),
                         name = info.profileName?.toString() ?: "",
                         nickName = info.profileNickname?.toString() ?: "",

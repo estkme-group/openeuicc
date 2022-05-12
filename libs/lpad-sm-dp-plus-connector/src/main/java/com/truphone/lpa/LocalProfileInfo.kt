@@ -14,7 +14,6 @@
 
 package com.truphone.lpa
 
-import com.truphone.util.TextUtil.iccidBigToLittle
 import java.lang.IllegalArgumentException
 
 data class LocalProfileInfo(
@@ -26,10 +25,6 @@ data class LocalProfileInfo(
     val isdpAID: String,
     val profileClass: Clazz
 ) {
-    val iccidLittleEndian by lazy {
-        iccidBigToLittle(iccid)
-    }
-
     enum class State {
         Enabled,
         Disabled
