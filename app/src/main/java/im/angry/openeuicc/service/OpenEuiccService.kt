@@ -103,7 +103,7 @@ class OpenEuiccService : EuiccService() {
                 return RESULT_FIRST_USER
             }
 
-            return if (channel.lpa.deleteProfile(iccid, Progress()) == "0") {
+            return if (channel.lpa.deleteProfile(iccid, Progress())) {
                 RESULT_OK
             } else {
                 RESULT_FIRST_USER
@@ -135,13 +135,13 @@ class OpenEuiccService : EuiccService() {
                     it.state == LocalProfileInfo.State.Enabled
                 } ?: return RESULT_OK
 
-                return if (channel.lpa.disableProfile(activeProfile.iccid, Progress()) == "0") {
+                return if (channel.lpa.disableProfile(activeProfile.iccid, Progress())) {
                     RESULT_OK
                 } else {
                     RESULT_FIRST_USER
                 }
             } else {
-                return if (channel.lpa.enableProfile(iccid, Progress()) == "0") {
+                return if (channel.lpa.enableProfile(iccid, Progress())) {
                     RESULT_OK
                 } else {
                     RESULT_FIRST_USER

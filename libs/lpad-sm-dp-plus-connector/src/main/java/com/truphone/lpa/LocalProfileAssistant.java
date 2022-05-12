@@ -8,11 +8,11 @@ import java.util.Map;
 
 public interface LocalProfileAssistant {
 
-    String enableProfile(String iccid, Progress progress);
+    boolean enableProfile(String iccid, Progress progress);
 
-    String disableProfile(String iccid, Progress progress);
+    boolean disableProfile(String iccid, Progress progress);
 
-    String deleteProfile(String iccid, Progress progress);
+    boolean deleteProfile(String iccid, Progress progress);
 
     String getDefaultSMDP();
 

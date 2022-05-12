@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 public class LocalProfileAssistantImpl implements LocalProfileAssistant {
     static final String PROFILE_RESULT_SUCESS = "0";
     static final String TRIGGER_PROFILE_REFRESH = "FF";
-    static final String DISABLED_STATE = PROFILE_RESULT_SUCESS;
 
     private static final Logger LOG = Logger.getLogger(LocalProfileAssistantImpl.class.getName());
 
@@ -44,21 +43,25 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
     }
 
     @Override
-    public String enableProfile(final String iccid,
+    public boolean enableProfile(final String iccid,
                                 final Progress progress) {
 
-        return new EnableProfileWorker(TextUtil.iccidLittleToBig(iccid), progress, apduChannel).run();
+        return PROFILE_RESULT_SUCESS.equals(
+                new EnableProfileWorker(TextUtil.iccidLittleToBig(iccid), progress, apduChannel).run()
+        );
     }
 
     @Override
-    public String disableProfile(final String iccid,
+    public boolean disableProfile(final String iccid,
                                  final Progress progress) {
 
-        return new DisableProfileWorker(TextUtil.iccidLittleToBig(iccid), progress, apduChannel).run();
+        return PROFILE_RESULT_SUCESS.equals(
+                new DisableProfileWorker(TextUtil.iccidLittleToBig(iccid), progress, apduChannel).run()
+        );
     }
 
     @Override
-    public String deleteProfile(final String iccid,
+    public boolean deleteProfile(final String iccid,
                                 final Progress progress) {
 
         DeleteProfileWorker deleteProfileWorker = new DeleteProfileWorker(progress, apduChannel);
@@ -66,7 +69,7 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
         LpadWorkerExchange<DeleteProfileWorker.DeleteProfileInputParams> exchange =
                 new LpadWorkerExchange<>(deleteProfileWorker.new DeleteProfileInputParams(TextUtil.iccidLittleToBig(iccid)));
 
-        return deleteProfileWorker.run(exchange);
+        return PROFILE_RESULT_SUCESS.equals(deleteProfileWorker.run(exchange));
 
     }
 
