@@ -53,12 +53,10 @@ class OpenEuiccService : EuiccService() {
 
     override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult? {
         val channel = findChannel(slotId) ?: return null
-        val profiles = channel.lpa.profiles.filter {
-            it.profileClass == LocalProfileInfo.Clazz.Operational
-        }.map {
+        val profiles = channel.lpa.profiles.operational.map {
             EuiccProfileInfo.Builder(it.iccidLittleEndian).apply {
                 setProfileName(it.name)
-                setNickname(it.nickName)
+                setNickname(it.displayName)
                 setServiceProviderName(it.providerName)
                 setState(
                     when (it.state) {

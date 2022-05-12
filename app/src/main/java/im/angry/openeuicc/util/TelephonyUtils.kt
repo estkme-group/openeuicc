@@ -2,6 +2,7 @@ package im.angry.openeuicc.util
 
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import com.truphone.lpa.LocalProfileInfo
 import java.lang.Exception
 
 val TelephonyManager.supportsDSDS: Boolean
@@ -22,3 +23,11 @@ fun SubscriptionManager.tryRefreshCachedEuiccInfo(cardId: Int) {
         }
     }
 }
+
+val LocalProfileInfo.displayName: String
+    get() = nickName.ifEmpty { name }
+
+val List<LocalProfileInfo>.operational: List<LocalProfileInfo>
+    get() = filter {
+        it.profileClass == LocalProfileInfo.Clazz.Operational
+    }

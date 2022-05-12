@@ -19,8 +19,7 @@ import com.truphone.lpad.progress.Progress
 import im.angry.openeuicc.R
 import im.angry.openeuicc.databinding.EuiccProfileBinding
 import im.angry.openeuicc.databinding.FragmentEuiccBinding
-import im.angry.openeuicc.util.openEuiccApplication
-import im.angry.openeuicc.util.tryRefreshCachedEuiccInfo
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -81,7 +80,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             }
 
             withContext(Dispatchers.Main) {
-                adapter.profiles = profiles.filter { it.profileClass == LocalProfileInfo.Clazz.Operational }
+                adapter.profiles = profiles.operational
                 adapter.notifyDataSetChanged()
                 binding.swipeRefresh.isRefreshing = false
             }
@@ -141,7 +140,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
         fun setProfile(profile: LocalProfileInfo) {
             this.profile = profile
-            binding.name.text = getName()
+            binding.name.text = profile.displayName
 
             binding.state.setText(
                 if (isEnabled()) {
@@ -157,11 +156,6 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
         private fun isEnabled(): Boolean =
             profile.state == LocalProfileInfo.State.Enabled
-
-        private fun getName(): String =
-            profile.nickName.ifEmpty {
-                profile.name
-            }
 
         private fun showOptionsMenu() {
             PopupMenu(binding.root.context, binding.profileMenu).apply {
@@ -188,12 +182,12 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                     true
                 }
                 R.id.rename -> {
-                    ProfileRenameFragment.newInstance(slotId, profile.iccid, getName())
+                    ProfileRenameFragment.newInstance(slotId, profile.iccid, profile.displayName)
                         .show(childFragmentManager, ProfileRenameFragment.TAG)
                     true
                 }
                 R.id.delete -> {
-                    ProfileDeleteFragment.newInstance(slotId, profile.iccid, getName())
+                    ProfileDeleteFragment.newInstance(slotId, profile.iccid, profile.displayName)
                         .show(childFragmentManager, ProfileDeleteFragment.TAG)
                     true
                 }
