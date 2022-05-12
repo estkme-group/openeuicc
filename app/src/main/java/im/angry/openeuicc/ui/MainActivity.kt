@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         manager = openEuiccApplication.euiccChannelManager
 
-        spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
+        spinnerAdapter = ArrayAdapter<String>(this, R.layout.spinner_item)
 
         lifecycleScope.launch {
             init()
