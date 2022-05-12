@@ -34,9 +34,11 @@ class EuiccChannelManager(private val context: Context) {
     private val handler = Handler(HandlerThread("EuiccChannelManager").also { it.start() }.looper)
 
     private suspend fun connectSEService(): SEService = suspendCoroutine { cont ->
-        var service: SEService? = null
-        service = SEService(context, { handler.post(it) }) {
-            cont.resume(service!!)
+        handler.post {
+            var service: SEService? = null
+            service = SEService(context, { handler.post(it) }) {
+                cont.resume(service!!)
+            }
         }
     }
 
