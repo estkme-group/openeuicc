@@ -54,7 +54,7 @@ class OpenEuiccService : EuiccService() {
     override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult? {
         val channel = findChannel(slotId) ?: return null
         val profiles = channel.lpa.profiles.filter {
-            it.profileClass != LocalProfileInfo.Clazz.Testing
+            it.profileClass == LocalProfileInfo.Clazz.Operational
         }.map {
             EuiccProfileInfo.Builder(it.iccidLittleEndian).apply {
                 setProfileName(it.name)

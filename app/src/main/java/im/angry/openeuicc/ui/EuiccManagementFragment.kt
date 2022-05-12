@@ -81,7 +81,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             }
 
             withContext(Dispatchers.Main) {
-                adapter.profiles = profiles.filter { it.profileClass != LocalProfileInfo.Clazz.Testing }
+                adapter.profiles = profiles.filter { it.profileClass == LocalProfileInfo.Clazz.Operational }
                 adapter.notifyDataSetChanged()
                 binding.swipeRefresh.isRefreshing = false
             }
