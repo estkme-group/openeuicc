@@ -20,6 +20,12 @@ class OpenEuiccService : EuiccService() {
     override fun onGetEid(slotId: Int): String? =
         findChannel(slotId)?.lpa?.eid
 
+    // When two eSIM cards are present on one device, the Android settings UI
+    // gets confused and sets the incorrect slotId for profiles from one of
+    // the cards. This function helps Detect this case and abort early.
+    private fun EuiccChannel.profileExists(iccid: String?) =
+        lpa.profiles.any { it.iccid == iccid }
+
     override fun onGetOtaStatus(slotId: Int): Int {
         // Not implemented
         return 5 // EUICC_OTA_STATUS_UNAVAILABLE
@@ -84,6 +90,10 @@ class OpenEuiccService : EuiccService() {
         try {
             val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
 
+            if (!channel.profileExists(iccid)) {
+                return RESULT_FIRST_USER
+            }
+
             val profile = channel.lpa.profiles.find {
                 it.iccid == iccid
             } ?: return RESULT_FIRST_USER
@@ -114,6 +124,11 @@ class OpenEuiccService : EuiccService() {
     ): Int {
         try {
             val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
+
+            if (!channel.profileExists(iccid)) {
+                return RESULT_FIRST_USER
+            }
+
             if (iccid == null) {
                 // Disable active profile
                 val activeProfile = channel.lpa.profiles.find {
@@ -141,6 +156,9 @@ class OpenEuiccService : EuiccService() {
 
     override fun onUpdateSubscriptionNickname(slotId: Int, iccid: String, nickname: String?): Int {
         val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
+        if (!channel.profileExists(iccid)) {
+            return RESULT_FIRST_USER
+        }
         val success = channel.lpa
             .setNickname(iccid, nickname)
         openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
