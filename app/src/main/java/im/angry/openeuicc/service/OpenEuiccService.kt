@@ -52,7 +52,8 @@ class OpenEuiccService : EuiccService() {
     }
 
     override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult? {
-        val profiles = (findChannel(slotId) ?: return null).lpa.profiles.filter {
+        val channel = findChannel(slotId) ?: return null
+        val profiles = channel.lpa.profiles.filter {
             it.profileClass != LocalProfileInfo.Clazz.Testing
         }.map {
             EuiccProfileInfo.Builder(it.iccidLittleEndian).apply {
@@ -75,8 +76,7 @@ class OpenEuiccService : EuiccService() {
             }.build()
         }
 
-        // TODO: Does isRemovable matter? Will Android even query us for removable SIMs?
-        return GetEuiccProfileInfoListResult(RESULT_OK, profiles.toTypedArray(), false)
+        return GetEuiccProfileInfoListResult(RESULT_OK, profiles.toTypedArray(), channel.removable)
     }
 
     override fun onGetEuiccInfo(slotId: Int): EuiccInfo {
