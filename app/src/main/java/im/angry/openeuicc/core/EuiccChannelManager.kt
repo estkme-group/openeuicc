@@ -9,6 +9,8 @@ import android.util.Log
 import im.angry.openeuicc.OpenEuiccApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -22,6 +24,8 @@ class EuiccChannelManager(private val context: Context) {
     private val channels = mutableListOf<EuiccChannel>()
 
     private var seService: SEService? = null
+
+    private val lock = Mutex()
 
     private val tm by lazy {
         (context.applicationContext as OpenEuiccApplication).telephonyManager
@@ -43,38 +47,43 @@ class EuiccChannelManager(private val context: Context) {
     }
 
     private suspend fun tryOpenEuiccChannel(uiccInfo: UiccCardInfo): EuiccChannel? {
-        ensureSEService()
-        val existing = channels.find { it.slotId == uiccInfo.slotIndex }
-        if (existing != null) {
-            if (existing.valid) {
-                return existing
-            } else {
-                existing.close()
-                channels.remove(existing)
+        lock.withLock {
+            ensureSEService()
+            val existing = channels.find { it.slotId == uiccInfo.slotIndex }
+            if (existing != null) {
+                if (existing.valid) {
+                    return existing
+                } else {
+                    existing.close()
+                    channels.remove(existing)
+                }
             }
+
+            val channelInfo = EuiccChannelInfo(
+                uiccInfo.slotIndex,
+                uiccInfo.cardId,
+                "SIM ${uiccInfo.slotIndex}",
+                uiccInfo.isRemovable
+            )
+
+            var euiccChannel: EuiccChannel? = null
+
+            if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
+                Log.d(TAG, "Using TelephonyManager for slot ${uiccInfo.slotIndex}")
+                // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
+                euiccChannel = TelephonyManagerChannel.tryConnect(tm, channelInfo)
+            }
+
+            if (euiccChannel == null) {
+                euiccChannel = OmapiChannel.tryConnect(seService!!, channelInfo)
+            }
+
+            if (euiccChannel != null) {
+                channels.add(euiccChannel)
+            }
+
+            return euiccChannel
         }
-
-        val channelInfo = EuiccChannelInfo(
-            uiccInfo.slotIndex, uiccInfo.cardId, "SIM ${uiccInfo.slotIndex}", uiccInfo.isRemovable
-        )
-
-        var euiccChannel: EuiccChannel? = null
-
-        if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
-            Log.d(TAG, "Using TelephonyManager for slot ${uiccInfo.slotIndex}")
-            // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
-            euiccChannel = TelephonyManagerChannel.tryConnect(tm, channelInfo)
-        }
-
-        if (euiccChannel == null) {
-            euiccChannel = OmapiChannel.tryConnect(seService!!, channelInfo)
-        }
-
-        if (euiccChannel != null) {
-            channels.add(euiccChannel)
-        }
-
-        return euiccChannel
     }
 
     private suspend fun findEuiccChannelBySlot(slotId: Int): EuiccChannel? {
