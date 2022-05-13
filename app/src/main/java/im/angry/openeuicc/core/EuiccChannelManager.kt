@@ -7,18 +7,19 @@ import android.se.omapi.SEService
 import android.telephony.UiccCardInfo
 import android.util.Log
 import im.angry.openeuicc.OpenEuiccApplication
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class EuiccChannelManager(private val context: Context) {
     companion object {
         const val TAG = "EuiccChannelManager"
-        const val MAX_SIMS = 3
     }
 
     private val channels = mutableListOf<EuiccChannel>()
@@ -123,5 +124,20 @@ class EuiccChannelManager(private val context: Context) {
         channels.clear()
         seService?.shutdown()
         seService = null
+    }
+
+    // Clean up channels left open in TelephonyManager
+    // due to a (potentially) forced restart
+    // This should be called every time the application is restarted
+    fun closeAllStaleChannels() {
+        for (card in tm.uiccCardsInfo) {
+            for (channel in 0 until 10) {
+                try {
+                    tm.iccCloseLogicalChannelBySlot(card.slotIndex, channel)
+                } catch (_: Exception) {
+                    // We do not care
+                }
+            }
+        }
     }
 }
