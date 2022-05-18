@@ -30,7 +30,9 @@ public class ApduTransmitter {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - Transmit APDU response: " + apduResponse);
         }
 
-        return apduResponse;
+        // Last 2 bytes are the status code (should be 0x9000)
+        // TODO: Do this properly
+        return apduResponse.substring(0, apduResponse.length() - 4);
     }
 
     String transmitApdus(List<String> apdus) {
@@ -46,7 +48,9 @@ public class ApduTransmitter {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - Transmit APDUs response: " + apduResponse);
         }
 
-        return apduResponse;
+        // Last 2 bytes are the status code (should be 0x9000)
+        // TODO: Do this properly
+        return apduResponse.substring(0, apduResponse.length() - 4);
     }
 
     void addApduTransmittedListener(ApduTransmittedListener apduTransmittedListener) {
