@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
 
 class DownloadProfileWorker {
     private static final Logger LOG = Logger.getLogger(DownloadProfileWorker.class.getName());
@@ -42,7 +41,7 @@ class DownloadProfileWorker {
         String serverAddress;
         if(matchingId.contains("$")){
             //Its activation code
-            String[] acParts = matchingId.split("\\$");
+            String[] acParts = matchingId.split("\\$", -1);
             if(acParts.length<3 )
                 throw new RuntimeException("Invalid ActivationCode format");
             
