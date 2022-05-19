@@ -2,7 +2,6 @@ package com.truphone.lpa.impl.download;
 
 
 import com.truphone.es9plus.Es9PlusImpl;
-import com.truphone.es9plus.LpaUtils;
 import com.truphone.es9plus.message.response.AuthenticateClientResp;
 import com.truphone.es9plus.message.response.InitiateAuthenticationResp;
 import com.truphone.lpa.apdu.ApduUtils;
@@ -126,7 +125,7 @@ public class AuthenticatingPhaseWorker {
         }
     }
 
-    public void initiateAuthentication(InitialAuthenticationKeys initialAuthenticationKeys) {
+    public void initiateAuthentication(InitialAuthenticationKeys initialAuthenticationKeys, String matchingId, String imei) {
 
         progress.stepExecuted(DOWNLOAD_PROFILE_INITIATE_AUTHENTICATION, "initiateAuthentication retrieving...");
 
@@ -142,14 +141,14 @@ public class AuthenticatingPhaseWorker {
         setServerCertificate(initialAuthenticationKeys, initiateAuthenticationResp);
         setTransactionId(initialAuthenticationKeys, initiateAuthenticationResp);
         setMatchingId(initialAuthenticationKeys);
-        setCtxParams1(initialAuthenticationKeys);
+        setCtxParams1(initialAuthenticationKeys, matchingId, imei);
 
         progress.stepExecuted(DOWNLOAD_PROFILE_INITIATED_AUTHENTICATION, "initiateAuthentication initiated...");
     }
 
-    private void setCtxParams1(InitialAuthenticationKeys initialAuthenticationKeys) {
+    private void setCtxParams1(InitialAuthenticationKeys initialAuthenticationKeys, String matchingId, String imei) {
 
-        initialAuthenticationKeys.setCtxParams1(LpaUtils.generateCtxParams1());
+        initialAuthenticationKeys.setCtxParams1(ApduUtils.generateCtxParams1(matchingId, imei));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - ctxParams1: " + initialAuthenticationKeys.getCtxParams1());
@@ -276,7 +275,7 @@ public class AuthenticatingPhaseWorker {
         String authenticateServerResponse = apduTransmitter.transmitApdus(ApduUtils.authenticateServerApdu(initialAuthenticationKeys.getServerSigned1(),
                 initialAuthenticationKeys.getServerSignature1(),
                 initialAuthenticationKeys.getEuiccCiPKIdTobeUsed(), initialAuthenticationKeys.getServerCertificate(),
-                initialAuthenticationKeys.getMatchingId()));
+                initialAuthenticationKeys.getCtxParams1()));
         String encodedAuthenticateServerResponse = Base64.encodeBase64String(Util.hexStringToByteArray(authenticateServerResponse));
 
         if (LogStub.getInstance().isDebugEnabled()) {

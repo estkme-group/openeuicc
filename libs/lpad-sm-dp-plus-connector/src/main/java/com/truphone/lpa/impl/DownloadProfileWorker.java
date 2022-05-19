@@ -17,11 +17,13 @@ class DownloadProfileWorker {
     private final DownloadProgress progress;
     private final Es9PlusImpl es9Module;
     private String matchingId;
+    private final String imei;
     private ApduTransmitter apduTransmitter;
 
-    DownloadProfileWorker(String matchingId, DownloadProgress progress, ApduChannel apduChannel, Es9PlusImpl es9Module) {
+    DownloadProfileWorker(String matchingId, String imei, DownloadProgress progress, ApduChannel apduChannel, Es9PlusImpl es9Module) {
 
         this.matchingId = matchingId;
+        this.imei = imei;
         this.progress = progress;
         this.es9Module = es9Module;
         apduTransmitter = new ApduTransmitter(apduChannel);
@@ -59,7 +61,7 @@ class DownloadProfileWorker {
                 authenticatingPhaseWorker.getEuiccInfo(),
                 authenticatingPhaseWorker.getEuiccChallenge(matchingId));
 
-        authenticatingPhaseWorker.initiateAuthentication(initialAuthenticationKeys);
+        authenticatingPhaseWorker.initiateAuthentication(initialAuthenticationKeys, matchingId, imei);
         downloadAndInstallProfilePackage(initialAuthenticationKeys,
                 downloadPhaseWorker.prepareDownload(authenticatingPhaseWorker.authenticateClient(initialAuthenticationKeys,
                         authenticatingPhaseWorker.authenticateWithEuicc(initialAuthenticationKeys))), downloadPhaseWorker);

@@ -19,7 +19,7 @@ public interface LocalProfileAssistant {
     String setDefaultSMDP(String smdpAddress, Progress progress);
 
     
-    void downloadProfile(String matchingId, DownloadProgress progress) throws Exception;
+    void downloadProfile(String matchingId, String imei, DownloadProgress progress) throws Exception;
     
     List<LocalProfileInfo> getProfiles();
 

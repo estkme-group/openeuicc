@@ -74,10 +74,10 @@ public class LocalProfileAssistantImpl implements LocalProfileAssistant {
     }
 
     @Override
-    public void downloadProfile(final String matchingId,
+    public void downloadProfile(final String matchingId, final String imei,
                                 final DownloadProgress progress) throws Exception {
 
-        new DownloadProfileWorker(matchingId, progress, apduChannel, es9Module).run();
+        new DownloadProfileWorker(matchingId, imei, progress, apduChannel, es9Module).run();
     }
 
     @Override

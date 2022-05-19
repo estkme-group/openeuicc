@@ -128,7 +128,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     }
 
     private suspend fun doDownloadProfile(server: String, code: String) = withContext(Dispatchers.IO) {
-        channel.lpa.downloadProfile("1\$${server}\$${code}", DownloadProgress().apply {
+        channel.lpa.downloadProfile("1\$${server}\$${code}", channel.imei, DownloadProgress().apply {
             setProgressListener { _, _, percentage, _ ->
                 binding.progress.isIndeterminate = false
                 binding.progress.progress = (percentage * 100).toInt()

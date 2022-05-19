@@ -34,9 +34,16 @@ public class ApduUtils {
         return apdu.toString();
     }
 
+    public static String generateCtxParams1(String matchingId, String imei) {
+        String tac = imei.substring(0, 8);
+        return ToTLV.toTLV("A0",
+                ToTLV.toTLV("80", matchingId) + ToTLV.toTLV("A1",
+                        ToTLV.toTLV("80", tac) + ToTLV.toTLV("A1", "") + ToTLV.toTLV("82", imei + "F")
+                ));
+    }
+
     public static List<String> authenticateServerApdu(String smdpSigned1, String smdpSignature1, String euiccCiPKIdToBeUsed,
-            String cert, String matchingId) {
-        String sctxParams1 = ToTLV.toTLV("A0", ToTLV.toTLV("80", matchingId) + ToTLV.toTLV("A1", ToTLV.toTLV("80", "35550607") + ToTLV.toTLV("A1", "")));
+            String cert, String sctxParams1) {
         String data = ToTLV.toTLV("BF38", smdpSigned1 + smdpSignature1 + euiccCiPKIdToBeUsed + cert + sctxParams1);
 
         return subCommandData(data, len, false);
