@@ -31,7 +31,7 @@ internal class DownloadProfileWorker(
     private var matchingId: String,
     private val imei: String,
     private val progress: DownloadProgress,
-    apduChannel: ApduChannel?,
+    apduChannel: ApduChannel,
     private val es9Module: Es9PlusImpl
 ) {
     private val apduTransmitter = ApduTransmitter(apduChannel)
