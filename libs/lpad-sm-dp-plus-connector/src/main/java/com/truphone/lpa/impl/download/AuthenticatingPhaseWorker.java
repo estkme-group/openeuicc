@@ -125,7 +125,7 @@ public class AuthenticatingPhaseWorker {
         }
     }
 
-    public void initiateAuthentication(InitialAuthenticationKeys initialAuthenticationKeys, String matchingId, String imei) {
+    public void initiateAuthentication(InitialAuthenticationKeys initialAuthenticationKeys, String imei) {
 
         progress.stepExecuted(DOWNLOAD_PROFILE_INITIATE_AUTHENTICATION, "initiateAuthentication retrieving...");
 
@@ -141,14 +141,14 @@ public class AuthenticatingPhaseWorker {
         setServerCertificate(initialAuthenticationKeys, initiateAuthenticationResp);
         setTransactionId(initialAuthenticationKeys, initiateAuthenticationResp);
         setMatchingId(initialAuthenticationKeys);
-        setCtxParams1(initialAuthenticationKeys, matchingId, imei);
+        setCtxParams1(initialAuthenticationKeys, imei);
 
         progress.stepExecuted(DOWNLOAD_PROFILE_INITIATED_AUTHENTICATION, "initiateAuthentication initiated...");
     }
 
-    private void setCtxParams1(InitialAuthenticationKeys initialAuthenticationKeys, String matchingId, String imei) {
+    private void setCtxParams1(InitialAuthenticationKeys initialAuthenticationKeys, String imei) {
 
-        initialAuthenticationKeys.setCtxParams1(ApduUtils.generateCtxParams1(matchingId, imei));
+        initialAuthenticationKeys.setCtxParams1(ApduUtils.generateCtxParams1(initialAuthenticationKeys.getMatchingId(), imei));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - ctxParams1: " + initialAuthenticationKeys.getCtxParams1());

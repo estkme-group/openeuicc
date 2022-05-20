@@ -74,7 +74,6 @@ internal class DownloadProfileWorker(
         )
         authenticatingPhaseWorker.initiateAuthentication(
             initialAuthenticationKeys,
-            matchingId,
             imei
         )
         downloadAndInstallProfilePackage(
