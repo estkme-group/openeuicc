@@ -39,6 +39,10 @@ class ApduTransmitter(private val apduChannel: ApduChannel) {
             )
         }
 
+        if (apduResponse.length < 4) {
+            throw RuntimeException("APDU response should at least contain a status code")
+        }
+
         // Last 2 bytes are the status code (should be 0x9000)
         // TODO: Do this properly
         return apduResponse.substring(0, apduResponse.length - 4)
@@ -55,6 +59,10 @@ class ApduTransmitter(private val apduChannel: ApduChannel) {
                 LOG,
                 LogStub.getInstance().tag + " - Transmit APDUs response: " + apduResponse
             )
+        }
+
+        if (apduResponse.length < 4) {
+            throw RuntimeException("APDU response should at least contain a status code")
         }
 
         // Last 2 bytes are the status code (should be 0x9000)

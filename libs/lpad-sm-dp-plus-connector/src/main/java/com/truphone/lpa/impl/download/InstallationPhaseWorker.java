@@ -98,10 +98,8 @@ public class InstallationPhaseWorker {
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
 
-        if (StringUtils.isNotBlank(profileInstallationResult) && profileInstallationResult.length() > 4) {
+        if (StringUtils.isNotBlank(profileInstallationResult)) {
             checkProfileInstallationResult(profileInstallationResult);
-        } else {
-            throw new RuntimeException("Unexpected response on loadBoundProfilePackage");
         }
     }
 
@@ -112,12 +110,8 @@ public class InstallationPhaseWorker {
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
 
-        if (profileInstallationResult.compareTo("9000") != 0) {
-            if (StringUtils.isNotBlank(profileInstallationResult) && profileInstallationResult.length() > 4) {
-                checkProfileInstallationResult(profileInstallationResult);
-            } else {
-                throw new RuntimeException("Unexpected response on loadStoreMetadata");
-            }
+        if (StringUtils.isNotBlank(profileInstallationResult)) {
+            checkProfileInstallationResult(profileInstallationResult);
         }
     }
 
@@ -128,12 +122,8 @@ public class InstallationPhaseWorker {
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
 
-        if (profileInstallationResult.compareTo("9000") != 0) {
-            if (StringUtils.isNotBlank(profileInstallationResult) && profileInstallationResult.length() > 4) {
-                checkProfileInstallationResult(profileInstallationResult);
-            } else {
-                throw new RuntimeException("Unexpected response on loadConfigureIsdpa");
-            }
+        if (StringUtils.isNotBlank(profileInstallationResult)) {
+            checkProfileInstallationResult(profileInstallationResult);
         }
     }
 
@@ -144,12 +134,8 @@ public class InstallationPhaseWorker {
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
 
-        if (profileInstallationResult.compareTo("9000") != 0) {
-            if (StringUtils.isNotBlank(profileInstallationResult) && profileInstallationResult.length() > 4) {
-                checkProfileInstallationResult(profileInstallationResult);
-            } else {
-                throw new RuntimeException("Unexpected response on loadInitialiseSecureChannel");
-            }
+        if (StringUtils.isNotBlank(profileInstallationResult)) {
+            checkProfileInstallationResult(profileInstallationResult);
         }
     }
 
@@ -237,13 +223,8 @@ public class InstallationPhaseWorker {
                 "loadReplaceSessionsKeys...");
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
-
-        if (profileInstallationResult.compareTo("9000") != 0) {
-            if (StringUtils.isNotBlank(profileInstallationResult) && profileInstallationResult.length() > 4) {
-                checkProfileInstallationResult(profileInstallationResult);
-            } else {
-                throw new RuntimeException("Unexpected response on loadReplaceSessionsKeys");
-            }
+        if (StringUtils.isNotBlank(profileInstallationResult)) {
+            checkProfileInstallationResult(profileInstallationResult);
         }
     }
 }
