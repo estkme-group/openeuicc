@@ -1,5 +1,6 @@
 package com.truphone.util
 
+import java.io.InputStream
 import java.lang.StringBuilder
 
 object TextUtil {
@@ -77,4 +78,12 @@ object TextUtil {
         }
         return builder.toString()
     }
+
+    /*
+     * Read an InputStream into a ByteArray
+     * This is exposed to the Java side as a convenience
+     * TODO: Remove when we migrate the full code base to Kotlin
+     */
+    @JvmStatic
+    fun readInputStream(i: InputStream): ByteArray = i.readBytes()
 }

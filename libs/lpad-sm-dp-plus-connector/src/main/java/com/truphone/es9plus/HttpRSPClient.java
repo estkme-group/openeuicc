@@ -1,7 +1,8 @@
 package com.truphone.es9plus;
 
 import com.truphone.util.LogStub;
-import org.apache.commons.io.IOUtils;
+import com.truphone.util.TextUtil;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedWriter;
@@ -89,7 +90,7 @@ public class HttpRSPClient {
         os.close();
 
         httpResponse.setStatusCode(con.getResponseCode());
-        httpResponse.setContent(IOUtils.toString(con.getInputStream(), StandardCharsets.UTF_8));
+        httpResponse.setContent(new String(TextUtil.readInputStream(con.getInputStream()), StandardCharsets.UTF_8));
 
         return httpResponse;
     }
