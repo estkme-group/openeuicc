@@ -9,7 +9,6 @@ dependencies {
     tool 'javax.xml.bind:jaxb-api:2.3.0'
     tool 'com.beanit:asn1bean-compiler:1.13.0'
     implementation 'com.beanit:asn1bean:1.13.0'
-    implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'commons-codec:commons-codec:1.11'
     implementation 'com.google.code.gson:gson:2.8.4'
     testImplementation 'junit:junit:4.12'

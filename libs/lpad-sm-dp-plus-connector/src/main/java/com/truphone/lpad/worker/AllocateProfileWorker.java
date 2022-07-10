@@ -3,14 +3,12 @@ package com.truphone.lpad.worker;
 import com.truphone.es9plus.AllocateProfileResponse;
 import com.truphone.es9plus.Es9PlusImpl;
 import com.truphone.util.LogStub;
-import org.apache.commons.lang3.StringUtils;
 import com.truphone.lpad.LpadWorker;
 import com.truphone.lpad.progress.Progress;
 import com.truphone.lpad.progress.ProgressStep;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * Worker containing all logic to allocate a profile for a MCC with a specific EID
@@ -67,7 +65,7 @@ public class AllocateProfileWorker implements LpadWorker<LpadWorkerExchange<Allo
 //
 //            throw new RuntimeException("Unable to allocate profile");
 //        }
-            throw new NotImplementedException("Not implemented");
+            throw new IllegalArgumentException("Not implemented");
     }
 
     private void logDebug(final String errorMessage) {

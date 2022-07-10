@@ -86,4 +86,22 @@ object TextUtil {
      */
     @JvmStatic
     fun readInputStream(i: InputStream): ByteArray = i.readBytes()
+
+    /*
+     * TODO: Remove after Kotlin migration
+     */
+    @JvmStatic
+    fun isNotBlank(str: String): Boolean = str.isNotBlank()
+
+    /*
+     * TODO: Remove after Kotlin migration
+     */
+    @JvmStatic
+    fun isBlank(str: String): Boolean = str.isBlank()
+
+    /*
+     * TODO: Remove after Kotlin migration
+     */
+    @JvmStatic
+    fun isNotEmpty(str: String): Boolean = str.isNotEmpty()
 }

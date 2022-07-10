@@ -1,6 +1,6 @@
 package com.truphone.lpa.apdu;
 
-import org.apache.commons.lang3.StringUtils;
+import com.truphone.util.TextUtil;
 import com.truphone.util.ToTLV;
 import com.truphone.util.Tools;
 
@@ -135,7 +135,7 @@ public class ApduUtils {
     public static String listNotificationApdu(String notificationType) {
         String data;
 
-        if (StringUtils.isNotBlank(notificationType)) {
+        if (TextUtil.isNotBlank(notificationType)) {
             data = ToTLV.toTLV("BF28", ToTLV.toTLV("81", "04" + notificationType));
         } else {
             data = ToTLV.toTLV("BF28", "");
@@ -156,7 +156,7 @@ public class ApduUtils {
 
     public static String getProfilesInfoApdu(String isdp1) {
         String searchCriteria = "";
-        if (!StringUtils.isEmpty(isdp1)) {
+        if (TextUtil.isNotEmpty(isdp1)) {
             searchCriteria = ToTLV.toTLV("A0", ToTLV.toTLV("4F", isdp1));
         }
         String data = ToTLV.toTLV("BF2D", searchCriteria);// + tagList);

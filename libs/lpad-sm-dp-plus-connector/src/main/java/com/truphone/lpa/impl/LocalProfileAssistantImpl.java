@@ -15,8 +15,6 @@ import com.truphone.lpad.worker.LpadWorkerExchange;
 import com.truphone.util.LogStub;
 import com.truphone.util.TextUtil;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;

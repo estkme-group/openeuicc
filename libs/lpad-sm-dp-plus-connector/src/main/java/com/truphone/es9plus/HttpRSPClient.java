@@ -3,8 +3,6 @@ package com.truphone.es9plus;
 import com.truphone.util.LogStub;
 import com.truphone.util.TextUtil;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.BufferedWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -57,7 +55,7 @@ public class HttpRSPClient {
         StringBuilder endpoint = new StringBuilder(rspServerUrl);
         HttpResponse httpResponse = new HttpResponse();
 
-        if (StringUtils.isNotBlank(url)) {
+        if (TextUtil.isNotBlank(url)) {
             endpoint.append(url);
         }
 

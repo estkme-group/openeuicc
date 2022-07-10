@@ -7,9 +7,10 @@ import com.truphone.lpad.progress.ProgressStep;
 import com.truphone.rsp.dto.asn1.rspdefinitions.ProfileInstallationResult;
 import com.truphone.rsp.dto.asn1.rspdefinitions.ProfileInstallationResultData;
 import com.truphone.util.LogStub;
+import com.truphone.util.TextUtil;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -98,7 +99,7 @@ public class InstallationPhaseWorker {
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
 
-        if (StringUtils.isNotBlank(profileInstallationResult)) {
+        if (TextUtil.isNotBlank(profileInstallationResult)) {
             checkProfileInstallationResult(profileInstallationResult);
         }
     }
@@ -110,7 +111,7 @@ public class InstallationPhaseWorker {
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
 
-        if (StringUtils.isNotBlank(profileInstallationResult)) {
+        if (TextUtil.isNotBlank(profileInstallationResult)) {
             checkProfileInstallationResult(profileInstallationResult);
         }
     }
@@ -122,7 +123,7 @@ public class InstallationPhaseWorker {
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
 
-        if (StringUtils.isNotBlank(profileInstallationResult)) {
+        if (TextUtil.isNotBlank(profileInstallationResult)) {
             checkProfileInstallationResult(profileInstallationResult);
         }
     }
@@ -134,7 +135,7 @@ public class InstallationPhaseWorker {
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
 
-        if (StringUtils.isNotBlank(profileInstallationResult)) {
+        if (TextUtil.isNotBlank(profileInstallationResult)) {
             checkProfileInstallationResult(profileInstallationResult);
         }
     }
@@ -223,7 +224,7 @@ public class InstallationPhaseWorker {
                 "loadReplaceSessionsKeys...");
 
         String profileInstallationResult = apduTransmitter.transmitApdus(sbpp);
-        if (StringUtils.isNotBlank(profileInstallationResult)) {
+        if (TextUtil.isNotBlank(profileInstallationResult)) {
             checkProfileInstallationResult(profileInstallationResult);
         }
     }

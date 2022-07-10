@@ -7,9 +7,10 @@ import com.truphone.lpad.progress.Progress;
 import com.truphone.lpad.progress.ProgressStep;
 import com.truphone.rsp.dto.asn1.rspdefinitions.DeleteProfileResponse;
 import com.truphone.util.LogStub;
+import com.truphone.util.TextUtil;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class DeleteProfileWorker implements LpadWorker<LpadWorkerExchange<Delete
 
         inputValidation(lpadWorkerExchange == null, "Input params to invoke Delete Profile must not be null");
         inputValidation(lpadWorkerExchange.getBody() == null, "Input params must have body defined");
-        inputValidation(StringUtils.isBlank(lpadWorkerExchange.getBody().getIccid()), "ICCID must not be null/empty");
+        inputValidation(TextUtil.isBlank(lpadWorkerExchange.getBody().getIccid()), "ICCID must not be null/empty");
 
         String iccid = lpadWorkerExchange.getBody().getIccid(); // Get ICCID From Body
         String eResponse = transmitDeleteProfile(iccid, progress);

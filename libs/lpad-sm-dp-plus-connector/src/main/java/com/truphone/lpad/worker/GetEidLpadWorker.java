@@ -7,9 +7,10 @@ import com.truphone.lpad.progress.Progress;
 import com.truphone.lpad.progress.ProgressStep;
 import com.truphone.rsp.dto.asn1.rspdefinitions.GetEuiccDataResponse;
 import com.truphone.util.LogStub;
+import com.truphone.util.TextUtil;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class GetEidLpadWorker implements LpadWorker<LpadWorkerExchange<String>, 
         progress.stepExecuted(ProgressStep.GET_EID_RETRIEVING, "getEID retrieving...");
 
         inputValidation(lpadWorkerExchange == null, "Lpa dWorker Exchange must be provided");
-        inputValidation(StringUtils.isBlank(lpadWorkerExchange.getBody()), "EID APDU must be provided");
+        inputValidation(TextUtil.isBlank(lpadWorkerExchange.getBody()), "EID APDU must be provided");
 
         logDebug("EID APDU: " + lpadWorkerExchange);
 
@@ -62,7 +63,7 @@ public class GetEidLpadWorker implements LpadWorker<LpadWorkerExchange<String>, 
 
         progress.stepExecuted(ProgressStep.GET_EID_CONVERTING, "getEID converting...");
 
-        inputValidation(StringUtils.isBlank(eidapduResponseStr), "received an invalid eidapduResponseStr: " + eidapduResponseStr);
+        inputValidation(TextUtil.isBlank(eidapduResponseStr), "received an invalid eidapduResponseStr: " + eidapduResponseStr);
 
         GetEuiccDataResponse eidResponse = new GetEuiccDataResponse();
 
