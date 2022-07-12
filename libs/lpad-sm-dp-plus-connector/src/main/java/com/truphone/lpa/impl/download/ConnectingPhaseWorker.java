@@ -7,8 +7,7 @@ import com.truphone.lpa.progress.DownloadProgressPhase;
 import com.truphone.lpad.progress.ProgressStep;
 import com.truphone.rsp.dto.asn1.rspdefinitions.EuiccConfiguredAddressesResponse;
 import com.truphone.util.LogStub;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
+import com.truphone.util.TextUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -59,7 +58,7 @@ public class ConnectingPhaseWorker {
             }
 
             return euiccConfiguredAddress;
-        } catch (DecoderException e) {
+        } catch (NumberFormatException e) {
             LOG.log(Level.SEVERE, "KOL.007" + e.getMessage(), e);
             LOG.severe(LogStub.getInstance().getTag() + " - matchingId: " + matchingId +
                     " Unable to retrieve eUICC configured address. Exception in Decoder:" + e.getMessage());
@@ -74,12 +73,12 @@ public class ConnectingPhaseWorker {
         }
     }
 
-    private EuiccConfiguredAddressesResponse decodeEuiccConfiguredAddressesResponse(String euiCCConfiguredAddressAPDUResponse) throws DecoderException, IOException {
+    private EuiccConfiguredAddressesResponse decodeEuiccConfiguredAddressesResponse(String euiCCConfiguredAddressAPDUResponse) throws NumberFormatException, IOException {
         InputStream is = null;
 
         try {
             EuiccConfiguredAddressesResponse euiccConfiguredAddressesResponse = new EuiccConfiguredAddressesResponse();
-            is = new ByteArrayInputStream(Hex.decodeHex(euiCCConfiguredAddressAPDUResponse.toCharArray()));
+            is = new ByteArrayInputStream(TextUtil.decodeHex(euiCCConfiguredAddressAPDUResponse));
 
             euiccConfiguredAddressesResponse.decode(is);
 

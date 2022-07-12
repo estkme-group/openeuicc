@@ -1,6 +1,7 @@
 package com.truphone.util
 
 import java.io.InputStream
+import java.lang.NumberFormatException
 import java.lang.StringBuilder
 
 object TextUtil {
@@ -42,6 +43,21 @@ object TextUtil {
             ++offset
         }
         return String(result)
+    }
+
+    /*
+     * Decodes a hex string into a byte array
+     * Adapted from <https://stackoverflow.com/questions/66613717/kotlin-convert-hex-string-to-bytearray>
+     */
+    @JvmStatic
+    fun decodeHex(str: String): ByteArray {
+        if (str.length % 2 == 0) {
+            throw NumberFormatException("Must have an even length")
+        }
+
+        return str.chunked(2)
+            .map { it.toInt(16).toByte() }
+            .toByteArray()
     }
 
     /**

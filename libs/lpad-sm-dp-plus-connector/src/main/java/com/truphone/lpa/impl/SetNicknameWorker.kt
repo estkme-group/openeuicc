@@ -17,13 +17,13 @@ package com.truphone.lpa.impl
 import com.truphone.lpa.ApduChannel
 import com.truphone.util.LogStub
 import com.truphone.lpa.apdu.ApduUtils
-import org.apache.commons.codec.binary.Hex
 import com.truphone.rsp.dto.asn1.rspdefinitions.SetNicknameResponse
-import org.apache.commons.codec.DecoderException
+import com.truphone.util.TextUtil
 import com.truphone.util.Util
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -51,7 +51,7 @@ class SetNicknameWorker internal constructor(
         )
         val eResponse = apduChannel.transmitAPDU(apdu)
         return try {
-            val `is`: InputStream = ByteArrayInputStream(Hex.decodeHex(eResponse.toCharArray()))
+            val `is`: InputStream = ByteArrayInputStream(TextUtil.decodeHex(eResponse))
             val response = SetNicknameResponse()
             response.decode(`is`)
             if ("0" == response.setNicknameResult.toString()) {
@@ -75,7 +75,7 @@ class SetNicknameWorker internal constructor(
                 LogStub.getInstance().tag + " - iccid: " + iccid + " profile failed to be renamed"
             )
             throw RuntimeException("Unable to rename profile: $iccid, response: $eResponse")
-        } catch (e: DecoderException) {
+        } catch (e: NumberFormatException) {
             LOG.log(Level.SEVERE, LogStub.getInstance().tag + " - " + e.message, e)
             LOG.log(
                 Level.SEVERE,

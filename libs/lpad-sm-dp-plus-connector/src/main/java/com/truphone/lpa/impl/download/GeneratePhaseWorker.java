@@ -8,8 +8,7 @@ import com.truphone.lpa.progress.DownloadProgressPhase;
 import com.truphone.lpad.progress.ProgressStep;
 import com.truphone.rsp.dto.asn1.rspdefinitions.BoundProfilePackage;
 import com.truphone.util.LogStub;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
+import com.truphone.util.TextUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -100,12 +99,12 @@ public class GeneratePhaseWorker {
             BoundProfilePackage bppObj = new BoundProfilePackage();
 
             try {
-                bppIs = new ByteArrayInputStream(Hex.decodeHex(bpp.toCharArray()));
+                bppIs = new ByteArrayInputStream(TextUtil.decodeHex(bpp));
 
                 bppObj.decode(bppIs);
 
                 LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - BPP Object is: " + bppObj);
-            } catch (DecoderException e) {
+            } catch (NumberFormatException e) {
                 LOG.log(Level.INFO, LogStub.getInstance().getTag() + " - " + e.getMessage(), e);
             } finally {
                 CloseResources.closeResources(bppIs);

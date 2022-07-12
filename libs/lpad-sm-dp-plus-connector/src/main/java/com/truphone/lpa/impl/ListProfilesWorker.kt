@@ -18,13 +18,13 @@ import com.truphone.lpa.ApduChannel
 import com.truphone.lpa.LocalProfileInfo
 import com.truphone.rsp.dto.asn1.rspdefinitions.ProfileInfoListResponse
 import com.truphone.util.LogStub
-import org.apache.commons.codec.DecoderException
-import org.apache.commons.codec.binary.Hex
 import com.truphone.lpa.apdu.ApduUtils
+import com.truphone.util.TextUtil
 import com.truphone.util.TextUtil.iccidBigToLittle
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -56,7 +56,7 @@ internal class ListProfilesWorker(private val apduChannel: ApduChannel) {
                 )
             }
             profileList
-        } catch (e: DecoderException) {
+        } catch (e: NumberFormatException) {
             LOG.log(Level.SEVERE, LogStub.getInstance().tag + " - " + e.message, e)
             LOG.log(
                 Level.SEVERE,
@@ -69,9 +69,9 @@ internal class ListProfilesWorker(private val apduChannel: ApduChannel) {
         }
     }
 
-    @Throws(DecoderException::class, IOException::class)
+    @Throws(NumberFormatException::class, IOException::class)
     private fun decodeProfiles(profilesInfo: String, profiles: ProfileInfoListResponse) {
-        val `is`: InputStream = ByteArrayInputStream(Hex.decodeHex(profilesInfo.toCharArray()))
+        val `is`: InputStream = ByteArrayInputStream(TextUtil.decodeHex(profilesInfo))
         profiles.decode(`is`)
         if (LogStub.getInstance().isDebugEnabled) {
             LogStub.getInstance().logDebug(LOG, "Profile list object: $profiles")

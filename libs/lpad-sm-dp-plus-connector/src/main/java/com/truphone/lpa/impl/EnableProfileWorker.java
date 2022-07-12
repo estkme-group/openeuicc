@@ -7,8 +7,7 @@ import com.truphone.lpad.progress.Progress;
 import com.truphone.lpad.progress.ProgressStep;
 import com.truphone.rsp.dto.asn1.rspdefinitions.EnableProfileResponse;
 import com.truphone.util.LogStub;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
+import com.truphone.util.TextUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -42,7 +41,7 @@ class EnableProfileWorker {
 
         try {
             EnableProfileResponse enableProfileResponse = new EnableProfileResponse();
-            InputStream is = new ByteArrayInputStream(Hex.decodeHex(eResponse.toCharArray()));
+            InputStream is = new ByteArrayInputStream(TextUtil.decodeHex(eResponse));
 
             enableProfileResponse.decode(is);
 
@@ -72,7 +71,7 @@ class EnableProfileWorker {
             LOG.severe(LogStub.getInstance().getTag() + " - iccid: " + iccid + " profile failed to be enabled. message: " + e.getMessage());
 
             throw new RuntimeException("Unable to enable profile: " + iccid + ", response: " + eResponse);
-        } catch (DecoderException e) {
+        } catch (NumberFormatException e) {
             LOG.log(Level.SEVERE, LogStub.getInstance().getTag() + " - " + e.getMessage(), e);
             LOG.severe(LogStub.getInstance().getTag() + " - iccid: " + iccid + " profile failed to be enabled. Exception in Decoder:" + e.getMessage());
 

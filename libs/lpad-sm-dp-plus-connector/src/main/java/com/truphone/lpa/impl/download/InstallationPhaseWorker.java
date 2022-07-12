@@ -9,9 +9,6 @@ import com.truphone.rsp.dto.asn1.rspdefinitions.ProfileInstallationResultData;
 import com.truphone.util.LogStub;
 import com.truphone.util.TextUtil;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -168,7 +165,7 @@ public class InstallationPhaseWorker {
                 throw new RuntimeException(errorMessage);
             }
 
-        } catch (DecoderException e) {
+        } catch (NumberFormatException e) {
             LOG.log(Level.SEVERE, LogStub.getInstance().getTag() + " - " + e.getMessage(), e);
             LOG.severe(LogStub.getInstance().getTag() + " -  Unable to retrieve Profile Installation Result. Exception in Decoder:" + e.getMessage());
 
@@ -199,7 +196,7 @@ public class InstallationPhaseWorker {
         return errorMessage;
     }
 
-    private ProfileInstallationResult getProfileInstallationResult(String profileInstallationResultRaw) throws DecoderException, IOException {
+    private ProfileInstallationResult getProfileInstallationResult(String profileInstallationResultRaw) throws NumberFormatException, IOException {
         InputStream is = null;
 
         if (LogStub.getInstance().isDebugEnabled()) {
@@ -209,7 +206,7 @@ public class InstallationPhaseWorker {
         try {
             ProfileInstallationResult profileInstallationResult = new ProfileInstallationResult();
 
-            is = new ByteArrayInputStream(Hex.decodeHex(profileInstallationResultRaw.toCharArray()));
+            is = new ByteArrayInputStream(TextUtil.decodeHex(profileInstallationResultRaw));
 
             profileInstallationResult.decode(is, true);
 

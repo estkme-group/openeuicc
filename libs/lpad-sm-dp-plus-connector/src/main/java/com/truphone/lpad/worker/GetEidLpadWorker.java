@@ -9,9 +9,6 @@ import com.truphone.rsp.dto.asn1.rspdefinitions.GetEuiccDataResponse;
 import com.truphone.util.LogStub;
 import com.truphone.util.TextUtil;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,7 +68,7 @@ public class GetEidLpadWorker implements LpadWorker<LpadWorkerExchange<String>, 
 
             logDebug("Decoding response: " + eidapduResponseStr);
 
-            InputStream is = new ByteArrayInputStream(Hex.decodeHex(eidapduResponseStr.toCharArray()));
+            InputStream is = new ByteArrayInputStream(TextUtil.decodeHex(eidapduResponseStr));
 
             logDebug("Decoding with GetEuiccDataResponse");
 
@@ -82,7 +79,7 @@ public class GetEidLpadWorker implements LpadWorker<LpadWorkerExchange<String>, 
             progress.stepExecuted(ProgressStep.GET_EID_CONVERTED, "getEID converted...");
 
             return eidResponse.getEidValue().toString();
-        } catch (DecoderException e) {
+        } catch (NumberFormatException e) {
             LOG.log(Level.SEVERE, LogStub.getInstance().getTag() + " - " + e.getMessage(), e);
             LOG.log(Level.SEVERE, LogStub.getInstance().getTag() + " -  Unable to retrieve EID. Exception in Decoder:" + e.getMessage());
 

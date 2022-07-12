@@ -9,9 +9,6 @@ import com.truphone.rsp.dto.asn1.rspdefinitions.DeleteProfileResponse;
 import com.truphone.util.LogStub;
 import com.truphone.util.TextUtil;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,7 +68,7 @@ public class DeleteProfileWorker implements LpadWorker<LpadWorkerExchange<Delete
         DeleteProfileResponse deleteProfileResponse = new DeleteProfileResponse();
 
         try {
-            InputStream is = new ByteArrayInputStream(Hex.decodeHex(eResponse.toCharArray()));
+            InputStream is = new ByteArrayInputStream(TextUtil.decodeHex(eResponse));
             deleteProfileResponse.decode(is);
 
             logDebug(" -  Delete response: " + deleteProfileResponse);
@@ -93,7 +90,7 @@ public class DeleteProfileWorker implements LpadWorker<LpadWorkerExchange<Delete
             LOG.severe(LogStub.getInstance().getTag() + " - iccid:" + iccid + " profile failed to be deleted");
 
             throw new RuntimeException("Unable to delete profile: " + iccid + ", response: " + eResponse);
-        } catch (DecoderException e) {
+        } catch (NumberFormatException e) {
             LOG.severe(LogStub.getInstance().getTag() + " - " + e.getMessage());
             LOG.severe(LogStub.getInstance().getTag() + " - iccid: " + iccid + " profile failed to be deleted. Exception in Decoder:" + e.getMessage());
 
