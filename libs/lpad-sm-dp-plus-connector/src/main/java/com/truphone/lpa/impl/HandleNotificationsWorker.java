@@ -1,20 +1,19 @@
 package com.truphone.lpa.impl;
 
 import com.truphone.rsp.dto.asn1.rspdefinitions.*;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import com.beanit.asn1bean.ber.ReverseByteArrayOutputStream;
 import com.truphone.es9plus.Es9PlusImpl;
 import com.truphone.lpa.ApduChannel;
 import com.truphone.lpa.apdu.ApduUtils;
 import com.truphone.lpa.apdu.NotificationType;
 import com.truphone.util.LogStub;
+import com.truphone.util.TextUtil;
 import com.truphone.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +47,7 @@ public class HandleNotificationsWorker {
                 handlePendingNotification(seqNo, notificationListResponse);
             }
 
-        } catch (DecoderException e) {
+        } catch (NumberFormatException e) {
             LOG.log(Level.SEVERE, LogStub.getInstance().getTag() + " - " + e.getMessage(), e);
             LOG.log(Level.SEVERE, LogStub.getInstance().getTag() + " -  Unable to retrieve profiles. Exception in Decoder:" + e.getMessage());
 
@@ -60,8 +59,8 @@ public class HandleNotificationsWorker {
         }
     }
 
-    private void decodeNotificationList(String notificationList, ListNotificationResponse list) throws DecoderException, IOException {
-        InputStream is = new ByteArrayInputStream(Hex.decodeHex(notificationList.toCharArray()));
+    private void decodeNotificationList(String notificationList, ListNotificationResponse list) throws NumberFormatException, IOException {
+        InputStream is = new ByteArrayInputStream(TextUtil.decodeHex(notificationList));
 
         list.decode(is, true);
 
@@ -93,7 +92,7 @@ public class HandleNotificationsWorker {
         return notificationList;
     }
 
-    private void handlePendingNotification(int seqNo, RetrieveNotificationsListResponse notificationListResponse) throws IOException, DecoderException {
+    private void handlePendingNotification(int seqNo, RetrieveNotificationsListResponse notificationListResponse) throws IOException, NumberFormatException {
 
         if (notificationListResponse != null && notificationListResponse.getNotificationList() != null &&
                 notificationListResponse.getNotificationList().getPendingNotification() != null)
@@ -114,7 +113,7 @@ public class HandleNotificationsWorker {
             }
     }
 
-    private RetrieveNotificationsListResponse getRetrieveNotificationsListResponse(int seqNo) throws DecoderException, IOException {
+    private RetrieveNotificationsListResponse getRetrieveNotificationsListResponse(int seqNo) throws NumberFormatException, IOException {
         String retrieveNotificationFromListApdu = ApduUtils.retrievePendingNotificationsListApdu(seqNo);
 
         if (LogStub.getInstance().isDebugEnabled()) {
@@ -130,8 +129,8 @@ public class HandleNotificationsWorker {
         return decodeNotificationResponse(notificationResponse);
     }
 
-    private RetrieveNotificationsListResponse decodeNotificationResponse(String notificationResponse) throws DecoderException, IOException {
-        InputStream is3 = new ByteArrayInputStream(Hex.decodeHex(notificationResponse.toCharArray()));
+    private RetrieveNotificationsListResponse decodeNotificationResponse(String notificationResponse) throws NumberFormatException, IOException {
+        InputStream is3 = new ByteArrayInputStream(TextUtil.decodeHex(notificationResponse));
         RetrieveNotificationsListResponse notificationListResponse = new RetrieveNotificationsListResponse();
 
         notificationListResponse.decode(is3, true);
@@ -154,7 +153,7 @@ public class HandleNotificationsWorker {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - Pending notification: " + pendingNotificationStr);
         }
 
-        String encodedPendingNotification = Base64.encodeBase64String(Util.hexStringToByteArray(pendingNotificationStr));
+        String encodedPendingNotification = Base64.getEncoder().encodeToString(Util.hexStringToByteArray(pendingNotificationStr));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - Encoded pending notification: " + encodedPendingNotification);
@@ -164,7 +163,7 @@ public class HandleNotificationsWorker {
         return encodedPendingNotification;
     }
 
-    private void removeNotification(int seqNo) throws DecoderException, IOException {
+    private void removeNotification(int seqNo) throws NumberFormatException, IOException {
         String removeNotificationApdu = ApduUtils.removeNotificationFromListApdu(seqNo);
 
         if (LogStub.getInstance().isDebugEnabled()) {
@@ -180,8 +179,8 @@ public class HandleNotificationsWorker {
         decodeRemoveNotification(removeNotificationResponse);
     }
 
-    private void decodeRemoveNotification(String removeNotificationResponse) throws DecoderException, IOException {
-        InputStream is2 = new ByteArrayInputStream(Hex.decodeHex(removeNotificationResponse.toCharArray()));
+    private void decodeRemoveNotification(String removeNotificationResponse) throws NumberFormatException, IOException {
+        InputStream is2 = new ByteArrayInputStream(TextUtil.decodeHex(removeNotificationResponse));
         NotificationSentResponse notificationSentResponse = new NotificationSentResponse();
 
         notificationSentResponse.decode(is2, true);

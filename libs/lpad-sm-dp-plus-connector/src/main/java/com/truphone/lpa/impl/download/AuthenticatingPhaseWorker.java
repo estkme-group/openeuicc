@@ -11,14 +11,13 @@ import com.truphone.lpa.progress.DownloadProgress;
 import com.truphone.lpa.progress.DownloadProgressPhase;
 import com.truphone.rsp.dto.asn1.rspdefinitions.GetEuiccChallengeResponse;
 import com.truphone.util.LogStub;
+import com.truphone.util.TextUtil;
 import com.truphone.util.Util;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +56,7 @@ public class AuthenticatingPhaseWorker {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - EUICC Info Object: " + euiccInfo1);
         }
 
-        euiccInfo1 = Base64.encodeBase64String(Util.hexStringToByteArray(euiccInfo1));
+        euiccInfo1 = Base64.getEncoder().encodeToString(Util.hexStringToByteArray(euiccInfo1));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - EUICC Info Object (Base 64): " + euiccInfo1);
@@ -81,12 +80,12 @@ public class AuthenticatingPhaseWorker {
         progress.stepExecuted(DOWNLOAD_PROFILE_CONVERTING_EUICC_CHALLENGE, "convertEuiccChallenge converting...");
 
         try {
-            euiccChallenge = Base64.encodeBase64String(Util.hexStringToByteArray(decodeGetEuiccChallengeResponse(euiccChallengeApduResponse)));
+            euiccChallenge = Base64.getEncoder().encodeToString(Util.hexStringToByteArray(decodeGetEuiccChallengeResponse(euiccChallengeApduResponse)));
 
             if (LogStub.getInstance().isDebugEnabled()) {
                 LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - eUICCChallenge is " + euiccChallenge);
             }
-        } catch (DecoderException e) {
+        } catch (NumberFormatException e) {
             LOG.log(Level.SEVERE, "KOL.007" + e.getMessage(), e);
             LOG.severe(LogStub.getInstance().getTag() + " - matchingId: " + matchingId +
                     " Unable to retrieve eUICC challenge. Exception in Decoder:" + e.getMessage());
@@ -105,13 +104,13 @@ public class AuthenticatingPhaseWorker {
         return euiccChallenge;
     }
 
-    private String decodeGetEuiccChallengeResponse(String euiccChallengeApduResponse) throws DecoderException, IOException {
+    private String decodeGetEuiccChallengeResponse(String euiccChallengeApduResponse) throws NumberFormatException, IOException {
         InputStream is = null;
 
         try {
             GetEuiccChallengeResponse euiccChallengeResponse = new GetEuiccChallengeResponse();
 
-            is = new ByteArrayInputStream(Hex.decodeHex(euiccChallengeApduResponse.toCharArray()));
+            is = new ByteArrayInputStream(TextUtil.decodeHex(euiccChallengeApduResponse));
 
             euiccChallengeResponse.decode(is);
 
@@ -176,7 +175,7 @@ public class AuthenticatingPhaseWorker {
     private void setServerCertificate(InitialAuthenticationKeys initialAuthenticationKeys, InitiateAuthenticationResp initiateAuthenticationResp) {
 
         initialAuthenticationKeys.setServerCertificate(initiateAuthenticationResp.getServerCertificate());
-        initialAuthenticationKeys.setServerCertificate(Util.byteArrayToHexString(Base64.decodeBase64(initialAuthenticationKeys.getServerCertificate()), ""));
+        initialAuthenticationKeys.setServerCertificate(Util.byteArrayToHexString(Base64.getDecoder().decode(initialAuthenticationKeys.getServerCertificate()), ""));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - serverCertificate: " + initialAuthenticationKeys.getServerCertificate());
@@ -186,7 +185,7 @@ public class AuthenticatingPhaseWorker {
     private void setEuiccCiPKIdToveUsed(InitialAuthenticationKeys initialAuthenticationKeys, InitiateAuthenticationResp initiateAuthenticationResp) {
 
         initialAuthenticationKeys.setEuiccCiPKIdTobeUsed(initiateAuthenticationResp.getEuiccCiPKIdToBeUsed());
-        initialAuthenticationKeys.setEuiccCiPKIdTobeUsed(Util.byteArrayToHexString(Base64.decodeBase64(initialAuthenticationKeys.getEuiccCiPKIdTobeUsed()), ""));
+        initialAuthenticationKeys.setEuiccCiPKIdTobeUsed(Util.byteArrayToHexString(Base64.getDecoder().decode(initialAuthenticationKeys.getEuiccCiPKIdTobeUsed()), ""));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - euiccCiPKIdTobeUsed: " + initialAuthenticationKeys.getEuiccCiPKIdTobeUsed());
@@ -196,7 +195,7 @@ public class AuthenticatingPhaseWorker {
     private void setServerSignature1(InitialAuthenticationKeys initialAuthenticationKeys, InitiateAuthenticationResp initiateAuthenticationResp) {
 
         initialAuthenticationKeys.setServerSignature1(initiateAuthenticationResp.getServerSignature1());
-        initialAuthenticationKeys.setServerSignature1(Util.byteArrayToHexString(Base64.decodeBase64(initialAuthenticationKeys.getServerSignature1()), ""));
+        initialAuthenticationKeys.setServerSignature1(Util.byteArrayToHexString(Base64.getDecoder().decode(initialAuthenticationKeys.getServerSignature1()), ""));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - serverSignature1: " + initialAuthenticationKeys.getServerSignature1());
@@ -206,7 +205,7 @@ public class AuthenticatingPhaseWorker {
     private void setServerSigned1(InitialAuthenticationKeys initialAuthenticationKeys, InitiateAuthenticationResp initiateAuthenticationResp) {
 
         initialAuthenticationKeys.setServerSigned1(initiateAuthenticationResp.getServerSigned1());
-        initialAuthenticationKeys.setServerSigned1(Util.byteArrayToHexString(Base64.decodeBase64(initialAuthenticationKeys.getServerSigned1()), ""));
+        initialAuthenticationKeys.setServerSigned1(Util.byteArrayToHexString(Base64.getDecoder().decode(initialAuthenticationKeys.getServerSigned1()), ""));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - serverSigned1: " + initialAuthenticationKeys.getServerSigned1());
@@ -239,9 +238,9 @@ public class AuthenticatingPhaseWorker {
     private AuthenticateClientSmDp convertAuthenticateClientResp(AuthenticateClientResp authenticateClientResp) {
         AuthenticateClientSmDp authenticateClientSmDp = new AuthenticateClientSmDp();
 
-        authenticateClientSmDp.setSmdpSigned2(Util.byteArrayToHexString(Base64.decodeBase64(authenticateClientResp.getSmdpSigned2()), ""));
-        authenticateClientSmDp.setSmdpSignature2(Util.byteArrayToHexString(Base64.decodeBase64(authenticateClientResp.getSmdpSignature2()), ""));
-        authenticateClientSmDp.setSmdpCertificate(Util.byteArrayToHexString(Base64.decodeBase64(authenticateClientResp.getSmdpCertificate()), ""));
+        authenticateClientSmDp.setSmdpSigned2(Util.byteArrayToHexString(Base64.getDecoder().decode(authenticateClientResp.getSmdpSigned2()), ""));
+        authenticateClientSmDp.setSmdpSignature2(Util.byteArrayToHexString(Base64.getDecoder().decode(authenticateClientResp.getSmdpSignature2()), ""));
+        authenticateClientSmDp.setSmdpCertificate(Util.byteArrayToHexString(Base64.getDecoder().decode(authenticateClientResp.getSmdpCertificate()), ""));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - authenticateClient returning: " + authenticateClientSmDp);
@@ -276,7 +275,7 @@ public class AuthenticatingPhaseWorker {
                 initialAuthenticationKeys.getServerSignature1(),
                 initialAuthenticationKeys.getEuiccCiPKIdTobeUsed(), initialAuthenticationKeys.getServerCertificate(),
                 initialAuthenticationKeys.getCtxParams1()));
-        String encodedAuthenticateServerResponse = Base64.encodeBase64String(Util.hexStringToByteArray(authenticateServerResponse));
+        String encodedAuthenticateServerResponse = Base64.getEncoder().encodeToString(Util.hexStringToByteArray(authenticateServerResponse));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - Authenticate server response (base64): " + encodedAuthenticateServerResponse);

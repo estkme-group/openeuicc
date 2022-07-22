@@ -2,7 +2,6 @@ package com.truphone.lpa.impl.download;
 
 
 import com.truphone.lpa.impl.InitialAuthenticationKeys;
-import org.apache.commons.codec.binary.Base64;
 import com.truphone.es9plus.Es9PlusImpl;
 import com.truphone.es9plus.message.response.GetBoundProfilePackageResp;
 import com.truphone.lpa.apdu.ApduUtils;
@@ -13,6 +12,7 @@ import com.truphone.lpad.progress.ProgressStep;
 import com.truphone.util.LogStub;
 import com.truphone.util.Util;
 
+import java.util.Base64;
 import java.util.logging.Logger;
 
 public class DownloadPhaseWorker {
@@ -37,7 +37,7 @@ public class DownloadPhaseWorker {
         String prepareDownloadResponse = apduTransmitter.transmitApdus(ApduUtils.prepareDownloadApdu(authenticateClientSmDp.getSmdpSigned2(),
                 authenticateClientSmDp.getSmdpSignature2(), authenticateClientSmDp.getSmdpCertificate(),
                 null));
-        String encodedPrepareDownloadResponse = Base64.encodeBase64String(Util.hexStringToByteArray(prepareDownloadResponse));
+        String encodedPrepareDownloadResponse = Base64.getEncoder().encodeToString(Util.hexStringToByteArray(prepareDownloadResponse));
 
         if (LogStub.getInstance().isDebugEnabled()) {
             LogStub.getInstance().logDebug(LOG, LogStub.getInstance().getTag() + " - Prepare download response (base64): " + encodedPrepareDownloadResponse);
@@ -54,7 +54,7 @@ public class DownloadPhaseWorker {
                 "downloadAndInstallProfilePackage retrieving...");
 
         GetBoundProfilePackageResp getBoundProfilePackageResp = getGetBoundProfilePackageResp(initialAuthenticationKeys, encodedPrepareDownloadResponse, initialAuthenticationKeys.getEuiccConfiguredAddress());
-        String bpp = Util.byteArrayToHexString(Base64.decodeBase64(getBoundProfilePackageResp.getBoundProfilePackage()), "");
+        String bpp = Util.byteArrayToHexString(Base64.getDecoder().decode(getBoundProfilePackageResp.getBoundProfilePackage()), "");
 
         progress.stepExecuted(ProgressStep.DOWNLOAD_PROFILE_BOUND_PROFILE_PACKAGE_RETRIEVED,
                 "downloadAndInstallProfilePackage retrieved...");
