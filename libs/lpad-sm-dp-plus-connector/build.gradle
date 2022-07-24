@@ -15,11 +15,11 @@ dependencies {
     testImplementation 'com.github.tomakehurst:wiremock:2.17.0'
 }
 
-sourceSets.main.java.srcDirs = ['build/generated-sources/asn1','src/main/java']
+sourceSets.main.java.srcDirs = ['src/generated/asn1','src/main/java']
 
 task genAsn1(type: JavaExec) {
     mainClass = 'com.beanit.asn1bean.compiler.Compiler'
-    args "-o", "$projectDir/build/generated-sources/asn1", "-p", "com.truphone.rsp.dto.asn1", "-f", "$projectDir/src/main/resources/PKIXExplicit88.asn", "$projectDir/src/main/resources/PKIXImplicit88.asn", "$projectDir/src/main/resources/rsp.asn"
+    args "-o", "$projectDir/src/generated/asn1", "-p", "com.truphone.rsp.dto.asn1", "-f", "$projectDir/src/main/resources/PKIXExplicit88.asn", "$projectDir/src/main/resources/PKIXImplicit88.asn", "$projectDir/src/main/resources/rsp.asn"
     classpath configurations.tool
 }
 
