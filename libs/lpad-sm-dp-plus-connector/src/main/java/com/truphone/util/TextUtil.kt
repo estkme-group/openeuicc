@@ -107,17 +107,17 @@ object TextUtil {
      * TODO: Remove after Kotlin migration
      */
     @JvmStatic
-    fun isNotBlank(str: String): Boolean = str.isNotBlank()
+    fun isNotBlank(str: String?): Boolean = !isBlank(str)
 
     /*
      * TODO: Remove after Kotlin migration
      */
     @JvmStatic
-    fun isBlank(str: String): Boolean = str.isBlank()
+    fun isBlank(str: String?): Boolean = str?.isBlank() ?: true
 
     /*
      * TODO: Remove after Kotlin migration
      */
     @JvmStatic
-    fun isNotEmpty(str: String): Boolean = str.isNotEmpty()
+    fun isNotEmpty(str: String?): Boolean = str?.isNotEmpty() ?: false
 }
