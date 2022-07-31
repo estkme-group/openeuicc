@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.R
 import im.angry.openeuicc.core.EuiccChannelManager
-import im.angry.openeuicc.databinding.ActivityMainBinding
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,14 +31,14 @@ class MainActivity : AppCompatActivity() {
 
     private val fragments = arrayListOf<EuiccManagementFragment>()
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var noEuiccPlaceholder: View
 
     private lateinit var tm: TelephonyManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_main)
+        noEuiccPlaceholder = findViewById(R.id.no_euicc_placeholder)
 
         tm = openEuiccApplication.telephonyManager
 
@@ -108,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (fragments.isNotEmpty()) {
-                binding.noEuiccPlaceholder.visibility = View.GONE
+                noEuiccPlaceholder.visibility = View.GONE
                 supportFragmentManager.beginTransaction().replace(R.id.fragment_root, fragments.first()).commit()
             }
         }

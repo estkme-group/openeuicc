@@ -4,15 +4,16 @@ import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputLayout
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import com.truphone.lpa.progress.DownloadProgress
 import im.angry.openeuicc.R
-import im.angry.openeuicc.databinding.FragmentProfileDownloadBinding
 import im.angry.openeuicc.util.setWidthPercent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,8 +28,10 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
             newInstanceEuicc(ProfileDownloadFragment::class.java, slotId)
     }
 
-    private var _binding: FragmentProfileDownloadBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var toolbar: Toolbar
+    private lateinit var profileDownloadServer: TextInputLayout
+    private lateinit var profileDownloadCode: TextInputLayout
+    private lateinit var progress: ProgressBar
 
     private var downloading = false
 
@@ -37,8 +40,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
             Log.d(TAG, content)
             val components = content.split("$")
             if (components.size < 3 || components[0] != "LPA:1") return@registerForActivityResult
-            binding.profileDownloadServer.editText?.setText(components[1])
-            binding.profileDownloadCode.editText?.setText(components[2])
+            profileDownloadServer.editText?.setText(components[1])
+            profileDownloadCode.editText?.setText(components[2])
         }
     }
 
@@ -47,14 +50,19 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentProfileDownloadBinding.inflate(inflater, container, false)
-        binding.toolbar.inflateMenu(R.menu.fragment_profile_download)
-        return binding.root
+        val view = inflater.inflate(R.layout.fragment_profile_download, container, false)
+
+        toolbar = view.findViewById(R.id.toolbar)
+        profileDownloadServer = view.findViewById(R.id.profile_download_server)
+        profileDownloadCode = view.findViewById(R.id.profile_download_code)
+        progress = view.findViewById(R.id.progress)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.apply {
+        toolbar.apply {
             setTitle(R.string.profile_download)
             setNavigationOnClickListener {
                 if (!downloading) dismiss()
@@ -92,7 +100,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     }
 
     private fun startDownloadProfile() {
-        val server = binding.profileDownloadServer.editText!!.let {
+        val server = profileDownloadServer.editText!!.let {
             it.text.toString().trim().apply {
                 if (isEmpty()) {
                     it.requestFocus()
@@ -101,15 +109,15 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
             }
         }
 
-        val code = binding.profileDownloadCode.editText!!.text.toString().trim()
+        val code = profileDownloadCode.editText!!.text.toString().trim()
 
         downloading = true
 
-        binding.profileDownloadServer.editText!!.isEnabled = false
-        binding.profileDownloadCode.editText!!.isEnabled = false
+        profileDownloadServer.editText!!.isEnabled = false
+        profileDownloadCode.editText!!.isEnabled = false
 
-        binding.progress.isIndeterminate = true
-        binding.progress.visibility = View.VISIBLE
+        progress.isIndeterminate = true
+        progress.visibility = View.VISIBLE
 
         lifecycleScope.launch {
             try {
@@ -130,8 +138,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     private suspend fun doDownloadProfile(server: String, code: String) = withContext(Dispatchers.IO) {
         channel.lpa.downloadProfile("1\$${server}\$${code}", channel.imei, DownloadProgress().apply {
             setProgressListener { _, _, percentage, _ ->
-                binding.progress.isIndeterminate = false
-                binding.progress.progress = (percentage * 100).toInt()
+                progress.isIndeterminate = false
+                progress.progress = (percentage * 100).toInt()
             }
         })
     }
