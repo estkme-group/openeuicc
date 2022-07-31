@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputLayout
 import im.angry.openeuicc.R
-import im.angry.openeuicc.databinding.FragmentProfileRenameBinding
 import im.angry.openeuicc.util.setWidthPercent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,8 +35,9 @@ class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
         }
     }
 
-    private var _binding: FragmentProfileRenameBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var toolbar: Toolbar
+    private lateinit var profileRenameNewName: TextInputLayout
+    private lateinit var progress: ProgressBar
 
     private var renaming = false
 
@@ -43,14 +46,18 @@ class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentProfileRenameBinding.inflate(inflater, container, false)
-        binding.toolbar.inflateMenu(R.menu.fragment_profile_rename)
-        return binding.root
+        val view = inflater.inflate(R.layout.fragment_profile_rename, container, false)
+
+        toolbar = view.findViewById(R.id.toolbar)
+        profileRenameNewName = view.findViewById(R.id.profile_rename_new_name)
+        progress = view.findViewById(R.id.progress)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.apply {
+        toolbar.apply {
             setTitle(R.string.rename)
             setNavigationOnClickListener {
                 if (!renaming) dismiss()
@@ -64,7 +71,7 @@ class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
 
     override fun onStart() {
         super.onStart()
-        binding.profileRenameNewName.editText!!.setText(requireArguments().getString("currentName"))
+        profileRenameNewName.editText!!.setText(requireArguments().getString("currentName"))
     }
 
     override fun onResume() {
@@ -80,15 +87,15 @@ class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
     }
 
     private fun rename() {
-        val name = binding.profileRenameNewName.editText!!.text.toString().trim()
+        val name = profileRenameNewName.editText!!.text.toString().trim()
         if (name.length >= 64) {
             Toast.makeText(context, R.string.toast_profile_name_too_long, Toast.LENGTH_LONG).show()
             return
         }
 
         renaming = true
-        binding.progress.isIndeterminate = true
-        binding.progress.visibility = View.VISIBLE
+        progress.isIndeterminate = true
+        progress.visibility = View.VISIBLE
 
         lifecycleScope.launch {
             try {
