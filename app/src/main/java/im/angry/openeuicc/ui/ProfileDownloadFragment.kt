@@ -57,6 +57,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         profileDownloadCode = view.findViewById(R.id.profile_download_code)
         progress = view.findViewById(R.id.progress)
 
+        toolbar.inflateMenu(R.menu.fragment_profile_download)
+
         return view
     }
 

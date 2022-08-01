@@ -52,6 +52,8 @@ class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
         profileRenameNewName = view.findViewById(R.id.profile_rename_new_name)
         progress = view.findViewById(R.id.progress)
 
+        toolbar.inflateMenu(R.menu.fragment_profile_rename)
+
         return view
     }
 
