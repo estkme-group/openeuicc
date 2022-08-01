@@ -1,0 +1,35 @@
+android_app {
+    name: "OpenEUICC",
+    static_libs: [
+        // Dependencies that must be pulled from maven
+        "asn1bean-prebuilt-jar",
+        "zxing-core-prebuilt-jar",
+        "zxing-android-embedded-prebuilt-aar",
+
+        // Dependencies included with AOSP
+        "androidx.appcompat_appcompat",
+        "androidx.cardview_cardview",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx.core_core-ktx",
+        "androidx.lifecycle_lifecycle-runtime-ktx",
+        "androidx.swiperefreshlayout_swiperefreshlayout",
+        "com.google.android.material_material",
+        "gson-prebuilt-jar",
+    ],
+    srcs: [
+        // Main app
+        "app/src/main/**/*.kt",
+
+        // TruPhone LPAd library
+        "libs/lpad-sm-dp-plus-connector/src/generated/**/*.java",
+        "libs/lpad-sm-dp-plus-connector/src/main/**/*.java",
+        "libs/lpad-sm-dp-plus-connector/src/main/**/*.kt",
+    ],
+    resource_dirs: [
+        "app/src/main/res",
+    ],
+    manifest: "app/src/main/AndroidManifest.xml",
+    privileged: true,
+    platform_apis: true,
+    system_ext_specific: true,
+}
