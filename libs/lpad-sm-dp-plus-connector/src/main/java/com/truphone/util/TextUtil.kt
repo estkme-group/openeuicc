@@ -51,7 +51,7 @@ object TextUtil {
      */
     @JvmStatic
     fun decodeHex(str: String): ByteArray {
-        if (str.length % 2 == 0) {
+        if (str.length % 2 != 0) {
             throw NumberFormatException("Must have an even length")
         }
 
