@@ -8,17 +8,19 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.PopupMenu
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.truphone.lpa.LocalProfileInfo
 import com.truphone.lpad.progress.Progress
 import im.angry.openeuicc.R
-import im.angry.openeuicc.databinding.EuiccProfileBinding
-import im.angry.openeuicc.databinding.FragmentEuiccBinding
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,8 +35,9 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             newInstanceEuicc(EuiccManagementFragment::class.java, slotId)
     }
 
-    private var _binding: FragmentEuiccBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var fab: FloatingActionButton
+    private lateinit var profileList: RecyclerView
 
     private val adapter = EuiccProfileAdapter(listOf())
 
@@ -43,18 +46,23 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEuiccBinding.inflate(inflater, container, false)
-        return binding.root
+        val view = inflater.inflate(R.layout.fragment_euicc, container, false)
+
+        swipeRefresh = view.findViewById(R.id.swipe_refresh)
+        fab = view.findViewById(R.id.fab)
+        profileList = view.findViewById(R.id.profile_list)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.swipeRefresh.setOnRefreshListener { refresh() }
-        binding.profileList.adapter = adapter
-        binding.profileList.layoutManager =
+        swipeRefresh.setOnRefreshListener { refresh() }
+        profileList.adapter = adapter
+        profileList.layoutManager =
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
-        binding.fab.setOnClickListener {
+        fab.setOnClickListener {
             ProfileDownloadFragment.newInstance(slotId)
                 .show(childFragmentManager, ProfileDownloadFragment.TAG)
         }
@@ -71,7 +79,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
     @SuppressLint("NotifyDataSetChanged")
     private fun refresh() {
-        binding.swipeRefresh.isRefreshing = true
+        swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
             val profiles = withContext(Dispatchers.IO) {
@@ -82,15 +90,15 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             withContext(Dispatchers.Main) {
                 adapter.profiles = profiles.operational
                 adapter.notifyDataSetChanged()
-                binding.swipeRefresh.isRefreshing = false
+                swipeRefresh.isRefreshing = false
             }
         }
     }
 
     private fun enableOrDisableProfile(iccid: String, enable: Boolean) {
-        binding.swipeRefresh.isRefreshing = true
-        binding.swipeRefresh.isEnabled = false
-        binding.fab.isEnabled = false
+        swipeRefresh.isRefreshing = true
+        swipeRefresh.isEnabled = false
+        fab.isEnabled = false
 
         lifecycleScope.launch {
             try {
@@ -106,8 +114,8 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             } catch (e: Exception) {
                 Log.d(TAG, "Failed to enable / disable profile $iccid")
                 Log.d(TAG, Log.getStackTraceString(e))
-                binding.fab.isEnabled = true
-                binding.swipeRefresh.isEnabled = true
+                fab.isEnabled = true
+                swipeRefresh.isEnabled = true
                 Toast.makeText(context, R.string.toast_profile_enable_failed, Toast.LENGTH_LONG).show()
             }
         }
@@ -123,42 +131,48 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             channel.lpa.disableProfile(iccid, Progress())
         }
 
-    inner class ViewHolder(private val binding: EuiccProfileBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
+        private val iccid: TextView = root.findViewById(R.id.iccid)
+        private val name: TextView = root.findViewById(R.id.name)
+        private val state: TextView = root.findViewById(R.id.state)
+        private val provider: TextView = root.findViewById(R.id.provider)
+        private val profileMenu: ImageButton = root.findViewById(R.id.profile_menu)
+
         init {
-            binding.iccid.setOnClickListener {
-                if (binding.iccid.transformationMethod == null) {
-                    binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
+            iccid.setOnClickListener {
+                if (iccid.transformationMethod == null) {
+                    iccid.transformationMethod = PasswordTransformationMethod.getInstance()
                 } else {
-                    binding.iccid.transformationMethod = null
+                    iccid.transformationMethod = null
                 }
             }
 
-            binding.profileMenu.setOnClickListener { showOptionsMenu() }
+            profileMenu.setOnClickListener { showOptionsMenu() }
         }
 
         private lateinit var profile: LocalProfileInfo
 
         fun setProfile(profile: LocalProfileInfo) {
             this.profile = profile
-            binding.name.text = profile.displayName
+            name.text = profile.displayName
 
-            binding.state.setText(
+            state.setText(
                 if (isEnabled()) {
                     R.string.enabled
                 } else {
                     R.string.disabled
                 }
             )
-            binding.provider.text = profile.providerName
-            binding.iccid.text = profile.iccid
-            binding.iccid.transformationMethod = PasswordTransformationMethod.getInstance()
+            provider.text = profile.providerName
+            iccid.text = profile.iccid
+            iccid.transformationMethod = PasswordTransformationMethod.getInstance()
         }
 
         private fun isEnabled(): Boolean =
             profile.state == LocalProfileInfo.State.Enabled
 
         private fun showOptionsMenu() {
-            PopupMenu(binding.root.context, binding.profileMenu).apply {
+            PopupMenu(root.context, profileMenu).apply {
                 setOnMenuItemClickListener(::onMenuItemClicked)
                 inflate(R.menu.profile_options)
                 if (isEnabled()) {
@@ -197,9 +211,8 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
     inner class EuiccProfileAdapter(var profiles: List<LocalProfileInfo>) : RecyclerView.Adapter<ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding =
-                EuiccProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return ViewHolder(binding)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.euicc_profile, parent, false)
+            return ViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
