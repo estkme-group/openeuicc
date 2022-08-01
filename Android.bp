@@ -32,4 +32,5 @@ android_app {
     privileged: true,
     platform_apis: true,
     system_ext_specific: true,
+    certificate: "platform",
 }
