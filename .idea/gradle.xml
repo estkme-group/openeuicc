@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/libs" />
+            <option value="$PROJECT_DIR$/libs/hidden-apis-shim" />
             <option value="$PROJECT_DIR$/libs/hidden-apis-stub" />
             <option value="$PROJECT_DIR$/libs/lpad-sm-dp-plus-connector" />
           </set>

@@ -3,6 +3,7 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.7">
       <module name="OpenEUICC.app" target="11" />
+      <module name="OpenEUICC.libs.hidden-apis-shim" target="11" />
       <module name="OpenEUICC.libs.lpad-sm-dp-plus-connector" target="1.8" />
       <module name="OpenEUICC.libs.lpad-sm-dp-plus-connector.main" target="1.8" />
       <module name="OpenEUICC.libs.lpad-sm-dp-plus-connector.test" target="1.8" />
