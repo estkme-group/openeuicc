@@ -28,9 +28,17 @@ android_app {
     resource_dirs: [
         "app/src/main/res",
     ],
+    required: ["privapp_whitelist_im.angry.openeuicc.xml"],
     manifest: "app/src/main/AndroidManifest.xml",
     privileged: true,
     platform_apis: true,
     system_ext_specific: true,
     certificate: "platform",
+}
+
+prebuilt_etc {
+    name: "privapp_whitelist_im.angry.openeuicc.xml",
+    system_ext_specific: true,
+    src: "privapp_whitelist_im.angry.openeuicc.xml",
+    sub_dir: "permissions",
 }
