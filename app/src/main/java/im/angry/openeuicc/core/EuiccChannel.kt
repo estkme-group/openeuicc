@@ -8,7 +8,7 @@ data class EuiccChannelInfo(
     val cardId: Int,
     val name: String,
     val imei: String,
-    val removable: Boolean,
+    val removable: Boolean
 )
 
 abstract class EuiccChannel(

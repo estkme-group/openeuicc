@@ -9,7 +9,7 @@ import java.lang.Exception
 
 class OmapiChannel private constructor(
     info: EuiccChannelInfo,
-    private val channel: Channel,
+    private val channel: Channel
 ) : EuiccChannel(info) {
     companion object {
         private const val TAG = "OmapiChannel"
