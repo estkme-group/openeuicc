@@ -66,7 +66,7 @@ class EuiccChannelManager(private val context: Context) {
                 uiccInfo.slotIndex,
                 uiccInfo.cardId,
                 "SIM ${uiccInfo.slotIndex}",
-                tm.getImei(uiccInfo.slotIndex),
+                tm.getImei(uiccInfo.slotIndex) ?: return null,
                 uiccInfo.isRemovable
             )
 
