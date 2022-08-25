@@ -15,6 +15,7 @@ android_app {
         "androidx.swiperefreshlayout_swiperefreshlayout",
         "com.google.android.material_material",
         "gson-prebuilt-jar",
+        "kotlinx_coroutines",
     ],
     srcs: [
         // Main app
