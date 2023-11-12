@@ -4,6 +4,7 @@ plugins {
 
 android {
     compileSdk 31
+    namespace 'im.angry.hidden.apis'
 }
 
 java {

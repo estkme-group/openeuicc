@@ -27,6 +27,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'im.angry.openeuicc.hidden_apis_shim'
 }
 
 dependencies {
