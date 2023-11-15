@@ -27,8 +27,3 @@ compileJava.dependsOn genAsn1
 compileKotlin.dependsOn genAsn1
 
 description = 'LPAd SM-DP+ Connector'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
