@@ -7,5 +7,4 @@ private object LpacJni {
 
     external fun createContext(apduInterface: ApduInterface, httpInterface: HttpInterface): Long
     external fun destroyContext(handle: Long)
-    external fun setCurrentContext(handle: Long)
 }
