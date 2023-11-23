@@ -1,33 +1,50 @@
 package im.angry.openeuicc.core
 
+import android.se.omapi.Channel
 import android.se.omapi.SEService
+import android.se.omapi.Session
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.impl.HttpInterfaceImpl
 import net.typeblog.lpac_jni.impl.LocalProfileAssistantImpl
+import java.lang.IllegalStateException
 
 class OmapiApduInterface(
     private val service: SEService,
     private val info: EuiccChannelInfo
 ): ApduInterface {
+    private lateinit var session: Session
+    private lateinit var lastChannel: Channel
+
     override fun connect() {
-        TODO("Not yet implemented")
+        session = service.getUiccReader(info.slotId + 1).openSession()
     }
 
     override fun disconnect() {
-        TODO("Not yet implemented")
+        session.close()
     }
 
     override fun logicalChannelOpen(aid: ByteArray): Int {
-        TODO("Not yet implemented")
+        if (this::lastChannel.isInitialized) {
+            throw IllegalStateException("Can only open one channel")
+        }
+        lastChannel = session.openLogicalChannel(aid)!!;
+        return 0;
     }
 
     override fun logicalChannelClose(handle: Int) {
-        TODO("Not yet implemented")
+        if (handle != 0 || !this::lastChannel.isInitialized) {
+            throw IllegalStateException("Unknown channel")
+        }
+        lastChannel.close()
     }
 
     override fun transmit(tx: ByteArray): ByteArray {
-        TODO("Not yet implemented")
+        if (!this::lastChannel.isInitialized) {
+            throw IllegalStateException("Unknown channel")
+        }
+
+        return lastChannel.transmit(tx)
     }
 
 }

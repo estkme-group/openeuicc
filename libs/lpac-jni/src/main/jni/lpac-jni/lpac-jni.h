@@ -9,5 +9,8 @@ struct lpac_jni_ctx {
 };
 
 #define LPAC_JNI_CTX(ctx) ((struct lpac_jni_ctx *) ctx->userdata)
+#define LPAC_JNI_SETUP_ENV \
+    JNIEnv *env; \
+    (*jvm)->AttachCurrentThread(jvm, &env, NULL)
 
 extern JavaVM *jvm;

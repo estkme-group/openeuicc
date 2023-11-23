@@ -6,11 +6,23 @@ import net.typeblog.lpac_jni.HttpInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
 
-class LocalProfileAssistantImpl(val apduInterface: ApduInterface, val httpInterface: HttpInterface): LocalProfileAssistant {
+class LocalProfileAssistantImpl(
+    apduInterface: ApduInterface,
+    httpInterface: HttpInterface
+): LocalProfileAssistant {
+    private val contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
+    init {
+        if (LpacJni.es10xInit(contextHandle) < 0) {
+            throw IllegalArgumentException("Failed to initialize LPA")
+        }
+    }
+
     override val profiles: List<LocalProfileInfo>
-        get() = listOf()
-    override val eID: String
-        get() = "1234567890"
+        get() = LpacJni.es10cGetProfilesInfo(contextHandle)!!.asList() // TODO: Maybe we need better error handling
+
+    override val eID: String by lazy {
+        LpacJni.es10cGetEid(contextHandle)!!
+    }
 
     override fun enableProfile(iccid: String): Boolean {
         TODO("Not yet implemented")
@@ -33,6 +45,7 @@ class LocalProfileAssistantImpl(val apduInterface: ApduInterface, val httpInterf
     }
 
     override fun close() {
-        // TODO: use es10x_fini
+        LpacJni.es10xFini(contextHandle)
+        LpacJni.destroyContext(contextHandle)
     }
 }
