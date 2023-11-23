@@ -3,7 +3,7 @@ package net.typeblog.lpac_jni
 /*
  * Should reflect euicc_apdu_interface in lpac/euicc/interface.h
  */
-sealed interface ApduInterface {
+interface ApduInterface {
     fun connect()
     fun disconnect()
     fun logicalChannelOpen(aid: ByteArray): Int

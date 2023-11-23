@@ -18,8 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.truphone.lpa.LocalProfileInfo
-import com.truphone.lpad.progress.Progress
+import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.R
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -123,12 +122,12 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
     private suspend fun doEnableProfile(iccid: String) =
         withContext(Dispatchers.IO) {
-            channel.lpa.enableProfile(iccid, Progress())
+            channel.lpa.enableProfile(iccid)
         }
 
     private suspend fun doDisableProfile(iccid: String) =
         withContext(Dispatchers.IO) {
-            channel.lpa.disableProfile(iccid, Progress())
+            channel.lpa.disableProfile(iccid)
         }
 
     inner class ViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {

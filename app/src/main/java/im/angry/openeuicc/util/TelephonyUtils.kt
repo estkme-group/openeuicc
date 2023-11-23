@@ -2,7 +2,7 @@ package im.angry.openeuicc.util
 
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
-import com.truphone.lpa.LocalProfileInfo
+import net.typeblog.lpac_jni.LocalProfileInfo
 import java.lang.Exception
 
 val TelephonyManager.supportsDSDS: Boolean

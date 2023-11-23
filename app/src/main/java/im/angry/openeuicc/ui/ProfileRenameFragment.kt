@@ -115,7 +115,7 @@ class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
     }
 
     private suspend fun doRename(name: String) = withContext(Dispatchers.IO) {
-        if (!channel.lpa.setNickname(requireArguments().getString("iccid"), name)) {
+        if (!channel.lpa.setNickname(requireArguments().getString("iccid")!!, name)) {
             throw RuntimeException("Profile nickname not changed")
         }
     }

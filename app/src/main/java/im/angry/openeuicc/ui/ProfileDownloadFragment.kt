@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import com.truphone.lpa.progress.DownloadProgress
 import im.angry.openeuicc.R
 import im.angry.openeuicc.util.setWidthPercent
 import kotlinx.coroutines.Dispatchers
@@ -138,11 +137,11 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     }
 
     private suspend fun doDownloadProfile(server: String, code: String) = withContext(Dispatchers.IO) {
-        channel.lpa.downloadProfile("1\$${server}\$${code}", channel.imei, DownloadProgress().apply {
+        channel.lpa.downloadProfile("1\$${server}\$${code}", channel.imei/*, DownloadProgress().apply {
             setProgressListener { _, _, percentage, _ ->
                 progress.isIndeterminate = false
                 progress.progress = (percentage * 100).toInt()
             }
-        })
+        }*/)
     }
 }

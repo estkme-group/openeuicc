@@ -1,6 +1,6 @@
 package im.angry.openeuicc.core
 
-import com.truphone.lpa.LocalProfileAssistant
+import net.typeblog.lpac_jni.LocalProfileAssistant
 
 // A custom type to avoid compatibility issues with UiccCardInfo / UiccPortInfo
 data class EuiccChannelInfo(

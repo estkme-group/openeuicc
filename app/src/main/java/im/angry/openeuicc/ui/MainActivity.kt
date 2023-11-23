@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             manager.enumerateEuiccChannels()
             manager.knownChannels.forEach {
                 Log.d(TAG, it.name)
-                Log.d(TAG, it.lpa.eid)
+                Log.d(TAG, it.lpa.eID)
                 openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(it.cardId)
             }
         }

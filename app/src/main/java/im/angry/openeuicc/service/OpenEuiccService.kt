@@ -3,8 +3,7 @@ package im.angry.openeuicc.service
 import android.service.euicc.*
 import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
-import com.truphone.lpa.LocalProfileInfo
-import com.truphone.lpad.progress.Progress
+import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
@@ -18,7 +17,7 @@ class OpenEuiccService : EuiccService() {
             .findEuiccChannelBySlotBlocking(slotId)
 
     override fun onGetEid(slotId: Int): String? =
-        findChannel(slotId)?.lpa?.eid
+        findChannel(slotId)?.lpa?.eID
 
     // When two eSIM cards are present on one device, the Android settings UI
     // gets confused and sets the incorrect slotId for profiles from one of
@@ -103,7 +102,7 @@ class OpenEuiccService : EuiccService() {
                 return RESULT_FIRST_USER
             }
 
-            return if (channel.lpa.deleteProfile(iccid, Progress())) {
+            return if (channel.lpa.deleteProfile(iccid)) {
                 RESULT_OK
             } else {
                 RESULT_FIRST_USER
@@ -135,13 +134,13 @@ class OpenEuiccService : EuiccService() {
                     it.state == LocalProfileInfo.State.Enabled
                 } ?: return RESULT_OK
 
-                return if (channel.lpa.disableProfile(activeProfile.iccid, Progress())) {
+                return if (channel.lpa.disableProfile(activeProfile.iccid)) {
                     RESULT_OK
                 } else {
                     RESULT_FIRST_USER
                 }
             } else {
-                return if (channel.lpa.enableProfile(iccid, Progress())) {
+                return if (channel.lpa.enableProfile(iccid)) {
                     RESULT_OK
                 } else {
                     RESULT_FIRST_USER
@@ -160,7 +159,7 @@ class OpenEuiccService : EuiccService() {
             return RESULT_FIRST_USER
         }
         val success = channel.lpa
-            .setNickname(iccid, nickname)
+            .setNickname(iccid, nickname!!)
         openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
         return if (success) {
             RESULT_OK

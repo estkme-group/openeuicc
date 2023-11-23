@@ -80,7 +80,6 @@ android {
 dependencies {
     compileOnly project(':libs:hidden-apis-stub')
     implementation project(':libs:hidden-apis-shim')
-    implementation project(":libs:lpad-sm-dp-plus-connector")
     implementation project(":libs:lpac-jni")
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'

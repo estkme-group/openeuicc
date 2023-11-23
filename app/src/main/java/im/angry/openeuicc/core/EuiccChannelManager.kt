@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.lang.Exception
+import java.lang.IllegalArgumentException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -75,11 +76,19 @@ class EuiccChannelManager(private val context: Context) {
             if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
                 Log.d(TAG, "Using TelephonyManager for slot ${uiccInfo.slotIndex}")
                 // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
-                euiccChannel = TelephonyManagerChannel.tryConnect(tm, channelInfo)
+                try {
+                    euiccChannel = TelephonyManagerChannel(channelInfo, tm)
+                } catch (e: IllegalArgumentException) {
+                    // Failed
+                }
             }
 
             if (euiccChannel == null) {
-                euiccChannel = OmapiChannel.tryConnect(seService!!, channelInfo)
+                try {
+                    euiccChannel = OmapiChannel(seService!!, channelInfo)
+                } catch (e: IllegalArgumentException) {
+                    // Failed
+                }
             }
 
             if (euiccChannel != null) {

@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import com.truphone.lpad.progress.Progress
 import im.angry.openeuicc.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -72,6 +71,6 @@ class ProfileDeleteFragment : DialogFragment(), EuiccFragmentMarker {
     }
 
     private suspend fun doDelete() = withContext(Dispatchers.IO) {
-        channel.lpa.deleteProfile(requireArguments().getString("iccid"), Progress())
+        channel.lpa.deleteProfile(requireArguments().getString("iccid")!!)
     }
 }

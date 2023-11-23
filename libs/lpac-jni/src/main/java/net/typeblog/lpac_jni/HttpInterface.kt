@@ -3,7 +3,7 @@ package net.typeblog.lpac_jni
 /*
  * Should reflect euicc_http_interface in lpac/euicc/interface.h
  */
-sealed interface HttpInterface {
+interface HttpInterface {
     data class HttpResponse(val rcode: Int, val data: ByteArray) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

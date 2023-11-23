@@ -1,6 +1,6 @@
 package net.typeblog.lpac_jni
 
-private object LpacJni {
+internal object LpacJni {
     init {
         System.loadLibrary("lpac-jni")
     }
