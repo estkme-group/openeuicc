@@ -2,7 +2,6 @@
 #include <euicc/interface.h>
 #include <malloc.h>
 #include <string.h>
-#include <syslog.h>
 #include "lpac-jni.h"
 #include "interface-wrapper.h"
 
@@ -145,7 +144,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject th
         jstring serviceProvider = info[i].serviceProviderName ? toJString(env, info[i].serviceProviderName) : (*env)->NewLocalRef(env, empty_string);
 
         jobject state;
-        switch (info->profileState) {
+        switch (info[i].profileState) {
             case ES10C_PROFILE_INFO_STATE_ENABLED:
                 state = local_profile_state_enabled;
                 break;
@@ -156,7 +155,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject th
         state = (*env)->NewLocalRef(env, state);
 
         jobject class;
-        switch (info->profileClass) {
+        switch (info[i].profileClass) {
             case ES10C_PROFILE_INFO_CLASS_TEST:
                 class = local_profile_class_testing;
                 break;

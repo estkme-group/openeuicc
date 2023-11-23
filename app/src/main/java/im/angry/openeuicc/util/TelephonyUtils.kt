@@ -29,6 +29,5 @@ val LocalProfileInfo.displayName: String
 
 val List<LocalProfileInfo>.operational: List<LocalProfileInfo>
     get() = filter {
-        // TODO: Profiles get marked as PROVISIONING with lpac even if it is OPERATIONAL. Why?
-        it.profileClass != LocalProfileInfo.Clazz.Testing
+        it.profileClass == LocalProfileInfo.Clazz.Operational
     }
