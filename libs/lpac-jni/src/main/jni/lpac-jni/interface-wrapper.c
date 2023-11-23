@@ -67,6 +67,8 @@ static int apdu_interface_transmit(struct euicc_ctx *ctx, uint8_t **rx, uint32_t
     *rx_len = (*env)->GetArrayLength(env, ret);
     *rx = malloc(*rx_len * sizeof(uint8_t));
     (*env)->GetByteArrayRegion(env, ret, 0, *rx_len, *rx);
+    (*env)->DeleteLocalRef(env, txArr);
+    (*env)->DeleteLocalRef(env, ret);
     return 0;
 }
 
@@ -82,6 +84,9 @@ static int http_interface_transmit(struct euicc_ctx *ctx, const char *url, uint3
     *rx_len = (*env)->GetArrayLength(env, rxArr);
     *rx = malloc(*rx_len * sizeof(uint8_t));
     (*env)->GetByteArrayRegion(env, rxArr, 0, *rx_len, *rx);
+    (*env)->DeleteLocalRef(env, txArr);
+    (*env)->DeleteLocalRef(env, rxArr);
+    (*env)->DeleteLocalRef(env, ret);
     return 0;
 }
 
