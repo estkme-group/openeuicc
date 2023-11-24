@@ -25,11 +25,11 @@ class LocalProfileAssistantImpl(
     }
 
     override fun enableProfile(iccid: String): Boolean {
-        TODO("Not yet implemented")
+        return LpacJni.es10cEnableProfile(contextHandle, iccid) == 0
     }
 
     override fun disableProfile(iccid: String): Boolean {
-        TODO("Not yet implemented")
+        return LpacJni.es10cDisableProfile(contextHandle, iccid) == 0
     }
 
     override fun deleteProfile(iccid: String): Boolean {

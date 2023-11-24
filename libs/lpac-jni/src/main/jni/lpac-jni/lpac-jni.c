@@ -2,6 +2,7 @@
 #include <euicc/interface.h>
 #include <malloc.h>
 #include <string.h>
+#include <syslog.h>
 #include "lpac-jni.h"
 #include "interface-wrapper.h"
 
@@ -183,5 +184,25 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject th
     }
 
     es10c_profile_info_free_all(info, count);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL
+Java_net_typeblog_lpac_1jni_LpacJni_es10cEnableProfile(JNIEnv *env, jobject thiz, jlong handle,
+                                                       jstring iccid) {
+    struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
+    const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
+    int ret = es10c_enable_profile_iccid(ctx, _iccid, 1);
+    (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL
+Java_net_typeblog_lpac_1jni_LpacJni_es10cDisableProfile(JNIEnv *env, jobject thiz, jlong handle,
+                                                        jstring iccid) {
+    struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
+    const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
+    int ret = es10c_disable_profile_iccid(ctx, _iccid, 1);
+    (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
