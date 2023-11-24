@@ -206,3 +206,25 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cDisableProfile(JNIEnv *env, jobject thi
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
+
+JNIEXPORT jint JNICALL
+Java_net_typeblog_lpac_1jni_LpacJni_es10cSetNickname(JNIEnv *env, jobject thiz, jlong handle,
+                                                     jstring iccid, jstring nick) {
+    struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
+    const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
+    const char *_nick = (*env)->GetStringUTFChars(env, nick, NULL);
+    int ret = es10c_set_nickname(ctx, _iccid, _nick);
+    (*env)->ReleaseStringUTFChars(env, nick, _nick);
+    (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL
+Java_net_typeblog_lpac_1jni_LpacJni_es10cDeleteProfile(JNIEnv *env, jobject thiz, jlong handle,
+                                                       jstring iccid) {
+    struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
+    const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
+    int ret = es10c_delete_profile_iccid(ctx, _iccid);
+    (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
+    return ret;
+}

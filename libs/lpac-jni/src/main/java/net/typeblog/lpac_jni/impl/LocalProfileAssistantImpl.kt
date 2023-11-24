@@ -33,7 +33,7 @@ class LocalProfileAssistantImpl(
     }
 
     override fun deleteProfile(iccid: String): Boolean {
-        TODO("Not yet implemented")
+        return LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0
     }
 
     override fun downloadProfile(matchingId: String, imei: String) {
@@ -41,7 +41,7 @@ class LocalProfileAssistantImpl(
     }
 
     override fun setNickname(iccid: String, nickname: String): Boolean {
-        TODO("Not yet implemented")
+        return LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0
     }
 
     override fun close() {
