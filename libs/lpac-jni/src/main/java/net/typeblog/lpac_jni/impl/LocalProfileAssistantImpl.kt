@@ -37,8 +37,9 @@ class LocalProfileAssistantImpl(
         return LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0
     }
 
-    override fun downloadProfile(smdp: String, matchingId: String, imei: String, callback: ProfileDownloadCallback): Boolean {
-        return LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei, callback) == 0
+    override fun downloadProfile(smdp: String, matchingId: String, imei: String,
+                                 confirmationCode: String?, callback: ProfileDownloadCallback): Boolean {
+        return LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei, confirmationCode, callback) == 0
     }
 
     override fun setNickname(iccid: String, nickname: String): Boolean {

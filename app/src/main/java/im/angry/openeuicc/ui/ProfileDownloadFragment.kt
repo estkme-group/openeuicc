@@ -31,6 +31,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     private lateinit var toolbar: Toolbar
     private lateinit var profileDownloadServer: TextInputLayout
     private lateinit var profileDownloadCode: TextInputLayout
+    private lateinit var profileDownloadConfirmationCode: TextInputLayout
     private lateinit var progress: ProgressBar
 
     private var downloading = false
@@ -55,6 +56,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         toolbar = view.findViewById(R.id.toolbar)
         profileDownloadServer = view.findViewById(R.id.profile_download_server)
         profileDownloadCode = view.findViewById(R.id.profile_download_code)
+        profileDownloadConfirmationCode = view.findViewById(R.id.profile_download_confirmation_code)
         progress = view.findViewById(R.id.progress)
 
         toolbar.inflateMenu(R.menu.fragment_profile_download)
@@ -112,6 +114,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         }
 
         val code = profileDownloadCode.editText!!.text.toString().trim()
+        val confirmationCode = profileDownloadConfirmationCode.editText!!.text.toString().trim()
+            .ifBlank { null }
 
         downloading = true
 
@@ -123,7 +127,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
 
         lifecycleScope.launch {
             try {
-                doDownloadProfile(server, code)
+                doDownloadProfile(server, code, confirmationCode)
             } catch (e: Exception) {
                 Log.d(TAG, "Error downloading profile")
                 Log.d(TAG, Log.getStackTraceString(e))
@@ -137,8 +141,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         }
     }
 
-    private suspend fun doDownloadProfile(server: String, code: String) = withContext(Dispatchers.IO) {
-        channel.lpa.downloadProfile(server, code, channel.imei, object : ProfileDownloadCallback {
+    private suspend fun doDownloadProfile(server: String, code: String, confirmationCode: String?) = withContext(Dispatchers.IO) {
+        channel.lpa.downloadProfile(server, code, channel.imei, confirmationCode, object : ProfileDownloadCallback {
             override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
                 lifecycleScope.launch(Dispatchers.Main) {
                     progress.isIndeterminate = false

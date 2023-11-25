@@ -38,7 +38,8 @@ void lpac_download_init() {
 
 JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, jlong handle,
-                                                    jstring smdp, jstring matching_id, jstring imei,
+                                                    jstring smdp, jstring matching_id,
+                                                    jstring imei, jstring confirmation_code,
                                                     jobject callback) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
     struct es9p_get_bound_profile_package_resp es9p_get_bound_profile_package_resp;
@@ -51,11 +52,14 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     char *b64_euicc_challenge = NULL;
     char *b64_euicc_info_1 = NULL;
     char *transaction_id = NULL;
+    const char *_confirmation_code = NULL;
     const char *_matching_id = NULL;
     const char *_smdp = NULL;
     const char *_imei = NULL;
     int ret;
 
+    if (confirmation_code != NULL)
+        _confirmation_code = (*env)->GetStringUTFChars(env, confirmation_code, NULL);
     _matching_id = (*env)->GetStringUTFChars(env, matching_id, NULL);
     _smdp = (*env)->GetStringUTFChars(env, smdp, NULL);
     _imei = (*env)->GetStringUTFChars(env, imei, NULL);
@@ -95,7 +99,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     es10b_prepare_download_param.b64_smdp_signed_2 = es9p_authenticate_client_resp.b64_smdp_signed_2;
     es10b_prepare_download_param.b64_smdp_signature_2 = es9p_authenticate_client_resp.b64_smdp_signature_2;
     es10b_prepare_download_param.b64_smdp_certificate = es9p_authenticate_client_resp.b64_smdp_certificate;
-    es10b_prepare_download_param.str_checkcode = NULL; // TODO: Support confirmation code
+    es10b_prepare_download_param.hexstr_transcation_id = transaction_id;
+    es10b_prepare_download_param.str_checkcode = _confirmation_code;
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_downloading);
     ret = es10b_prepare_download(ctx, &b64_prepare_download_response, &es10b_prepare_download_param);
@@ -115,6 +120,8 @@ out:
     free(b64_euicc_info_1);
     free(b64_euicc_challenge);
     free(transaction_id);
+    if (_confirmation_code != NULL)
+        (*env)->ReleaseStringUTFChars(env, confirmation_code, _confirmation_code);
     (*env)->ReleaseStringUTFChars(env, matching_id, _matching_id);
     (*env)->ReleaseStringUTFChars(env, smdp, _smdp);
     (*env)->ReleaseStringUTFChars(env, imei, _imei);

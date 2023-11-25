@@ -23,5 +23,6 @@ internal object LpacJni {
 
     // es9p + es10b
     // We do not expose all of the functions because of tediousness :)
-    external fun downloadProfile(handle: Long, smdp: String, matchingId: String, imei: String, callback: ProfileDownloadCallback): Int
+    external fun downloadProfile(handle: Long, smdp: String, matchingId: String, imei: String,
+                                 confirmationCode: String?, callback: ProfileDownloadCallback): Int
 }
