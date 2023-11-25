@@ -38,9 +38,7 @@ class LocalProfileAssistantImpl(
     }
 
     override fun downloadProfile(smdp: String, matchingId: String, imei: String, callback: ProfileDownloadCallback): Boolean {
-        // See SGP.22, check digit of IMEI needs a "F" filler
-        // TODO: Do this in lpac-jni or lpac itself?
-        return LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei + "F", callback) == 0
+        return LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei, callback) == 0
     }
 
     override fun setNickname(iccid: String, nickname: String): Boolean {
