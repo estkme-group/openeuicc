@@ -74,7 +74,7 @@ static int apdu_interface_transmit(struct euicc_ctx *ctx, uint8_t **rx, uint32_t
 
 static int http_interface_transmit(struct euicc_ctx *ctx, const char *url, uint32_t *rcode, uint8_t **rx, uint32_t *rx_len, const uint8_t *tx, uint32_t tx_len) {
     LPAC_JNI_SETUP_ENV;
-    jstring jurl = (*env)->NewString(env, url, strlen(url));
+    jstring jurl = toJString(env, url);
     jbyteArray txArr = (*env)->NewByteArray(env, tx_len);
     (*env)->SetByteArrayRegion(env, txArr, 0, tx_len, (const jbyte *) tx);
     jobject ret = (*env)->CallObjectMethod(env, LPAC_JNI_CTX(ctx)->http_interface, method_http_transmit, jurl, txArr);

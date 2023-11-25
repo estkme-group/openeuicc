@@ -17,6 +17,7 @@ import im.angry.openeuicc.util.setWidthPercent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.typeblog.lpac_jni.ProfileDownloadCallback
 import java.lang.Exception
 
 class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.OnMenuItemClickListener {
@@ -137,11 +138,13 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     }
 
     private suspend fun doDownloadProfile(server: String, code: String) = withContext(Dispatchers.IO) {
-        channel.lpa.downloadProfile("1\$${server}\$${code}", channel.imei/*, DownloadProgress().apply {
-            setProgressListener { _, _, percentage, _ ->
-                progress.isIndeterminate = false
-                progress.progress = (percentage * 100).toInt()
+        channel.lpa.downloadProfile(server, code, channel.imei, object : ProfileDownloadCallback {
+            override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    progress.isIndeterminate = false
+                    progress.progress = state.progress
+                }
             }
-        }*/)
+        })
     }
 }

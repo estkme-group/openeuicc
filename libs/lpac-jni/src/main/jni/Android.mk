@@ -42,5 +42,6 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/lpac
 LOCAL_SRC_FILES := \
 	lpac-jni/lpac-jni.c \
+	lpac-jni/lpac-download.c \
 	lpac-jni/interface-wrapper.c
 include $(BUILD_SHARED_LIBRARY)

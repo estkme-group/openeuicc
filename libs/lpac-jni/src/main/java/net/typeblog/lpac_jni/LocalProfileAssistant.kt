@@ -8,7 +8,7 @@ interface LocalProfileAssistant {
     fun disableProfile(iccid: String): Boolean
     fun deleteProfile(iccid: String): Boolean
 
-    fun downloadProfile(matchingId: String, imei: String)
+    fun downloadProfile(smdp: String, matchingId: String, imei: String, callback: ProfileDownloadCallback): Boolean
 
     fun setNickname(
         iccid: String, nickname: String

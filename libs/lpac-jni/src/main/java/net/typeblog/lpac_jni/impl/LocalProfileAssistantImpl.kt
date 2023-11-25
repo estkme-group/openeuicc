@@ -5,6 +5,7 @@ import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.HttpInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
+import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
     apduInterface: ApduInterface,
@@ -36,8 +37,10 @@ class LocalProfileAssistantImpl(
         return LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0
     }
 
-    override fun downloadProfile(matchingId: String, imei: String) {
-        TODO("Not yet implemented")
+    override fun downloadProfile(smdp: String, matchingId: String, imei: String, callback: ProfileDownloadCallback): Boolean {
+        // See SGP.22, check digit of IMEI needs a "F" filler
+        // TODO: Do this in lpac-jni or lpac itself?
+        return LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei + "F", callback) == 0
     }
 
     override fun setNickname(iccid: String, nickname: String): Boolean {
