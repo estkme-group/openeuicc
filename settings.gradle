@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "OpenEUICC"
-include ':app', ':libs:lpad-sm-dp-plus-connector'
+include ':app'
 include ':libs:hidden-apis-stub'
 include ':libs:hidden-apis-shim'
 include ':libs:lpac-jni'
