@@ -60,6 +60,4 @@ class TelephonyManagerChannel(
         TelephonyManagerApduInterface(info, tm),
         HttpInterfaceImpl()
     )
-
-    override fun close() = lpa.close()
 }

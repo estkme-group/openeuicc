@@ -55,6 +55,4 @@ class OmapiChannel(
     override val lpa: LocalProfileAssistant = LocalProfileAssistantImpl(
         OmapiApduInterface(service, info),
         HttpInterfaceImpl())
-
-    override fun close() = lpa.close()
 }

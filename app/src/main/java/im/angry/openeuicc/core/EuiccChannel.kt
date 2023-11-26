@@ -32,5 +32,5 @@ abstract class EuiccChannel(
             return true
         }
 
-    abstract fun close()
+    fun close() = lpa.close()
 }
