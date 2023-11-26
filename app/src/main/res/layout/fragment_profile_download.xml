@@ -85,12 +85,33 @@
         app:layout_constraintTop_toBottomOf="@id/profile_download_code"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintWidth_percent=".8">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:theme="@style/Theme.OpenEUICC.Input.Cursor"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/profile_download_imei"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:hint="@string/profile_download_imei"
+        style="@style/Widget.OpenEUICC.Input"
+        app:layout_constraintTop_toBottomOf="@id/profile_download_confirmation_code"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintWidth_percent=".8"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
             android:theme="@style/Theme.OpenEUICC.Input.Cursor"/>
 
     </com.google.android.material.textfield.TextInputLayout>

@@ -2,6 +2,7 @@ package im.angry.openeuicc.ui
 
 import android.app.Dialog
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
@@ -32,6 +33,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     private lateinit var profileDownloadServer: TextInputLayout
     private lateinit var profileDownloadCode: TextInputLayout
     private lateinit var profileDownloadConfirmationCode: TextInputLayout
+    private lateinit var profileDownloadIMEI: TextInputLayout
     private lateinit var progress: ProgressBar
 
     private var downloading = false
@@ -57,6 +59,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         profileDownloadServer = view.findViewById(R.id.profile_download_server)
         profileDownloadCode = view.findViewById(R.id.profile_download_code)
         profileDownloadConfirmationCode = view.findViewById(R.id.profile_download_confirmation_code)
+        profileDownloadIMEI = view.findViewById(R.id.profile_download_imei)
         progress = view.findViewById(R.id.progress)
 
         toolbar.inflateMenu(R.menu.fragment_profile_download)
@@ -96,6 +99,11 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         setWidthPercent(95)
     }
 
+    override fun onStart() {
+        super.onStart()
+        profileDownloadIMEI.editText!!.text = Editable.Factory.getInstance().newEditable(channel.imei)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState).also {
             it.window?.requestFeature(Window.FEATURE_NO_TITLE)
@@ -117,6 +125,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
             .ifBlank { null }
         val confirmationCode = profileDownloadConfirmationCode.editText!!.text.toString().trim()
             .ifBlank { null }
+        val imei = profileDownloadIMEI.editText!!.text.toString().trim()
+            .ifBlank { null }
 
         downloading = true
 
@@ -128,7 +138,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
 
         lifecycleScope.launch {
             try {
-                doDownloadProfile(server, code, confirmationCode)
+                doDownloadProfile(server, code, confirmationCode, imei)
             } catch (e: Exception) {
                 Log.d(TAG, "Error downloading profile")
                 Log.d(TAG, Log.getStackTraceString(e))
@@ -142,8 +152,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         }
     }
 
-    private suspend fun doDownloadProfile(server: String, code: String?, confirmationCode: String?) = withContext(Dispatchers.IO) {
-        channel.lpa.downloadProfile(server, code, channel.imei, confirmationCode, object : ProfileDownloadCallback {
+    private suspend fun doDownloadProfile(server: String, code: String?, confirmationCode: String?, imei: String?) = withContext(Dispatchers.IO) {
+        channel.lpa.downloadProfile(server, code, imei, confirmationCode, object : ProfileDownloadCallback {
             override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
                 lifecycleScope.launch(Dispatchers.Main) {
                     progress.isIndeterminate = false
