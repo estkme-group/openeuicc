@@ -114,6 +114,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         }
 
         val code = profileDownloadCode.editText!!.text.toString().trim()
+            .ifBlank { null }
         val confirmationCode = profileDownloadConfirmationCode.editText!!.text.toString().trim()
             .ifBlank { null }
 
@@ -141,7 +142,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         }
     }
 
-    private suspend fun doDownloadProfile(server: String, code: String, confirmationCode: String?) = withContext(Dispatchers.IO) {
+    private suspend fun doDownloadProfile(server: String, code: String?, confirmationCode: String?) = withContext(Dispatchers.IO) {
         channel.lpa.downloadProfile(server, code, channel.imei, confirmationCode, object : ProfileDownloadCallback {
             override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
                 lifecycleScope.launch(Dispatchers.Main) {

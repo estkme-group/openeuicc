@@ -60,9 +60,11 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
 
     if (confirmation_code != NULL)
         _confirmation_code = (*env)->GetStringUTFChars(env, confirmation_code, NULL);
-    _matching_id = (*env)->GetStringUTFChars(env, matching_id, NULL);
+    if (matching_id != NULL)
+        _matching_id = (*env)->GetStringUTFChars(env, matching_id, NULL);
     _smdp = (*env)->GetStringUTFChars(env, smdp, NULL);
-    _imei = (*env)->GetStringUTFChars(env, imei, NULL);
+    if (imei != NULL)
+        _imei = (*env)->GetStringUTFChars(env, imei, NULL);
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_preparing);
     ret = es10b_get_euicc_challenge(ctx, &b64_euicc_challenge);
@@ -122,8 +124,10 @@ out:
     free(transaction_id);
     if (_confirmation_code != NULL)
         (*env)->ReleaseStringUTFChars(env, confirmation_code, _confirmation_code);
-    (*env)->ReleaseStringUTFChars(env, matching_id, _matching_id);
+    if (_matching_id != NULL)
+        (*env)->ReleaseStringUTFChars(env, matching_id, _matching_id);
     (*env)->ReleaseStringUTFChars(env, smdp, _smdp);
-    (*env)->ReleaseStringUTFChars(env, imei, _imei);
+    if (_imei != NULL)
+        (*env)->ReleaseStringUTFChars(env, imei, _imei);
     return ret;
 }
