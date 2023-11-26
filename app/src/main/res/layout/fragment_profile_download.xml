@@ -66,11 +66,13 @@
         app:layout_constraintTop_toBottomOf="@id/profile_download_server"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintWidth_percent=".8">
+        app:layout_constraintWidth_percent=".8"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:inputType="textPassword"
             android:theme="@style/Theme.OpenEUICC.Input.Cursor"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -85,11 +87,13 @@
         app:layout_constraintTop_toBottomOf="@id/profile_download_code"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintWidth_percent=".8">
+        app:layout_constraintWidth_percent=".8"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:inputType="textPassword"
             android:theme="@style/Theme.OpenEUICC.Input.Cursor"/>
 
     </com.google.android.material.textfield.TextInputLayout>
