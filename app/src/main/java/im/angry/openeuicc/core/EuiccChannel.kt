@@ -21,7 +21,16 @@ abstract class EuiccChannel(
     val removable = info.removable
 
     abstract val lpa: LocalProfileAssistant
-    abstract val valid: Boolean
+    val valid: Boolean
+        get() {
+            try {
+                // Try to ping the eUICC card by reading the EID
+                lpa.eID
+            } catch (e: Exception) {
+                return false
+            }
+            return true
+        }
 
     abstract fun close()
 }

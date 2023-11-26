@@ -1,19 +1,22 @@
 package im.angry.openeuicc.util
 
-fun hexStringToByteArray(str: String): ByteArray {
-    val length = str.length / 2
-    val out = ByteArray(length)
-    for (i in 0 until length) {
+fun String.decodeHex(): ByteArray {
+    check(length % 2 == 0) { "Must have an even length" }
+
+    val decodedLength = length / 2
+    val out = ByteArray(decodedLength)
+    for (i in 0 until decodedLength) {
         val i2 = i * 2
-        out[i] = str.substring(i2, i2 + 2).toInt(16).toByte()
+        out[i] = substring(i2, i2 + 2).toInt(16).toByte()
     }
     return out
 }
-fun byteArrayToHex(arr: ByteArray): String {
+
+fun ByteArray.encodeHex(): String {
     val sb = StringBuilder()
-    val length = arr.size
+    val length = size
     for (i in 0 until length) {
-        sb.append(String.format("%02X", arr[i]))
+        sb.append(String.format("%02X", this[i]))
     }
     return sb.toString()
 }
