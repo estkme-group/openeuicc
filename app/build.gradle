@@ -67,6 +67,11 @@ android {
             signingConfig signingConfigs.config
         }
     }
+    applicationVariants.all { variant ->
+        if (variant.name == "debug") {
+            variant.outputs.each { o -> o.versionCodeOverride = System.currentTimeSeconds() }
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
