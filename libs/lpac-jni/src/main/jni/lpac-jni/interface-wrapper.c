@@ -24,7 +24,7 @@ void interface_wrapper_init() {
 
     jclass http_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/HttpInterface");
     method_http_transmit = (*env)->GetMethodID(env, http_class, "transmit",
-                                               "(Ljava/lang/String;[B)Lnet/typeblog/lpac_jni/HttpInterface$HttpResponse;");
+                                               "(Ljava/lang/String;[B[Ljava/lang/String;)Lnet/typeblog/lpac_jni/HttpInterface$HttpResponse;");
 
     jclass resp_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/HttpInterface$HttpResponse");
     field_resp_rcode = (*env)->GetFieldID(env, resp_class, "rcode", "I");
@@ -72,12 +72,24 @@ static int apdu_interface_transmit(struct euicc_ctx *ctx, uint8_t **rx, uint32_t
     return 0;
 }
 
-static int http_interface_transmit(struct euicc_ctx *ctx, const char *url, uint32_t *rcode, uint8_t **rx, uint32_t *rx_len, const uint8_t *tx, uint32_t tx_len) {
+static int http_interface_transmit(struct euicc_ctx *ctx, const char *url, uint32_t *rcode, uint8_t **rx, uint32_t *rx_len, const uint8_t *tx, uint32_t tx_len, const char **headers) {
     LPAC_JNI_SETUP_ENV;
     jstring jurl = toJString(env, url);
     jbyteArray txArr = (*env)->NewByteArray(env, tx_len);
     (*env)->SetByteArrayRegion(env, txArr, 0, tx_len, (const jbyte *) tx);
-    jobject ret = (*env)->CallObjectMethod(env, LPAC_JNI_CTX(ctx)->http_interface, method_http_transmit, jurl, txArr);
+
+    int num_headers = 0;
+    while (headers[num_headers] != NULL) {
+        num_headers++;
+    }
+    jobjectArray headersArr = (*env)->NewObjectArray(env, num_headers, string_class, NULL);
+    for (int i = 0; i < num_headers; i++) {
+        jstring header = toJString(env, headers[i]);
+        (*env)->SetObjectArrayElement(env, headersArr, i, header);
+        (*env)->DeleteLocalRef(env, header);
+    }
+
+    jobject ret = (*env)->CallObjectMethod(env, LPAC_JNI_CTX(ctx)->http_interface, method_http_transmit, jurl, txArr, headersArr);
     LPAC_JNI_EXCEPTION_RETURN;
     *rcode = (*env)->GetIntField(env, ret, field_resp_rcode);
     jbyteArray rxArr = (jbyteArray) (*env)->GetObjectField(env, ret, field_resp_data);
@@ -86,6 +98,7 @@ static int http_interface_transmit(struct euicc_ctx *ctx, const char *url, uint3
     (*env)->GetByteArrayRegion(env, rxArr, 0, *rx_len, *rx);
     (*env)->DeleteLocalRef(env, txArr);
     (*env)->DeleteLocalRef(env, rxArr);
+    (*env)->DeleteLocalRef(env, headersArr);
     (*env)->DeleteLocalRef(env, ret);
     return 0;
 }

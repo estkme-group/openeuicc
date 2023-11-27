@@ -24,5 +24,5 @@ interface HttpInterface {
         }
     }
 
-    fun transmit(url: String, tx: ByteArray): HttpResponse
+    fun transmit(url: String, tx: ByteArray, headers: Array<String>): HttpResponse
 }

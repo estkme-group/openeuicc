@@ -14,5 +14,6 @@ struct lpac_jni_ctx {
     (*jvm)->AttachCurrentThread(jvm, &env, NULL)
 
 extern JavaVM *jvm;
+extern jclass string_class;
 
 jstring toJString(JNIEnv *env, const char *pat);

@@ -5,15 +5,20 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class HttpInterfaceImpl: HttpInterface {
-    override fun transmit(url: String, tx: ByteArray): HttpInterface.HttpResponse {
-        android.util.Log.d("aaa", url)
+    override fun transmit(
+        url: String,
+        tx: ByteArray,
+        headers: Array<String>
+    ): HttpInterface.HttpResponse {
         val conn = URL(url).openConnection() as HttpURLConnection
         conn.requestMethod = "POST"
         conn.doInput = true
         conn.doOutput = true
-        conn.setRequestProperty("User-Agent", "gsma-rsp-lpad")
-        conn.setRequestProperty("X-Admin-Protocol", "gsma/rsp/v2.2.0")
-        conn.setRequestProperty("Content-Type", "application/json")
+
+        for (h in headers) {
+            val s = h.split(":", limit = 2)
+            conn.setRequestProperty(s[0], s[1])
+        }
 
         conn.outputStream.write(tx)
         conn.outputStream.flush()
