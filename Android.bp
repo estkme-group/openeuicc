@@ -1,8 +1,7 @@
 android_app {
     name: "OpenEUICC",
     static_libs: [
-        // Dependencies that must be pulled from maven
-        "asn1bean-prebuilt-jar",
+        // Dependencies that must be pulled from maven,
         "zxing-core-prebuilt-jar",
         "zxing-android-embedded-prebuilt-aar",
 
@@ -14,17 +13,18 @@ android_app {
         "androidx.lifecycle_lifecycle-runtime-ktx",
         "androidx.swiperefreshlayout_swiperefreshlayout",
         "com.google.android.material_material",
-        "gson-prebuilt-jar",
+        "gson",
         "kotlinx_coroutines",
+    ],
+    jni_libs: [
+        "liblpac-jni",
     ],
     srcs: [
         // Main app
         "app/src/main/**/*.kt",
 
-        // TruPhone LPAd library
-        "libs/lpad-sm-dp-plus-connector/src/generated/**/*.java",
-        "libs/lpad-sm-dp-plus-connector/src/main/**/*.java",
-        "libs/lpad-sm-dp-plus-connector/src/main/**/*.kt",
+        // lpac-jni interface
+        "libs/lpac-jni/src/main/**/*.kt",
     ],
     resource_dirs: [
         "app/src/main/res",
