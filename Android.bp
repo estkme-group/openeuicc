@@ -26,6 +26,9 @@ android_app {
         // lpac-jni interface
         "libs/lpac-jni/src/main/**/*.kt",
     ],
+    optimize: {
+        enabled: false,
+    },
     resource_dirs: [
         "app/src/main/res",
     ],
