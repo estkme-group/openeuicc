@@ -29,11 +29,14 @@ class TelephonyManagerApduInterface(
         if (channel.status != IccOpenLogicalChannelResponse.STATUS_NO_ERROR || channel.channel == IccOpenLogicalChannelResponse.INVALID_CHANNEL) {
             throw IllegalArgumentException("Cannot open logical channel " + hex + " via TelephonManager on slot " + info.slotId);
         }
-        return channel.channel
+        lastChannel = channel.channel
+        return lastChannel
     }
 
     override fun logicalChannelClose(handle: Int) {
+        check(handle == lastChannel) { "Invalid channel handle " }
         tm.iccCloseLogicalChannelBySlot(info.slotId, handle)
+        lastChannel = -1
     }
 
     override fun transmit(tx: ByteArray): ByteArray {
