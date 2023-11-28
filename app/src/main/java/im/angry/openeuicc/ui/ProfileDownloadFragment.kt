@@ -132,6 +132,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
 
         profileDownloadServer.editText!!.isEnabled = false
         profileDownloadCode.editText!!.isEnabled = false
+        profileDownloadConfirmationCode.editText!!.isEnabled = false
+        profileDownloadIMEI.editText!!.isEnabled = false
 
         progress.isIndeterminate = true
         progress.visibility = View.VISIBLE
