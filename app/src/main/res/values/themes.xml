@@ -11,9 +11,11 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorAccent">?attr/colorSecondary</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:windowLightStatusBar">true</item>
         <!-- Customize your theme here. -->
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="android:navigationBarColor">?attr/colorSecondary</item>
     </style>
 
     <style name="Theme.OpenEUICC.Input.Cursor" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
