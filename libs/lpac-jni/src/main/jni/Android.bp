@@ -48,4 +48,5 @@ cc_library_shared {
         "liblpac-cjson",
     ],
     shared_libs: ["liblog"],
+    system_ext_specific: true,
 }
