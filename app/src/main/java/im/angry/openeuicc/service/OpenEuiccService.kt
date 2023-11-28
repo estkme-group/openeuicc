@@ -4,13 +4,13 @@ import android.service.euicc.*
 import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
 import net.typeblog.lpac_jni.LocalProfileInfo
-import im.angry.openeuicc.OpenEuiccApplication
+import im.angry.openeuicc.BaseOpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 
 class OpenEuiccService : EuiccService() {
     private val openEuiccApplication
-        get() = application as OpenEuiccApplication
+        get() = application as BaseOpenEuiccApplication
 
     private fun findChannel(slotId: Int): EuiccChannel? =
         openEuiccApplication.euiccChannelManager

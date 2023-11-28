@@ -6,21 +6,19 @@ import android.os.HandlerThread
 import android.se.omapi.SEService
 import android.telephony.UiccCardInfo
 import android.util.Log
-import im.angry.openeuicc.OpenEuiccApplication
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.BaseOpenEuiccApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import java.lang.IllegalArgumentException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class EuiccChannelManager(private val context: Context) {
+abstract class BaseEuiccChannelManager(private val context: Context) {
     companion object {
-        const val TAG = "EuiccChannelManager"
+        const val TAG = "BaseEuiccChannelManager"
     }
 
     private val channels = mutableListOf<EuiccChannel>()
@@ -29,11 +27,11 @@ class EuiccChannelManager(private val context: Context) {
 
     private val lock = Mutex()
 
-    private val tm by lazy {
-        (context.applicationContext as OpenEuiccApplication).telephonyManager
+    protected val tm by lazy {
+        (context.applicationContext as BaseOpenEuiccApplication).telephonyManager
     }
 
-    private val handler = Handler(HandlerThread("EuiccChannelManager").also { it.start() }.looper)
+    private val handler = Handler(HandlerThread("BaseEuiccChannelManager").also { it.start() }.looper)
 
     private suspend fun connectSEService(): SEService = suspendCoroutine { cont ->
         handler.post {
@@ -49,6 +47,8 @@ class EuiccChannelManager(private val context: Context) {
              seService = connectSEService()
          }
     }
+
+    abstract fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel?
 
     private suspend fun tryOpenEuiccChannel(uiccInfo: UiccCardInfo): EuiccChannel? {
         lock.withLock {
@@ -71,17 +71,7 @@ class EuiccChannelManager(private val context: Context) {
                 uiccInfo.isRemovable
             )
 
-            var euiccChannel: EuiccChannel? = null
-
-            if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
-                Log.d(TAG, "Using TelephonyManager for slot ${uiccInfo.slotIndex}")
-                // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
-                try {
-                    euiccChannel = TelephonyManagerChannel(channelInfo, tm)
-                } catch (e: IllegalArgumentException) {
-                    // Failed
-                }
-            }
+            var euiccChannel: EuiccChannel? = tryOpenEuiccChannelPrivileged(uiccInfo, channelInfo)
 
             if (euiccChannel == null) {
                 try {
@@ -134,20 +124,5 @@ class EuiccChannelManager(private val context: Context) {
         channels.clear()
         seService?.shutdown()
         seService = null
-    }
-
-    // Clean up channels left open in TelephonyManager
-    // due to a (potentially) forced restart
-    // This should be called every time the application is restarted
-    fun closeAllStaleChannels() {
-        for (card in tm.uiccCardsInfo) {
-            for (channel in 0 until 10) {
-                try {
-                    tm.iccCloseLogicalChannelBySlot(card.slotIndex, channel)
-                } catch (_: Exception) {
-                    // We do not care
-                }
-            }
-        }
     }
 }

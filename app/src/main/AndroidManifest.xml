@@ -5,7 +5,7 @@
     package="im.angry.openeuicc">
 
     <application
-        android:name=".OpenEuiccApplication"
+        android:name=".PrivilegedOpenEuiccApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
