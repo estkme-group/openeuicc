@@ -42,11 +42,11 @@ class TelephonyManagerApduInterface(
     override fun transmit(tx: ByteArray): ByteArray {
         check(lastChannel != -1) { "Uninitialized" }
 
-        val cla = tx[0].toInt()
-        val instruction = tx[1].toInt()
-        val p1 = tx[2].toInt()
-        val p2 = tx[3].toInt()
-        val p3 = tx[4].toInt()
+        val cla = tx[0].toUByte().toInt()
+        val instruction = tx[1].toUByte().toInt()
+        val p1 = tx[2].toUByte().toInt()
+        val p2 = tx[3].toUByte().toInt()
+        val p3 = tx[4].toUByte().toInt()
         val p4 = tx.drop(5).toByteArray().encodeHex()
 
         return tm.iccTransmitApduLogicalChannelBySlot(info.slotId, lastChannel,
