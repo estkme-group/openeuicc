@@ -4,16 +4,6 @@
     tools:ignore="ProtectedPermissions"
     package="im.angry.openeuicc">
 
-    <uses-feature
-        android:name="android.hardware.telephony"
-        android:required="true" />
-
-    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EMBEDDED_SUBSCRIPTIONS" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SECURE_ELEMENT_PRIVILEGED_OPERATION" />
-
     <application
         android:name=".OpenEuiccApplication"
         android:allowBackup="true"
@@ -21,8 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.OpenEUICC"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:theme="@style/Theme.OpenEUICC">
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -52,11 +41,6 @@
                 <category android:name="android.service.euicc.category.EUICC_UI" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation" />
     </application>
 
 </manifest>

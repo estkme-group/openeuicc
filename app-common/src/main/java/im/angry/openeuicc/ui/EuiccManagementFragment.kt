@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import net.typeblog.lpac_jni.LocalProfileInfo
-import im.angry.openeuicc.R
+import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -1,35 +1,3 @@
 <resources>
     <string name="app_name">OpenEUICC</string>
-
-    <string name="no_euicc">No eUICC found on this device.\nOn some devices, you may need to enable dual SIM first in the menu of this app.</string>
-
-    <string name="dsds">Dual SIM</string>
-
-    <string name="enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
-    <string name="provider">Provider:</string>
-    <string name="iccid">ICCID:</string>
-
-    <string name="enable">Enable</string>
-    <string name="disable">Disable</string>
-    <string name="delete">Delete</string>
-    <string name="rename">Rename</string>
-
-    <string name="toast_profile_enabled">eSIM profile switched. Please wait for a while when the card is restarting.</string>
-    <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
-    <string name="toast_profile_name_too_long">Nickname cannot be longer than 64 characters</string>
-    <string name="toast_dsds_switched">DSDS state switched. Please wait until the modem restarts.</string>
-
-    <string name="profile_download">New eSIM</string>
-    <string name="profile_download_server">Server (RSP / SM-DP+)</string>
-    <string name="profile_download_code">Activation Code</string>
-    <string name="profile_download_confirmation_code">Confirmation Code (Optional)</string>
-    <string name="profile_download_imei">IMEI (Optional)</string>
-    <string name="profile_download_scan">Scan QR Code</string>
-    <string name="profile_download_ok">Download</string>
-    <string name="profile_download_failed">Failed to download eSIM. Check your activation / QR code.</string>
-
-    <string name="profile_rename_new_name">New nickname</string>
-
-    <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
 </resources>

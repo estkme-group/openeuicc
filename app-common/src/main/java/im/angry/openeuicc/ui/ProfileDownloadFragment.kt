@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import im.angry.openeuicc.R
+import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.setWidthPercent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
