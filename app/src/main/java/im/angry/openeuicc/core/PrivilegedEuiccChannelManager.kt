@@ -3,6 +3,7 @@ package im.angry.openeuicc.core
 import android.content.Context
 import android.telephony.UiccCardInfo
 import android.util.Log
+import im.angry.openeuicc.BaseOpenEuiccApplication
 import im.angry.openeuicc.util.*
 import java.lang.Exception
 import java.lang.IllegalArgumentException
@@ -32,6 +33,14 @@ class PrivilegedEuiccChannelManager(context: Context): BaseEuiccChannelManager(c
                 } catch (_: Exception) {
                     // We do not care
                 }
+            }
+        }
+    }
+
+    override fun notifyEuiccProfilesChanged(slotId: Int) {
+        (context.applicationContext as BaseOpenEuiccApplication).subscriptionManager.apply {
+            findEuiccChannelBySlotBlocking(slotId)?.let {
+                tryRefreshCachedEuiccInfo(it.cardId)
             }
         }
     }

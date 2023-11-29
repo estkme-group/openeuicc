@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">OpenEUICC</string>
+
+    <string name="dsds">Dual SIM</string>
+
+    <string name="toast_dsds_switched">DSDS state switched. Please wait until the modem restarts.</string>
 </resources>

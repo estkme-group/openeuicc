@@ -82,7 +82,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
 
         lifecycleScope.launch {
             val profiles = withContext(Dispatchers.IO) {
-                openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
+                euiccChannelManager.notifyEuiccProfilesChanged(slotId)
                 channel.lpa.profiles
             }
 

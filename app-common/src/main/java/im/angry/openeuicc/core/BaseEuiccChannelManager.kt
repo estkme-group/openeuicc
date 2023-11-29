@@ -16,7 +16,7 @@ import java.lang.IllegalArgumentException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-abstract class BaseEuiccChannelManager(private val context: Context) {
+abstract class BaseEuiccChannelManager(protected val context: Context) {
     companion object {
         const val TAG = "BaseEuiccChannelManager"
     }
@@ -124,5 +124,9 @@ abstract class BaseEuiccChannelManager(private val context: Context) {
         channels.clear()
         seService?.shutdown()
         seService = null
+    }
+
+    open fun notifyEuiccProfilesChanged(slotId: Int) {
+        // No-op for unprivileged
     }
 }

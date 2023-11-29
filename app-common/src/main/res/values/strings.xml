@@ -2,8 +2,6 @@
 <resources>
     <string name="no_euicc">No eUICC found on this device.\nOn some devices, you may need to enable dual SIM first in the menu of this app.</string>
 
-    <string name="dsds">Dual SIM</string>
-
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="provider">Provider:</string>
@@ -17,7 +15,6 @@
     <string name="toast_profile_enabled">eSIM profile switched. Please wait for a while when the card is restarting.</string>
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
     <string name="toast_profile_name_too_long">Nickname cannot be longer than 64 characters</string>
-    <string name="toast_dsds_switched">DSDS state switched. Please wait until the modem restarts.</string>
 
     <string name="profile_download">New eSIM</string>
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>

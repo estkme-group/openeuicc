@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
@@ -19,12 +17,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity() {
     companion object {
         const val TAG = "MainActivity"
     }
 
-    private lateinit var manager: BaseEuiccChannelManager
+    protected lateinit var manager: BaseEuiccChannelManager
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private lateinit var spinner: Spinner
@@ -33,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var noEuiccPlaceholder: View
 
-    private lateinit var tm: TelephonyManager
+    protected lateinit var tm: TelephonyManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,23 +69,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        if (tm.supportsDSDS) {
-            val dsds = menu.findItem(R.id.dsds)
-            dsds.isVisible = true
-            dsds.isChecked = tm.dsdsEnabled
-        }
-
         return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.dsds -> {
-            tm.dsdsEnabled = !item.isChecked
-            Toast.makeText(this, R.string.toast_dsds_switched, Toast.LENGTH_LONG).show()
-            finish()
-            true
-        }
-        else -> false
     }
 
     private suspend fun init() {
@@ -96,7 +78,10 @@ class MainActivity : AppCompatActivity() {
             manager.knownChannels.forEach {
                 Log.d(TAG, it.name)
                 Log.d(TAG, it.lpa.eID)
-                openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(it.cardId)
+                // Request the system to refresh the list of profiles every time we start
+                // Note that this is currently supposed to be no-op when unprivileged,
+                // but it could change in the future
+                manager.notifyEuiccProfilesChanged(it.slotId)
             }
         }
 
