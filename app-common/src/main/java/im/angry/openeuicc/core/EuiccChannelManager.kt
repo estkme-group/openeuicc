@@ -48,7 +48,7 @@ open class EuiccChannelManager(protected val context: Context) {
          }
     }
 
-    open fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
+    protected open fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
         // No-op when unprivileged
         return null
     }
