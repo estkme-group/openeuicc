@@ -1,5 +1,6 @@
 package im.angry.openeuicc.core
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
@@ -16,6 +17,7 @@ import java.lang.IllegalArgumentException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+@SuppressLint("MissingPermission") // We rely on ARA-based privileges, not READ_PRIVILEGED_PHONE_STATE
 open class EuiccChannelManager(protected val context: Context) {
     companion object {
         const val TAG = "EuiccChannelManager"
@@ -32,6 +34,8 @@ open class EuiccChannelManager(protected val context: Context) {
     }
 
     private val handler = Handler(HandlerThread("BaseEuiccChannelManager").also { it.start() }.looper)
+
+    protected open fun checkPrivileges() = tm.hasCarrierPrivileges()
 
     private suspend fun connectSEService(): SEService = suspendCoroutine { cont ->
         handler.post {
@@ -99,12 +103,15 @@ open class EuiccChannelManager(protected val context: Context) {
     }
 
     fun findEuiccChannelBySlotBlocking(slotId: Int): EuiccChannel? = runBlocking {
+        if (!checkPrivileges()) return@runBlocking null
         withContext(Dispatchers.IO) {
             findEuiccChannelBySlot(slotId)
         }
     }
 
     suspend fun enumerateEuiccChannels() {
+        if (!checkPrivileges()) return
+
         withContext(Dispatchers.IO) {
             ensureSEService()
 
@@ -120,6 +127,8 @@ open class EuiccChannelManager(protected val context: Context) {
         get() = channels.toList()
 
     fun invalidate() {
+        if (!checkPrivileges()) return
+
         for (channel in channels) {
             channel.close()
         }

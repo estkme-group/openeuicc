@@ -9,6 +9,8 @@ import java.lang.Exception
 import java.lang.IllegalArgumentException
 
 class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(context) {
+    override fun checkPrivileges() = true // TODO: Implement proper system app check
+
     override fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
         if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
             Log.d(TAG, "Using TelephonyManager for slot ${uiccInfo.slotIndex}")
