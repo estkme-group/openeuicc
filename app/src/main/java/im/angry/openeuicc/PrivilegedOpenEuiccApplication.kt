@@ -1,10 +1,10 @@
 package im.angry.openeuicc
 
-import im.angry.openeuicc.core.BaseEuiccChannelManager
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.core.PrivilegedEuiccChannelManager
 
-class PrivilegedOpenEuiccApplication: BaseOpenEuiccApplication() {
-    override val euiccChannelManager: BaseEuiccChannelManager by lazy {
+class PrivilegedOpenEuiccApplication: OpenEuiccApplication() {
+    override val euiccChannelManager: EuiccChannelManager by lazy {
         PrivilegedEuiccChannelManager(this)
     }
 

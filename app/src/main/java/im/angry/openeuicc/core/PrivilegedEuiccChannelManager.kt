@@ -3,12 +3,12 @@ package im.angry.openeuicc.core
 import android.content.Context
 import android.telephony.UiccCardInfo
 import android.util.Log
-import im.angry.openeuicc.BaseOpenEuiccApplication
+import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.util.*
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 
-class PrivilegedEuiccChannelManager(context: Context): BaseEuiccChannelManager(context) {
+class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(context) {
     override fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
         if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
             Log.d(TAG, "Using TelephonyManager for slot ${uiccInfo.slotIndex}")
@@ -38,7 +38,7 @@ class PrivilegedEuiccChannelManager(context: Context): BaseEuiccChannelManager(c
     }
 
     override fun notifyEuiccProfilesChanged(slotId: Int) {
-        (context.applicationContext as BaseOpenEuiccApplication).subscriptionManager.apply {
+        (context.applicationContext as OpenEuiccApplication).subscriptionManager.apply {
             findEuiccChannelBySlotBlocking(slotId)?.let {
                 tryRefreshCachedEuiccInfo(it.cardId)
             }

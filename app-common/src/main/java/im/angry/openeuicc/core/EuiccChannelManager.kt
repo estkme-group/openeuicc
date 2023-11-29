@@ -6,7 +6,7 @@ import android.os.HandlerThread
 import android.se.omapi.SEService
 import android.telephony.UiccCardInfo
 import android.util.Log
-import im.angry.openeuicc.BaseOpenEuiccApplication
+import im.angry.openeuicc.OpenEuiccApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -16,9 +16,9 @@ import java.lang.IllegalArgumentException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-abstract class BaseEuiccChannelManager(protected val context: Context) {
+open class EuiccChannelManager(protected val context: Context) {
     companion object {
-        const val TAG = "BaseEuiccChannelManager"
+        const val TAG = "EuiccChannelManager"
     }
 
     private val channels = mutableListOf<EuiccChannel>()
@@ -28,7 +28,7 @@ abstract class BaseEuiccChannelManager(protected val context: Context) {
     private val lock = Mutex()
 
     protected val tm by lazy {
-        (context.applicationContext as BaseOpenEuiccApplication).telephonyManager
+        (context.applicationContext as OpenEuiccApplication).telephonyManager
     }
 
     private val handler = Handler(HandlerThread("BaseEuiccChannelManager").also { it.start() }.looper)
@@ -48,7 +48,10 @@ abstract class BaseEuiccChannelManager(protected val context: Context) {
          }
     }
 
-    abstract fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel?
+    open fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
+        // No-op when unprivileged
+        return null
+    }
 
     private suspend fun tryOpenEuiccChannel(uiccInfo: UiccCardInfo): EuiccChannel? {
         lock.withLock {

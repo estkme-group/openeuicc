@@ -11,7 +11,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.core.BaseEuiccChannelManager
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +22,7 @@ open class MainActivity : AppCompatActivity() {
         const val TAG = "MainActivity"
     }
 
-    protected lateinit var manager: BaseEuiccChannelManager
+    protected lateinit var manager: EuiccChannelManager
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private lateinit var spinner: Spinner
