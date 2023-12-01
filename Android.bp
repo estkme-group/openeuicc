@@ -1,6 +1,19 @@
-android_app {
-    name: "OpenEUICC",
+java_library {
+    name: "net.typeblog.lpac_jni",
+    srcs: [
+        "libs/lpac-jni/src/main/**/*.kt",
+    ],
+    optimize: {
+        enabled: false,
+    },
+    system_ext_specific: true,
+}
+
+android_library {
+    name: "OpenEUICC-common",
     static_libs: [
+        "net.typeblog.lpac_jni",
+
         // Dependencies that must be pulled from maven,
         "zxing-core-prebuilt-jar",
         "zxing-android-embedded-prebuilt-aar",
@@ -13,18 +26,31 @@ android_app {
         "androidx.lifecycle_lifecycle-runtime-ktx",
         "androidx.swiperefreshlayout_swiperefreshlayout",
         "com.google.android.material_material",
-        "gson",
         "kotlinx_coroutines",
+    ],
+    srcs: [
+        "app-common/src/main/**/*.kt",
+    ],
+    optimize: {
+        enabled: false,
+    },
+    resource_dirs: [
+        "app-common/src/main/res",
+    ],
+    manifest: "app-common/src/main/AndroidManifest.xml",
+    system_ext_specific: true,
+}
+
+android_app {
+    name: "OpenEUICC",
+    static_libs: [
+        "OpenEUICC-common",
     ],
     jni_libs: [
         "liblpac-jni",
     ],
     srcs: [
-        // Main app
         "app/src/main/**/*.kt",
-
-        // lpac-jni interface
-        "libs/lpac-jni/src/main/**/*.kt",
     ],
     optimize: {
         enabled: false,
