@@ -3,9 +3,11 @@ package im.angry.openeuicc.ui
 import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
+import android.text.format.Formatter
 import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
@@ -34,7 +36,10 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     private lateinit var profileDownloadCode: TextInputLayout
     private lateinit var profileDownloadConfirmationCode: TextInputLayout
     private lateinit var profileDownloadIMEI: TextInputLayout
+    private lateinit var profileDownloadFreeSpace: TextView
     private lateinit var progress: ProgressBar
+
+    private var freeNvram: Int = -1
 
     private var downloading = false
 
@@ -60,6 +65,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         profileDownloadCode = view.findViewById(R.id.profile_download_code)
         profileDownloadConfirmationCode = view.findViewById(R.id.profile_download_confirmation_code)
         profileDownloadIMEI = view.findViewById(R.id.profile_download_imei)
+        profileDownloadFreeSpace = view.findViewById(R.id.profile_download_free_space)
         progress = view.findViewById(R.id.progress)
 
         toolbar.inflateMenu(R.menu.fragment_profile_download)
@@ -102,6 +108,18 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
     override fun onStart() {
         super.onStart()
         profileDownloadIMEI.editText!!.text = Editable.Factory.getInstance().newEditable(channel.imei)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            // Fetch remaining NVRAM
+            val str = channel.lpa.euiccInfo2?.freeNvram?.also {
+                freeNvram = it
+            }?.let { Formatter.formatShortFileSize(requireContext(), it.toLong()) }
+
+            withContext(Dispatchers.Main) {
+                profileDownloadFreeSpace.text = getString(R.string.profile_download_free_space,
+                    str ?: getText(R.string.unknown))
+            }
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

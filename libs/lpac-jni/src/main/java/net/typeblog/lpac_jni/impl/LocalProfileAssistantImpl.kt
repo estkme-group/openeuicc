@@ -2,6 +2,7 @@ package net.typeblog.lpac_jni.impl
 
 import net.typeblog.lpac_jni.LpacJni
 import net.typeblog.lpac_jni.ApduInterface
+import net.typeblog.lpac_jni.EuiccInfo2
 import net.typeblog.lpac_jni.HttpInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
@@ -24,6 +25,9 @@ class LocalProfileAssistantImpl(
     override val eID: String by lazy {
         LpacJni.es10cGetEid(contextHandle)!!
     }
+
+    override val euiccInfo2: EuiccInfo2?
+        get() = LpacJni.es10cexGetEuiccInfo2(contextHandle)
 
     override fun enableProfile(iccid: String): Boolean {
         return LpacJni.es10cEnableProfile(contextHandle, iccid) == 0

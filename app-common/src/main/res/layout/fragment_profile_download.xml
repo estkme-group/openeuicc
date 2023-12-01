@@ -102,13 +102,14 @@
         android:id="@+id/profile_download_imei"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="6dp"
         android:hint="@string/profile_download_imei"
         style="@style/Widget.OpenEUICC.Input"
         app:layout_constraintTop_toBottomOf="@id/profile_download_confirmation_code"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/profile_download_free_space"
         app:layout_constraintWidth_percent=".8"
         app:passwordToggleEnabled="true">
 
@@ -119,5 +120,17 @@
             android:theme="@style/Theme.OpenEUICC.Input.Cursor"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/profile_download_free_space"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="11sp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintTop_toBottomOf="@id/profile_download_imei"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

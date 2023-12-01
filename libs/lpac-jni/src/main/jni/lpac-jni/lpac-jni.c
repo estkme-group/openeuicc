@@ -24,6 +24,9 @@ jstring empty_string;
 jclass string_class;
 jmethodID string_constructor;
 
+jclass euicc_info2_class;
+jmethodID euicc_info2_constructor;
+
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     jvm = vm;
     interface_wrapper_init();
@@ -57,6 +60,10 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     jfieldID field_operational = (*env)->GetStaticFieldID(env, local_profile_class_class, "Operational", "Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;");
     local_profile_class_operational = (*env)->GetStaticObjectField(env, local_profile_class_class, field_operational);
     local_profile_class_operational = (*env)->NewGlobalRef(env, local_profile_class_operational);
+
+    euicc_info2_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/EuiccInfo2");
+    euicc_info2_class = (*env)->NewGlobalRef(env, euicc_info2_class);
+    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;III)V");
 
     const char _unused[1];
     empty_string = (*env)->NewString(env, _unused, 0);
@@ -228,5 +235,46 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cDeleteProfile(JNIEnv *env, jobject thiz
     const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
     int ret = es10c_delete_profile_iccid(ctx, _iccid);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL
+Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject thiz, jlong handle) {
+    struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
+    struct es10cex_euiccinfo2 info;
+    jstring sas_accreditation_number = NULL;
+    jstring global_platform_version = NULL;
+    jstring euicc_firmware_version = NULL;
+    jstring uicc_firmware_version = NULL;
+    jstring profile_version = NULL;
+    jstring sgp22_version = NULL;
+    jstring pp_version = NULL;
+    jobject ret = NULL;
+
+    if (es10cex_get_euiccinfo2(ctx, &info) < 0)
+        goto out;
+
+    profile_version = toJString(env, info.profile_version);
+    sgp22_version = toJString(env, info.sgp22_version);
+    euicc_firmware_version = toJString(env, info.euicc_firmware_version);
+    uicc_firmware_version = toJString(env, info.uicc_firmware_version);
+    global_platform_version = toJString(env, info.global_platform_version);
+    sas_accreditation_number = toJString(env, info.sas_accreditation_number);
+    pp_version = toJString(env, info.pp_version);
+
+    ret = (*env)->NewObject(env, euicc_info2_class, euicc_info2_constructor,
+                            profile_version, sgp22_version, euicc_firmware_version,
+                            uicc_firmware_version, global_platform_version,
+                            sas_accreditation_number, pp_version,
+                            info.installed_app, info.free_nvram, info.free_ram);
+
+    out:
+    (*env)->DeleteLocalRef(env, profile_version);
+    (*env)->DeleteLocalRef(env, sgp22_version);
+    (*env)->DeleteLocalRef(env, euicc_firmware_version);
+    (*env)->DeleteLocalRef(env, uicc_firmware_version);
+    (*env)->DeleteLocalRef(env, global_platform_version);
+    (*env)->DeleteLocalRef(env, sas_accreditation_number);
+    (*env)->DeleteLocalRef(env, pp_version);
     return ret;
 }

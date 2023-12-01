@@ -25,4 +25,7 @@ internal object LpacJni {
     // We do not expose all of the functions because of tediousness :)
     external fun downloadProfile(handle: Long, smdp: String, matchingId: String?, imei: String?,
                                  confirmationCode: String?, callback: ProfileDownloadCallback): Int
+
+    // es10cex (actually part of es10b)
+    external fun es10cexGetEuiccInfo2(handle: Long): EuiccInfo2?
 }
