@@ -28,11 +28,11 @@ class OmapiApduInterface(
             "Can only open one channel"
         }
         lastChannel = session.openLogicalChannel(aid)!!;
-        return 0;
+        return 1;
     }
 
     override fun logicalChannelClose(handle: Int) {
-        check(handle == 0 && !this::lastChannel.isInitialized) {
+        check(handle == 1 && !this::lastChannel.isInitialized) {
             "Unknown channel"
         }
         lastChannel.close()
