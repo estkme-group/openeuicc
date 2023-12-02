@@ -1,5 +1,9 @@
 LOCAL_PATH := $(call my-dir)
 
+ifeq ($(OS),Windows_NT)
+$(error "Building on Windows is unsupported")
+endif
+
 # function to find all *.c files under a directory
 define all-c-files-under
 $(patsubst ./%,%, \
