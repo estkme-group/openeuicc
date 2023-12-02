@@ -12,6 +12,12 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments '-j4'
+            }
+        }
     }
 
     buildTypes {
