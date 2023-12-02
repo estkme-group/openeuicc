@@ -81,10 +81,12 @@ open class EuiccChannelManager(protected val context: Context) {
             var euiccChannel: EuiccChannel? = tryOpenEuiccChannelPrivileged(uiccInfo, channelInfo)
 
             if (euiccChannel == null) {
+                Log.i(TAG, "Trying OMAPI for slot ${uiccInfo.slotIndex}")
                 try {
                     euiccChannel = OmapiChannel(seService!!, channelInfo)
                 } catch (e: IllegalArgumentException) {
                     // Failed
+                    Log.w(TAG, "OMAPI APDU interface unavailable for slot ${uiccInfo.slotIndex}.")
                 }
             }
 

@@ -13,12 +13,13 @@ class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(conte
 
     override fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
         if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
-            Log.d(TAG, "Using TelephonyManager for slot ${uiccInfo.slotIndex}")
+            Log.i(TAG, "Trying TelephonyManager for slot ${uiccInfo.slotIndex}")
             // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
             try {
                 return TelephonyManagerChannel(channelInfo, tm)
             } catch (e: IllegalArgumentException) {
                 // Failed
+                Log.w(TAG, "TelephonyManager APDU interface unavailable for slot ${uiccInfo.slotIndex}, falling back")
             }
         }
         return null
