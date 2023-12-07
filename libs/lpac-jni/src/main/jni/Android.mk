@@ -1,14 +1,9 @@
 LOCAL_PATH := $(call my-dir)
 
-ifeq ($(OS),Windows_NT)
-$(error "Building on Windows is unsupported")
-endif
-
 # function to find all *.c files under a directory
 define all-c-files-under
-$(patsubst ./%,%, \
-  $(shell cd $(LOCAL_PATH) ; \
-          find $(1) -name "*.c" -and -not -name ".*" -maxdepth 1) \
+$(patsubst $(LOCAL_PATH)/%,%, \
+  $(wildcard $(LOCAL_PATH)/$(strip $(1))/*.c) \
  )
 endef
 
@@ -45,7 +40,5 @@ LOCAL_STATIC_LIBRARIES := lpac-euicc
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/lpac
 LOCAL_SRC_FILES := \
-	lpac-jni/lpac-jni.c \
-	lpac-jni/lpac-download.c \
-	lpac-jni/interface-wrapper.c
+	$(call all-c-files-under, lpac-jni)
 include $(BUILD_SHARED_LIBRARY)
