@@ -68,6 +68,14 @@ class UiccPortInfoCompat(private val _inner: Any?, val card: UiccCardInfoCompat)
             } else {
                 0
             }
+
+    val logicalSlotIndex: Int
+        get() =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                inner.logicalSlotIndex
+            } else {
+                card.physicalSlotIndex // logical is the same as physical below TIRAMISU
+            }
 }
 
 val TelephonyManager.uiccCardsInfoCompat: List<UiccCardInfoCompat>

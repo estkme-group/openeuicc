@@ -88,7 +88,7 @@ open class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) {
             manager.knownChannels.forEach { channel ->
                 spinnerAdapter.add(channel.name)
-                fragments.add(EuiccManagementFragment.newInstance(channel.slotId))
+                fragments.add(EuiccManagementFragment.newInstance(channel.slotId, channel.portId))
             }
 
             if (fragments.isNotEmpty()) {

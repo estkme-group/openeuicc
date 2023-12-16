@@ -30,8 +30,8 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
     companion object {
         const val TAG = "EuiccManagementFragment"
 
-        fun newInstance(slotId: Int): EuiccManagementFragment =
-            newInstanceEuicc(EuiccManagementFragment::class.java, slotId)
+        fun newInstance(slotId: Int, portId: Int): EuiccManagementFragment =
+            newInstanceEuicc(EuiccManagementFragment::class.java, slotId, portId)
     }
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
@@ -62,7 +62,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
         fab.setOnClickListener {
-            ProfileDownloadFragment.newInstance(slotId)
+            ProfileDownloadFragment.newInstance(slotId, portId)
                 .show(childFragmentManager, ProfileDownloadFragment.TAG)
         }
     }
@@ -195,12 +195,12 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                     true
                 }
                 R.id.rename -> {
-                    ProfileRenameFragment.newInstance(slotId, profile.iccid, profile.displayName)
+                    ProfileRenameFragment.newInstance(slotId, portId, profile.iccid, profile.displayName)
                         .show(childFragmentManager, ProfileRenameFragment.TAG)
                     true
                 }
                 R.id.delete -> {
-                    ProfileDeleteFragment.newInstance(slotId, profile.iccid, profile.displayName)
+                    ProfileDeleteFragment.newInstance(slotId, portId, profile.iccid, profile.displayName)
                         .show(childFragmentManager, ProfileDeleteFragment.TAG)
                     true
                 }
