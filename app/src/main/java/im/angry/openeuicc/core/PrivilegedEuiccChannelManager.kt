@@ -12,7 +12,13 @@ class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(conte
     override fun checkPrivileges() = true // TODO: Implement proper system app check
 
     override fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
-        if (uiccInfo.isEuicc && !uiccInfo.isRemovable) {
+        if (uiccInfo.isRemovable) {
+            // Attempt unprivileged (OMAPI) before TelephonyManager
+            // but still try TelephonyManager in case OMAPI is broken
+            super.tryOpenEuiccChannelUnprivileged(uiccInfo, channelInfo)?.let { return it }
+        }
+
+        if (uiccInfo.isEuicc) {
             Log.i(TAG, "Trying TelephonyManager for slot ${uiccInfo.slotIndex}")
             // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
             try {

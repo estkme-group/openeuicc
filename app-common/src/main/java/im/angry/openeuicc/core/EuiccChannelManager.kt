@@ -57,6 +57,18 @@ open class EuiccChannelManager(protected val context: Context) {
         return null
     }
 
+    protected fun tryOpenEuiccChannelUnprivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
+        Log.i(TAG, "Trying OMAPI for slot ${uiccInfo.slotIndex}")
+        try {
+            return OmapiChannel(seService!!, channelInfo)
+        } catch (e: IllegalArgumentException) {
+            // Failed
+            Log.w(TAG, "OMAPI APDU interface unavailable for slot ${uiccInfo.slotIndex}.")
+        }
+
+        return null
+    }
+
     private suspend fun tryOpenEuiccChannel(uiccInfo: UiccCardInfo): EuiccChannel? {
         lock.withLock {
             ensureSEService()
@@ -81,13 +93,7 @@ open class EuiccChannelManager(protected val context: Context) {
             var euiccChannel: EuiccChannel? = tryOpenEuiccChannelPrivileged(uiccInfo, channelInfo)
 
             if (euiccChannel == null) {
-                Log.i(TAG, "Trying OMAPI for slot ${uiccInfo.slotIndex}")
-                try {
-                    euiccChannel = OmapiChannel(seService!!, channelInfo)
-                } catch (e: IllegalArgumentException) {
-                    // Failed
-                    Log.w(TAG, "OMAPI APDU interface unavailable for slot ${uiccInfo.slotIndex}.")
-                }
+                euiccChannel = tryOpenEuiccChannelUnprivileged(uiccInfo, channelInfo)
             }
 
             if (euiccChannel != null) {
