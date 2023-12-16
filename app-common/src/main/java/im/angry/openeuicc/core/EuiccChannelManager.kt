@@ -5,9 +5,9 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.se.omapi.SEService
-import android.telephony.UiccCardInfo
 import android.util.Log
 import im.angry.openeuicc.OpenEuiccApplication
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -52,27 +52,27 @@ open class EuiccChannelManager(protected val context: Context) {
          }
     }
 
-    protected open fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
+    protected open fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfoCompat, channelInfo: EuiccChannelInfo): EuiccChannel? {
         // No-op when unprivileged
         return null
     }
 
-    protected fun tryOpenEuiccChannelUnprivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
-        Log.i(TAG, "Trying OMAPI for slot ${uiccInfo.slotIndex}")
+    protected fun tryOpenEuiccChannelUnprivileged(uiccInfo: UiccCardInfoCompat, channelInfo: EuiccChannelInfo): EuiccChannel? {
+        Log.i(TAG, "Trying OMAPI for slot ${uiccInfo.physicalSlotIndex}")
         try {
             return OmapiChannel(seService!!, channelInfo)
         } catch (e: IllegalArgumentException) {
             // Failed
-            Log.w(TAG, "OMAPI APDU interface unavailable for slot ${uiccInfo.slotIndex}.")
+            Log.w(TAG, "OMAPI APDU interface unavailable for slot ${uiccInfo.physicalSlotIndex}.")
         }
 
         return null
     }
 
-    private suspend fun tryOpenEuiccChannel(uiccInfo: UiccCardInfo): EuiccChannel? {
+    private suspend fun tryOpenEuiccChannel(uiccInfo: UiccCardInfoCompat): EuiccChannel? {
         lock.withLock {
             ensureSEService()
-            val existing = channels.find { it.slotId == uiccInfo.slotIndex }
+            val existing = channels.find { it.slotId == uiccInfo.physicalSlotIndex }
             if (existing != null) {
                 if (existing.valid) {
                     return existing
@@ -83,10 +83,10 @@ open class EuiccChannelManager(protected val context: Context) {
             }
 
             val channelInfo = EuiccChannelInfo(
-                uiccInfo.slotIndex,
+                uiccInfo.physicalSlotIndex,
                 uiccInfo.cardId,
-                "SIM ${uiccInfo.slotIndex}",
-                tm.getImei(uiccInfo.slotIndex) ?: return null,
+                "SIM ${uiccInfo.physicalSlotIndex}",
+                tm.getImei(uiccInfo.physicalSlotIndex) ?: return null,
                 uiccInfo.isRemovable
             )
 
@@ -105,7 +105,7 @@ open class EuiccChannelManager(protected val context: Context) {
     }
 
     private suspend fun findEuiccChannelBySlot(slotId: Int): EuiccChannel? {
-        return tm.uiccCardsInfo.find { it.slotIndex == slotId }?.let {
+        return tm.uiccCardsInfoCompat.find { it.physicalSlotIndex == slotId }?.let {
             tryOpenEuiccChannel(it)
         }
     }
@@ -123,9 +123,9 @@ open class EuiccChannelManager(protected val context: Context) {
         withContext(Dispatchers.IO) {
             ensureSEService()
 
-            for (uiccInfo in tm.uiccCardsInfo) {
+            for (uiccInfo in tm.uiccCardsInfoCompat) {
                 if (tryOpenEuiccChannel(uiccInfo) != null) {
-                    Log.d(TAG, "Found eUICC on slot ${uiccInfo.slotIndex}")
+                    Log.d(TAG, "Found eUICC on slot ${uiccInfo.physicalSlotIndex}")
                 }
             }
         }

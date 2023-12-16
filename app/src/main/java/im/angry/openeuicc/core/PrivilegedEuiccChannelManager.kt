@@ -1,7 +1,6 @@
 package im.angry.openeuicc.core
 
 import android.content.Context
-import android.telephony.UiccCardInfo
 import android.util.Log
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.util.*
@@ -11,7 +10,7 @@ import java.lang.IllegalArgumentException
 class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(context) {
     override fun checkPrivileges() = true // TODO: Implement proper system app check
 
-    override fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfo, channelInfo: EuiccChannelInfo): EuiccChannel? {
+    override fun tryOpenEuiccChannelPrivileged(uiccInfo: UiccCardInfoCompat, channelInfo: EuiccChannelInfo): EuiccChannel? {
         if (uiccInfo.isRemovable) {
             // Attempt unprivileged (OMAPI) before TelephonyManager
             // but still try TelephonyManager in case OMAPI is broken
@@ -19,13 +18,13 @@ class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(conte
         }
 
         if (uiccInfo.isEuicc) {
-            Log.i(TAG, "Trying TelephonyManager for slot ${uiccInfo.slotIndex}")
+            Log.i(TAG, "Trying TelephonyManager for slot ${uiccInfo.physicalSlotIndex}")
             // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
             try {
                 return TelephonyManagerChannel(channelInfo, tm)
             } catch (e: IllegalArgumentException) {
                 // Failed
-                Log.w(TAG, "TelephonyManager APDU interface unavailable for slot ${uiccInfo.slotIndex}, falling back")
+                Log.w(TAG, "TelephonyManager APDU interface unavailable for slot ${uiccInfo.physicalSlotIndex}, falling back")
             }
         }
         return null
