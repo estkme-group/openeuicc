@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener
 import androidx.fragment.app.DialogFragment
@@ -46,6 +47,7 @@ class SlotMappingFragment: DialogFragment(), OnMenuItemClickListener {
     private lateinit var toolbar: Toolbar
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SlotMappingAdapter
+    private lateinit var helpTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +60,7 @@ class SlotMappingFragment: DialogFragment(), OnMenuItemClickListener {
         recyclerView = view.findViewById(R.id.mapping_list)
         recyclerView.layoutManager =
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
+        helpTextView = view.findViewById(R.id.mapping_help)
         return view
     }
 
@@ -87,17 +90,54 @@ class SlotMappingFragment: DialogFragment(), OnMenuItemClickListener {
             recyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
 
+            helpTextView.text = buildHelpText()
         }
     }
 
     private fun commit() {
         lifecycleScope.launch(Dispatchers.Main) {
-            withContext(Dispatchers.IO) {
-                tm.simSlotMapping = adapter.mappings
+            try {
+                withContext(Dispatchers.IO) {
+                    tm.simSlotMapping = adapter.mappings
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), R.string.slot_mapping_failure, Toast.LENGTH_LONG).show()
+                return@launch
             }
+            Toast.makeText(requireContext(), R.string.slot_mapping_completed, Toast.LENGTH_LONG).show()
             openEuiccApplication.euiccChannelManager.invalidate()
             requireActivity().finish()
         }
+    }
+
+    private suspend fun buildHelpText() = withContext(Dispatchers.IO) {
+        var nLogicalSlots = adapter.mappings.size
+
+        val cards = openEuiccApplication.telephonyManager.uiccCardsInfoCompat
+
+        var nPhysicalSlots = cards.size
+        var idxMepCard = -1
+        var nMepPorts = 0
+
+        for (card in cards) {
+            if (card.isMultipleEnabledProfilesSupported) {
+                idxMepCard = card.physicalSlotIndex
+                nMepPorts = card.ports.size
+            }
+        }
+
+        val mayEnableDSDS =
+            openEuiccApplication.telephonyManager.supportsDSDS && !openEuiccApplication.telephonyManager.dsdsEnabled
+        val extraText =
+            if (nLogicalSlots == 1 && mayEnableDSDS) {
+                getString(R.string.slot_mapping_help_dsds)
+            } else if (idxMepCard != -1) {
+                getString(R.string.slot_mapping_help_mep, idxMepCard, nMepPorts)
+            } else {
+                ""
+            }
+
+        getString(R.string.slot_mapping_help, nLogicalSlots, nPhysicalSlots, extraText)
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean =
