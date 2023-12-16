@@ -3,6 +3,7 @@ package im.angry.openeuicc.util
 import android.telephony.IccOpenLogicalChannelResponse
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import android.telephony.UiccSlotMapping
 import java.lang.reflect.Method
 
 // Hidden APIs via reflection to enable building without AOSP source tree
@@ -46,6 +47,17 @@ private val iccTransmitApduLogicalChannelByPort: Method by lazy {
         Int::class.java, Int::class.java, Int::class.java, String::class.java
     )
 }
+private val getSimSlotMapping: Method by lazy {
+    TelephonyManager::class.java.getMethod(
+        "getSimSlotMapping"
+    )
+}
+private val setSimSlotMapping: Method by lazy {
+    TelephonyManager::class.java.getMethod(
+        "setSimSlotMapping",
+        Collection::class.java
+    )
+}
 
 fun TelephonyManager.iccOpenLogicalChannelBySlot(
     slotId: Int, appletId: String?, p2: Int
@@ -78,6 +90,10 @@ fun TelephonyManager.iccTransmitApduLogicalChannelByPort(
     iccTransmitApduLogicalChannelByPort.invoke(
         this, slotId, portId, channel, cla, instruction, p1, p2, p3, data
     ) as String?
+
+var TelephonyManager.simSlotMapping: Collection<UiccSlotMapping>
+    get() = getSimSlotMapping.invoke(this) as Collection<UiccSlotMapping>
+    set(new) { setSimSlotMapping.invoke(this, new) }
 
 private val requestEmbeddedSubscriptionInfoListRefresh: Method by lazy {
     SubscriptionManager::class.java.getMethod("requestEmbeddedSubscriptionInfoListRefresh", Int::class.java)

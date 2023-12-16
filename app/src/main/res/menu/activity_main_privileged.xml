@@ -7,4 +7,8 @@
         android:checkable="true"
         android:visible="false"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/slot_mapping"
+        android:title="@string/slot_mapping"
+        app:showAsAction="never" />
 </menu>

@@ -27,6 +27,10 @@ class PrivilegedMainActivity : MainActivity() {
             finish()
             true
         }
+        R.id.slot_mapping -> {
+            SlotMappingFragment().show(supportFragmentManager, SlotMappingFragment.TAG)
+            true
+        }
         else -> super.onOptionsItemSelected(item)
     }
 }

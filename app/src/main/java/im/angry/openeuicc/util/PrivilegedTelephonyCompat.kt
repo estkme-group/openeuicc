@@ -4,7 +4,7 @@ import android.os.Build
 import android.telephony.IccOpenLogicalChannelResponse
 import android.telephony.TelephonyManager
 
-// TODO: Usage of *byPort APIs will still break build in-tree on lower AOSP versions
+// TODO: Usage of new APIs from T or later will still break build in-tree on lower AOSP versions
 //       Maybe older versions should simply include hidden-apis-shim when building?
 fun TelephonyManager.iccOpenLogicalChannelByPortCompat(
     slotIndex: Int, portIndex: Int, aid: String?, p2: Int
