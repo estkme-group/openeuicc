@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.se.omapi.SEService
+import android.telephony.SubscriptionManager
 import android.util.Log
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.util.*
@@ -77,12 +78,17 @@ open class EuiccChannelManager(protected val context: Context) {
             ensureSEService()
             val existing = channels.find { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex }
             if (existing != null) {
-                if (existing.valid) {
+                if (existing.valid && port.logicalSlotIndex == existing.logicalSlotId) {
                     return existing
                 } else {
                     existing.close()
                     channels.remove(existing)
                 }
+            }
+
+            if (port.logicalSlotIndex == SubscriptionManager.INVALID_SIM_SLOT_INDEX) {
+                // We can only open channels on ports that are actually enabled
+                return null
             }
 
             var euiccChannel: EuiccChannel? = tryOpenEuiccChannelPrivileged(port)

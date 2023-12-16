@@ -10,7 +10,7 @@ abstract class EuiccChannel(
     val logicalSlotId = port.logicalSlotIndex
     val portId = port.portIndex
     val cardId = port.card.cardId
-    val name = "SLOT ${port.card.physicalSlotIndex}:${port.portIndex}"
+    val name = "SLOT $logicalSlotId"
     val removable = port.card.isRemovable
 
     abstract val lpa: LocalProfileAssistant
