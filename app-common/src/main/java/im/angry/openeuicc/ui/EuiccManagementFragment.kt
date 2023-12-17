@@ -85,7 +85,7 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
 
         lifecycleScope.launch {
             val profiles = withContext(Dispatchers.IO) {
-                euiccChannelManager.notifyEuiccProfilesChanged(slotId)
+                euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
                 channel.lpa.profiles
             }
 

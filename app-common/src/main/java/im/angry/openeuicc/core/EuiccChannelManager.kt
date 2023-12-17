@@ -161,7 +161,7 @@ open class EuiccChannelManager(protected val context: Context) {
         seService = null
     }
 
-    open fun notifyEuiccProfilesChanged(slotId: Int) {
+    open fun notifyEuiccProfilesChanged(logicalSlotId: Int) {
         // No-op for unprivileged
     }
 }

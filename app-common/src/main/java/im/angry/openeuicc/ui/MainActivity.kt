@@ -85,7 +85,7 @@ open class MainActivity : AppCompatActivity() {
                 // Request the system to refresh the list of profiles every time we start
                 // Note that this is currently supposed to be no-op when unprivileged,
                 // but it could change in the future
-                manager.notifyEuiccProfilesChanged(it.slotId)
+                manager.notifyEuiccProfilesChanged(it.logicalSlotId)
             }
         }
 
