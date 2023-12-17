@@ -3,6 +3,8 @@
     <string name="no_euicc">No eUICC card on this device is accessible by this app.\nInsert a supported eUICC card, or try out the privileged OpenEUICC app instead.</string>
     <string name="unknown">Unknown</string>
 
+    <string name="channel_name_format">Logical Slot %d</string>
+
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="provider">Provider:</string>

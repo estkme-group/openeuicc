@@ -10,7 +10,6 @@ abstract class EuiccChannel(
     val logicalSlotId = port.logicalSlotIndex
     val portId = port.portIndex
     val cardId = port.card.cardId
-    val name = "SLOT $logicalSlotId"
     val removable = port.card.isRemovable
     val isMEP = port.card.isMultipleEnabledProfilesSupported
 

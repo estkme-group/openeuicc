@@ -80,7 +80,7 @@ open class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.IO) {
             manager.enumerateEuiccChannels()
             manager.knownChannels.forEach {
-                Log.d(TAG, it.name)
+                Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
                 Log.d(TAG, it.lpa.eID)
                 // Request the system to refresh the list of profiles every time we start
                 // Note that this is currently supposed to be no-op when unprivileged,
@@ -90,8 +90,8 @@ open class MainActivity : AppCompatActivity() {
         }
 
         withContext(Dispatchers.Main) {
-            manager.knownChannels.forEach { channel ->
-                spinnerAdapter.add(channel.name)
+            manager.knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
+                spinnerAdapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
                 fragments.add(createEuiccManagementFragment(channel))
             }
 
