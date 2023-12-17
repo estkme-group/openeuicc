@@ -6,6 +6,8 @@
 
     <string name="toast_dsds_switched">DSDS state switched. Please wait until the modem restarts.</string>
 
+    <string name="footer_mep">Multiple Enabled Profiles (MEP) is supported by this slot. To enable or disable this feature, use the \"Slot Mapping\" tool.</string>
+
     <string name="slot_mapping">Slot Mapping</string>
     <string name="slot_mapping_logical_slot">Logical slot %d:</string>
     <string name="slot_mapping_port">Slot %d Port %d</string>

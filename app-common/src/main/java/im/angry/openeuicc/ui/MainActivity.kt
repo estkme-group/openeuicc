@@ -11,6 +11,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +73,9 @@ open class MainActivity : AppCompatActivity() {
         return true
     }
 
+    protected open fun createEuiccManagementFragment(channel: EuiccChannel): EuiccManagementFragment =
+        EuiccManagementFragment.newInstance(channel.slotId, channel.portId)
+
     private suspend fun init() {
         withContext(Dispatchers.IO) {
             manager.enumerateEuiccChannels()
@@ -88,7 +92,7 @@ open class MainActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) {
             manager.knownChannels.forEach { channel ->
                 spinnerAdapter.add(channel.name)
-                fragments.add(EuiccManagementFragment.newInstance(channel.slotId, channel.portId))
+                fragments.add(createEuiccManagementFragment(channel))
             }
 
             if (fragments.isNotEmpty()) {
