@@ -1,6 +1,7 @@
 package im.angry.openeuicc.service
 
 import android.service.euicc.*
+import android.telephony.UiccSlotMapping
 import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
 import android.util.Log
@@ -8,6 +9,7 @@ import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
+import java.lang.IllegalStateException
 
 class OpenEuiccService : EuiccService() {
     companion object {
@@ -33,6 +35,47 @@ class OpenEuiccService : EuiccService() {
     // the cards. This function helps Detect this case and abort early.
     private fun EuiccChannel.profileExists(iccid: String?) =
         lpa.profiles.any { it.iccid == iccid }
+
+    private fun ensurePortIsMapped(slotId: Int, portId: Int) {
+        val mappings = openEuiccApplication.telephonyManager.simSlotMapping.toMutableList()
+
+        mappings.firstOrNull { it.physicalSlotIndex == slotId && it.portIndex == portId }?.let {
+            throw IllegalStateException("Slot $slotId port $portId has already been mapped")
+        }
+
+        val idx = mappings.indexOfFirst { it.physicalSlotIndex != slotId || it.portIndex != portId }
+        if (idx >= 0) {
+            mappings[idx] = UiccSlotMapping(portId, slotId, mappings[idx].logicalSlotIndex)
+        }
+
+        mappings.firstOrNull { it.physicalSlotIndex == slotId && it.portIndex == portId } ?: run {
+            throw IllegalStateException("Cannot map slot $slotId port $portId")
+        }
+
+        try {
+            openEuiccApplication.telephonyManager.simSlotMapping = mappings
+            return
+        } catch (_: Exception) {
+
+        }
+
+        // Sometimes hardware supports one ordering but not the reverse
+        openEuiccApplication.telephonyManager.simSlotMapping = mappings.reversed()
+    }
+
+    private fun <T> retryWithTimeout(timeoutMillis: Int, backoff: Int = 1000, f: () -> T?): T? {
+        val startTimeMillis = System.currentTimeMillis()
+        do {
+            try {
+                f()?.let { return@retryWithTimeout it }
+            } catch (_: Exception) {
+                // Ignore
+            } finally {
+                Thread.sleep(backoff.toLong())
+            }
+        } while (System.currentTimeMillis() - startTimeMillis < timeoutMillis)
+        return null
+    }
 
     override fun onGetOtaStatus(slotId: Int): Int {
         // Not implemented
@@ -141,35 +184,46 @@ class OpenEuiccService : EuiccService() {
     ): Int {
         Log.i(TAG,"onSwitchToSubscriptionWithPort slotId=$slotId portIndex=$portIndex iccid=$iccid forceDeactivateSim=$forceDeactivateSim")
         try {
+            // retryWithTimeout is needed here because this function may be called just after
+            // AOSP has switched slot mappings, in which case the slots may not be ready yet.
             val channel = if (portIndex == -1) {
-                findChannel(slotId)
+                retryWithTimeout(5000) { findChannel(slotId) }
             } else {
-                findChannel(slotId, portIndex)
-            } ?: return RESULT_MUST_DEACTIVATE_SIM // TODO: If forceDeactivateSim = true, apply a default mapping
+                retryWithTimeout(5000) { findChannel(slotId, portIndex) }
+            } ?: run {
+                if (!forceDeactivateSim) {
+                    // The user must select which SIM to deactivate
+                    return@onSwitchToSubscriptionWithPort RESULT_MUST_DEACTIVATE_SIM
+                } else {
+                    try {
+                        // If we are allowed to deactivate any SIM we like, try mapping the indicated port first
+                        ensurePortIsMapped(slotId, portIndex)
+                        retryWithTimeout(5000) { findChannel(slotId, portIndex) }
+                    } catch (e: Exception) {
+                        // We cannot map the port (or it is already mapped)
+                        // but we can also use any port available on the card
+                        retryWithTimeout(5000) { findChannel(slotId) }
+                    } ?: return@onSwitchToSubscriptionWithPort RESULT_FIRST_USER
+                }
+            }
 
             if (iccid != null && !channel.profileExists(iccid)) {
                 Log.i(TAG, "onSwitchToSubscriptionWithPort iccid=$iccid not found")
                 return RESULT_FIRST_USER
             }
 
-            if (iccid == null) {
-                // Disable active profile
-                val activeProfile = channel.lpa.profiles.find {
-                    it.state == LocalProfileInfo.State.Enabled
-                } ?: return RESULT_OK
+            // Disable any active profile first if present
+            channel.lpa.profiles.find {
+                it.state == LocalProfileInfo.State.Enabled
+            }?.let { if (!channel.lpa.disableProfile(it.iccid)) return RESULT_FIRST_USER }
 
-                return if (channel.lpa.disableProfile(activeProfile.iccid)) {
-                    RESULT_OK
-                } else {
-                    RESULT_FIRST_USER
-                }
-            } else {
-                return if (channel.lpa.enableProfile(iccid)) {
-                    RESULT_OK
-                } else {
-                    RESULT_FIRST_USER
+            if (iccid != null) {
+                if (!channel.lpa.enableProfile(iccid)) {
+                    return RESULT_FIRST_USER
                 }
             }
+
+            return RESULT_OK
         } catch (e: Exception) {
             return RESULT_FIRST_USER
         } finally {
