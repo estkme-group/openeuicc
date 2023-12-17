@@ -111,11 +111,11 @@ class SlotMappingFragment: DialogFragment(), OnMenuItemClickListener {
     }
 
     private suspend fun buildHelpText() = withContext(Dispatchers.IO) {
-        var nLogicalSlots = adapter.mappings.size
+        val nLogicalSlots = adapter.mappings.size
 
         val cards = openEuiccApplication.telephonyManager.uiccCardsInfoCompat
 
-        var nPhysicalSlots = cards.size
+        val nPhysicalSlots = cards.size
         var idxMepCard = -1
         var nMepPorts = 0
 
