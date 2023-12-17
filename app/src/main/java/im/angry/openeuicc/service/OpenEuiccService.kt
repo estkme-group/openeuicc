@@ -3,12 +3,17 @@ package im.angry.openeuicc.service
 import android.service.euicc.*
 import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
+import android.util.Log
 import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 
 class OpenEuiccService : EuiccService() {
+    companion object {
+        const val TAG = "OpenEuiccService"
+    }
+
     private val openEuiccApplication
         get() = application as OpenEuiccApplication
 
@@ -60,6 +65,7 @@ class OpenEuiccService : EuiccService() {
     }
 
     override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult? {
+        Log.i(TAG, "onGetEuiccProfileInfoList slotId=$slotId")
         val channel = findChannel(slotId) ?: return null
         val profiles = channel.lpa.profiles.operational.map {
             EuiccProfileInfo.Builder(it.iccid).apply {
@@ -90,6 +96,7 @@ class OpenEuiccService : EuiccService() {
     }
 
     override fun onDeleteSubscription(slotId: Int, iccid: String): Int {
+        Log.i(TAG, "onDeleteSubscription slotId=$slotId iccid=$iccid")
         try {
             val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
 
@@ -132,6 +139,7 @@ class OpenEuiccService : EuiccService() {
         iccid: String?,
         forceDeactivateSim: Boolean
     ): Int {
+        Log.i(TAG,"onSwitchToSubscriptionWithPort slotId=$slotId portIndex=$portIndex iccid=$iccid forceDeactivateSim=$forceDeactivateSim")
         try {
             val channel = if (portIndex == -1) {
                 findChannel(slotId)
@@ -140,6 +148,7 @@ class OpenEuiccService : EuiccService() {
             } ?: return RESULT_MUST_DEACTIVATE_SIM // TODO: If forceDeactivateSim = true, apply a default mapping
 
             if (iccid != null && !channel.profileExists(iccid)) {
+                Log.i(TAG, "onSwitchToSubscriptionWithPort iccid=$iccid not found")
                 return RESULT_FIRST_USER
             }
 
@@ -169,6 +178,7 @@ class OpenEuiccService : EuiccService() {
     }
 
     override fun onUpdateSubscriptionNickname(slotId: Int, iccid: String, nickname: String?): Int {
+        Log.i(TAG, "onUpdateSubscriptionNickname slotId=$slotId iccid=$iccid nickname=$nickname")
         val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
         if (!channel.profileExists(iccid)) {
             return RESULT_FIRST_USER
