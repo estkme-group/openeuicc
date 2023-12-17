@@ -12,9 +12,13 @@ class OpenEuiccService : EuiccService() {
     private val openEuiccApplication
         get() = application as OpenEuiccApplication
 
-    private fun findChannel(slotId: Int): EuiccChannel? =
+    private fun findChannel(physicalSlotId: Int): EuiccChannel? =
         openEuiccApplication.euiccChannelManager
-            .findEuiccChannelBySlotBlocking(slotId)
+            .findEuiccChannelByPhysicalSlotBlocking(physicalSlotId)
+
+    private fun findChannel(slotId: Int, portId: Int): EuiccChannel? =
+        openEuiccApplication.euiccChannelManager
+            .findEuiccChannelByPortBlocking(slotId, portId)
 
     override fun onGetEid(slotId: Int): String? =
         findChannel(slotId)?.lpa?.eID
@@ -99,6 +103,7 @@ class OpenEuiccService : EuiccService() {
 
             if (profile.state == LocalProfileInfo.State.Enabled) {
                 // Must disable the profile first
+                // TODO: Need to check "other port" as well for MEP
                 return RESULT_FIRST_USER
             }
 
@@ -112,19 +117,29 @@ class OpenEuiccService : EuiccService() {
         }
     }
 
-    // TODO: on some devices we need to update the mapping (and potentially disable a pSIM)
-    //       for eSIM to be usable, in which case we will have to respect forceDeactivateSim.
-    //       This is the same for our custom LUI. Both have to take this into consideration.
     @Deprecated("Deprecated in Java")
     override fun onSwitchToSubscription(
         slotId: Int,
         iccid: String?,
         forceDeactivateSim: Boolean
+    ): Int =
+        // -1 = any port
+        onSwitchToSubscriptionWithPort(slotId, -1, iccid, forceDeactivateSim)
+
+    override fun onSwitchToSubscriptionWithPort(
+        slotId: Int,
+        portIndex: Int,
+        iccid: String?,
+        forceDeactivateSim: Boolean
     ): Int {
         try {
-            val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
+            val channel = if (portIndex == -1) {
+                findChannel(slotId)
+            } else {
+                findChannel(slotId, portIndex)
+            } ?: return RESULT_MUST_DEACTIVATE_SIM // TODO: If forceDeactivateSim = true, apply a default mapping
 
-            if (!channel.profileExists(iccid)) {
+            if (iccid != null && !channel.profileExists(iccid)) {
                 return RESULT_FIRST_USER
             }
 

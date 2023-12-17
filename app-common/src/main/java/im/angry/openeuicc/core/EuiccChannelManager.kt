@@ -121,6 +121,20 @@ open class EuiccChannelManager(protected val context: Context) {
             }
         }
 
+    fun findEuiccChannelByPhysicalSlotBlocking(physicalSlotId: Int): EuiccChannel? = runBlocking {
+        if (!checkPrivileges()) return@runBlocking null
+        withContext(Dispatchers.IO) {
+            for (card in tm.uiccCardsInfoCompat) {
+                if (card.physicalSlotIndex != physicalSlotId) continue
+                for (port in card.ports) {
+                    tryOpenEuiccChannel(port)?.let { return@withContext it }
+                }
+            }
+
+            null
+        }
+    }
+
     fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel? = runBlocking {
         if (!checkPrivileges()) return@runBlocking null
         withContext(Dispatchers.IO) {
