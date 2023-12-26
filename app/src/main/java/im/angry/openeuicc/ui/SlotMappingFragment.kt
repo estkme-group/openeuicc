@@ -98,7 +98,9 @@ class SlotMappingFragment: DialogFragment(), OnMenuItemClickListener {
         lifecycleScope.launch(Dispatchers.Main) {
             try {
                 withContext(Dispatchers.IO) {
-                    tm.simSlotMapping = adapter.mappings
+                    // Use the utility method from PrivilegedTelephonyUtils to ensure
+                    // unmapped ports have all profiles disabled
+                    tm.updateSimSlotMapping(openEuiccApplication.euiccChannelManager, adapter.mappings)
                 }
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), R.string.slot_mapping_failure, Toast.LENGTH_LONG).show()
