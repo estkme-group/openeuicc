@@ -27,6 +27,10 @@ class OpenEuiccService : EuiccService() {
         openEuiccApplication.euiccChannelManager
             .findEuiccChannelByPortBlocking(slotId, portId)
 
+    private fun findAllChannels(physicalSlotId: Int): List<EuiccChannel>? =
+        openEuiccApplication.euiccChannelManager
+            .findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId)
+
     override fun onGetEid(slotId: Int): String? =
         findChannel(slotId)?.lpa?.eID
 
@@ -141,23 +145,25 @@ class OpenEuiccService : EuiccService() {
     override fun onDeleteSubscription(slotId: Int, iccid: String): Int {
         Log.i(TAG, "onDeleteSubscription slotId=$slotId iccid=$iccid")
         try {
-            val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
+            val channels = findAllChannels(slotId) ?: return RESULT_FIRST_USER
 
-            if (!channel.profileExists(iccid)) {
+            if (!channels[0].profileExists(iccid)) {
                 return RESULT_FIRST_USER
             }
 
-            val profile = channel.lpa.profiles.find {
-                it.iccid == iccid
-            } ?: return RESULT_FIRST_USER
+            // If the profile is enabled by ANY channel (port), we cannot delete it
+            channels.forEach { channel ->
+                val profile = channel.lpa.profiles.find {
+                    it.iccid == iccid
+                } ?: return RESULT_FIRST_USER
 
-            if (profile.state == LocalProfileInfo.State.Enabled) {
-                // Must disable the profile first
-                // TODO: Need to check "other port" as well for MEP
-                return RESULT_FIRST_USER
+                if (profile.state == LocalProfileInfo.State.Enabled) {
+                    // Must disable the profile first
+                    return RESULT_FIRST_USER
+                }
             }
 
-            return if (channel.lpa.deleteProfile(iccid)) {
+            return if (channels[0].lpa.deleteProfile(iccid)) {
                 RESULT_OK
             } else {
                 RESULT_FIRST_USER
