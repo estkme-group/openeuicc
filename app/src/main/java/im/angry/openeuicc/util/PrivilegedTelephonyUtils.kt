@@ -2,16 +2,57 @@ package im.angry.openeuicc.util
 
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import android.telephony.UiccSlotMapping
+import im.angry.openeuicc.core.EuiccChannelManager
+import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
 val TelephonyManager.supportsDSDS: Boolean
     get() = supportedModemCount == 2
 
-var TelephonyManager.dsdsEnabled: Boolean
+val TelephonyManager.dsdsEnabled: Boolean
     get() = activeModemCount >= 2
-    set(value) {
-        switchMultiSimConfig(if (value) { 2 } else {1})
+
+fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: Boolean) {
+    runBlocking {
+        euiccManager.enumerateEuiccChannels()
     }
+
+    // Disable all eSIM profiles before performing a DSDS switch
+    euiccManager.knownChannels.forEach {
+        it.lpa.disableActiveProfileWithUndo()
+    }
+
+    switchMultiSimConfig(if (enabled) { 2 } else { 1 })
+}
+
+// Disable eSIM profiles before switching the slot mapping
+// This ensures that unmapped eSIM ports never have "ghost" profiles enabled
+fun TelephonyManager.updateSimSlotMapping(
+    euiccManager: EuiccChannelManager, newMapping: Collection<UiccSlotMapping>,
+    currentMapping: Collection<UiccSlotMapping> = simSlotMapping
+) {
+    val unmapped = currentMapping.filterNot { mapping ->
+        // If the same physical slot + port pair is not found in the new mapping, it is unmapped
+        newMapping.any {
+            it.physicalSlotIndex == mapping.physicalSlotIndex && it.portIndex == mapping.portIndex
+        }
+    }
+
+    val undo = unmapped.mapNotNull { mapping ->
+        euiccManager.findEuiccChannelByPortBlocking(mapping.physicalSlotIndex, mapping.portIndex)?.let { channel ->
+            return@mapNotNull channel.lpa.disableActiveProfileWithUndo()
+        }
+    }
+
+    try {
+        simSlotMapping = newMapping
+    } catch (e: Exception) {
+        e.printStackTrace()
+        undo.forEach { it() } // Undo what we just did
+        throw e // Rethrow for caller to handle
+    }
+}
 
 fun SubscriptionManager.tryRefreshCachedEuiccInfo(cardId: Int) {
     if (cardId != 0) {

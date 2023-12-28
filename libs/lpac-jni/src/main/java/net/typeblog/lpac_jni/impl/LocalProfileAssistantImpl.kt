@@ -20,11 +20,10 @@ class LocalProfileAssistantImpl(
     }
 
     override val profiles: List<LocalProfileInfo>
-        get() = LpacJni.es10cGetProfilesInfo(contextHandle)!!.asList() // TODO: Maybe we need better error handling
+        get() = LpacJni.es10cGetProfilesInfo(contextHandle)!!.asList()
 
-    override val eID: String by lazy {
-        LpacJni.es10cGetEid(contextHandle)!!
-    }
+    override val eID: String
+        get() = LpacJni.es10cGetEid(contextHandle)!!
 
     override val euiccInfo2: EuiccInfo2?
         get() = LpacJni.es10cexGetEuiccInfo2(contextHandle)

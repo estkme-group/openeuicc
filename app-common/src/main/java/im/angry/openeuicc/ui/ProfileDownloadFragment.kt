@@ -1,5 +1,6 @@
 package im.angry.openeuicc.ui
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
@@ -16,19 +17,20 @@ import com.google.android.material.textfield.TextInputLayout
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.util.openEuiccApplication
 import im.angry.openeuicc.util.setWidthPercent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.ProfileDownloadCallback
-import java.lang.Exception
+import kotlin.Exception
 
 class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.OnMenuItemClickListener {
     companion object {
         const val TAG = "ProfileDownloadFragment"
 
-        fun newInstance(slotId: Int): ProfileDownloadFragment =
-            newInstanceEuicc(ProfileDownloadFragment::class.java, slotId)
+        fun newInstance(slotId: Int, portId: Int): ProfileDownloadFragment =
+            newInstanceEuicc(ProfileDownloadFragment::class.java, slotId, portId)
     }
 
     private lateinit var toolbar: Toolbar
@@ -105,9 +107,16 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         setWidthPercent(95)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onStart() {
         super.onStart()
-        profileDownloadIMEI.editText!!.text = Editable.Factory.getInstance().newEditable(channel.imei)
+        profileDownloadIMEI.editText!!.text = Editable.Factory.getInstance().newEditable(
+            try {
+                openEuiccApplication.telephonyManager.getImei(channel.logicalSlotId)
+            } catch (e: Exception) {
+                ""
+            }
+        )
 
         lifecycleScope.launch(Dispatchers.IO) {
             // Fetch remaining NVRAM

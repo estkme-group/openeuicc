@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
@@ -26,19 +27,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
-class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesChangedListener {
+open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesChangedListener {
     companion object {
         const val TAG = "EuiccManagementFragment"
 
-        fun newInstance(slotId: Int): EuiccManagementFragment =
-            newInstanceEuicc(EuiccManagementFragment::class.java, slotId)
+        fun newInstance(slotId: Int, portId: Int): EuiccManagementFragment =
+            newInstanceEuicc(EuiccManagementFragment::class.java, slotId, portId)
     }
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var fab: FloatingActionButton
     private lateinit var profileList: RecyclerView
 
-    private val adapter = EuiccProfileAdapter(listOf())
+    private val adapter = EuiccProfileAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +63,7 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
         fab.setOnClickListener {
-            ProfileDownloadFragment.newInstance(slotId)
+            ProfileDownloadFragment.newInstance(slotId, portId)
                 .show(childFragmentManager, ProfileDownloadFragment.TAG)
         }
     }
@@ -76,18 +77,21 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
         refresh()
     }
 
+    protected open suspend fun onCreateFooterViews(parent: ViewGroup): List<View> = listOf()
+
     @SuppressLint("NotifyDataSetChanged")
     private fun refresh() {
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
             val profiles = withContext(Dispatchers.IO) {
-                euiccChannelManager.notifyEuiccProfilesChanged(slotId)
+                euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
                 channel.lpa.profiles
             }
 
             withContext(Dispatchers.Main) {
                 adapter.profiles = profiles.operational
+                adapter.footerViews = onCreateFooterViews(profileList)
                 adapter.notifyDataSetChanged()
                 swipeRefresh.isRefreshing = false
             }
@@ -130,7 +134,30 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             channel.lpa.disableProfile(iccid)
         }
 
-    inner class ViewHolder(private val root: View) : RecyclerView.ViewHolder(root) {
+    sealed class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
+        enum class Type(val value: Int) {
+            PROFILE(0),
+            FOOTER(1);
+
+            companion object {
+                fun fromInt(value: Int) =
+                    Type.values().first { it.value == value }
+            }
+        }
+    }
+
+    inner class FooterViewHolder: ViewHolder(FrameLayout(requireContext())) {
+        fun attach(view: View) {
+            view.parent?.let { (it as ViewGroup).removeView(view) }
+            (itemView as FrameLayout).addView(view)
+        }
+
+        fun detach() {
+            (itemView as FrameLayout).removeAllViews()
+        }
+    }
+
+    inner class ProfileViewHolder(private val root: View) : ViewHolder(root) {
         private val iccid: TextView = root.findViewById(R.id.iccid)
         private val name: TextView = root.findViewById(R.id.name)
         private val state: TextView = root.findViewById(R.id.state)
@@ -195,12 +222,12 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
                     true
                 }
                 R.id.rename -> {
-                    ProfileRenameFragment.newInstance(slotId, profile.iccid, profile.displayName)
+                    ProfileRenameFragment.newInstance(slotId, portId, profile.iccid, profile.displayName)
                         .show(childFragmentManager, ProfileRenameFragment.TAG)
                     true
                 }
                 R.id.delete -> {
-                    ProfileDeleteFragment.newInstance(slotId, profile.iccid, profile.displayName)
+                    ProfileDeleteFragment.newInstance(slotId, portId, profile.iccid, profile.displayName)
                         .show(childFragmentManager, ProfileDeleteFragment.TAG)
                     true
                 }
@@ -208,16 +235,49 @@ class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesCh
             }
     }
 
-    inner class EuiccProfileAdapter(var profiles: List<LocalProfileInfo>) : RecyclerView.Adapter<ViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.euicc_profile, parent, false)
-            return ViewHolder(view)
-        }
+    inner class EuiccProfileAdapter : RecyclerView.Adapter<ViewHolder>() {
+        var profiles: List<LocalProfileInfo> = listOf()
+        var footerViews: List<View> = listOf()
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+            when (ViewHolder.Type.fromInt(viewType)) {
+                ViewHolder.Type.PROFILE -> {
+                    val view = LayoutInflater.from(parent.context).inflate(R.layout.euicc_profile, parent, false)
+                    ProfileViewHolder(view)
+                }
+                ViewHolder.Type.FOOTER -> {
+                    FooterViewHolder()
+                }
+            }
+
+        override fun getItemViewType(position: Int): Int =
+            when {
+                position < profiles.size -> {
+                    ViewHolder.Type.PROFILE.value
+                }
+                position >= profiles.size && position < profiles.size + footerViews.size -> {
+                    ViewHolder.Type.FOOTER.value
+                }
+                else -> -1
+            }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.setProfile(profiles[position])
+            when (holder) {
+                is ProfileViewHolder -> {
+                    holder.setProfile(profiles[position])
+                }
+                is FooterViewHolder -> {
+                    holder.attach(footerViews[position - profiles.size])
+                }
+            }
         }
 
-        override fun getItemCount(): Int = profiles.size
+        override fun onViewRecycled(holder: ViewHolder) {
+            if (holder is FooterViewHolder) {
+                holder.detach()
+            }
+        }
+
+        override fun getItemCount(): Int = profiles.size + footerViews.size
     }
 }

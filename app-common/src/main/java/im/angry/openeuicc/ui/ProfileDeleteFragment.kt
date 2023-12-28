@@ -16,8 +16,8 @@ class ProfileDeleteFragment : DialogFragment(), EuiccFragmentMarker {
     companion object {
         const val TAG = "ProfileDeleteFragment"
 
-        fun newInstance(slotId: Int, iccid: String, name: String): ProfileDeleteFragment {
-            val instance = newInstanceEuicc(ProfileDeleteFragment::class.java, slotId)
+        fun newInstance(slotId: Int, portId: Int, iccid: String, name: String): ProfileDeleteFragment {
+            val instance = newInstanceEuicc(ProfileDeleteFragment::class.java, slotId, portId)
             instance.requireArguments().apply {
                 putString("iccid", iccid)
                 putString("name", name)

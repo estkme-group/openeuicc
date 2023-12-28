@@ -11,6 +11,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -72,23 +73,26 @@ open class MainActivity : AppCompatActivity() {
         return true
     }
 
+    protected open fun createEuiccManagementFragment(channel: EuiccChannel): EuiccManagementFragment =
+        EuiccManagementFragment.newInstance(channel.slotId, channel.portId)
+
     private suspend fun init() {
         withContext(Dispatchers.IO) {
             manager.enumerateEuiccChannels()
             manager.knownChannels.forEach {
-                Log.d(TAG, it.name)
+                Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
                 Log.d(TAG, it.lpa.eID)
                 // Request the system to refresh the list of profiles every time we start
                 // Note that this is currently supposed to be no-op when unprivileged,
                 // but it could change in the future
-                manager.notifyEuiccProfilesChanged(it.slotId)
+                manager.notifyEuiccProfilesChanged(it.logicalSlotId)
             }
         }
 
         withContext(Dispatchers.Main) {
-            manager.knownChannels.forEach { channel ->
-                spinnerAdapter.add(channel.name)
-                fragments.add(EuiccManagementFragment.newInstance(channel.slotId))
+            manager.knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
+                spinnerAdapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
+                fragments.add(createEuiccManagementFragment(channel))
             }
 
             if (fragments.isNotEmpty()) {

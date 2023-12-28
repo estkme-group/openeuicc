@@ -4,6 +4,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import im.angry.openeuicc.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 
 class PrivilegedMainActivity : MainActivity() {
@@ -20,13 +21,23 @@ class PrivilegedMainActivity : MainActivity() {
         return true
     }
 
+    internal fun showSlotMappingFragment() =
+        SlotMappingFragment().show(supportFragmentManager, SlotMappingFragment.TAG)
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.dsds -> {
-            tm.dsdsEnabled = !item.isChecked
+            tm.setDsdsEnabled(openEuiccApplication.euiccChannelManager, !item.isChecked)
             Toast.makeText(this, R.string.toast_dsds_switched, Toast.LENGTH_LONG).show()
             finish()
             true
         }
+        R.id.slot_mapping -> {
+            showSlotMappingFragment()
+            true
+        }
         else -> super.onOptionsItemSelected(item)
     }
+
+    override fun createEuiccManagementFragment(channel: EuiccChannel): EuiccManagementFragment =
+        PrivilegedEuiccManagementFragment.newInstance(channel.slotId, channel.portId)
 }

@@ -1,24 +1,17 @@
 package im.angry.openeuicc.core
 
+import im.angry.openeuicc.util.*
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
-// A custom type to avoid compatibility issues with UiccCardInfo / UiccPortInfo
-data class EuiccChannelInfo(
-    val slotId: Int,
-    val cardId: Int,
-    val name: String,
-    val imei: String,
-    val removable: Boolean
-)
-
 abstract class EuiccChannel(
-    info: EuiccChannelInfo
+    port: UiccPortInfoCompat
 ) {
-    val slotId = info.slotId
-    val cardId = info.cardId
-    val name = info.name
-    val imei = info.imei
-    val removable = info.removable
+    val slotId = port.card.physicalSlotIndex // PHYSICAL slot
+    val logicalSlotId = port.logicalSlotIndex
+    val portId = port.portIndex
+    val cardId = port.card.cardId
+    val removable = port.card.isRemovable
+    val isMEP = port.card.isMultipleEnabledProfilesSupported
 
     abstract val lpa: LocalProfileAssistant
     val valid: Boolean

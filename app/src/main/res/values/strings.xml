@@ -5,4 +5,15 @@
     <string name="dsds">Dual SIM</string>
 
     <string name="toast_dsds_switched">DSDS state switched. Please wait until the modem restarts.</string>
+
+    <string name="footer_mep">Multiple Enabled Profiles (MEP) is supported by this slot. To enable or disable this feature, use the \"Slot Mapping\" tool.</string>
+
+    <string name="slot_mapping">Slot Mapping</string>
+    <string name="slot_mapping_logical_slot">Logical slot %d:</string>
+    <string name="slot_mapping_port">Slot %d Port %d</string>
+    <string name="slot_mapping_help">Your phone has %d logical and %d physical SIM slots.%s\n\nSelect which physical slot and/or \"port\" you want each logical slot to correspond to. Note that not all mapping modes may be supported by hardware.</string>
+    <string name="slot_mapping_help_mep">\n\nPhysical slot %d supports Multiple Enabled Profiles (MEP). To use this feature, assign its %d virtual \"ports\" to different logical slots shown above.\n\nWith MEP enabled, the \"ports\" will behave like separate eSIM slots in OpenEUICC, except with a shared profile list.</string>
+    <string name="slot_mapping_help_dsds">\nDual SIM mode is supported but disabled. If your device comes with an internal eSIM chip, it might not be enabled by default. Change mapping above or enable dual SIM to access your eSIM.</string>
+    <string name="slot_mapping_completed">Your new slot mapping has been set. Please wait until modem refreshes the slots.</string>
+    <string name="slot_mapping_failure">The specified mapping might be invalid or unsupported by hardware.</string>
 </resources>
