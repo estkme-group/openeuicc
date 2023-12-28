@@ -26,7 +26,7 @@ class PrivilegedMainActivity : MainActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.dsds -> {
-            tm.dsdsEnabled = !item.isChecked
+            tm.setDsdsEnabled(openEuiccApplication.euiccChannelManager, !item.isChecked)
             Toast.makeText(this, R.string.toast_dsds_switched, Toast.LENGTH_LONG).show()
             finish()
             true

@@ -4,22 +4,35 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.telephony.UiccSlotMapping
 import im.angry.openeuicc.core.EuiccChannelManager
-import net.typeblog.lpac_jni.LocalProfileInfo
+import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
 val TelephonyManager.supportsDSDS: Boolean
     get() = supportedModemCount == 2
 
-var TelephonyManager.dsdsEnabled: Boolean
+val TelephonyManager.dsdsEnabled: Boolean
     get() = activeModemCount >= 2
-    set(value) {
-        switchMultiSimConfig(if (value) { 2 } else {1})
+
+fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: Boolean) {
+    runBlocking {
+        euiccManager.enumerateEuiccChannels()
     }
+
+    // Disable all eSIM profiles before performing a DSDS switch
+    euiccManager.knownChannels.forEach {
+        it.lpa.disableActiveProfileWithUndo()
+    }
+
+    switchMultiSimConfig(if (enabled) { 2 } else { 1 })
+}
 
 // Disable eSIM profiles before switching the slot mapping
 // This ensures that unmapped eSIM ports never have "ghost" profiles enabled
-fun TelephonyManager.updateSimSlotMapping(euiccManager: EuiccChannelManager, newMapping: Collection<UiccSlotMapping>) {
-    val unmapped = simSlotMapping.filterNot { mapping ->
+fun TelephonyManager.updateSimSlotMapping(
+    euiccManager: EuiccChannelManager, newMapping: Collection<UiccSlotMapping>,
+    currentMapping: Collection<UiccSlotMapping> = simSlotMapping
+) {
+    val unmapped = currentMapping.filterNot { mapping ->
         // If the same physical slot + port pair is not found in the new mapping, it is unmapped
         newMapping.any {
             it.physicalSlotIndex == mapping.physicalSlotIndex && it.portIndex == mapping.portIndex
@@ -28,10 +41,7 @@ fun TelephonyManager.updateSimSlotMapping(euiccManager: EuiccChannelManager, new
 
     val undo = unmapped.mapNotNull { mapping ->
         euiccManager.findEuiccChannelByPortBlocking(mapping.physicalSlotIndex, mapping.portIndex)?.let { channel ->
-            channel.lpa.profiles.find { it.state == LocalProfileInfo.State.Enabled }?.let { profile ->
-                channel.lpa.disableProfile(profile.iccid)
-                return@mapNotNull { channel.lpa.enableProfile(profile.iccid) }
-            }
+            return@mapNotNull channel.lpa.disableActiveProfileWithUndo()
         }
     }
 
