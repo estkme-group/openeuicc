@@ -34,7 +34,8 @@ open class EuiccChannelManager(protected val context: Context) {
 
     private val handler = Handler(HandlerThread("BaseEuiccChannelManager").also { it.start() }.looper)
 
-    protected open fun checkPrivileges() = tm.hasCarrierPrivileges()
+    protected open val uiccCards: Collection<UiccCardInfoCompat>
+        get() = (0..<tm.activeModemCount).map { FakeUiccCardInfoCompat(it) }
 
     private suspend fun connectSEService(): SEService = suspendCoroutine { cont ->
         handler.post {
@@ -107,9 +108,8 @@ open class EuiccChannelManager(protected val context: Context) {
 
     fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
         runBlocking {
-            if (!checkPrivileges()) return@runBlocking null
             withContext(Dispatchers.IO) {
-                for (card in tm.uiccCardsInfoCompat) {
+                for (card in uiccCards) {
                     for (port in card.ports) {
                         if (port.logicalSlotIndex == logicalSlotId) {
                             return@withContext tryOpenEuiccChannel(port)
@@ -122,9 +122,8 @@ open class EuiccChannelManager(protected val context: Context) {
         }
 
     fun findEuiccChannelByPhysicalSlotBlocking(physicalSlotId: Int): EuiccChannel? = runBlocking {
-        if (!checkPrivileges()) return@runBlocking null
         withContext(Dispatchers.IO) {
-            for (card in tm.uiccCardsInfoCompat) {
+            for (card in uiccCards) {
                 if (card.physicalSlotIndex != physicalSlotId) continue
                 for (port in card.ports) {
                     tryOpenEuiccChannel(port)?.let { return@withContext it }
@@ -136,8 +135,7 @@ open class EuiccChannelManager(protected val context: Context) {
     }
 
     fun findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId: Int): List<EuiccChannel>? = runBlocking {
-        if (!checkPrivileges()) return@runBlocking null
-        for (card in tm.uiccCardsInfoCompat) {
+        for (card in uiccCards) {
             if (card.physicalSlotIndex != physicalSlotId) continue
             return@runBlocking card.ports.mapNotNull { tryOpenEuiccChannel(it) }
                 .ifEmpty { null }
@@ -146,21 +144,18 @@ open class EuiccChannelManager(protected val context: Context) {
     }
 
     fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel? = runBlocking {
-        if (!checkPrivileges()) return@runBlocking null
         withContext(Dispatchers.IO) {
-            tm.uiccCardsInfoCompat.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
+            uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
                 card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
             }
         }
     }
 
     suspend fun enumerateEuiccChannels() {
-        if (!checkPrivileges()) return
-
         withContext(Dispatchers.IO) {
             ensureSEService()
 
-            for (uiccInfo in tm.uiccCardsInfoCompat) {
+            for (uiccInfo in uiccCards) {
                 for (port in uiccInfo.ports) {
                     if (tryOpenEuiccChannel(port) != null) {
                         Log.d(TAG, "Found eUICC on slot ${uiccInfo.physicalSlotIndex} port ${port.portIndex}")
@@ -174,8 +169,6 @@ open class EuiccChannelManager(protected val context: Context) {
         get() = channels.toList()
 
     fun invalidate() {
-        if (!checkPrivileges()) return
-
         for (channel in channels) {
             channel.close()
         }

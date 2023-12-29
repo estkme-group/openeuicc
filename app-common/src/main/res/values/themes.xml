@@ -6,8 +6,8 @@
         <item name="colorPrimaryVariant">@color/gray_300</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/pink_600</item>
-        <item name="colorSecondaryVariant">@color/pink_800</item>
+        <item name="colorSecondary">@color/brand</item>
+        <item name="colorSecondaryVariant">@color/brandSecondary</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorAccent">?attr/colorSecondary</item>
         <!-- Status bar color. -->

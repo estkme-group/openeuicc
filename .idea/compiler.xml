@@ -4,6 +4,7 @@
     <bytecodeTargetLevel target="1.7">
       <module name="OpenEUICC.app" target="17" />
       <module name="OpenEUICC.app-common" target="17" />
+      <module name="OpenEUICC.app-unpriv" target="17" />
       <module name="OpenEUICC.libs.hidden-apis-shim" target="17" />
       <module name="OpenEUICC.libs.lpac-jni" target="17" />
     </bytecodeTargetLevel>

@@ -1,0 +1,62 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+apply from: '../helpers.gradle'
+
+def keystorePropertiesFile = rootProject.file("keystore.properties");
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    namespace 'im.angry.easyeuicc'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "im.angry.easyeuicc"
+        minSdk 30
+        targetSdk 34
+        versionCode getGitVersionCode()
+        versionName getGitVersionName()
+    }
+
+    signingConfigs {
+        config {
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['unprivKeyAlias']
+            keyPassword keystoreProperties['unprivKeyPassword']
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+        debug {
+            debuggable false
+            signingConfig signingConfigs.config
+        }
+    }
+    applicationVariants.configureEach { variant ->
+        if (variant.name == "debug") {
+            variant.outputs.each { o -> o.versionCodeOverride = System.currentTimeSeconds() }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation project(":app-common")
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+}

@@ -3,6 +3,7 @@ package im.angry.openeuicc.util
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.telephony.UiccSlotMapping
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import kotlinx.coroutines.runBlocking
 import java.lang.Exception
@@ -63,3 +64,13 @@ fun SubscriptionManager.tryRefreshCachedEuiccInfo(cardId: Int) {
         }
     }
 }
+
+// Every EuiccChannel we use here should be backed by a RealUiccPortInfoCompat
+val EuiccChannel.removable
+    get() = (port as RealUiccPortInfoCompat).card.isRemovable
+
+val EuiccChannel.cardId
+    get() = (port as RealUiccPortInfoCompat).card.cardId
+
+val EuiccChannel.isMEP
+    get() = (port as RealUiccPortInfoCompat).card.isMultipleEnabledProfilesSupported

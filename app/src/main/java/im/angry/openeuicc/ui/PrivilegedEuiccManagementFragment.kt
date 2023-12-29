@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import im.angry.openeuicc.R
+import im.angry.openeuicc.util.*
 
 class PrivilegedEuiccManagementFragment: EuiccManagementFragment() {
     companion object {

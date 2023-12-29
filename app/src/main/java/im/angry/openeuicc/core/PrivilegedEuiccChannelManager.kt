@@ -8,9 +8,11 @@ import java.lang.Exception
 import java.lang.IllegalArgumentException
 
 class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(context) {
-    override fun checkPrivileges() = true // TODO: Implement proper system app check
+    override val uiccCards: Collection<UiccCardInfoCompat>
+        get() = tm.uiccCardsInfoCompat
 
-    override fun tryOpenEuiccChannelPrivileged(port: UiccPortInfoCompat): EuiccChannel? {
+    override fun tryOpenEuiccChannelPrivileged(_port: UiccPortInfoCompat): EuiccChannel? {
+        val port = _port as RealUiccPortInfoCompat
         if (port.card.isRemovable) {
             // Attempt unprivileged (OMAPI) before TelephonyManager
             // but still try TelephonyManager in case OMAPI is broken
