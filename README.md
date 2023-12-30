@@ -7,7 +7,9 @@ There are two variants of this project:
 
 - OpenEUICC: The full-fledged privileged variant. Intended to be run as a privileged system app (inside `/system/priv-app`) and serve as the system LPA. This can be used to manage all kinds of eSIM chips, embedded or removable.
   - The privileged variant can be imported to build along with AOSP by simply placing this repository and its [dependencies](https://gitea.angry.im/PeterCxy/android_prebuilts_openeuicc-deps) inside the AOSP tree.
-  - Note that **only the latest AOSP release** is supported. Older versions are still compatible with the app itself, but it may not compile within the old AOSP trees. For older versions, consider building the app with `gradle` or a newer AOSP source tree and simply import as a prebuilt apk.
+  - Notes:
+    - This repository contains submodules. If inclusion in `manifest.xml` is required, remember to set the `sync-s` option.
+    - **Only the latest AOSP release** is supported for building. Older versions of AOSP are still compatible with the app itself, but it may not compile within the old AOSP trees. For older versions, consider building the app with `gradle` or a newer AOSP source tree and simply import as a prebuilt apk.
 - EasyEUICC: Unprivileged version that can run as a user app. An eSIM chip must include the certificate of EasyEUICC in its ARA-M field in order to grant access without system privileges. This is intended for removable eSIM chips such as those provided by eSTK.
   - Prebuilt EasyEUICC apks can be downloaded [here](https://gitea.angry.im/PeterCxy/OpenEUICC/releases)
   - For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC, include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`
