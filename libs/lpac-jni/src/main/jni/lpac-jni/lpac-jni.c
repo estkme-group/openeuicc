@@ -64,25 +64,29 @@ JNIEXPORT jlong JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_createContext(JNIEnv *env, jobject thiz,
                                                   jobject apdu_interface,
                                                   jobject http_interface) {
-    struct euicc_ctx *ctx = malloc(sizeof(struct euicc_ctx));
-    struct lpac_jni_ctx *_ctx = malloc(sizeof(struct lpac_jni_ctx));
+    struct lpac_jni_ctx *jni_ctx = NULL;
+    struct euicc_ctx *ctx = NULL;
+
+    ctx = malloc(sizeof(struct euicc_ctx));
+    jni_ctx = malloc(sizeof(struct lpac_jni_ctx));
     memset(ctx, 0, sizeof(struct lpac_jni_ctx));
-    memset(_ctx, 0, sizeof(struct lpac_jni_ctx));
+    memset(jni_ctx, 0, sizeof(struct lpac_jni_ctx));
     ctx->interface.apdu = &lpac_jni_apdu_interface;
     ctx->interface.http = &lpac_jni_http_interface;
-    _ctx->apdu_interface = (*env)->NewGlobalRef(env, apdu_interface);
-    _ctx->http_interface = (*env)->NewGlobalRef(env, http_interface);
-    ctx->userdata = (void *) _ctx;
+    jni_ctx->apdu_interface = (*env)->NewGlobalRef(env, apdu_interface);
+    jni_ctx->http_interface = (*env)->NewGlobalRef(env, http_interface);
+    ctx->userdata = (void *) jni_ctx;
     return (jlong) ctx;
 }
 
 JNIEXPORT void JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_destroyContext(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct lpac_jni_ctx *_ctx = LPAC_JNI_CTX(ctx);
-    (*env)->DeleteGlobalRef(env, _ctx->apdu_interface);
-    (*env)->DeleteGlobalRef(env, _ctx->http_interface);
-    free(_ctx);
+    struct lpac_jni_ctx *jni_ctx = LPAC_JNI_CTX(ctx);
+
+    (*env)->DeleteGlobalRef(env, jni_ctx->apdu_interface);
+    (*env)->DeleteGlobalRef(env, jni_ctx->http_interface);
+    free(jni_ctx);
     free(ctx);
 }
 
@@ -99,12 +103,17 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10xFini(JNIEnv *env, jobject thiz, jlong h
 }
 
 jstring toJString(JNIEnv *env, const char *pat) {
-    int len = strlen(pat);
-    jbyteArray bytes = (*env)->NewByteArray(env, len);
+    jbyteArray bytes = NULL;
+    jstring encoding = NULL;
+    jstring jstr = NULL;
+    int len;
+
+    len = strlen(pat);
+    bytes = (*env)->NewByteArray(env, len);
     (*env)->SetByteArrayRegion(env, bytes, 0, len, (jbyte *) pat);
-    jstring encoding = (*env)->NewStringUTF(env, "utf-8");
-    jstring jstr = (jstring) (*env)->NewObject(env, string_class,
-                                               string_constructor, bytes, encoding);
+    encoding = (*env)->NewStringUTF(env, "utf-8");
+    jstr = (jstring) (*env)->NewObject(env, string_class,
+                                       string_constructor, bytes, encoding);
     (*env)->DeleteLocalRef(env, encoding);
     (*env)->DeleteLocalRef(env, bytes);
     return jstr;
@@ -113,7 +122,8 @@ jstring toJString(JNIEnv *env, const char *pat) {
 JNIEXPORT jstring JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cGetEid(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    char *buf;
+    char *buf = NULL;
+
     if (es10c_get_eid(ctx, &buf) < 0) {
         return NULL;
     }
@@ -122,47 +132,63 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetEid(JNIEnv *env, jobject thiz, jlong
     return ret;
 }
 
+jobject profile_info_native_to_java(JNIEnv *env, struct es10c_profile_info *info) {
+    jstring serviceProvider = NULL;
+    jstring nickName = NULL;
+    jstring isdpAid = NULL;
+    jstring iccid = NULL;
+    jstring name = NULL;
+    jobject state = NULL;
+    jobject class = NULL;
+    jobject jinfo = NULL;
+
+    iccid = toJString(env, info->iccid);
+    isdpAid = toJString(env, info->isdpAid);
+    name = toJString(env, info->profileName);
+    nickName = info->profileNickname ? toJString(env, info->profileNickname) : (*env)->NewLocalRef(env, empty_string);
+    serviceProvider = info->serviceProviderName ? toJString(env, info->serviceProviderName) : (*env)->NewLocalRef(env, empty_string);
+
+    state = (*env)->CallStaticObjectMethod(env, local_profile_state_class,
+                                           local_profile_state_from_string,
+                                           toJString(env, info->profileState));
+
+    class = (*env)->CallStaticObjectMethod(env, local_profile_class_class,
+                                           local_profile_class_from_string,
+                                           toJString(env, info->profileClass));
+
+    jinfo = (*env)->NewObject(env, local_profile_info_class, local_profile_info_constructor,
+                              iccid, state, name, nickName, serviceProvider, isdpAid, class);
+
+    (*env)->DeleteLocalRef(env, class);
+    (*env)->DeleteLocalRef(env, state);
+    (*env)->DeleteLocalRef(env, serviceProvider);
+    (*env)->DeleteLocalRef(env, nickName);
+    (*env)->DeleteLocalRef(env, name);
+    (*env)->DeleteLocalRef(env, isdpAid);
+    (*env)->DeleteLocalRef(env, iccid);
+
+    return jinfo;
+}
+
 JNIEXPORT jobjectArray JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es10c_profile_info *info;
+    struct es10c_profile_info *info = NULL;
+    jobjectArray ret = NULL;
+    jobject jinfo = NULL;
     int count;
+
     if (es10c_get_profiles_info(ctx, &info, &count) < 0) {
         return NULL;
     }
 
-    jobjectArray ret = (*env)->NewObjectArray(env, count, local_profile_info_class, NULL);
+    ret = (*env)->NewObjectArray(env, count, local_profile_info_class, NULL);
 
     // Convert the native info array to Java
     for (int i = 0; i < count; i++) {
-        jstring iccid = toJString(env, info[i].iccid);
-        jstring isdpAid = toJString(env, info[i].isdpAid);
-        jstring name = toJString(env, info[i].profileName);
-        jstring nickName = info[i].profileNickname ? toJString(env, info[i].profileNickname) : (*env)->NewLocalRef(env, empty_string);
-        jstring serviceProvider = info[i].serviceProviderName ? toJString(env, info[i].serviceProviderName) : (*env)->NewLocalRef(env, empty_string);
-
-        jobject state =
-                (*env)->CallStaticObjectMethod(env, local_profile_state_class,
-                                               local_profile_state_from_string,
-                                               toJString(env, info[i].profileState));
-
-        jobject class =
-                (*env)->CallStaticObjectMethod(env, local_profile_class_class,
-                                               local_profile_class_from_string,
-                                               toJString(env, info[i].profileClass));
-
-        jobject jinfo = (*env)->NewObject(env, local_profile_info_class, local_profile_info_constructor,
-                                          iccid, state, name, nickName, serviceProvider, isdpAid, class);
+        jinfo = profile_info_native_to_java(env, &info[i]);
         (*env)->SetObjectArrayElement(env, ret, i, jinfo);
-
         (*env)->DeleteLocalRef(env, jinfo);
-        (*env)->DeleteLocalRef(env, class);
-        (*env)->DeleteLocalRef(env, state);
-        (*env)->DeleteLocalRef(env, serviceProvider);
-        (*env)->DeleteLocalRef(env, nickName);
-        (*env)->DeleteLocalRef(env, name);
-        (*env)->DeleteLocalRef(env, isdpAid);
-        (*env)->DeleteLocalRef(env, iccid);
     }
 
     es10c_profile_info_free_all(info, count);
@@ -173,8 +199,11 @@ JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cEnableProfile(JNIEnv *env, jobject thiz, jlong handle,
                                                        jstring iccid) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    int ret = es10c_enable_profile_iccid(ctx, _iccid, 1);
+    const char *_iccid = NULL;
+    int ret;
+
+    _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
+    ret = es10c_enable_profile_iccid(ctx, _iccid, 1);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
@@ -183,8 +212,11 @@ JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cDisableProfile(JNIEnv *env, jobject thiz, jlong handle,
                                                         jstring iccid) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    int ret = es10c_disable_profile_iccid(ctx, _iccid, 1);
+    const char *_iccid = NULL;
+    int ret;
+
+    _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
+    ret = es10c_disable_profile_iccid(ctx, _iccid, 1);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
@@ -193,9 +225,13 @@ JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cSetNickname(JNIEnv *env, jobject thiz, jlong handle,
                                                      jstring iccid, jstring nick) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    const char *_nick = (*env)->GetStringUTFChars(env, nick, NULL);
-    int ret = es10c_set_nickname(ctx, _iccid, _nick);
+    const char *_iccid = NULL;
+    const char *_nick = NULL;
+    int ret;
+
+    _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
+    _nick = (*env)->GetStringUTFChars(env, nick, NULL);
+    ret = es10c_set_nickname(ctx, _iccid, _nick);
     (*env)->ReleaseStringUTFChars(env, nick, _nick);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
@@ -205,8 +241,11 @@ JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cDeleteProfile(JNIEnv *env, jobject thiz, jlong handle,
                                                        jstring iccid) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    const char *_iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    int ret = es10c_delete_profile_iccid(ctx, _iccid);
+    const char *_iccid = NULL;
+    int ret;
+
+    _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
+    ret = es10c_delete_profile_iccid(ctx, _iccid);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
