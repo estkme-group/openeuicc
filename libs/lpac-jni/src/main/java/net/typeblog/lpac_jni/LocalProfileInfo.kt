@@ -1,7 +1,5 @@
 package net.typeblog.lpac_jni
 
-import java.lang.IllegalArgumentException
-
 data class LocalProfileInfo(
     val iccid: String,
     val state: State,
@@ -13,29 +11,33 @@ data class LocalProfileInfo(
 ) {
     enum class State {
         Enabled,
-        Disabled
+        Disabled;
+
+        companion object {
+            @JvmStatic
+            fun fromString(str: String?) =
+                when (str?.lowercase()) {
+                    "enabled" -> Enabled
+                    "disabled" -> Disabled
+                    else -> Disabled
+                }
+        }
     }
 
     enum class Clazz {
         Testing,
         Provisioning,
-        Operational
-    }
+        Operational;
 
-    companion object {
-        fun stateFromString(state: String?): State =
-            if (state == "0") {
-                State.Disabled
-            } else {
-                State.Enabled
-            }
-
-        fun classFromString(clazz: String?): Clazz =
-            when (clazz) {
-                "0" -> Clazz.Testing
-                "1" -> Clazz.Provisioning
-                "2" -> Clazz.Operational
-                else -> throw IllegalArgumentException("Unknown profile class $clazz")
-            }
+        companion object {
+            @JvmStatic
+            fun fromString(str: String?) =
+                when (str?.lowercase()) {
+                    "testing" -> Testing
+                    "provisioning" -> Provisioning
+                    "operational" -> Operational
+                    else -> Operational
+                }
+        }
     }
 }

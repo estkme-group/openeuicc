@@ -12,12 +12,11 @@ JavaVM  *jvm = NULL;
 jclass local_profile_info_class;
 jmethodID local_profile_info_constructor;
 
-jobject local_profile_state_enabled;
-jobject local_profile_state_disabled;
+jclass local_profile_state_class;
+jmethodID local_profile_state_from_string;
 
-jobject local_profile_class_testing;
-jobject local_profile_class_provisioning;
-jobject local_profile_class_operational;
+jclass local_profile_class_class;
+jmethodID local_profile_class_from_string;
 
 jstring empty_string;
 
@@ -42,28 +41,17 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     local_profile_info_constructor = (*env)->GetMethodID(env, local_profile_info_class, "<init>",
                                                          "(Ljava/lang/String;Lnet/typeblog/lpac_jni/LocalProfileInfo$State;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;)V");
 
-    jclass local_profile_state_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/LocalProfileInfo$State");
-    jfieldID field_enabled = (*env)->GetStaticFieldID(env, local_profile_state_class, "Enabled", "Lnet/typeblog/lpac_jni/LocalProfileInfo$State;");
-    local_profile_state_enabled = (*env)->GetStaticObjectField(env, local_profile_state_class, field_enabled);
-    local_profile_state_enabled = (*env)->NewGlobalRef(env, local_profile_state_enabled);
-    jfieldID field_disabled = (*env)->GetStaticFieldID(env, local_profile_state_class, "Disabled", "Lnet/typeblog/lpac_jni/LocalProfileInfo$State;");
-    local_profile_state_disabled = (*env)->GetStaticObjectField(env, local_profile_state_class, field_disabled);
-    local_profile_state_disabled = (*env)->NewGlobalRef(env, local_profile_state_disabled);
+    local_profile_state_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/LocalProfileInfo$State");
+    local_profile_state_class = (*env)->NewGlobalRef(env, local_profile_state_class);
+    local_profile_state_from_string = (*env)->GetStaticMethodID(env, local_profile_state_class, "fromString", "(Ljava/lang/String;)Lnet/typeblog/lpac_jni/LocalProfileInfo$State;");
 
-    jclass local_profile_class_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/LocalProfileInfo$Clazz");
-    jfieldID field_testing = (*env)->GetStaticFieldID(env, local_profile_class_class, "Testing", "Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;");
-    local_profile_class_testing = (*env)->GetStaticObjectField(env, local_profile_class_class, field_testing);
-    local_profile_class_testing = (*env)->NewGlobalRef(env, local_profile_class_testing);
-    jfieldID field_provisioning = (*env)->GetStaticFieldID(env, local_profile_class_class, "Provisioning", "Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;");
-    local_profile_class_provisioning = (*env)->GetStaticObjectField(env, local_profile_class_class, field_provisioning);
-    local_profile_class_provisioning = (*env)->NewGlobalRef(env, local_profile_class_provisioning);
-    jfieldID field_operational = (*env)->GetStaticFieldID(env, local_profile_class_class, "Operational", "Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;");
-    local_profile_class_operational = (*env)->GetStaticObjectField(env, local_profile_class_class, field_operational);
-    local_profile_class_operational = (*env)->NewGlobalRef(env, local_profile_class_operational);
+    local_profile_class_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/LocalProfileInfo$Clazz");
+    local_profile_class_class = (*env)->NewGlobalRef(env, local_profile_class_class);
+    local_profile_class_from_string = (*env)->GetStaticMethodID(env, local_profile_class_class, "fromString", "(Ljava/lang/String;)Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;");
 
     euicc_info2_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/EuiccInfo2");
     euicc_info2_class = (*env)->NewGlobalRef(env, euicc_info2_class);
-    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;III)V");
+    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)V");
 
     const char _unused[1];
     empty_string = (*env)->NewString(env, _unused, 0);
@@ -153,30 +141,15 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject th
         jstring nickName = info[i].profileNickname ? toJString(env, info[i].profileNickname) : (*env)->NewLocalRef(env, empty_string);
         jstring serviceProvider = info[i].serviceProviderName ? toJString(env, info[i].serviceProviderName) : (*env)->NewLocalRef(env, empty_string);
 
-        jobject state;
-        switch (info[i].profileState) {
-            case ES10C_PROFILE_INFO_STATE_ENABLED:
-                state = local_profile_state_enabled;
-                break;
-            case ES10C_PROFILE_INFO_STATE_DISABLED:
-                state = local_profile_state_disabled;
-                break;
-        }
-        state = (*env)->NewLocalRef(env, state);
+        jobject state =
+                (*env)->CallStaticObjectMethod(env, local_profile_state_class,
+                                               local_profile_state_from_string,
+                                               toJString(env, info[i].profileState));
 
-        jobject class;
-        switch (info[i].profileClass) {
-            case ES10C_PROFILE_INFO_CLASS_TEST:
-                class = local_profile_class_testing;
-                break;
-            case ES10C_PROFILE_INFO_CLASS_PROVISIONING:
-                class = local_profile_class_provisioning;
-                break;
-            case ES10C_PROFILE_INFO_CLASS_OPERATIONAL:
-                class = local_profile_class_operational;
-                break;
-        }
-        class = (*env)->NewLocalRef(env, class);
+        jobject class =
+                (*env)->CallStaticObjectMethod(env, local_profile_class_class,
+                                               local_profile_class_from_string,
+                                               toJString(env, info[i].profileClass));
 
         jobject jinfo = (*env)->NewObject(env, local_profile_info_class, local_profile_info_constructor,
                                           iccid, state, name, nickName, serviceProvider, isdpAid, class);
@@ -266,7 +239,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject th
                             profile_version, sgp22_version, euicc_firmware_version,
                             uicc_firmware_version, global_platform_version,
                             sas_accreditation_number, pp_version,
-                            info.installed_app, info.free_nvram, info.free_ram);
+                            info.free_nvram, info.free_ram);
 
     out:
     (*env)->DeleteLocalRef(env, profile_version);

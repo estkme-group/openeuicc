@@ -9,7 +9,6 @@ data class EuiccInfo2(
     val globalPlatformVersion: String,
     val sasAccreditationNumber: String,
     val ppVersion: String,
-    val installedApp: Int,
     val freeNvram: Int,
     val freeRam: Int,
 )
