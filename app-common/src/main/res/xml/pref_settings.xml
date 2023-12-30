@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        app:title="@string/pref_info">
+        <Preference
+            app:title="@string/pref_info_app_version"
+            app:key="pref_info_app_version" />
+
+        <Preference
+            app:title="@string/pref_info_source_code"
+            app:summary="@string/pref_info_source_code_url"
+            app:key="pref_info_source_code"/>
+    </PreferenceCategory>
+</PreferenceScreen>

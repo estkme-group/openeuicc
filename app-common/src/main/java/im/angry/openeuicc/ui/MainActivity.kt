@@ -1,9 +1,11 @@
 package im.angry.openeuicc.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -72,6 +74,16 @@ open class MainActivity : AppCompatActivity() {
 
         return true
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java));
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
 
     protected open fun createEuiccManagementFragment(channel: EuiccChannel): EuiccManagementFragment =
         EuiccManagementFragment.newInstance(channel.slotId, channel.portId)

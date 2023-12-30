@@ -7,4 +7,9 @@
         app:actionViewClass="android.widget.Spinner"
         android:background="?android:attr/colorPrimary"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/settings"
+        android:title="@string/pref_settings"
+        app:showAsAction="never" />
 </menu>
