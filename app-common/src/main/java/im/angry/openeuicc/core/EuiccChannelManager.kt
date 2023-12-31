@@ -59,8 +59,7 @@ open class EuiccChannelManager(protected val context: Context) {
 
     protected fun tryOpenEuiccChannelUnprivileged(port: UiccPortInfoCompat): EuiccChannel? {
         if (port.portIndex != 0) {
-            Log.w(TAG, "OMAPI channel attempted on non-zero portId, ignoring")
-            return null
+            Log.w(TAG, "OMAPI channel attempted on non-zero portId, this may or may not work.")
         }
 
         Log.i(TAG, "Trying OMAPI for physical slot ${port.card.physicalSlotIndex}")
