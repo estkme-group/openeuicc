@@ -110,6 +110,9 @@ jstring toJString(JNIEnv *env, const char *pat) {
     jstring jstr = NULL;
     int len;
 
+    if (pat == NULL)
+        return (*env)->NewLocalRef(env, empty_string);
+
     len = strlen(pat);
     bytes = (*env)->NewByteArray(env, len);
     (*env)->SetByteArrayRegion(env, bytes, 0, len, (jbyte *) pat);
@@ -147,8 +150,8 @@ jobject profile_info_native_to_java(JNIEnv *env, struct es10c_profile_info *info
     iccid = toJString(env, info->iccid);
     isdpAid = toJString(env, info->isdpAid);
     name = toJString(env, info->profileName);
-    nickName = info->profileNickname ? toJString(env, info->profileNickname) : (*env)->NewLocalRef(env, empty_string);
-    serviceProvider = info->serviceProviderName ? toJString(env, info->serviceProviderName) : (*env)->NewLocalRef(env, empty_string);
+    nickName = toJString(env, info->profileNickname);
+    serviceProvider = toJString(env, info->serviceProviderName);
 
     state = (*env)->CallStaticObjectMethod(env, local_profile_state_class,
                                            local_profile_state_from_string,
