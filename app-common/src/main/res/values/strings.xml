@@ -2,6 +2,7 @@
 <resources>
     <string name="no_euicc">No eUICC card on this device is accessible by this app.\nInsert a supported eUICC card, or try out the privileged OpenEUICC app instead.</string>
     <string name="unknown">Unknown</string>
+    <string name="help">Help</string>
 
     <string name="channel_name_format">Logical Slot %d</string>
 
@@ -33,7 +34,20 @@
 
     <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
 
+    <string name="profile_notifications">Profile Notifications</string>
+    <string name="profile_notifications_show">Manage Notifications</string>
+    <string name="profile_notifications_help">eSIM profiles can send notifications to the carrier when they are downloaded, deleted, enabled, or disabled. The queue of these notifications to be sent is listed here.\n\nIn Settings, you can specify whether to send each type of notification automatically. Note that even if a notification has been sent, it will not be deleted automatically from the record, unless the queue runs out of space.\n\nHere, you can manually send or delete each pending notification.</string>
+    <string name="profile_notification_operation_download">Downloaded</string>
+    <string name="profile_notification_operation_delete">Deleted</string>
+    <string name="profile_notification_operation_enable">Enabled</string>
+    <string name="profile_notification_operation_disable">Disabled</string>
+    <string name="profile_notification_name_format">&lt;b&gt;%s&lt;/b&gt; %s (%s)</string>
+    <string name="profile_notification_process">Process</string>
+    <string name="profile_notification_delete">Delete</string>
+
     <string name="pref_settings">Settings</string>
+    <string name="pref_notifications">Notifications</string>
+    <string name="pref_notifications_desc">eSIM profile operations send notifications to the carrier. Fine-tune this behavior as needed here.</string>
     <string name="pref_info">Info</string>
     <string name="pref_info_app_version">App Version</string>
     <string name="pref_info_source_code">Source Code</string>

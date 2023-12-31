@@ -13,6 +13,10 @@
             android:label="@string/pref_settings" />
 
         <activity
+            android:name="im.angry.openeuicc.ui.NotificationsActivity"
+            android:label="@string/profile_notifications" />
+
+        <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />

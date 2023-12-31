@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory
+        app:title="@string/pref_notifications"
+        app:summary="@string/pref_notifications_desc"
+        app:iconSpaceReserved="false">
+
+    </im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory>
+
     <PreferenceCategory
-        app:title="@string/pref_info">
+        app:title="@string/pref_info"
+        app:iconSpaceReserved="false">
         <Preference
+            app:iconSpaceReserved="false"
             app:title="@string/pref_info_app_version"
             app:key="pref_info_app_version" />
 
         <Preference
+            app:iconSpaceReserved="false"
             app:title="@string/pref_info_source_code"
             app:summary="@string/pref_info_source_code_url"
             app:key="pref_info_source_code"/>

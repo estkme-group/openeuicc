@@ -5,6 +5,7 @@
 #include <syslog.h>
 #include "lpac-jni.h"
 #include "lpac-download.h"
+#include "lpac-notifications.h"
 #include "interface-wrapper.h"
 
 JavaVM  *jvm = NULL;
@@ -30,6 +31,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     jvm = vm;
     interface_wrapper_init();
     lpac_download_init();
+    lpac_notifications_init();
 
     LPAC_JNI_SETUP_ENV;
     string_class = (*env)->FindClass(env, "java/lang/String");

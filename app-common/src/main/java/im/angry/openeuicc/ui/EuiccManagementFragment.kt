@@ -1,10 +1,13 @@
 package im.angry.openeuicc.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +44,11 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
 
     private val adapter = EuiccProfileAdapter()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,6 +84,23 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
     override fun onEuiccProfilesChanged() {
         refresh()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_euicc, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.show_notifications -> {
+                Intent(requireContext(), NotificationsActivity::class.java).apply {
+                    putExtra("logicalSlotId", channel.logicalSlotId)
+                    startActivity(this)
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
 
     protected open suspend fun onCreateFooterViews(parent: ViewGroup): List<View> = listOf()
 

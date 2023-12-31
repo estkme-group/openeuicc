@@ -21,10 +21,15 @@ internal object LpacJni {
     external fun es10cDeleteProfile(handle: Long, iccid: String): Int
     external fun es10cSetNickname(handle: Long, iccid: String, nick: String): Int
 
+    // es10b
+    external fun es10bListNotification(handle: Long): Array<LocalProfileNotification>?
+    external fun es10bDeleteNotification(handle: Long, seqNumber: Long): Int
+
     // es9p + es10b
     // We do not expose all of the functions because of tediousness :)
     external fun downloadProfile(handle: Long, smdp: String, matchingId: String?, imei: String?,
                                  confirmationCode: String?, callback: ProfileDownloadCallback): Int
+    external fun handleNotification(handle: Long, seqNumber: Long): Int
 
     // es10cex (actually part of es10b)
     external fun es10cexGetEuiccInfo2(handle: Long): EuiccInfo2?

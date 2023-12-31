@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/notification_process"
+        android:title="@string/profile_notification_process" />
+
+    <item
+        android:id="@+id/notification_delete"
+        android:title="@string/profile_notification_delete" />
+</menu>

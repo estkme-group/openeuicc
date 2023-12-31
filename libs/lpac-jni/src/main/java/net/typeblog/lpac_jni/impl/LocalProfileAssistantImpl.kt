@@ -6,6 +6,7 @@ import net.typeblog.lpac_jni.EuiccInfo2
 import net.typeblog.lpac_jni.HttpInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
+import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
@@ -21,6 +22,11 @@ class LocalProfileAssistantImpl(
 
     override val profiles: List<LocalProfileInfo>
         get() = LpacJni.es10cGetProfilesInfo(contextHandle)!!.asList()
+
+    override val notifications: List<LocalProfileNotification>
+        get() =
+            (LpacJni.es10bListNotification(contextHandle) ?: arrayOf())
+                .sortedBy { it.seqNumber }.reversed()
 
     override val eID: String
         get() = LpacJni.es10cGetEid(contextHandle)!!
@@ -43,6 +49,18 @@ class LocalProfileAssistantImpl(
     override fun downloadProfile(smdp: String, matchingId: String?, imei: String?,
                                  confirmationCode: String?, callback: ProfileDownloadCallback): Boolean {
         return LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei, confirmationCode, callback) == 0
+    }
+
+    override fun deleteNotification(seqNumber: Long): Boolean =
+        LpacJni.es10bDeleteNotification(contextHandle, seqNumber) == 0
+
+    override fun handleNotification(seqNumber: Long): Boolean =
+        LpacJni.handleNotification(contextHandle, seqNumber) == 0
+
+    override fun handleLatestNotification(operation: LocalProfileNotification.Operation) {
+        notifications.find { it.profileManagementOperation == operation }?.let {
+            handleNotification(it.seqNumber)
+        }
     }
 
     override fun setNickname(iccid: String, nickname: String): Boolean {
