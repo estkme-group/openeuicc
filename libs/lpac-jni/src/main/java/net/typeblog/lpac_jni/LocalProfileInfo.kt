@@ -33,7 +33,7 @@ data class LocalProfileInfo(
             @JvmStatic
             fun fromString(str: String?) =
                 when (str?.lowercase()) {
-                    "testing" -> Testing
+                    "test" -> Testing
                     "provisioning" -> Provisioning
                     "operational" -> Operational
                     else -> Operational
