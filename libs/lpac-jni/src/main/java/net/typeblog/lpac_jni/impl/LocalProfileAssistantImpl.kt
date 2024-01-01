@@ -64,13 +64,6 @@ class LocalProfileAssistantImpl(
             Log.d(TAG, "handleNotification $seqNumber = $it")
         } == 0
 
-    override fun handleLatestNotification(operation: LocalProfileNotification.Operation) {
-        notifications.find { it.profileManagementOperation == operation }?.let {
-            Log.d(TAG, "handleLatestNotification: $it")
-            handleNotification(it.seqNumber)
-        }
-    }
-
     override fun setNickname(iccid: String, nickname: String): Boolean {
         return LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0
     }

@@ -152,19 +152,15 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
     }
 
     private suspend fun doEnableProfile(iccid: String) =
-        withContext(Dispatchers.IO) {
+        channel.lpa.beginOperation {
             channel.lpa.enableProfile(iccid)
-            if (preferenceRepository.notificationEnableFlow.first()) {
-                channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Enable)
-            }
+            preferenceRepository.notificationEnableFlow.first()
         }
 
     private suspend fun doDisableProfile(iccid: String) =
-        withContext(Dispatchers.IO) {
+        channel.lpa.beginOperation {
             channel.lpa.disableProfile(iccid)
-            if (preferenceRepository.notificationDisableFlow.first()) {
-                channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Disable)
-            }
+            preferenceRepository.notificationDisableFlow.first()
         }
 
     sealed class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {

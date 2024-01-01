@@ -184,8 +184,8 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         }
     }
 
-    private suspend fun doDownloadProfile(server: String, code: String?, confirmationCode: String?, imei: String?) = withContext(Dispatchers.IO) {
-        channel.lpa.downloadProfile(server, code, imei, confirmationCode, object : ProfileDownloadCallback {
+    private suspend fun doDownloadProfile(server: String, code: String?, confirmationCode: String?, imei: String?) = channel.lpa.beginOperation {
+        downloadProfile(server, code, imei, confirmationCode, object : ProfileDownloadCallback {
             override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
                 lifecycleScope.launch(Dispatchers.Main) {
                     progress.isIndeterminate = false
@@ -195,8 +195,7 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         })
 
         // If we get here, we are successful
-        if (preferenceRepository.notificationDownloadFlow.first()) {
-            channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Install)
-        }
+        // Only send notifications if the user allowed us to
+        preferenceRepository.notificationDownloadFlow.first()
     }
 }
