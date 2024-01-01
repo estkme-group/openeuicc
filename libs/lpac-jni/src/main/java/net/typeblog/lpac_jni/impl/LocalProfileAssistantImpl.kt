@@ -1,5 +1,6 @@
 package net.typeblog.lpac_jni.impl
 
+import android.util.Log
 import net.typeblog.lpac_jni.LpacJni
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.EuiccInfo2
@@ -13,6 +14,10 @@ class LocalProfileAssistantImpl(
     apduInterface: ApduInterface,
     httpInterface: HttpInterface
 ): LocalProfileAssistant {
+    companion object {
+        val TAG = "LocalProfileAssistantImpl"
+    }
+
     private val contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
     init {
         if (LpacJni.es10xInit(contextHandle) < 0) {
@@ -59,6 +64,7 @@ class LocalProfileAssistantImpl(
 
     override fun handleLatestNotification(operation: LocalProfileNotification.Operation) {
         notifications.find { it.profileManagementOperation == operation }?.let {
+            Log.d(TAG, "handleLatestNotification: $it")
             handleNotification(it.seqNumber)
         }
     }

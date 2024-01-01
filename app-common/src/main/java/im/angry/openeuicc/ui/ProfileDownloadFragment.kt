@@ -18,10 +18,13 @@ import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.openEuiccApplication
+import im.angry.openeuicc.util.preferenceRepository
 import im.angry.openeuicc.util.setWidthPercent
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 import kotlin.Exception
 
@@ -168,6 +171,9 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         lifecycleScope.launch {
             try {
                 doDownloadProfile(server, code, confirmationCode, imei)
+                if (preferenceRepository.notificationDownloadFlow.first()) {
+                    channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Install)
+                }
             } catch (e: Exception) {
                 Log.d(TAG, "Error downloading profile")
                 Log.d(TAG, Log.getStackTraceString(e))

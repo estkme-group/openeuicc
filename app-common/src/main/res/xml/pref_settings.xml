@@ -4,7 +4,26 @@
         app:title="@string/pref_notifications"
         app:summary="@string/pref_notifications_desc"
         app:iconSpaceReserved="false">
-
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
+            app:title="@string/pref_notifications_download"
+            app:summary="@string/pref_notifications_download_desc"
+            app:key="pref_notifications_download" />
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
+            app:title="@string/pref_notifications_delete"
+            app:summary="@string/pref_notifications_delete_desc"
+            app:key="pref_notifications_delete" />
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
+            app:title="@string/pref_notifications_enable"
+            app:summary="@string/pref_notifications_enable_desc"
+            app:key="pref_notifications_enable" />
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
+            app:title="@string/pref_notifications_disable"
+            app:summary="@string/pref_notifications_disable_desc"
+            app:key="pref_notifications_disable" />
     </im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory>
 
     <PreferenceCategory

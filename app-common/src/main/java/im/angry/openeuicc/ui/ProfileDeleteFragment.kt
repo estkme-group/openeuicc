@@ -7,9 +7,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.util.preferenceRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.typeblog.lpac_jni.LocalProfileNotification
 import java.lang.Exception
 
 class ProfileDeleteFragment : DialogFragment(), EuiccFragmentMarker {
@@ -58,6 +61,9 @@ class ProfileDeleteFragment : DialogFragment(), EuiccFragmentMarker {
         lifecycleScope.launch {
             try {
                 doDelete()
+                if (preferenceRepository.notificationDeleteFlow.first()) {
+                    channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Delete)
+                }
             } catch (e: Exception) {
                 Log.d(ProfileDownloadFragment.TAG, "Error deleting profile")
                 Log.d(ProfileDownloadFragment.TAG, Log.getStackTraceString(e))

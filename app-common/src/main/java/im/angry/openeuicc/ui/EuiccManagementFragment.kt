@@ -26,8 +26,10 @@ import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.typeblog.lpac_jni.LocalProfileNotification
 import java.lang.Exception
 
 open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesChangedListener {
@@ -152,11 +154,17 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
     private suspend fun doEnableProfile(iccid: String) =
         withContext(Dispatchers.IO) {
             channel.lpa.enableProfile(iccid)
+            if (preferenceRepository.notificationEnableFlow.first()) {
+                channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Enable)
+            }
         }
 
     private suspend fun doDisableProfile(iccid: String) =
         withContext(Dispatchers.IO) {
             channel.lpa.disableProfile(iccid)
+            if (preferenceRepository.notificationDisableFlow.first()) {
+                channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Disable)
+            }
         }
 
     sealed class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
