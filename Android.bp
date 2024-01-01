@@ -26,6 +26,7 @@ android_library {
         "androidx.lifecycle_lifecycle-runtime-ktx",
         "androidx.swiperefreshlayout_swiperefreshlayout",
         "com.google.android.material_material",
+        "androidx.preference_preference"
         "kotlinx_coroutines",
     ],
     srcs: [
