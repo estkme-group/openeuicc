@@ -61,9 +61,6 @@ class ProfileDeleteFragment : DialogFragment(), EuiccFragmentMarker {
         lifecycleScope.launch {
             try {
                 doDelete()
-                if (preferenceRepository.notificationDeleteFlow.first()) {
-                    channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Delete)
-                }
             } catch (e: Exception) {
                 Log.d(ProfileDownloadFragment.TAG, "Error deleting profile")
                 Log.d(ProfileDownloadFragment.TAG, Log.getStackTraceString(e))
@@ -78,5 +75,8 @@ class ProfileDeleteFragment : DialogFragment(), EuiccFragmentMarker {
 
     private suspend fun doDelete() = withContext(Dispatchers.IO) {
         channel.lpa.deleteProfile(requireArguments().getString("iccid")!!)
+        if (preferenceRepository.notificationDeleteFlow.first()) {
+            channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Delete)
+        }
     }
 }

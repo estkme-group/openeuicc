@@ -15,7 +15,7 @@ class LocalProfileAssistantImpl(
     httpInterface: HttpInterface
 ): LocalProfileAssistant {
     companion object {
-        val TAG = "LocalProfileAssistantImpl"
+        private const val TAG = "LocalProfileAssistantImpl"
     }
 
     private val contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
@@ -60,7 +60,9 @@ class LocalProfileAssistantImpl(
         LpacJni.es10bDeleteNotification(contextHandle, seqNumber) == 0
 
     override fun handleNotification(seqNumber: Long): Boolean =
-        LpacJni.handleNotification(contextHandle, seqNumber) == 0
+        LpacJni.handleNotification(contextHandle, seqNumber).also {
+            Log.d(TAG, "handleNotification $seqNumber = $it")
+        } == 0
 
     override fun handleLatestNotification(operation: LocalProfileNotification.Operation) {
         notifications.find { it.profileManagementOperation == operation }?.let {

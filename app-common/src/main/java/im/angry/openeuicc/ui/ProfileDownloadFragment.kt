@@ -171,9 +171,6 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
         lifecycleScope.launch {
             try {
                 doDownloadProfile(server, code, confirmationCode, imei)
-                if (preferenceRepository.notificationDownloadFlow.first()) {
-                    channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Install)
-                }
             } catch (e: Exception) {
                 Log.d(TAG, "Error downloading profile")
                 Log.d(TAG, Log.getStackTraceString(e))
@@ -196,5 +193,10 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
                 }
             }
         })
+
+        // If we get here, we are successful
+        if (preferenceRepository.notificationDownloadFlow.first()) {
+            channel.lpa.handleLatestNotification(LocalProfileNotification.Operation.Install)
+        }
     }
 }

@@ -2,6 +2,7 @@
 #include <euicc/es9p.h>
 #include <euicc/es10b.h>
 #include <malloc.h>
+#include <syslog.h>
 
 jclass local_profile_notification_class;
 jmethodID local_profile_notification_constructor;
@@ -74,10 +75,12 @@ Java_net_typeblog_lpac_1jni_LpacJni_handleNotification(JNIEnv *env, jobject thiz
     int res;
 
     res = es10b_retrieve_notification(ctx, &b64_payload, &receiver, (unsigned long) seq_number);
+    syslog(LOG_DEBUG, "es10b_retrieve_notification = %d", res);
     if (res < 0)
         goto out;
 
     res = es9p_handle_notification(ctx, receiver, b64_payload);
+    syslog(LOG_DEBUG, "es9p_handle_notification = %d", res);
     if (res < 0)
         goto out;
 

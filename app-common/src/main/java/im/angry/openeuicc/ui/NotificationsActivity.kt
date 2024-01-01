@@ -176,14 +176,18 @@ class NotificationsActivity: AppCompatActivity() {
             when (item.itemId) {
                 R.id.notification_process -> {
                     launchTask {
-                        euiccChannel.lpa.handleNotification(notification.inner.seqNumber)
+                        withContext(Dispatchers.IO) {
+                            euiccChannel.lpa.handleNotification(notification.inner.seqNumber)
+                        }
                     }
                     refresh()
                     true
                 }
                 R.id.notification_delete -> {
                     launchTask {
-                        euiccChannel.lpa.deleteNotification(notification.inner.seqNumber)
+                        withContext(Dispatchers.IO) {
+                            euiccChannel.lpa.deleteNotification(notification.inner.seqNumber)
+                        }
                     }
                     refresh()
                     true
