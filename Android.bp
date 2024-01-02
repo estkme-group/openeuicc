@@ -24,9 +24,9 @@ android_library {
         "androidx-constraintlayout_constraintlayout",
         "androidx.core_core-ktx",
         "androidx.lifecycle_lifecycle-runtime-ktx",
+        "androidx.preference_preference",
         "androidx.swiperefreshlayout_swiperefreshlayout",
         "com.google.android.material_material",
-        "androidx.preference_preference"
         "kotlinx_coroutines",
     ],
     srcs: [
