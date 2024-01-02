@@ -6,6 +6,9 @@ java_library {
     optimize: {
         enabled: false,
     },
+    static_libs: [
+        "kotlinx_coroutines",
+    ],
     system_ext_specific: true,
 }
 
