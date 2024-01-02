@@ -9,6 +9,16 @@ interface LocalProfileAssistant {
         private const val TAG = "LocalProfileAssistant"
     }
 
+    val valid: Boolean
+        get() = try {
+            // If we can read both eID and profiles properly, we are likely looking at
+            // a valid LocalProfileAssistant
+            eID
+            profiles
+            true
+        } catch (e: Exception) {
+            false
+        }
     val profiles: List<LocalProfileInfo>
     val notifications: List<LocalProfileNotification>
     val eID: String

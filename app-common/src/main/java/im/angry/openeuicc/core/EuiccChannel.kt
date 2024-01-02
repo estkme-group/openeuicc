@@ -12,15 +12,7 @@ abstract class EuiccChannel(
 
     abstract val lpa: LocalProfileAssistant
     val valid: Boolean
-        get() {
-            try {
-                // Try to ping the eUICC card by reading the EID
-                lpa.eID
-            } catch (e: Exception) {
-                return false
-            }
-            return true
-        }
+        get() = lpa.valid
 
     fun close() = lpa.close()
 }

@@ -49,8 +49,8 @@ class LocalProfileAssistantImpl(
                     apduInterface.connect()
                     contextHandle = LpacJni.createContext(apduInterface, httpInterface)
                     check(LpacJni.es10xInit(contextHandle) >= 0) { "Reconnect attempt failed" }
-                    // Validate that we can actually use the APDU channel by trying to read eID
-                    eID
+                    // Validate that we can actually use the APDU channel by trying to read eID and profiles
+                    check(valid) { "Reconnected channel is invalid" }
                     break
                 } catch (e: Exception) {
                     e.printStackTrace()
