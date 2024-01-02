@@ -127,7 +127,6 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
 
     private fun enableOrDisableProfile(iccid: String, enable: Boolean) {
         swipeRefresh.isRefreshing = true
-        swipeRefresh.isEnabled = false
         fab.isEnabled = false
 
         lifecycleScope.launch {
@@ -137,15 +136,12 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
                 } else {
                     doDisableProfile(iccid)
                 }
-                Toast.makeText(context, R.string.toast_profile_enabled, Toast.LENGTH_LONG).show()
-                // The APDU channel will be invalid when the SIM reboots. For now, just exit the app
-                euiccChannelManager.invalidate()
-                requireActivity().finish()
+                refresh()
+                fab.isEnabled = true
             } catch (e: Exception) {
                 Log.d(TAG, "Failed to enable / disable profile $iccid")
                 Log.d(TAG, Log.getStackTraceString(e))
                 fab.isEnabled = true
-                swipeRefresh.isEnabled = true
                 Toast.makeText(context, R.string.toast_profile_enable_failed, Toast.LENGTH_LONG).show()
             }
         }
@@ -153,14 +149,14 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
 
     private suspend fun doEnableProfile(iccid: String) =
         channel.lpa.beginOperation {
-            channel.lpa.enableProfile(iccid)
-            preferenceRepository.notificationEnableFlow.first()
+            channel.lpa.enableProfile(iccid, reconnectTimeout = 15 * 1000) &&
+                preferenceRepository.notificationEnableFlow.first()
         }
 
     private suspend fun doDisableProfile(iccid: String) =
         channel.lpa.beginOperation {
-            channel.lpa.disableProfile(iccid)
-            preferenceRepository.notificationDisableFlow.first()
+            channel.lpa.disableProfile(iccid, reconnectTimeout = 15 * 1000) &&
+                preferenceRepository.notificationDisableFlow.first()
         }
 
     sealed class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {

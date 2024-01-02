@@ -1,6 +1,9 @@
 package net.typeblog.lpac_jni.impl
 
 import android.util.Log
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import net.typeblog.lpac_jni.LpacJni
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.EuiccInfo2
@@ -11,17 +14,49 @@ import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
-    apduInterface: ApduInterface,
-    httpInterface: HttpInterface
+    private val apduInterface: ApduInterface,
+    private val httpInterface: HttpInterface
 ): LocalProfileAssistant {
     companion object {
         private const val TAG = "LocalProfileAssistantImpl"
     }
 
-    private val contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
+    private var contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
     init {
         if (LpacJni.es10xInit(contextHandle) < 0) {
             throw IllegalArgumentException("Failed to initialize LPA")
+        }
+    }
+
+    private fun tryReconnect(timeoutMillis: Long) = runBlocking {
+        withTimeout(timeoutMillis) {
+            try {
+                LpacJni.es10xFini(contextHandle)
+                LpacJni.destroyContext(contextHandle)
+            } catch (e: Exception) {
+                // Ignored
+            }
+
+            while (true) {
+                try {
+                    apduInterface.disconnect()
+                } catch (e: Exception) {
+                    // Ignored
+                }
+
+                try {
+                    apduInterface.connect()
+                    contextHandle = LpacJni.createContext(apduInterface, httpInterface)
+                    val res = LpacJni.es10xInit(contextHandle)
+                    Log.d(TAG, "$res")
+                    check(res >= 0) { "Reconnect attempt failed" }
+                    break
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    // continue retrying
+                    delay(1000)
+                }
+            }
         }
     }
 
@@ -39,12 +74,28 @@ class LocalProfileAssistantImpl(
     override val euiccInfo2: EuiccInfo2?
         get() = LpacJni.es10cexGetEuiccInfo2(contextHandle)
 
-    override fun enableProfile(iccid: String): Boolean {
-        return LpacJni.es10cEnableProfile(contextHandle, iccid) == 0
+    override fun enableProfile(iccid: String, reconnectTimeout: Long): Boolean {
+        val res = LpacJni.es10cEnableProfile(contextHandle, iccid) == 0
+        if (reconnectTimeout > 0) {
+            try {
+                tryReconnect(reconnectTimeout)
+            } catch (e: Exception) {
+                return false
+            }
+        }
+        return res
     }
 
-    override fun disableProfile(iccid: String): Boolean {
-        return LpacJni.es10cDisableProfile(contextHandle, iccid) == 0
+    override fun disableProfile(iccid: String, reconnectTimeout: Long): Boolean {
+        val res = LpacJni.es10cDisableProfile(contextHandle, iccid) == 0
+        if (reconnectTimeout > 0) {
+            try {
+                tryReconnect(reconnectTimeout)
+            } catch (e: Exception) {
+                return false
+            }
+        }
+        return res
     }
 
     override fun deleteProfile(iccid: String): Boolean {

@@ -20,6 +20,7 @@ class TelephonyManagerApduInterface(
 
     override fun disconnect() {
         // Do nothing
+        lastChannel = -1
     }
 
     override fun logicalChannelOpen(aid: ByteArray): Int {

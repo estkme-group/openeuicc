@@ -16,7 +16,6 @@
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
 
-    <string name="toast_profile_enabled">eSIM profile switched. Please wait for a while when the card is restarting.</string>
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
     <string name="toast_profile_name_too_long">Nickname cannot be longer than 64 characters</string>
 
