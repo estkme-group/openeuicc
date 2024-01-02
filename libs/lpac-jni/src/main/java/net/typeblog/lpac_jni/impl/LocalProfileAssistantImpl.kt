@@ -33,6 +33,7 @@ class LocalProfileAssistantImpl(
             try {
                 LpacJni.es10xFini(contextHandle)
                 LpacJni.destroyContext(contextHandle)
+                contextHandle = -1
             } catch (e: Exception) {
                 // Ignored
             }
@@ -47,12 +48,21 @@ class LocalProfileAssistantImpl(
                 try {
                     apduInterface.connect()
                     contextHandle = LpacJni.createContext(apduInterface, httpInterface)
-                    val res = LpacJni.es10xInit(contextHandle)
-                    Log.d(TAG, "$res")
-                    check(res >= 0) { "Reconnect attempt failed" }
+                    check(LpacJni.es10xInit(contextHandle) >= 0) { "Reconnect attempt failed" }
+                    // Validate that we can actually use the APDU channel by trying to read eID
+                    eID
                     break
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    if (contextHandle != -1L) {
+                        try {
+                            LpacJni.es10xFini(contextHandle)
+                            LpacJni.destroyContext(contextHandle)
+                            contextHandle = -1
+                        } catch (e: Exception) {
+                            // Ignored
+                        }
+                    }
                     // continue retrying
                     delay(1000)
                 }
