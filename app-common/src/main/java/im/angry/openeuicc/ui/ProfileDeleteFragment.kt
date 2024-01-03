@@ -32,7 +32,7 @@ class ProfileDeleteFragment : DialogFragment(), EuiccFragmentMarker {
     private var deleting = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return AlertDialog.Builder(requireContext()).apply {
+        return AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme).apply {
             setMessage(getString(R.string.profile_delete_confirm, requireArguments().getString("name")))
             setPositiveButton(android.R.string.ok, null) // Set listener to null to prevent auto closing
             setNegativeButton(android.R.string.cancel, null)

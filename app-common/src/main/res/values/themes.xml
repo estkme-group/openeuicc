@@ -1,46 +1,38 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.OpenEUICC" parent="Theme.MaterialComponents.DayNight">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">@color/gray_300</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/brand</item>
-        <item name="colorSecondaryVariant">@color/brandSecondary</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <item name="colorAccent">?attr/colorSecondary</item>
+    <style name="Theme.OpenEUICC" parent="Theme.Material3.DayNight">
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
         <!-- Customize your theme here. -->
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
-        <item name="android:navigationBarColor">?attr/colorSecondary</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
+        <item name="dialogCornerRadius">28dp</item>
+        <item name="toolbarStyle">@style/Widget.Material3.Toolbar.Surface</item>
     </style>
 
-    <style name="Theme.OpenEUICC.Input.Cursor" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+    <style name="Theme.OpenEUICC.Input.Cursor" parent="ThemeOverlay.Material3.TextInputEditText.OutlinedBox">
         <item name="colorControlActivated">?attr/colorSecondary</item>
     </style>
 
-    <style name="Widget.OpenEUICC.Input" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <style name="Widget.OpenEUICC.Input" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@android:color/transparent</item>
         <item name="boxStrokeColor">?attr/colorSecondary</item>
         <item name="hintTextColor">?attr/colorSecondary</item>
     </style>
 
-    <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+    <style name="AlertDialogTheme" parent="ThemeOverlay.Material3.Dialog.Alert">
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="dialogCornerRadius">28dp</item>
     </style>
 
-    <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="NegativeButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
-    <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="PositiveButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
-
-
-
 </resources>
