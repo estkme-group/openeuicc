@@ -5,10 +5,14 @@
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
-        <item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
-        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="toolbarStyle">@style/ToolbarTheme</item>
+        <item name="android:statusBarColor">?attr/colorSurfaceVariant</item>
         <item name="android:colorBackground">?attr/colorSurface</item>
         <item name="dialogCornerRadius">28dp</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="Widget.Material3.Toolbar">
+        <item name="android:background">?attr/colorSurfaceVariant</item>
     </style>
 
     <style name="AlertDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
