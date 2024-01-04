@@ -57,21 +57,28 @@ open class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_main, menu)
 
-        spinner = menu.findItem(R.id.spinner).actionView as Spinner
-        spinner.adapter = spinnerAdapter
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                supportFragmentManager.beginTransaction().replace(R.id.fragment_root, fragments[position]).commit()
-            }
+        if (!this::spinner.isInitialized) {
+            spinner = menu.findItem(R.id.spinner).actionView as Spinner
+            spinner.adapter = spinnerAdapter
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_root, fragments[position]).commit()
+                }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
 
+            }
+        } else {
+            // Fragments may cause this menu to be inflated multiple times.
+            // Simply reuse the action view in that case
+            menu.findItem(R.id.spinner).actionView = spinner
         }
 
         return true
