@@ -1,15 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.OpenEUICC" parent="Theme.Material3.DayNight">
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+    <style name="Theme.OpenEUICC" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
-        <!-- Customize your theme here. -->
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
         <item name="dialogCornerRadius">28dp</item>
-        <item name="toolbarStyle">@style/Widget.Material3.Toolbar.Surface</item>
+        <item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:colorBackground">?attr/colorSurface</item>
     </style>
 
     <style name="Theme.OpenEUICC.Input.Cursor" parent="ThemeOverlay.Material3.TextInputEditText.OutlinedBox">

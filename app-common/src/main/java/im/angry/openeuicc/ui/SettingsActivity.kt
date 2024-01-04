@@ -3,13 +3,16 @@ package im.angry.openeuicc.ui
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import im.angry.openeuicc.common.R
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_settings)
+        setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportFragmentManager.beginTransaction()
-            .replace(android.R.id.content, SettingsFragment())
+            .replace(R.id.settings_container, SettingsFragment())
             .commit()
     }
 
