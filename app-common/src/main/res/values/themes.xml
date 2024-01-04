@@ -8,6 +8,7 @@
         <item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
         <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="android:colorBackground">?attr/colorSurface</item>
+        <item name="dialogCornerRadius">28dp</item>
     </style>
 
     <style name="AlertDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">

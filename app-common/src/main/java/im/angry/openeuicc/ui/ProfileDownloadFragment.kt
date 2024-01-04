@@ -11,7 +11,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import com.journeyapps.barcodescanner.ScanContract
@@ -24,11 +23,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 import kotlin.Exception
 
-class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.OnMenuItemClickListener {
+class ProfileDownloadFragment : BaseMaterialDialogFragment(), EuiccFragmentMarker, Toolbar.OnMenuItemClickListener {
     companion object {
         const val TAG = "ProfileDownloadFragment"
 
@@ -136,7 +134,6 @@ class ProfileDownloadFragment : DialogFragment(), EuiccFragmentMarker, Toolbar.O
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState).also {
-            it.window?.requestFeature(Window.FEATURE_NO_TITLE)
             it.setCanceledOnTouchOutside(false)
         }
     }

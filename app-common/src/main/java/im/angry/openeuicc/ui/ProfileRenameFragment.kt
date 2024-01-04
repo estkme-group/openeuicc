@@ -10,7 +10,6 @@ import android.view.Window
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import im.angry.openeuicc.common.R
@@ -21,7 +20,7 @@ import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.lang.RuntimeException
 
-class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
+class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccFragmentMarker {
     companion object {
         const val TAG = "ProfileRenameFragment"
 
@@ -83,7 +82,6 @@ class ProfileRenameFragment : DialogFragment(), EuiccFragmentMarker {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return super.onCreateDialog(savedInstanceState).also {
-            it.window?.requestFeature(Window.FEATURE_NO_TITLE)
             it.setCanceledOnTouchOutside(false)
         }
     }

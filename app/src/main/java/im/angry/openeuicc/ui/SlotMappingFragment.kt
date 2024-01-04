@@ -16,7 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SlotMappingFragment: DialogFragment(), OnMenuItemClickListener {
+class SlotMappingFragment: BaseMaterialDialogFragment(), OnMenuItemClickListener {
     companion object {
         const val TAG = "SlotMappingFragment"
     }
