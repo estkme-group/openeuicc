@@ -5,23 +5,12 @@
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
-        <item name="dialogCornerRadius">28dp</item>
         <item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
         <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="android:colorBackground">?attr/colorSurface</item>
     </style>
 
-    <style name="Theme.OpenEUICC.Input.Cursor" parent="ThemeOverlay.Material3.TextInputEditText.OutlinedBox">
-        <item name="colorControlActivated">?attr/colorSecondary</item>
-    </style>
-
-    <style name="Widget.OpenEUICC.Input" parent="Widget.Material3.TextInputLayout.OutlinedBox">
-        <item name="boxBackgroundColor">@android:color/transparent</item>
-        <item name="boxStrokeColor">?attr/colorSecondary</item>
-        <item name="hintTextColor">?attr/colorSecondary</item>
-    </style>
-
-    <style name="AlertDialogTheme" parent="ThemeOverlay.Material3.Dialog.Alert">
+    <style name="AlertDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
         <item name="dialogCornerRadius">28dp</item>
