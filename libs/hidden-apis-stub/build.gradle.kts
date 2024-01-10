@@ -1,10 +1,10 @@
 plugins {
-    id 'com.android.library'
+    id("com.android.library")
 }
 
 android {
-    compileSdk 31
-    namespace 'im.angry.hidden.apis'
+    compileSdk = 31
+    namespace = "im.angry.hidden.apis"
 }
 
 java {
@@ -13,5 +13,5 @@ java {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:15.0'
+    implementation("org.jetbrains:annotations:15.0")
 }

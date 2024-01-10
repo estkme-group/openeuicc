@@ -5,6 +5,9 @@
       <module name="OpenEUICC.app" target="17" />
       <module name="OpenEUICC.app-common" target="17" />
       <module name="OpenEUICC.app-unpriv" target="17" />
+      <module name="OpenEUICC.buildSrc" target="17" />
+      <module name="OpenEUICC.buildSrc.main" target="17" />
+      <module name="OpenEUICC.buildSrc.test" target="17" />
       <module name="OpenEUICC.libs.hidden-apis-shim" target="17" />
       <module name="OpenEUICC.libs.lpac-jni" target="17" />
     </bytecodeTargetLevel>
