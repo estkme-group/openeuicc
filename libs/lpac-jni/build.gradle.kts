@@ -19,7 +19,7 @@ android {
                     arguments("-j4")
                 } else {
                     arguments("-j1")
-                    cFlags("-fmacro-prefix-map=${project.projectDir.toString()}=/fake/path/")
+                    cFlags("-fmacro-prefix-map=${project.projectDir.toString()}=/fake/path/ -Wl,--build-id=none")
                 }
             }
         }
