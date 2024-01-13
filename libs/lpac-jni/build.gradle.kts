@@ -14,9 +14,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         externalNativeBuild {
-            if (System.getenv("REPRODUCIBLE_BUILD") != "true") {
-                ndkBuild {
+            ndkBuild {
+                if (System.getenv("REPRODUCIBLE_BUILD") != "true") {
                     arguments("-j4")
+                } else {
+                    arguments("-j1")
+                    cFlags("-fmacro-prefix-map=${project.projectDir.toString()}=/fake/path/")
                 }
             }
         }
