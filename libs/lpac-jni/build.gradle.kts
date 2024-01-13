@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "net.typeblog.lpac_jni"
     compileSdk = 33
+    ndkVersion = "26.1.10909125"
 
     defaultConfig {
         minSdk = 27
