@@ -13,8 +13,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         externalNativeBuild {
-            ndkBuild {
-                arguments("-j4")
+            if (System.getenv("REPRODUCIBLE_BUILD") != "true") {
+                ndkBuild {
+                    arguments("-j4")
+                }
             }
         }
     }
