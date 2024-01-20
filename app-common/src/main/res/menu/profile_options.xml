@@ -6,6 +6,7 @@
 
     <item
         android:id="@+id/disable"
+        android:visible="false"
         android:title="@string/disable"/>
 
     <item

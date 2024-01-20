@@ -2,6 +2,7 @@ package im.angry.openeuicc.util
 
 import android.content.Context
 import android.content.pm.PackageManager
+import net.typeblog.lpac_jni.LocalProfileInfo
 import java.lang.RuntimeException
 
 val Context.selfAppVersion: String
@@ -12,3 +13,6 @@ val Context.selfAppVersion: String
         } catch (e: PackageManager.NameNotFoundException) {
             throw RuntimeException(e)
         }
+
+val LocalProfileInfo.isEnabled: Boolean
+    get() = state == LocalProfileInfo.State.Enabled

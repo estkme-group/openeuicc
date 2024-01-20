@@ -29,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.typeblog.lpac_jni.LocalProfileNotification
 import java.lang.Exception
 
 open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesChangedListener {
@@ -159,6 +158,14 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
                 preferenceRepository.notificationDisableFlow.first()
         }
 
+    protected open fun populatePopupWithProfileActions(popup: PopupMenu, profile: LocalProfileInfo) {
+        popup.inflate(R.menu.profile_options)
+        if (profile.isEnabled) {
+            popup.menu.findItem(R.id.enable).isVisible = false
+            popup.menu.findItem(R.id.delete).isVisible = false
+        }
+    }
+
     sealed class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
         enum class Type(val value: Int) {
             PROFILE(0),
@@ -208,7 +215,7 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
             name.text = profile.displayName
 
             state.setText(
-                if (isEnabled()) {
+                if (profile.isEnabled) {
                     R.string.enabled
                 } else {
                     R.string.disabled
@@ -219,19 +226,10 @@ open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfi
             iccid.transformationMethod = PasswordTransformationMethod.getInstance()
         }
 
-        private fun isEnabled(): Boolean =
-            profile.state == LocalProfileInfo.State.Enabled
-
         private fun showOptionsMenu() {
             PopupMenu(root.context, profileMenu).apply {
                 setOnMenuItemClickListener(::onMenuItemClicked)
-                inflate(R.menu.profile_options)
-                if (isEnabled()) {
-                    menu.findItem(R.id.enable).isVisible = false
-                    menu.findItem(R.id.delete).isVisible = false
-                } else {
-                    menu.findItem(R.id.disable).isVisible = false
-                }
+                populatePopupWithProfileActions(this, profile)
                 show()
             }
         }
