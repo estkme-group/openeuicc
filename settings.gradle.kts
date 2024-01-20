@@ -13,9 +13,9 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "OpenEUICC"
-include ':app'
-include ':libs:hidden-apis-stub'
-include ':libs:hidden-apis-shim'
-include ':libs:lpac-jni'
-include ':app-common'
-include ':app-unpriv'
+include(":app")
+include(":libs:hidden-apis-stub")
+include(":libs:hidden-apis-shim")
+include(":libs:lpac-jni")
+include(":app-common")
+include(":app-unpriv")
