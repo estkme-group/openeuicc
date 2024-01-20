@@ -35,7 +35,7 @@ open class EuiccChannelManager(protected val context: Context) {
     private val handler = Handler(HandlerThread("BaseEuiccChannelManager").also { it.start() }.looper)
 
     protected open val uiccCards: Collection<UiccCardInfoCompat>
-        get() = (0..<tm.activeModemCount).map { FakeUiccCardInfoCompat(it) }
+        get() = (0..<tm.activeModemCountCompat).map { FakeUiccCardInfoCompat(it) }
 
     private suspend fun connectSEService(): SEService = suspendCoroutine { cont ->
         handler.post {

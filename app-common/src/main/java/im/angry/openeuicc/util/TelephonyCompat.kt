@@ -1,5 +1,25 @@
 package im.angry.openeuicc.util
 
+import android.os.Build
+import android.se.omapi.Reader
+import android.se.omapi.SEService
+import android.telephony.TelephonyManager
+
+val TelephonyManager.activeModemCountCompat: Int
+    get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        activeModemCount
+    } else {
+        phoneCount
+    }
+
+fun SEService.getUiccReaderCompat(slotNumber: Int): Reader {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        return getUiccReader(slotNumber)
+    } else {
+        return readers.first { it.name == "SIM${slotNumber}" || (slotNumber == 1 && it.name == "SIM") }
+    }
+}
+
 /*
  * In the privileged version, the EuiccChannelManager should work
  * based on real Uicc{Card,Port}Info reported by TelephonyManager.

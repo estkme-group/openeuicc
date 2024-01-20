@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         applicationId = "im.angry.easyeuicc"
-        minSdk = 30
+        minSdk = 28
         targetSdk = 34
     }
 

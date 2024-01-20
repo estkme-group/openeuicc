@@ -3,7 +3,7 @@ package im.angry.openeuicc.core
 import android.se.omapi.Channel
 import android.se.omapi.SEService
 import android.se.omapi.Session
-import im.angry.openeuicc.util.UiccPortInfoCompat
+import im.angry.openeuicc.util.*
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.impl.HttpInterfaceImpl
@@ -17,7 +17,7 @@ class OmapiApduInterface(
     private lateinit var lastChannel: Channel
 
     override fun connect() {
-        session = service.getUiccReader(port.logicalSlotIndex + 1).openSession()
+        session = service.getUiccReaderCompat(port.logicalSlotIndex + 1).openSession()
     }
 
     override fun disconnect() {
