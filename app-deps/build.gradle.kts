@@ -64,6 +64,7 @@ configure<GenerateBpPluginExtension> {
             module.group == "androidx.datastore" -> false
             module.group.startsWith("androidx") -> true
             module.group == "com.google.android.material" -> true
+            module.group.startsWith("org.jetbrains") -> true
             else -> false
         }
     }
