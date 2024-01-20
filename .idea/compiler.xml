@@ -4,6 +4,7 @@
     <bytecodeTargetLevel target="1.7">
       <module name="OpenEUICC.app" target="17" />
       <module name="OpenEUICC.app-common" target="17" />
+      <module name="OpenEUICC.app-deps" target="17" />
       <module name="OpenEUICC.app-unpriv" target="17" />
       <module name="OpenEUICC.buildSrc" target="17" />
       <module name="OpenEUICC.buildSrc.main" target="17" />

@@ -16,3 +16,4 @@
 local.properties
 /libs/**/build
 /buildSrc/build
+/app-deps/libs

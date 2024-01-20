@@ -1,0 +1,16 @@
+java_defaults {
+    name: "OpenEUICC-deps-defaults",
+    static_libs: [
+        // DO NOT EDIT THIS SECTION MANUALLY
+        "androidx.core_core-ktx",
+        "androidx.appcompat_appcompat",
+        "com.google.android.material_material",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx.preference_preference",
+        "androidx.lifecycle_lifecycle-runtime-ktx",
+        "androidx.swiperefreshlayout_swiperefreshlayout",
+        "androidx.cardview_cardview",
+        "OpenEUICC_androidx.datastore_datastore-preferences",
+        "OpenEUICC_com.journeyapps_zxing-android-embedded",
+    ],
+}
