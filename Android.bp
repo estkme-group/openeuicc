@@ -14,22 +14,11 @@ java_library {
 
 android_library {
     name: "OpenEUICC-common",
+    defaults: [
+        "OpenEUICC-deps-defaults",
+    ],
     static_libs: [
         "net.typeblog.lpac_jni",
-
-        // Dependencies that must be pulled from maven,
-        "zxing-core-prebuilt-jar",
-        "zxing-android-embedded-prebuilt-aar",
-
-        // Dependencies included with AOSP
-        "androidx.appcompat_appcompat",
-        "androidx.cardview_cardview",
-        "androidx-constraintlayout_constraintlayout",
-        "androidx.core_core-ktx",
-        "androidx.lifecycle_lifecycle-runtime-ktx",
-        "androidx.preference_preference",
-        "androidx.swiperefreshlayout_swiperefreshlayout",
-        "com.google.android.material_material",
         "kotlinx_coroutines",
     ],
     srcs: [
@@ -40,6 +29,9 @@ android_library {
     },
     resource_dirs: [
         "app-common/src/main/res",
+    ],
+    kotlincflags: [
+        "-opt-in=kotlin.ExperimentalStdlibApi",
     ],
     manifest: "app-common/src/main/AndroidManifest.xml",
     system_ext_specific: true,
