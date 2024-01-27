@@ -11,8 +11,8 @@ class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(conte
     override val uiccCards: Collection<UiccCardInfoCompat>
         get() = tm.uiccCardsInfoCompat
 
-    override fun tryOpenEuiccChannelPrivileged(_port: UiccPortInfoCompat): EuiccChannel? {
-        val port = _port as RealUiccPortInfoCompat
+    override fun tryOpenEuiccChannelPrivileged(port: UiccPortInfoCompat): EuiccChannel? {
+        val port = port as RealUiccPortInfoCompat
         if (port.card.isRemovable) {
             // Attempt unprivileged (OMAPI) before TelephonyManager
             // but still try TelephonyManager in case OMAPI is broken
@@ -21,7 +21,6 @@ class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(conte
 
         if (port.card.isEuicc) {
             Log.i(TAG, "Trying TelephonyManager for slot ${port.card.physicalSlotIndex} port ${port.portIndex}")
-            // TODO: On Tiramisu, we should also connect all available "ports" for MEP support
             try {
                 return TelephonyManagerChannel(port, tm)
             } catch (e: IllegalArgumentException) {
