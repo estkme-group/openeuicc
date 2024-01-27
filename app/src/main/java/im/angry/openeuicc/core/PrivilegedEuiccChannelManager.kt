@@ -11,6 +11,7 @@ class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(conte
     override val uiccCards: Collection<UiccCardInfoCompat>
         get() = tm.uiccCardsInfoCompat
 
+    @Suppress("NAME_SHADOWING")
     override fun tryOpenEuiccChannelPrivileged(port: UiccPortInfoCompat): EuiccChannel? {
         val port = port as RealUiccPortInfoCompat
         if (port.card.isRemovable) {
