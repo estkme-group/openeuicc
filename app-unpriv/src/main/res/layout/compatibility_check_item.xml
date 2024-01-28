@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/compatibility_check_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="12dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/compatibility_check_status_container"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/compatibility_check_desc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/compatibility_check_status_container"
+        app:layout_constraintTop_toBottomOf="@id/compatibility_check_title"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/compatibility_check_status_container"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ProgressBar
+            android:id="@+id/compatibility_check_progress_bar"
+            android:visibility="gone"
+            android:indeterminate="true"
+            android:layout_gravity="center"
+            android:layout_width="32dp"
+            android:layout_height="32dp" />
+
+        <ImageView
+            android:id="@+id/compatibility_check_checkmark"
+            android:src="@drawable/ic_checkmark_outline"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_width="32dp"
+            android:layout_height="32dp" />
+
+        <ImageView
+            android:id="@+id/compatibility_check_error"
+            android:src="@drawable/ic_error_outline"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_width="32dp"
+            android:layout_height="32dp" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

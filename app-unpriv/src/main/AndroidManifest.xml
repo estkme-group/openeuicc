@@ -11,7 +11,7 @@
         android:theme="@style/Theme.OpenEUICC">
 
         <activity
-            android:name="im.angry.openeuicc.ui.MainActivity"
+            android:name="im.angry.openeuicc.ui.UnprivilegedMainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,6 +19,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="im.angry.openeuicc.ui.CompatibilityCheckActivity"
+            android:label="@string/compatibility_check"
+            android:exported="false" />
 
     </application>
 
