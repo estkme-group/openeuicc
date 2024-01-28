@@ -3,14 +3,11 @@ package im.angry.openeuicc.util
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.se.omapi.SEService
 import android.telephony.TelephonyManager
 import im.angry.easyeuicc.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 fun getCompatibilityChecks(context: Context): List<CompatibilityCheck> =
     listOf(
@@ -95,22 +92,8 @@ internal class OmapiConnCheck(private val context: Context): CompatibilityCheck(
     override val defaultDescription: String
         get() = context.getString(R.string.compatibility_check_omapi_connectivity_desc)
 
-    private suspend fun getSEService(): SEService = suspendCoroutine { cont ->
-        var service: SEService? = null
-        var resumed = false
-        val resume = {
-            if (!resumed && service != null) {
-                cont.resume(service!!)
-                resumed = true
-            }
-        }
-        service = SEService(context, { it.run() }, { resume() })
-        Thread.sleep(1000)
-        resume()
-    }
-
     override suspend fun doCheck(): Boolean {
-        val seService = getSEService()
+        val seService = connectSEService(context)
         if (!seService.isConnected) {
             failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail)
             return false

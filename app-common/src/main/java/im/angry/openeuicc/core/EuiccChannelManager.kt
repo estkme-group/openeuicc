@@ -1,8 +1,6 @@
 package im.angry.openeuicc.core
 
 import android.content.Context
-import android.os.Handler
-import android.os.HandlerThread
 import android.se.omapi.SEService
 import android.telephony.SubscriptionManager
 import android.util.Log
@@ -14,8 +12,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.lang.IllegalArgumentException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 open class EuiccChannelManager(protected val context: Context) {
     companion object {
@@ -32,23 +28,12 @@ open class EuiccChannelManager(protected val context: Context) {
         (context.applicationContext as OpenEuiccApplication).telephonyManager
     }
 
-    private val handler = Handler(HandlerThread("BaseEuiccChannelManager").also { it.start() }.looper)
-
     protected open val uiccCards: Collection<UiccCardInfoCompat>
         get() = (0..<tm.activeModemCountCompat).map { FakeUiccCardInfoCompat(it) }
 
-    private suspend fun connectSEService(): SEService = suspendCoroutine { cont ->
-        handler.post {
-            var service: SEService? = null
-            service = SEService(context, { handler.post(it) }) {
-                cont.resume(service!!)
-            }
-        }
-    }
-
     private suspend fun ensureSEService() {
          if (seService == null) {
-             seService = connectSEService()
+             seService = connectSEService(context)
          }
     }
 
