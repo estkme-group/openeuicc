@@ -3,6 +3,7 @@ package im.angry.openeuicc.util
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.se.omapi.Reader
 import android.telephony.TelephonyManager
 import im.angry.easyeuicc.R
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +14,7 @@ fun getCompatibilityChecks(context: Context): List<CompatibilityCheck> =
     listOf(
         HasSystemFeaturesCheck(context),
         OmapiConnCheck(context),
+        IsdrChannelAccessCheck(context),
         KnownBrokenCheck(context)
     )
 
@@ -24,6 +26,12 @@ suspend fun List<CompatibilityCheck>.executeAll(callback: () -> Unit) = withCont
         }
     }
 }
+
+private val Reader.isSIM: Boolean
+    get() = name.startsWith("SIM")
+
+private val Reader.slotIndex: Int
+    get() = (name.replace("SIM", "").toIntOrNull() ?: 1)
 
 abstract class CompatibilityCheck(context: Context) {
     enum class State {
@@ -100,15 +108,64 @@ internal class OmapiConnCheck(private val context: Context): CompatibilityCheck(
         }
 
         val tm = context.getSystemService(TelephonyManager::class.java)
-        val simReaders = seService.readers.filter { it.name.startsWith("SIM") }
+        val simReaders = seService.readers.filter { it.isSIM }
         if (simReaders.size < tm.activeModemCountCompat) {
             failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail_sim_number,
-                simReaders.map { (it.name.replace("SIM", "").toIntOrNull() ?: 1) - 1 }
-                    .joinToString(", "))
+                simReaders.map { it.slotIndex }.joinToString(", "))
             return false
         }
 
         return true
+    }
+}
+
+internal class IsdrChannelAccessCheck(private val context: Context): CompatibilityCheck(context) {
+    companion object {
+        val ISDR_AID = "A0000005591010FFFFFFFF8900000100".decodeHex()
+    }
+
+    override val title: String
+        get() = context.getString(R.string.compatibility_check_isdr_channel)
+    override val defaultDescription: String
+        get() = context.getString(R.string.compatibility_check_isdr_channel_desc)
+
+    override suspend fun doCheck(): Boolean {
+        val seService = connectSEService(context)
+        val (validSlotIds, result) = seService.readers.filter { it.isSIM }.map {
+            try {
+                it.openSession().openLogicalChannel(ISDR_AID)?.close()
+                Pair(it.slotIndex, true)
+            } catch (_: SecurityException) {
+                // Ignore; this is expected when everything works
+                // ref: https://android.googlesource.com/platform/frameworks/base/+/4fe64fb4712a99d5da9c9a0eb8fd5169b252e1e1/omapi/java/android/se/omapi/Session.java#305
+                // SecurityException is only thrown when Channel is constructed, which means everything else needs to succeed
+                Pair(it.slotIndex, true)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Pair(it.slotIndex, false)
+            }
+        }.fold(Pair(mutableListOf<Int>(), true)) { (ids, result), (id, ok) ->
+            if (!ok) {
+                Pair(ids, false)
+            } else {
+                Pair(ids.apply { add(id) }, result)
+            }
+        }
+
+        if (!result && validSlotIds.size > 0) {
+            if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_EUICC)) {
+                failureDescription = context.getString(
+                    R.string.compatibility_check_isdr_channel_desc_partial_fail,
+                    validSlotIds.joinToString(", ")
+                )
+            } else {
+                // If the device has embedded eSIMs, we can likely ignore the failure here;
+                // the OMAPI failure likely resulted from trying to access internal eSIMs.
+                return true
+            }
+        }
+
+        return result
     }
 }
 

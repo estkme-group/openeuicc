@@ -11,6 +11,9 @@
     <string name="compatibility_check_omapi_connectivity_desc">Does your device allow access to Secure Elements on SIM cards via OMAPI?</string>
     <string name="compatibility_check_omapi_connectivity_fail">Unable to detect Secure Element readers for SIM cards via OMAPI.</string>
     <string name="compatibility_check_omapi_connectivity_fail_sim_number">Only the following SIM slots are accessible via OMAPI: %s.</string>
+    <string name="compatibility_check_isdr_channel">ISD-R Channel Access</string>
+    <string name="compatibility_check_isdr_channel_desc">Does your device support opening an ISD-R (management) channel to eSIMs via OMAPI?</string>
+    <string name="compatibility_check_isdr_channel_desc_partial_fail">OMAPI access to ISD-R is only possible on the following SIM slots: %s.</string>
     <string name="compatibility_check_known_broken">Known Broken?</string>
     <string name="compatibility_check_known_broken_desc">Making sure your device is not known to have bugs associated with removable eSIMs.</string>
     <string name="compatibility_check_known_broken_fail">Oops, your device is known to have bugs when accessing removable eSIMs. This does not necessarily mean that it will not work at all, but you will have to proceed with caution.</string>
