@@ -109,7 +109,10 @@ internal class OmapiConnCheck(private val context: Context): CompatibilityCheck(
 
         val tm = context.getSystemService(TelephonyManager::class.java)
         val simReaders = seService.readers.filter { it.isSIM }
-        if (simReaders.size < tm.activeModemCountCompat) {
+        if (simReaders.isEmpty()) {
+            failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail)
+            return false
+        } else if (simReaders.size < tm.activeModemCountCompat) {
             failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail_sim_number,
                 simReaders.map { it.slotIndex }.joinToString(", "))
             return false
