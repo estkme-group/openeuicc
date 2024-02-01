@@ -16,4 +16,9 @@
     <string name="slot_mapping_help_dsds">\nDual SIM mode is supported but disabled. If your device comes with an internal eSIM chip, it might not be enabled by default. Change mapping above or enable dual SIM to access your eSIM.</string>
     <string name="slot_mapping_completed">Your new slot mapping has been set. Please wait until modem refreshes the slots.</string>
     <string name="slot_mapping_failure">The specified mapping might be invalid or unsupported by hardware.</string>
+
+    <string name="lui_title">Connect to mobile network by downloading an eSIM</string>
+    <string name="lui_desc">Your device supports eSIMs. To connect to mobile network, download your eSIM issued by a carrier, or insert a physical SIM.</string>
+    <string name="lui_skip">Skip</string>
+    <string name="lui_download">Download eSIM</string>
 </resources>
