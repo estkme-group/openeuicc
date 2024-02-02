@@ -22,7 +22,7 @@ class DirectProfileDownloadActivity : AppCompatActivity(), SlotSelectFragment.Sl
     }
 
     override fun onSlotSelected(slotId: Int, portId: Int) {
-        ProfileDownloadFragment.newInstance(slotId, portId)
+        ProfileDownloadFragment.newInstance(slotId, portId, finishWhenDone = true)
             .show(supportFragmentManager, ProfileDownloadFragment.TAG)
     }
 

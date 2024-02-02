@@ -2,6 +2,7 @@ package im.angry.openeuicc.ui
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.format.Formatter
@@ -30,8 +31,10 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(), EuiccFragmentMarke
     companion object {
         const val TAG = "ProfileDownloadFragment"
 
-        fun newInstance(slotId: Int, portId: Int): ProfileDownloadFragment =
-            newInstanceEuicc(ProfileDownloadFragment::class.java, slotId, portId)
+        fun newInstance(slotId: Int, portId: Int, finishWhenDone: Boolean = false): ProfileDownloadFragment =
+            newInstanceEuicc(ProfileDownloadFragment::class.java, slotId, portId) {
+                putBoolean("finishWhenDone", finishWhenDone)
+            }
     }
 
     private lateinit var toolbar: Toolbar
@@ -45,6 +48,10 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(), EuiccFragmentMarke
     private var freeNvram: Int = -1
 
     private var downloading = false
+
+    private val finishWhenDone by lazy {
+        requireArguments().getBoolean("finishWhenDone", false)
+    }
 
     private val barcodeScannerLauncher = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { content ->
@@ -81,7 +88,9 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(), EuiccFragmentMarke
         toolbar.apply {
             setTitle(R.string.profile_download)
             setNavigationOnClickListener {
-                if (!downloading) dismiss()
+                if (!downloading) {
+                    dismiss()
+                }
             }
             setOnMenuItemClickListener(this@ProfileDownloadFragment)
         }
@@ -194,5 +203,19 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(), EuiccFragmentMarke
         // If we get here, we are successful
         // Only send notifications if the user allowed us to
         preferenceRepository.notificationDownloadFlow.first()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if (finishWhenDone) {
+            activity?.finish()
+        }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        if (finishWhenDone) {
+            activity?.finish()
+        }
     }
 }

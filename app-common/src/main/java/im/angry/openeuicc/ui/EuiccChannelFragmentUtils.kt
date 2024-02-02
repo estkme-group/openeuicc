@@ -8,11 +8,12 @@ import im.angry.openeuicc.util.openEuiccApplication
 
 interface EuiccFragmentMarker
 
-fun <T> newInstanceEuicc(clazz: Class<T>, slotId: Int, portId: Int): T where T: Fragment, T: EuiccFragmentMarker {
+fun <T> newInstanceEuicc(clazz: Class<T>, slotId: Int, portId: Int, addArguments: Bundle.() -> Unit = {}): T where T: Fragment, T: EuiccFragmentMarker {
     val instance = clazz.newInstance()
     instance.arguments = Bundle().apply {
         putInt("slotId", slotId)
         putInt("portId", portId)
+        addArguments()
     }
     return instance
 }
