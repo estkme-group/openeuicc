@@ -6,12 +6,15 @@ import android.view.LayoutInflater
 import android.view.Window
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.color.DynamicColors
 import im.angry.openeuicc.common.R
 
 abstract class BaseMaterialDialogFragment: DialogFragment() {
     override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
         val inflater = super.onGetLayoutInflater(savedInstanceState)
-        return inflater.cloneInContext(ContextThemeWrapper(requireContext(), R.style.Theme_OpenEUICC))
+        val wrappedContext = ContextThemeWrapper(requireContext(), R.style.Theme_OpenEUICC)
+        val dynamicWrappedContext = DynamicColors.wrapContextIfAvailable(wrappedContext)
+        return inflater.cloneInContext(dynamicWrappedContext)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
