@@ -13,18 +13,18 @@ import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.openEuiccApplication
 import im.angry.openeuicc.util.setWidthPercent
 
-class SlotSelectFragment(private var listener: SlotSelectedListener) : BaseMaterialDialogFragment() {
+class SlotSelectFragment : BaseMaterialDialogFragment() {
     companion object {
         const val TAG = "SlotSelectFragment"
 
-        fun newInstance(listener: SlotSelectedListener): SlotSelectFragment {
-            return SlotSelectFragment(listener)
+        fun newInstance(): SlotSelectFragment {
+            return SlotSelectFragment()
         }
     }
 
     interface SlotSelectedListener {
         fun onSlotSelected(slotId: Int, portId: Int)
-        fun onCancel()
+        fun onSlotSelectCancelled()
     }
 
     private lateinit var toolbar: Toolbar
@@ -53,10 +53,12 @@ class SlotSelectFragment(private var listener: SlotSelectedListener) : BaseMater
             adapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
         }
 
-        toolbar.setNavigationOnClickListener { listener.onCancel() }
+        toolbar.setNavigationOnClickListener {
+            (requireActivity() as SlotSelectedListener).onSlotSelectCancelled()
+        }
         toolbar.setOnMenuItemClickListener {
             val channel = channels[spinner.selectedItemPosition]
-            listener.onSlotSelected(channel.slotId, channel.portId)
+            (requireActivity() as SlotSelectedListener).onSlotSelected(channel.slotId, channel.portId)
             dismiss()
             true
         }
@@ -71,6 +73,6 @@ class SlotSelectFragment(private var listener: SlotSelectedListener) : BaseMater
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        listener.onCancel()
+        (requireActivity() as SlotSelectedListener).onSlotSelectCancelled()
     }
 }

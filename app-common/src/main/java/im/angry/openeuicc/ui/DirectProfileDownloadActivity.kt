@@ -16,7 +16,7 @@ class DirectProfileDownloadActivity : AppCompatActivity(), SlotSelectFragment.Sl
                 openEuiccApplication.euiccChannelManager.enumerateEuiccChannels()
             }
 
-            SlotSelectFragment.newInstance(this@DirectProfileDownloadActivity)
+            SlotSelectFragment.newInstance()
                 .show(supportFragmentManager, SlotSelectFragment.TAG)
         }
     }
@@ -26,5 +26,5 @@ class DirectProfileDownloadActivity : AppCompatActivity(), SlotSelectFragment.Sl
             .show(supportFragmentManager, ProfileDownloadFragment.TAG)
     }
 
-    override fun onCancel() = finish()
+    override fun onSlotSelectCancelled() = finish()
 }
