@@ -2,6 +2,7 @@ package im.angry.openeuicc.util
 
 import android.content.Context
 import android.content.pm.PackageManager
+import im.angry.openeuicc.core.EuiccChannel
 import net.typeblog.lpac_jni.LocalProfileInfo
 import java.lang.RuntimeException
 
@@ -16,3 +17,6 @@ val Context.selfAppVersion: String
 
 val LocalProfileInfo.isEnabled: Boolean
     get() = state == LocalProfileInfo.State.Enabled
+
+val List<EuiccChannel>.hasMultipleChips: Boolean
+    get() = distinctBy { it.slotId }.size > 1
