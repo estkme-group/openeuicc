@@ -27,34 +27,6 @@ fun SEService.getUiccReaderCompat(slotNumber: Int): Reader {
     }
 }
 
-// Create an instance of OMAPI SEService in a manner that "makes sense" without unpredictable callbacks
-suspend fun connectSEService(context: Context): SEService = suspendCoroutine { cont ->
-    // Use a Mutex to make sure the continuation is run *after* the "service" variable is assigned
-    val lock = Mutex()
-    var service: SEService? = null
-    val callback = {
-        runBlocking {
-            lock.withLock {
-                cont.resume(service!!)
-            }
-        }
-    }
-
-    runBlocking {
-        // If this were not protected by a Mutex, callback might be run before service is even assigned
-        // Yes, we are on Android, we could have used something like a Handler, but we cannot really
-        // assume the coroutine is run on a thread that has a Handler. We either use our own HandlerThread
-        // (and then cleanup becomes an issue), or we use a lock
-        lock.withLock {
-            try {
-                service = SEService(context, { it.run() }, callback)
-            } catch (e: Exception) {
-                cont.resumeWithException(e)
-            }
-        }
-    }
-}
-
 /*
  * In the privileged version, the EuiccChannelManager should work
  * based on real Uicc{Card,Port}Info reported by TelephonyManager.
