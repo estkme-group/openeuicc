@@ -3,7 +3,11 @@ package im.angry.openeuicc.util
 import android.content.Context
 import android.content.pm.PackageManager
 import android.se.omapi.SEService
+import android.telephony.TelephonyManager
+import androidx.fragment.app.Fragment
+import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
+import im.angry.openeuicc.core.EuiccChannelManager
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -21,6 +25,24 @@ val Context.selfAppVersion: String
         } catch (e: PackageManager.NameNotFoundException) {
             throw RuntimeException(e)
         }
+
+interface OpenEuiccContextMarker
+
+val OpenEuiccContextMarker.context: Context
+    get() = when (this) {
+        is Context -> this
+        is Fragment -> requireContext()
+        else -> throw RuntimeException("OpenEuiccUIContextMarker shall only be used on Fragments or UI types that derive from Context")
+    }
+
+val OpenEuiccContextMarker.openEuiccApplication: OpenEuiccApplication
+    get() = context.applicationContext as OpenEuiccApplication
+
+val OpenEuiccContextMarker.euiccChannelManager: EuiccChannelManager
+    get() = openEuiccApplication.euiccChannelManager
+
+val OpenEuiccContextMarker.telephonyManager: TelephonyManager
+    get() = openEuiccApplication.telephonyManager
 
 val LocalProfileInfo.isEnabled: Boolean
     get() = state == LocalProfileInfo.State.Enabled

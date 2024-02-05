@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DirectProfileDownloadActivity : AppCompatActivity(), SlotSelectFragment.SlotSelectedListener, OpenEuiccUIContextMarker {
+class DirectProfileDownloadActivity : AppCompatActivity(), SlotSelectFragment.SlotSelectedListener, OpenEuiccContextMarker {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {

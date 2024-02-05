@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 
-interface EuiccFragmentMarker: OpenEuiccUIContextMarker
+interface EuiccFragmentMarker: OpenEuiccContextMarker
 
 fun <T> newInstanceEuicc(clazz: Class<T>, slotId: Int, portId: Int, addArguments: Bundle.() -> Unit = {}): T where T: Fragment, T: EuiccFragmentMarker {
     val instance = clazz.newInstance()

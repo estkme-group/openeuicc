@@ -12,7 +12,7 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 
-class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccUIContextMarker {
+class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccContextMarker {
     companion object {
         const val TAG = "SlotSelectFragment"
 

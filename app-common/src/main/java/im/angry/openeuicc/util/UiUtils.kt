@@ -1,32 +1,9 @@
 package im.angry.openeuicc.util
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
-import android.telephony.TelephonyManager
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import im.angry.openeuicc.OpenEuiccApplication
-import im.angry.openeuicc.core.EuiccChannelManager
-
-interface OpenEuiccUIContextMarker
-
-val OpenEuiccUIContextMarker.context: Context
-    get() = when (this) {
-        is Context -> this
-        is Fragment -> requireContext()
-        else -> throw RuntimeException("OpenEuiccUIContextMarker shall only be used on Fragments or UI types that derive from Context")
-    }
-
-val OpenEuiccUIContextMarker.openEuiccApplication: OpenEuiccApplication
-    get() = context.applicationContext as OpenEuiccApplication
-
-val OpenEuiccUIContextMarker.euiccChannelManager: EuiccChannelManager
-    get() = openEuiccApplication.euiccChannelManager
-
-val OpenEuiccUIContextMarker.telephonyManager: TelephonyManager
-    get() = openEuiccApplication.telephonyManager
 
 // Source: <https://stackoverflow.com/questions/12478520/how-to-set-dialogfragments-width-and-height>
 /**

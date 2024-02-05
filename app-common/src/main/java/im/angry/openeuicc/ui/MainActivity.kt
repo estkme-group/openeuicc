@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-open class MainActivity : AppCompatActivity(), OpenEuiccUIContextMarker {
+open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
     companion object {
         const val TAG = "MainActivity"
     }
