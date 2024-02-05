@@ -27,7 +27,7 @@ val Context.selfAppVersion: String
         }
 
 interface OpenEuiccContextMarker {
-    val context: Context
+    val openEuiccMarkerContext: Context
         get() = when (this) {
             is Context -> this
             is Fragment -> requireContext()
@@ -35,7 +35,7 @@ interface OpenEuiccContextMarker {
         }
 
     val openEuiccApplication: OpenEuiccApplication
-        get() = context.applicationContext as OpenEuiccApplication
+        get() = openEuiccMarkerContext.applicationContext as OpenEuiccApplication
 
     val euiccChannelManager: EuiccChannelManager
         get() = openEuiccApplication.euiccChannelManager
