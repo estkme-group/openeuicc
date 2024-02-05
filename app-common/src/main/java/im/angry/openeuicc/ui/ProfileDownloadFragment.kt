@@ -26,7 +26,7 @@ import net.typeblog.lpac_jni.ProfileDownloadCallback
 import kotlin.Exception
 
 class ProfileDownloadFragment : BaseMaterialDialogFragment(),
-    Toolbar.OnMenuItemClickListener, EuiccFragmentMarker {
+    Toolbar.OnMenuItemClickListener, EuiccChannelFragmentMarker {
     companion object {
         const val TAG = "ProfileDownloadFragment"
 

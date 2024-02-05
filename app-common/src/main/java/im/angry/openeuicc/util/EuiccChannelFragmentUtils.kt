@@ -1,0 +1,33 @@
+package im.angry.openeuicc.util
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import im.angry.openeuicc.core.EuiccChannel
+
+interface EuiccChannelFragmentMarker: OpenEuiccContextMarker
+
+// We must use extension functions because there is no way to add bounds to the type of "self"
+// in the definition of an interface, so the only way is to limit where the extension functions
+// can be applied.
+fun <T> newInstanceEuicc(clazz: Class<T>, slotId: Int, portId: Int, addArguments: Bundle.() -> Unit = {}): T where T: Fragment, T: EuiccChannelFragmentMarker {
+    val instance = clazz.newInstance()
+    instance.arguments = Bundle().apply {
+        putInt("slotId", slotId)
+        putInt("portId", portId)
+        addArguments()
+    }
+    return instance
+}
+
+val <T> T.slotId: Int where T: Fragment, T: EuiccChannelFragmentMarker
+    get() = requireArguments().getInt("slotId")
+val <T> T.portId: Int where T: Fragment, T: EuiccChannelFragmentMarker
+    get() = requireArguments().getInt("portId")
+
+val <T> T.channel: EuiccChannel where T: Fragment, T: EuiccChannelFragmentMarker
+    get() =
+        euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)!!
+
+interface EuiccProfilesChangedListener {
+    fun onEuiccProfilesChanged()
+}

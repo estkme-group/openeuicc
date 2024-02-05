@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
@@ -20,7 +19,7 @@ import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.lang.RuntimeException
 
-class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccFragmentMarker {
+class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragmentMarker {
     companion object {
         const val TAG = "ProfileRenameFragment"
 

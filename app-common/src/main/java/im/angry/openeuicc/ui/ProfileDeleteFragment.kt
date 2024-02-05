@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class ProfileDeleteFragment : DialogFragment(), EuiccFragmentMarker {
+class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
     companion object {
         const val TAG = "ProfileDeleteFragment"
 
