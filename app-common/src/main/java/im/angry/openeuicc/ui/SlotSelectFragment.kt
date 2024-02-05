@@ -10,10 +10,9 @@ import android.widget.Spinner
 import androidx.appcompat.widget.Toolbar
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.util.openEuiccApplication
-import im.angry.openeuicc.util.setWidthPercent
+import im.angry.openeuicc.util.*
 
-class SlotSelectFragment : BaseMaterialDialogFragment() {
+class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccUIContextMarker {
     companion object {
         const val TAG = "SlotSelectFragment"
 
@@ -30,7 +29,7 @@ class SlotSelectFragment : BaseMaterialDialogFragment() {
     private lateinit var toolbar: Toolbar
     private lateinit var spinner: Spinner
     private val channels: List<EuiccChannel> by lazy {
-        openEuiccApplication.euiccChannelManager.knownChannels.sortedBy { it.logicalSlotId }
+        euiccChannelManager.knownChannels.sortedBy { it.logicalSlotId }
     }
 
     override fun onCreateView(

@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
-open class EuiccManagementFragment : Fragment(), EuiccFragmentMarker, EuiccProfilesChangedListener {
+open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener, EuiccFragmentMarker {
     companion object {
         const val TAG = "EuiccManagementFragment"
 

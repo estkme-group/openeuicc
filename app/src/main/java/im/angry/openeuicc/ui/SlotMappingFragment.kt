@@ -26,7 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SlotMappingFragment: BaseMaterialDialogFragment(), OnMenuItemClickListener {
+class SlotMappingFragment: BaseMaterialDialogFragment(),
+    OnMenuItemClickListener, OpenEuiccUIContextMarker {
     companion object {
         const val TAG = "SlotMappingFragment"
     }

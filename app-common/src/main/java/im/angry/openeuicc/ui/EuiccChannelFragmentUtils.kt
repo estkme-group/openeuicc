@@ -2,11 +2,10 @@ package im.angry.openeuicc.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.util.openEuiccApplication
+import im.angry.openeuicc.util.*
 
-interface EuiccFragmentMarker
+interface EuiccFragmentMarker: OpenEuiccUIContextMarker
 
 fun <T> newInstanceEuicc(clazz: Class<T>, slotId: Int, portId: Int, addArguments: Bundle.() -> Unit = {}): T where T: Fragment, T: EuiccFragmentMarker {
     val instance = clazz.newInstance()
@@ -22,9 +21,6 @@ val <T> T.slotId: Int where T: Fragment, T: EuiccFragmentMarker
     get() = requireArguments().getInt("slotId")
 val <T> T.portId: Int where T: Fragment, T: EuiccFragmentMarker
     get() = requireArguments().getInt("portId")
-
-val <T> T.euiccChannelManager: EuiccChannelManager where T: Fragment, T: EuiccFragmentMarker
-    get() = openEuiccApplication.euiccChannelManager
 
 val <T> T.channel: EuiccChannel where T: Fragment, T: EuiccFragmentMarker
     get() =

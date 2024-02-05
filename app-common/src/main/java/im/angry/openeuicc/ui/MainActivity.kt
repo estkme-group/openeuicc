@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-open class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity(), OpenEuiccUIContextMarker {
     companion object {
         const val TAG = "MainActivity"
     }
@@ -43,9 +43,9 @@ open class MainActivity : AppCompatActivity() {
 
         noEuiccPlaceholder = findViewById(R.id.no_euicc_placeholder)
 
-        tm = openEuiccApplication.telephonyManager
+        tm = telephonyManager
 
-        manager = openEuiccApplication.euiccChannelManager
+        manager = euiccChannelManager
 
         spinnerAdapter = ArrayAdapter<String>(this, R.layout.spinner_item)
 

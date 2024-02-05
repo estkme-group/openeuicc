@@ -19,16 +19,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.util.displayName
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileNotification
 
-class NotificationsActivity: AppCompatActivity() {
+class NotificationsActivity: AppCompatActivity(), OpenEuiccUIContextMarker {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var notificationList: RecyclerView
     private val notificationAdapter = NotificationAdapter()
@@ -41,7 +40,7 @@ class NotificationsActivity: AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        euiccChannel = (application as OpenEuiccApplication).euiccChannelManager
+        euiccChannel = euiccChannelManager
             .findEuiccChannelBySlotBlocking(intent.getIntExtra("logicalSlotId", 0))!!
 
         swipeRefresh = findViewById(R.id.swipe_refresh)

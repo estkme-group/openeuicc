@@ -17,9 +17,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.util.openEuiccApplication
-import im.angry.openeuicc.util.preferenceRepository
-import im.angry.openeuicc.util.setWidthPercent
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -27,7 +25,8 @@ import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 import kotlin.Exception
 
-class ProfileDownloadFragment : BaseMaterialDialogFragment(), EuiccFragmentMarker, Toolbar.OnMenuItemClickListener {
+class ProfileDownloadFragment : BaseMaterialDialogFragment(),
+    Toolbar.OnMenuItemClickListener, EuiccFragmentMarker {
     companion object {
         const val TAG = "ProfileDownloadFragment"
 
