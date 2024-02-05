@@ -26,23 +26,23 @@ val Context.selfAppVersion: String
             throw RuntimeException(e)
         }
 
-interface OpenEuiccContextMarker
+interface OpenEuiccContextMarker {
+    val context: Context
+        get() = when (this) {
+            is Context -> this
+            is Fragment -> requireContext()
+            else -> throw RuntimeException("OpenEuiccUIContextMarker shall only be used on Fragments or UI types that derive from Context")
+        }
 
-val OpenEuiccContextMarker.context: Context
-    get() = when (this) {
-        is Context -> this
-        is Fragment -> requireContext()
-        else -> throw RuntimeException("OpenEuiccUIContextMarker shall only be used on Fragments or UI types that derive from Context")
-    }
+    val openEuiccApplication: OpenEuiccApplication
+        get() = context.applicationContext as OpenEuiccApplication
 
-val OpenEuiccContextMarker.openEuiccApplication: OpenEuiccApplication
-    get() = context.applicationContext as OpenEuiccApplication
+    val euiccChannelManager: EuiccChannelManager
+        get() = openEuiccApplication.euiccChannelManager
 
-val OpenEuiccContextMarker.euiccChannelManager: EuiccChannelManager
-    get() = openEuiccApplication.euiccChannelManager
-
-val OpenEuiccContextMarker.telephonyManager: TelephonyManager
-    get() = openEuiccApplication.telephonyManager
+    val telephonyManager: TelephonyManager
+        get() = openEuiccApplication.telephonyManager
+}
 
 val LocalProfileInfo.isEnabled: Boolean
     get() = state == LocalProfileInfo.State.Enabled
