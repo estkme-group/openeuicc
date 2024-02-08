@@ -22,6 +22,10 @@
             android:theme="@style/Theme.AppCompat.Translucent" />
 
         <activity
+            android:name="im.angry.openeuicc.ui.LogsActivity"
+            android:label="@string/pref_advanced_logs" />
+
+        <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />

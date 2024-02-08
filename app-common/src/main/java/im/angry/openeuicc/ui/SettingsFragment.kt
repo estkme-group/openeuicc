@@ -27,6 +27,12 @@ class SettingsFragment: PreferenceFragmentCompat() {
                 true
             }
 
+        findPreference<Preference>("pref_advanced_logs")
+            ?.setOnPreferenceClickListener {
+                startActivity(Intent(requireContext(), LogsActivity::class.java))
+                true
+            }
+
         findPreference<CheckBoxPreference>("pref_notifications_download")
             ?.bindBooleanFlow(preferenceRepository.notificationDownloadFlow, PreferenceKeys.NOTIFICATION_DOWNLOAD)
 

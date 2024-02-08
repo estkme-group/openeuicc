@@ -27,6 +27,16 @@
     </im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory>
 
     <PreferenceCategory
+        app:title="@string/pref_advanced"
+        app:iconSpaceReserved="false">
+        <Preference
+            app:key="pref_advanced_logs"
+            app:iconSpaceReserved="false"
+            app:title="@string/pref_advanced_logs"
+            app:summary="@string/pref_advanced_logs_desc" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:title="@string/pref_info"
         app:iconSpaceReserved="false">
         <Preference
