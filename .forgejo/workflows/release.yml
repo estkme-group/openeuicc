@@ -1,0 +1,49 @@
+on:
+  push:
+    tags: '*'
+
+env:
+  # Enable reproducibility-related build system workarounds
+  REPRODUCIBLE_BUILD: true
+
+jobs:
+  release:
+    runs-on: docker
+    container:
+      volumes:
+        - android-app-keystore:/keystore
+    steps:
+      - name: Repository Checkout
+        uses: https://gitea.angry.im/actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Decode Secret Signing Configuration
+        uses: https://gitea.angry.im/actions/base64-to-file@v1
+        with:
+          fileName: keystore.properties
+          fileDir: ${{ env.GITHUB_WORKSPACE }}
+          encodedString: ${{ secrets.OPENEUICC_SIGNING_CONFIG }}
+
+      - name: Set up JDK 17
+        uses: https://gitea.angry.im/actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: https://gitea.angry.im/actions/setup-android@v3
+
+      - name: Build Release APK (Unprivileged / EasyEUICC only)
+        run: ./gradlew --no-daemon :app-unpriv:assembleRelease
+
+      - name: Create Release
+        uses: https://gitea.angry.im/actions/forgejo-release@v1
+        with:
+          direction: upload
+          release-dir: app-unpriv/build/outputs/apk/release
+          url: https://gitea.angry.im
+          token: ${{ secrets.FORGEJO_TOKEN }}
+          # Release details are expected to be edited manually
+          release-notes: TBD
+          prerelease: 'true'

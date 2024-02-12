@@ -1,0 +1,44 @@
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build-debug:
+    runs-on: docker
+    container:
+      volumes:
+        - android-app-keystore:/keystore
+    steps:
+      - name: Repository Checkout
+        uses: https://gitea.angry.im/actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Decode Secret Signing Configuration
+        uses: https://gitea.angry.im/actions/base64-to-file@v1
+        with:
+          fileName: keystore.properties
+          fileDir: ${{ env.GITHUB_WORKSPACE }}
+          encodedString: ${{ secrets.OPENEUICC_SIGNING_CONFIG }}
+
+      - name: Set up JDK 17
+        uses: https://gitea.angry.im/actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: https://gitea.angry.im/actions/setup-android@v3
+
+      - name: Build Debug APKs
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: Upload Artifacts
+        uses: https://gitea.angry.im/actions/upload-artifact@v3
+        with:
+          name: Debug APKs
+          compression-level: 0
+          path: |
+            app-unpriv/build/outputs/apk/debug/app-unpriv-debug.apk
+            app/build/outputs/apk/debug/app-debug.apk
