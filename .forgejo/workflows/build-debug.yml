@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-debug:
-    runs-on: docker
+    runs-on: [docker, android-app-certs]
     container:
       volumes:
         - android-app-keystore:/keystore
