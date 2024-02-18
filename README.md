@@ -5,16 +5,15 @@ A fully free and open-source Local Profile Assistant implementation for Android 
 
 There are two variants of this project:
 
-- OpenEUICC: The full-fledged privileged variant. Intended to be run as a privileged system app (inside `/system/priv-app`) and serve as the system LPA. This can be used to manage all kinds of eSIM chips, embedded or removable.
-  - The privileged variant can be imported to build along with AOSP by simply placing this repository and its [dependencies](https://gitea.angry.im/PeterCxy/android_prebuilts_openeuicc-deps) inside the AOSP tree.
-  - Notes:
-    - This repository contains submodules. If inclusion in `manifest.xml` is required, remember to set the `sync-s` option.
-    - **Only the latest AOSP release** is supported for building. Older versions of AOSP are still compatible with the app itself, but it may not compile within the old AOSP trees. For older versions, consider building the app with `gradle` or a newer AOSP source tree and simply import as a prebuilt apk.
-- EasyEUICC: Unprivileged version that can run as a user app. An eSIM chip must include the certificate of EasyEUICC in its ARA-M field in order to grant access without system privileges. This is intended for removable eSIM chips such as those provided by eSTK.
-  - Prebuilt EasyEUICC apks can be downloaded [here](https://gitea.angry.im/PeterCxy/OpenEUICC/releases)
+- OpenEUICC: The full-fledged privileged variant.
+  - Due to its privilege requirement, OpenEUICC must be placed inside `/system/priv-app` and be signed with the platform certificate.
+  - The preferred way to including OpenEUICC in a system image is to [build it along with AOSP](#building--aosp-).
+- EasyEUICC: Unprivileged version that can run as a user app.
+  - Due to obvious security requirements, EasyEUICC is only able to access eSIM chips whose [ARF/ARA](https://source.android.com/docs/core/connect/uicc#arf) contains the hash of EasyEUICC's signing certificate.
+  - Prebuilt release-mode EasyEUICC apks can be downloaded [here](https://gitea.angry.im/PeterCxy/OpenEUICC/releases)
   - For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC, include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`
 
-Building
+Building (Gradle)
 ===
 
 Make sure you have all submodules cloned and updated by running
@@ -48,11 +47,24 @@ For EasyEUICC:
 ./gradlew :app-unpriv:assembleRelease
 ```
 
+Building (AOSP)
+===
+
+There are two ways to include OpenEUICC in your AOSP-based system image:
+
+1. Include this project and its [dependencies](https://gitea.angry.im/PeterCxy/android_prebuilts_openeuicc-deps) inside the AOSP tree.
+   - If inclusion in `manifest.xml` is required, remember to set the `sync-s` option to clone submodules.
+   - The module name is `OpenEUICC`. You can include it in `PRODUCT_PACKAGES`, or simply build it standalone using `mm`.
+   - Compilation of this project is **only** tested against the latest AOSP release version. The app itself should be compatible with older AOSP versions, but the source may not compile against an older AOSP source tree.
+2. If compilation against AOSP source tree is not possible, consider [building with gradle](#building--gradle-) and import the apk as a prebuilt.
+   - No official `Android.bp` is provided for this case but it should be straightforward to write.
+   - You might want to include `privapp_whitelist_im.angry.openeuicc.xml` as well.
+
 FAQs
 ===
 
 - Q: Do you provide prebuilt binaries for OpenEUICC?
-- A: No. If you are a custom ROM developer, either include the entire OpenEUICC repository in your AOSP source tree, or generate an APK using `gradle` and import that as a prebuilt system app. Note that you might want `privapp_whitelist_im.angry.openeuicc.xml` as well.
+- A: Debug-mode APKs are available continuously as an artifact of the [Actions](https://gitea.angry.im/PeterCxy/OpenEUICC/actions) CI used by this project. However, these debug-mode APKs are **not** intended for inclusion inside system images, nor are they supported by the developer in any sense. If you are a custom ROM developer, either include the entire OpenEUICC repository in your AOSP source tree, or generate an APK using `gradle` and import that as a prebuilt system app. Note that you might want `privapp_whitelist_im.angry.openeuicc.xml` as well.
 
 - Q: AOSP's Settings app seems to be confused by OpenEUICC (for example, disabling / enabling profiles from the Networks page do not work properly)
 - A: When your device has internal eSIM chip(s) __and__ you have inserted a removable eSIM chip, the Settings app can misbehave since it was never designed for this scenario. __Please prefer using OpenEUICC's own management interface whenever possible.__ In the future, there might be an option to exclude removable SIMs from being reported to the Android system.
