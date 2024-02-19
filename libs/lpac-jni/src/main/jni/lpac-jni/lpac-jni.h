@@ -13,6 +13,21 @@ struct lpac_jni_ctx {
     JNIEnv *env; \
     (*jvm)->AttachCurrentThread(jvm, &env, NULL)
 
+#define __LPAC_JNI_LINKED_LIST_FOREACH(list, curr, body, after) { \
+    int i = 0;                                                    \
+    curr = list;                                                  \
+    while (curr != NULL) {                                        \
+        body;                                                     \
+        curr = curr->next;                                        \
+        i++;                                                      \
+    };                                                             \
+    after;                                                        \
+}
+#define LPAC_JNI_LINKED_LIST_FOREACH(list, curr, body) \
+    __LPAC_JNI_LINKED_LIST_FOREACH(list, curr, body, {})
+#define LPAC_JNI_LINKED_LIST_COUNT(list, curr) \
+    (__LPAC_JNI_LINKED_LIST_FOREACH(list, curr, {}, i))
+
 extern JavaVM *jvm;
 extern jclass string_class;
 

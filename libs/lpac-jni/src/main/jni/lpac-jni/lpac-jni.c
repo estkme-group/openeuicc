@@ -183,29 +183,21 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject th
     jobjectArray ret = NULL;
     jobject jinfo = NULL;
     int count = 0;
-    int i = 0;
 
     if (es10c_get_profiles_info(ctx, &info) < 0) {
         return NULL;
     }
 
-    curr = info;
-    while (curr != NULL) {
-        curr = curr->next;
-        count++;
-    }
+    count = LPAC_JNI_LINKED_LIST_COUNT(info, curr);
 
     ret = (*env)->NewObjectArray(env, count, local_profile_info_class, NULL);
 
     // Convert the native info array to Java
-    curr = info;
-    while (curr != NULL) {
+    LPAC_JNI_LINKED_LIST_FOREACH(info, curr, {
         jinfo = profile_info_native_to_java(env, curr);
         (*env)->SetObjectArrayElement(env, ret, i, jinfo);
         (*env)->DeleteLocalRef(env, jinfo);
-        curr = curr->next;
-        i++;
-    }
+    });
 
     es10c_profile_info_free_all(info);
     return ret;

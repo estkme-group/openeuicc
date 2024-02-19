@@ -39,21 +39,15 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10bListNotification(JNIEnv *env, jobject t
     jobject operation = NULL;
     jobjectArray ret = NULL;
     int count = 0;
-    int i = 0;
 
     if (es10b_list_notification(ctx, &info) < 0)
         return NULL;
 
-    curr = info;
-    while (curr != NULL) {
-        curr = curr->next;
-        count++;
-    }
+    count = LPAC_JNI_LINKED_LIST_COUNT(info, curr);
 
     ret = (*env)->NewObjectArray(env, count, local_profile_notification_class, NULL);
 
-    curr = info;
-    while (curr != NULL) {
+    LPAC_JNI_LINKED_LIST_FOREACH(info, curr, {
         operation =
                 (*env)->CallStaticObjectMethod(env, local_profile_notification_operation_class,
                                                local_profile_notification_operation_from_string,
@@ -69,10 +63,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10bListNotification(JNIEnv *env, jobject t
 
         (*env)->DeleteLocalRef(env, operation);
         (*env)->DeleteLocalRef(env, notification);
-
-        curr = curr->next;
-        i++;
-    }
+    });
 
     es10b_notification_metadata_free_all(info);
     return ret;
