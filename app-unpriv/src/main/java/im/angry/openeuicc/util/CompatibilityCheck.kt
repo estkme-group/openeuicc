@@ -53,17 +53,13 @@ abstract class CompatibilityCheck(context: Context) {
             else -> defaultDescription
         }
 
-    protected abstract suspend fun doCheck(): Boolean
+    protected abstract suspend fun doCheck(): State
 
     suspend fun run() {
         state = State.IN_PROGRESS
         delay(200)
         state = try {
-            if (doCheck()) {
-                State.SUCCESS
-            } else {
-                State.FAILURE
-            }
+            doCheck()
         } catch (_: Exception) {
             State.FAILURE
         }
@@ -76,10 +72,10 @@ internal class HasSystemFeaturesCheck(private val context: Context): Compatibili
     override val defaultDescription: String
         get() = context.getString(R.string.compatibility_check_system_features_desc)
 
-    override suspend fun doCheck(): Boolean {
+    override suspend fun doCheck(): State {
         if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
             failureDescription = context.getString(R.string.compatibility_check_system_features_no_telephony)
-            return false
+            return State.FAILURE
         }
 
         // We can check OMAPI UICC availability on R or later (if before R, we check OMAPI connectivity later)
@@ -87,10 +83,10 @@ internal class HasSystemFeaturesCheck(private val context: Context): Compatibili
             PackageManager.FEATURE_SE_OMAPI_UICC
         )) {
             failureDescription = context.getString(R.string.compatibility_check_system_features_no_omapi)
-            return false
+            return State.FAILURE
         }
 
-        return true
+        return State.SUCCESS
     }
 }
 
@@ -100,25 +96,25 @@ internal class OmapiConnCheck(private val context: Context): CompatibilityCheck(
     override val defaultDescription: String
         get() = context.getString(R.string.compatibility_check_omapi_connectivity_desc)
 
-    override suspend fun doCheck(): Boolean {
+    override suspend fun doCheck(): State {
         val seService = connectSEService(context)
         if (!seService.isConnected) {
             failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail)
-            return false
+            return State.FAILURE
         }
 
         val tm = context.getSystemService(TelephonyManager::class.java)
         val simReaders = seService.readers.filter { it.isSIM }
         if (simReaders.isEmpty()) {
             failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail)
-            return false
+            return State.FAILURE
         } else if (simReaders.size < tm.activeModemCountCompat) {
             failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail_sim_number,
                 simReaders.map { it.slotIndex }.joinToString(", "))
-            return false
+            return State.FAILURE
         }
 
-        return true
+        return State.SUCCESS
     }
 }
 
@@ -132,30 +128,30 @@ internal class IsdrChannelAccessCheck(private val context: Context): Compatibili
     override val defaultDescription: String
         get() = context.getString(R.string.compatibility_check_isdr_channel_desc)
 
-    override suspend fun doCheck(): Boolean {
+    override suspend fun doCheck(): State {
         val seService = connectSEService(context)
         val (validSlotIds, result) = seService.readers.filter { it.isSIM }.map {
             try {
                 it.openSession().openLogicalChannel(ISDR_AID)?.close()
-                Pair(it.slotIndex, true)
+                Pair(it.slotIndex, State.SUCCESS)
             } catch (_: SecurityException) {
                 // Ignore; this is expected when everything works
                 // ref: https://android.googlesource.com/platform/frameworks/base/+/4fe64fb4712a99d5da9c9a0eb8fd5169b252e1e1/omapi/java/android/se/omapi/Session.java#305
                 // SecurityException is only thrown when Channel is constructed, which means everything else needs to succeed
-                Pair(it.slotIndex, true)
+                Pair(it.slotIndex, State.SUCCESS)
             } catch (e: Exception) {
                 e.printStackTrace()
-                Pair(it.slotIndex, false)
+                Pair(it.slotIndex, State.FAILURE)
             }
-        }.fold(Pair(mutableListOf<Int>(), true)) { (ids, result), (id, ok) ->
-            if (!ok) {
-                Pair(ids, false)
+        }.fold(Pair(mutableListOf<Int>(), State.SUCCESS)) { (ids, result), (id, ok) ->
+            if (ok != State.SUCCESS) {
+                Pair(ids, ok)
             } else {
                 Pair(ids.apply { add(id) }, result)
             }
         }
 
-        if (!result && validSlotIds.size > 0) {
+        if (result != State.SUCCESS && validSlotIds.size > 0) {
             if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_EUICC)) {
                 failureDescription = context.getString(
                     R.string.compatibility_check_isdr_channel_desc_partial_fail,
@@ -164,7 +160,7 @@ internal class IsdrChannelAccessCheck(private val context: Context): Compatibili
             } else {
                 // If the device has embedded eSIMs, we can likely ignore the failure here;
                 // the OMAPI failure likely resulted from trying to access internal eSIMs.
-                return true
+                return State.SUCCESS
             }
         }
 
@@ -186,6 +182,10 @@ internal class KnownBrokenCheck(private val context: Context): CompatibilityChec
         failureDescription = context.getString(R.string.compatibility_check_known_broken_fail)
     }
 
-    override suspend fun doCheck(): Boolean =
-        Build.MANUFACTURER.lowercase() !in BROKEN_MANUFACTURERS
+    override suspend fun doCheck(): State =
+        if (Build.MANUFACTURER.lowercase() in BROKEN_MANUFACTURERS) {
+            State.FAILURE
+        } else {
+            State.SUCCESS
+        }
 }
