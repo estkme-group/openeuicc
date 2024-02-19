@@ -13,6 +13,7 @@
     <string name="compatibility_check_omapi_connectivity_fail_sim_number">Only the following SIM slots are accessible via OMAPI: %s.</string>
     <string name="compatibility_check_isdr_channel">ISD-R Channel Access</string>
     <string name="compatibility_check_isdr_channel_desc">Does your device support opening an ISD-R (management) channel to eSIMs via OMAPI?</string>
+    <string name="compatibility_check_isdr_channel_desc_unknown">Cannot determine whether ISD-R access through OMAPI is supported. You might want to retry with SIM cards inserted (any SIM card will do) if not already.</string>
     <string name="compatibility_check_isdr_channel_desc_partial_fail">OMAPI access to ISD-R is only possible on the following SIM slots: %s.</string>
     <string name="compatibility_check_known_broken">Known Broken?</string>
     <string name="compatibility_check_known_broken_desc">Making sure your device is not known to have bugs associated with removable eSIMs.</string>

@@ -9,6 +9,7 @@ import im.angry.easyeuicc.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 fun getCompatibilityChecks(context: Context): List<CompatibilityCheck> =
     listOf(
@@ -38,6 +39,7 @@ abstract class CompatibilityCheck(context: Context) {
         NOT_STARTED,
         IN_PROGRESS,
         SUCCESS,
+        FAILURE_UNKNOWN, // The check technically failed, but no conclusion can be drawn
         FAILURE
     }
 
@@ -49,7 +51,7 @@ abstract class CompatibilityCheck(context: Context) {
 
     val description: String
         get() = when {
-            state == State.FAILURE && this::failureDescription.isInitialized -> failureDescription
+            (state == State.FAILURE || state == State.FAILURE_UNKNOWN) && this::failureDescription.isInitialized -> failureDescription
             else -> defaultDescription
         }
 
@@ -139,6 +141,14 @@ internal class IsdrChannelAccessCheck(private val context: Context): Compatibili
                 // ref: https://android.googlesource.com/platform/frameworks/base/+/4fe64fb4712a99d5da9c9a0eb8fd5169b252e1e1/omapi/java/android/se/omapi/Session.java#305
                 // SecurityException is only thrown when Channel is constructed, which means everything else needs to succeed
                 Pair(it.slotIndex, State.SUCCESS)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                if (e.message?.contains("Secure Element is not present") == true) {
+                    failureDescription = context.getString(R.string.compatibility_check_isdr_channel_desc_unknown)
+                    Pair(it.slotIndex, State.FAILURE_UNKNOWN)
+                } else {
+                    Pair(it.slotIndex, State.FAILURE)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 Pair(it.slotIndex, State.FAILURE)

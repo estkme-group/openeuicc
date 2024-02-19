@@ -60,6 +60,14 @@
             android:layout_width="32dp"
             android:layout_height="32dp" />
 
+        <ImageView
+            android:id="@+id/compatibility_check_unknown"
+            android:src="@drawable/ic_question_outline"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_width="32dp"
+            android:layout_height="32dp" />
+
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -64,6 +64,9 @@ class CompatibilityCheckActivity: AppCompatActivity() {
                 CompatibilityCheck.State.FAILURE -> {
                     root.findViewById<View>(R.id.compatibility_check_error).visibility = View.VISIBLE
                 }
+                CompatibilityCheck.State.FAILURE_UNKNOWN -> {
+                    root.findViewById<View>(R.id.compatibility_check_unknown).visibility = View.VISIBLE
+                }
                 else -> {
                     root.findViewById<View>(R.id.compatibility_check_progress_bar).visibility = View.VISIBLE
                 }
