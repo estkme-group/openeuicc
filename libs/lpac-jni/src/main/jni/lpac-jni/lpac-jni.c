@@ -53,7 +53,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
     euicc_info2_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/EuiccInfo2");
     euicc_info2_class = (*env)->NewGlobalRef(env, euicc_info2_class);
-    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)V");
+    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)V");
 
     const char _unused[1];
     empty_string = (*env)->NewString(env, _unused, 0);
@@ -179,24 +179,35 @@ JNIEXPORT jobjectArray JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
     struct es10c_profile_info *info = NULL;
+    struct es10c_profile_info *curr = NULL;
     jobjectArray ret = NULL;
     jobject jinfo = NULL;
-    int count;
+    int count = 0;
+    int i = 0;
 
-    if (es10c_get_profiles_info(ctx, &info, &count) < 0) {
+    if (es10c_get_profiles_info(ctx, &info) < 0) {
         return NULL;
+    }
+
+    curr = info;
+    while (curr != NULL) {
+        curr = curr->next;
+        count++;
     }
 
     ret = (*env)->NewObjectArray(env, count, local_profile_info_class, NULL);
 
     // Convert the native info array to Java
-    for (int i = 0; i < count; i++) {
-        jinfo = profile_info_native_to_java(env, &info[i]);
+    curr = info;
+    while (curr != NULL) {
+        jinfo = profile_info_native_to_java(env, curr);
         (*env)->SetObjectArrayElement(env, ret, i, jinfo);
         (*env)->DeleteLocalRef(env, jinfo);
+        curr = curr->next;
+        i++;
     }
 
-    es10c_profile_info_free_all(info, count);
+    es10c_profile_info_free_all(info);
     return ret;
 }
 
@@ -258,40 +269,37 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cDeleteProfile(JNIEnv *env, jobject thiz
 JNIEXPORT jobject JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es10cex_euiccinfo2 info;
+    struct es10cex_euiccinfo2 * info;
     jstring sas_accreditation_number = NULL;
     jstring global_platform_version = NULL;
     jstring euicc_firmware_version = NULL;
-    jstring uicc_firmware_version = NULL;
     jstring profile_version = NULL;
-    jstring sgp22_version = NULL;
     jstring pp_version = NULL;
     jobject ret = NULL;
 
     if (es10cex_get_euiccinfo2(ctx, &info) < 0)
         goto out;
 
-    profile_version = toJString(env, info.profile_version);
-    sgp22_version = toJString(env, info.sgp22_version);
-    euicc_firmware_version = toJString(env, info.euicc_firmware_version);
-    uicc_firmware_version = toJString(env, info.uicc_firmware_version);
-    global_platform_version = toJString(env, info.global_platform_version);
-    sas_accreditation_number = toJString(env, info.sas_accreditation_number);
-    pp_version = toJString(env, info.pp_version);
+    profile_version = toJString(env, info->profileVersion);
+    euicc_firmware_version = toJString(env, info->euiccFirmwareVer);
+    global_platform_version = toJString(env, info->globalplatformVersion);
+    sas_accreditation_number = toJString(env, info->sasAcreditationNumber);
+    pp_version = toJString(env, info->ppVersion);
 
     ret = (*env)->NewObject(env, euicc_info2_class, euicc_info2_constructor,
-                            profile_version, sgp22_version, euicc_firmware_version,
-                            uicc_firmware_version, global_platform_version,
+                            profile_version, euicc_firmware_version,
+                            global_platform_version,
                             sas_accreditation_number, pp_version,
-                            info.free_nvram, info.free_ram);
+                            info->extCardResource.freeNonVolatileMemory,
+                            info->extCardResource.freeVolatileMemory);
 
     out:
     (*env)->DeleteLocalRef(env, profile_version);
-    (*env)->DeleteLocalRef(env, sgp22_version);
     (*env)->DeleteLocalRef(env, euicc_firmware_version);
-    (*env)->DeleteLocalRef(env, uicc_firmware_version);
     (*env)->DeleteLocalRef(env, global_platform_version);
     (*env)->DeleteLocalRef(env, sas_accreditation_number);
     (*env)->DeleteLocalRef(env, pp_version);
+    if (info != NULL)
+        es10cex_free_euiccinfo2(info);
     return ret;
 }
