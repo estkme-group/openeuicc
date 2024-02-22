@@ -27,7 +27,7 @@ class LocalProfileAssistantImpl(
             throw IllegalArgumentException("Failed to initialize LPA")
         }
 
-        val pkids = euiccInfo2?.euiccCiPKIdListForVerification ?: arrayOf(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1)
+        val pkids = euiccInfo2?.euiccCiPKIdListForVerification ?: arrayOf()
         httpInterface.usePublicKeyIds(pkids)
     }
 

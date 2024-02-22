@@ -2,21 +2,35 @@ package net.typeblog.lpac_jni.impl
 
 import java.io.ByteArrayInputStream
 import java.security.KeyStore
-import java.security.cert.CertificateException
+import java.security.cert.Certificate
 import java.security.cert.CertificateFactory
 
 const val DEFAULT_PKID_GSMA_RSP2_ROOT_CI1 = "81370f5125d0b1d408d4c3b232e6d25e795bebfb"
+
+private fun getCertificate(keyId: String): Certificate? =
+    KNOWN_CI_CERTS[keyId]?.toByteArray().let { cert ->
+        ByteArrayInputStream(cert).use { stream ->
+            val cf = CertificateFactory.getInstance("X.509")
+            cf.generateCertificate(stream)
+        }
+    }
 
 internal fun keyIdToKeystore(keyIds: Array<String>): KeyStore {
     val ret = KeyStore.getInstance(KeyStore.getDefaultType())
     ret.load(null, null)
     keyIds.forEach {
-        if (it !in KNOWN_CI_CERTS) throw CertificateException("Unknown CI cert ID $it")
-        ByteArrayInputStream(KNOWN_CI_CERTS[it]!!.toByteArray()).use { stream ->
-            val cf = CertificateFactory.getInstance("X.509")
-            ret.setCertificateEntry(it, cf.generateCertificate(stream))
+        getCertificate(it)?.let { cert ->
+            ret.setCertificateEntry(it, cert)
         }
     }
+
+    // If no known certs have been added, add at least the default GSMA CI
+    if (ret.size() == 0) {
+        getCertificate(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1)?.let { cert ->
+            ret.setCertificateEntry(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1, cert)
+        }
+    }
+
     return ret
 }
 
