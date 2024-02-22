@@ -2,13 +2,19 @@ package net.typeblog.lpac_jni.impl
 
 import android.util.Log
 import net.typeblog.lpac_jni.HttpInterface
-import java.net.HttpURLConnection
 import java.net.URL
+import java.security.SecureRandom
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.TrustManagerFactory
 
 class HttpInterfaceImpl: HttpInterface {
     companion object {
         private const val TAG = "HttpInterfaceImpl"
     }
+
+    private lateinit var trustManagers: Array<TrustManager>
 
     override fun transmit(
         url: String,
@@ -17,8 +23,17 @@ class HttpInterfaceImpl: HttpInterface {
     ): HttpInterface.HttpResponse {
         Log.d(TAG, "transmit(url = $url)")
 
+        val parsedUrl = URL(url)
+        if (parsedUrl.protocol != "https") {
+            throw IllegalArgumentException("SM-DP+ servers must use the HTTPS protocol")
+        }
+
         try {
-            val conn = URL(url).openConnection() as HttpURLConnection
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, trustManagers, SecureRandom())
+
+            val conn = parsedUrl.openConnection() as HttpsURLConnection
+            conn.sslSocketFactory = sslContext.socketFactory
             conn.requestMethod = "POST"
             conn.doInput = true
             conn.doOutput = true
@@ -39,5 +54,12 @@ class HttpInterfaceImpl: HttpInterface {
             e.printStackTrace()
             throw e
         }
+    }
+
+    override fun usePublicKeyIds(pkids: Array<String>) {
+        val trustManagerFactory = TrustManagerFactory.getInstance("PKIX").apply {
+            init(keyIdToKeystore(pkids))
+        }
+        trustManagers = trustManagerFactory.trustManagers
     }
 }

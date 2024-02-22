@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
-    <base-config>
-        <trust-anchors>
-            <certificates src="@raw/symantec_gsma_rspv2_root_ci1"/>
-            <certificates src="system"/>
-        </trust-anchors>
-    </base-config>
-</network-security-config>

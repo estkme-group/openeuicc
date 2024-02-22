@@ -53,7 +53,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
     euicc_info2_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/EuiccInfo2");
     euicc_info2_class = (*env)->NewGlobalRef(env, euicc_info2_class);
-    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)V");
+    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II[Ljava/lang/String;[Ljava/lang/String;)V");
 
     const char _unused[1];
     empty_string = (*env)->NewString(env, _unused, 0);
@@ -262,12 +262,16 @@ JNIEXPORT jobject JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
     struct es10cex_euiccinfo2 * info;
+    jobjectArray euiccCiPKIdListForVerification = NULL;
+    jobjectArray euiccCiPKIdListForSigning = NULL;
     jstring sas_accreditation_number = NULL;
     jstring global_platform_version = NULL;
     jstring euicc_firmware_version = NULL;
     jstring profile_version = NULL;
     jstring pp_version = NULL;
     jobject ret = NULL;
+    char **curr = NULL;
+    int count = 0;
 
     if (es10cex_get_euiccinfo2(ctx, &info) < 0)
         goto out;
@@ -278,12 +282,26 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject th
     sas_accreditation_number = toJString(env, info->sasAcreditationNumber);
     pp_version = toJString(env, info->ppVersion);
 
+    count = LPAC_JNI_NULL_TERM_LIST_COUNT(info->euiccCiPKIdListForSigning, curr);
+    euiccCiPKIdListForSigning = (*env)->NewObjectArray(env, count, string_class, NULL);
+    LPAC_JNI_NULL_TERM_LIST_FOREACH(info->euiccCiPKIdListForSigning, curr, {
+        (*env)->SetObjectArrayElement(env, euiccCiPKIdListForSigning, i, toJString(env, *curr));
+    });
+
+    count = LPAC_JNI_NULL_TERM_LIST_COUNT(info->euiccCiPKIdListForVerification, curr);
+    euiccCiPKIdListForVerification = (*env)->NewObjectArray(env, count, string_class, NULL);
+    LPAC_JNI_NULL_TERM_LIST_FOREACH(info->euiccCiPKIdListForVerification, curr, {
+        (*env)->SetObjectArrayElement(env, euiccCiPKIdListForVerification, i, toJString(env, *curr));
+    });
+
     ret = (*env)->NewObject(env, euicc_info2_class, euicc_info2_constructor,
                             profile_version, euicc_firmware_version,
                             global_platform_version,
                             sas_accreditation_number, pp_version,
                             info->extCardResource.freeNonVolatileMemory,
-                            info->extCardResource.freeVolatileMemory);
+                            info->extCardResource.freeVolatileMemory,
+                            euiccCiPKIdListForSigning,
+                            euiccCiPKIdListForVerification);
 
     out:
     (*env)->DeleteLocalRef(env, profile_version);

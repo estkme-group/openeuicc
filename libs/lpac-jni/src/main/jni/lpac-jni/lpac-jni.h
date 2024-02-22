@@ -28,6 +28,21 @@ struct lpac_jni_ctx {
 #define LPAC_JNI_LINKED_LIST_COUNT(list, curr) \
     (__LPAC_JNI_LINKED_LIST_FOREACH(list, curr, {}, i))
 
+#define __LPAC_JNI_NULL_TERM_LIST_FOREACH(list, curr, body, after) { \
+    int i = 0;                                                       \
+    curr = list;                                                     \
+    while (*curr != NULL) {                                           \
+        body;                                                        \
+        curr++;                                                      \
+        i++;                                                         \
+    };                                                               \
+    after;                                                           \
+}
+#define LPAC_JNI_NULL_TERM_LIST_FOREACH(list, curr, body) \
+    __LPAC_JNI_NULL_TERM_LIST_FOREACH(list, curr, body, {})
+#define LPAC_JNI_NULL_TERM_LIST_COUNT(list, curr) \
+    (__LPAC_JNI_NULL_TERM_LIST_FOREACH(list, curr, {}, i))
+
 extern JavaVM *jvm;
 extern jclass string_class;
 

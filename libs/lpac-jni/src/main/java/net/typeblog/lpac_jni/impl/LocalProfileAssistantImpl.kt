@@ -26,6 +26,9 @@ class LocalProfileAssistantImpl(
         if (LpacJni.es10xInit(contextHandle) < 0) {
             throw IllegalArgumentException("Failed to initialize LPA")
         }
+
+        val pkids = euiccInfo2?.euiccCiPKIdListForVerification ?: arrayOf(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1)
+        httpInterface.usePublicKeyIds(pkids)
     }
 
     private fun tryReconnect(timeoutMillis: Long) = runBlocking {
