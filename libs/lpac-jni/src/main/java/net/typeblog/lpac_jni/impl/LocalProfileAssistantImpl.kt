@@ -23,7 +23,7 @@ class LocalProfileAssistantImpl(
 
     private var contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
     init {
-        if (LpacJni.es10xInit(contextHandle) < 0) {
+        if (LpacJni.euiccInit(contextHandle) < 0) {
             throw IllegalArgumentException("Failed to initialize LPA")
         }
 
@@ -34,7 +34,7 @@ class LocalProfileAssistantImpl(
     private fun tryReconnect(timeoutMillis: Long) = runBlocking {
         withTimeout(timeoutMillis) {
             try {
-                LpacJni.es10xFini(contextHandle)
+                LpacJni.euiccFini(contextHandle)
                 LpacJni.destroyContext(contextHandle)
                 contextHandle = -1
             } catch (e: Exception) {
@@ -51,7 +51,7 @@ class LocalProfileAssistantImpl(
                 try {
                     apduInterface.connect()
                     contextHandle = LpacJni.createContext(apduInterface, httpInterface)
-                    check(LpacJni.es10xInit(contextHandle) >= 0) { "Reconnect attempt failed" }
+                    check(LpacJni.euiccInit(contextHandle) >= 0) { "Reconnect attempt failed" }
                     // Validate that we can actually use the APDU channel by trying to read eID and profiles
                     check(valid) { "Reconnected channel is invalid" }
                     break
@@ -59,7 +59,7 @@ class LocalProfileAssistantImpl(
                     e.printStackTrace()
                     if (contextHandle != -1L) {
                         try {
-                            LpacJni.es10xFini(contextHandle)
+                            LpacJni.euiccFini(contextHandle)
                             LpacJni.destroyContext(contextHandle)
                             contextHandle = -1
                         } catch (e: Exception) {
@@ -133,7 +133,7 @@ class LocalProfileAssistantImpl(
     }
 
     override fun close() {
-        LpacJni.es10xFini(contextHandle)
+        LpacJni.euiccFini(contextHandle)
         LpacJni.destroyContext(contextHandle)
     }
 }

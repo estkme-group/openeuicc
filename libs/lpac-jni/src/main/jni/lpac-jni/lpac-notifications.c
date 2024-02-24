@@ -33,8 +33,9 @@ void lpac_notifications_init() {
 JNIEXPORT jobject JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10bListNotification(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es10b_notification_metadata *info = NULL;
-    struct es10b_notification_metadata *curr = NULL;
+    struct es10b_notification_metadata_list *info = NULL;
+    struct es10b_notification_metadata_list *curr = NULL;
+    const char *profileManagementOperationStr = NULL;
     jobject notification = NULL;
     jobject operation = NULL;
     jobjectArray ret = NULL;
@@ -48,10 +49,27 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10bListNotification(JNIEnv *env, jobject t
     ret = (*env)->NewObjectArray(env, count, local_profile_notification_class, NULL);
 
     LPAC_JNI_LINKED_LIST_FOREACH(info, curr, {
+        switch (curr->profileManagementOperation) {
+            case ES10B_PROFILE_MANAGEMENT_OPERATION_INSTALL:
+                profileManagementOperationStr = "install";
+                break;
+            case ES10B_PROFILE_MANAGEMENT_OPERATION_DELETE:
+                profileManagementOperationStr = "delete";
+                break;
+            case ES10B_PROFILE_MANAGEMENT_OPERATION_ENABLE:
+                profileManagementOperationStr = "enable";
+                break;
+            case ES10B_PROFILE_MANAGEMENT_OPERATION_DISABLE:
+                profileManagementOperationStr = "disable";
+                break;
+            default:
+                profileManagementOperationStr = "unknown";
+        }
+
         operation =
                 (*env)->CallStaticObjectMethod(env, local_profile_notification_operation_class,
                                                local_profile_notification_operation_from_string,
-                                               toJString(env, curr->profileManagementOperation));
+                                               toJString(env, profileManagementOperationStr));
 
         notification =
                 (*env)->NewObject(env, local_profile_notification_class,
@@ -73,15 +91,19 @@ JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_handleNotification(JNIEnv *env, jobject thiz, jlong handle,
                                                        jlong seq_number) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es10b_notification notification;
+    struct es9p_ctx es9p_ctx = { 0 };
+    struct es10b_pending_notification notification;
     int res;
 
-    res = es10b_retrieve_notification(ctx, &notification, (unsigned long) seq_number);
+    res = es10b_retrieve_notifications_list(ctx, &notification, (unsigned long) seq_number);
     syslog(LOG_DEBUG, "es10b_retrieve_notification = %d", res);
     if (res < 0)
         goto out;
 
-    res = es9p_handle_notification(ctx, notification.receiver, notification.b64_payload);
+    es9p_ctx.euicc_ctx = ctx;
+    es9p_ctx.address = notification.notificationAddress;
+
+    res = es9p_handle_notification(&es9p_ctx, notification.b64_PendingNotification);
     syslog(LOG_DEBUG, "es9p_handle_notification = %d", res);
     if (res < 0)
         goto out;

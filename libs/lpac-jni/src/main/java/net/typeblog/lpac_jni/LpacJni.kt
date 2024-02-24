@@ -8,9 +8,8 @@ internal object LpacJni {
     external fun createContext(apduInterface: ApduInterface, httpInterface: HttpInterface): Long
     external fun destroyContext(handle: Long)
 
-    // es10x
-    external fun es10xInit(handle: Long): Int
-    external fun es10xFini(handle: Long)
+    external fun euiccInit(handle: Long): Int
+    external fun euiccFini(handle: Long)
 
     // es10c
     // null returns signify errors

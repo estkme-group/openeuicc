@@ -1,4 +1,6 @@
-#include <euicc/es10x.h>
+#include <euicc/euicc.h>
+#include <euicc/es10c.h>
+#include <euicc/es10c_ex.h>
 #include <euicc/interface.h>
 #include <malloc.h>
 #include <string.h>
@@ -93,15 +95,15 @@ Java_net_typeblog_lpac_1jni_LpacJni_destroyContext(JNIEnv *env, jobject thiz, jl
 }
 
 JNIEXPORT jint JNICALL
-Java_net_typeblog_lpac_1jni_LpacJni_es10xInit(JNIEnv *env, jobject thiz, jlong handle) {
+Java_net_typeblog_lpac_1jni_LpacJni_euiccInit(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    return es10x_init(ctx);
+    return euicc_init(ctx);
 }
 
 JNIEXPORT void JNICALL
-Java_net_typeblog_lpac_1jni_LpacJni_es10xFini(JNIEnv *env, jobject thiz, jlong handle) {
+Java_net_typeblog_lpac_1jni_LpacJni_euiccFini(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    es10x_fini(ctx);
+    euicc_fini(ctx);
 }
 
 jstring toJString(JNIEnv *env, const char *pat) {
@@ -137,7 +139,9 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetEid(JNIEnv *env, jobject thiz, jlong
     return ret;
 }
 
-jobject profile_info_native_to_java(JNIEnv *env, struct es10c_profile_info *info) {
+jobject profile_info_native_to_java(JNIEnv *env, struct es10c_profile_info_list *info) {
+    const char *profileStateStr = NULL;
+    const char *profileClassStr = NULL;
     jstring serviceProvider = NULL;
     jstring nickName = NULL;
     jstring isdpAid = NULL;
@@ -153,13 +157,40 @@ jobject profile_info_native_to_java(JNIEnv *env, struct es10c_profile_info *info
     nickName = toJString(env, info->profileNickname);
     serviceProvider = toJString(env, info->serviceProviderName);
 
+    // TODO: Maybe we should pass a Java object directly here?
+    switch (info->profileState) {
+        case ES10C_PROFILE_STATE_ENABLED:
+            profileStateStr = "enabled";
+            break;
+        case ES10C_PROFILE_STATE_DISABLED:
+            profileStateStr = "disabled";
+            break;
+        default:
+            profileStateStr = "unknown";
+    }
+
     state = (*env)->CallStaticObjectMethod(env, local_profile_state_class,
                                            local_profile_state_from_string,
-                                           toJString(env, info->profileState));
+                                           toJString(env, profileStateStr));
+
+    switch (info->profileClass) {
+        case ES10C_PROFILE_CLASS_TEST:
+            profileClassStr = "test";
+            break;
+        case ES10C_PROFILE_CLASS_PROVISIONING:
+            profileClassStr = "provisioning";
+            break;
+        case ES10C_PROFILE_CLASS_OPERATIONAL:
+            profileClassStr = "operational";
+            break;
+        default:
+            profileClassStr = "unknown";
+            break;
+    }
 
     class = (*env)->CallStaticObjectMethod(env, local_profile_class_class,
                                            local_profile_class_from_string,
-                                           toJString(env, info->profileClass));
+                                           toJString(env, profileClassStr));
 
     jinfo = (*env)->NewObject(env, local_profile_info_class, local_profile_info_constructor,
                               iccid, state, name, nickName, serviceProvider, isdpAid, class);
@@ -178,8 +209,8 @@ jobject profile_info_native_to_java(JNIEnv *env, struct es10c_profile_info *info
 JNIEXPORT jobjectArray JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es10c_profile_info *info = NULL;
-    struct es10c_profile_info *curr = NULL;
+    struct es10c_profile_info_list *info = NULL;
+    struct es10c_profile_info_list *curr = NULL;
     jobjectArray ret = NULL;
     jobject jinfo = NULL;
     int count = 0;
@@ -211,7 +242,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cEnableProfile(JNIEnv *env, jobject thiz
     int ret;
 
     _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    ret = es10c_enable_profile_iccid(ctx, _iccid, 1);
+    ret = es10c_enable_profile(ctx, _iccid, 1);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
@@ -224,7 +255,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cDisableProfile(JNIEnv *env, jobject thi
     int ret;
 
     _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    ret = es10c_disable_profile_iccid(ctx, _iccid, 1);
+    ret = es10c_disable_profile(ctx, _iccid, 1);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
@@ -253,7 +284,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cDeleteProfile(JNIEnv *env, jobject thiz
     int ret;
 
     _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    ret = es10c_delete_profile_iccid(ctx, _iccid);
+    ret = es10c_delete_profile(ctx, _iccid);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
@@ -261,7 +292,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cDeleteProfile(JNIEnv *env, jobject thiz
 JNIEXPORT jobject JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es10cex_euiccinfo2 * info;
+    struct es10c_ex_euiccinfo2 info = { 0 };
     jobjectArray euiccCiPKIdListForVerification = NULL;
     jobjectArray euiccCiPKIdListForSigning = NULL;
     jstring sas_accreditation_number = NULL;
@@ -273,24 +304,24 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject th
     char **curr = NULL;
     int count = 0;
 
-    if (es10cex_get_euiccinfo2(ctx, &info) < 0)
+    if (es10c_ex_get_euiccinfo2(ctx, &info) < 0)
         goto out;
 
-    profile_version = toJString(env, info->profileVersion);
-    euicc_firmware_version = toJString(env, info->euiccFirmwareVer);
-    global_platform_version = toJString(env, info->globalplatformVersion);
-    sas_accreditation_number = toJString(env, info->sasAcreditationNumber);
-    pp_version = toJString(env, info->ppVersion);
+    profile_version = toJString(env, info.profileVersion);
+    euicc_firmware_version = toJString(env, info.euiccFirmwareVer);
+    global_platform_version = toJString(env, info.globalplatformVersion);
+    sas_accreditation_number = toJString(env, info.sasAcreditationNumber);
+    pp_version = toJString(env, info.ppVersion);
 
-    count = LPAC_JNI_NULL_TERM_LIST_COUNT(info->euiccCiPKIdListForSigning, curr);
+    count = LPAC_JNI_NULL_TERM_LIST_COUNT(info.euiccCiPKIdListForSigning, curr);
     euiccCiPKIdListForSigning = (*env)->NewObjectArray(env, count, string_class, NULL);
-    LPAC_JNI_NULL_TERM_LIST_FOREACH(info->euiccCiPKIdListForSigning, curr, {
+    LPAC_JNI_NULL_TERM_LIST_FOREACH(info.euiccCiPKIdListForSigning, curr, {
         (*env)->SetObjectArrayElement(env, euiccCiPKIdListForSigning, i, toJString(env, *curr));
     });
 
-    count = LPAC_JNI_NULL_TERM_LIST_COUNT(info->euiccCiPKIdListForVerification, curr);
+    count = LPAC_JNI_NULL_TERM_LIST_COUNT(info.euiccCiPKIdListForVerification, curr);
     euiccCiPKIdListForVerification = (*env)->NewObjectArray(env, count, string_class, NULL);
-    LPAC_JNI_NULL_TERM_LIST_FOREACH(info->euiccCiPKIdListForVerification, curr, {
+    LPAC_JNI_NULL_TERM_LIST_FOREACH(info.euiccCiPKIdListForVerification, curr, {
         (*env)->SetObjectArrayElement(env, euiccCiPKIdListForVerification, i, toJString(env, *curr));
     });
 
@@ -298,8 +329,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject th
                             profile_version, euicc_firmware_version,
                             global_platform_version,
                             sas_accreditation_number, pp_version,
-                            info->extCardResource.freeNonVolatileMemory,
-                            info->extCardResource.freeVolatileMemory,
+                            info.extCardResource.freeNonVolatileMemory,
+                            info.extCardResource.freeVolatileMemory,
                             euiccCiPKIdListForSigning,
                             euiccCiPKIdListForVerification);
 
@@ -309,7 +340,6 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject th
     (*env)->DeleteLocalRef(env, global_platform_version);
     (*env)->DeleteLocalRef(env, sas_accreditation_number);
     (*env)->DeleteLocalRef(env, pp_version);
-    if (info != NULL)
-        es10cex_free_euiccinfo2(info);
+    es10c_ex_euiccinfo2_free(&info);
     return ret;
 }
