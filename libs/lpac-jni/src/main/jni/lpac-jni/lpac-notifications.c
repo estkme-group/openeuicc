@@ -110,6 +110,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_handleNotification(JNIEnv *env, jobject thiz
         goto out;
 
     out:
+    es9p_ctx_free(&es9p_ctx);
     return res;
 }
 

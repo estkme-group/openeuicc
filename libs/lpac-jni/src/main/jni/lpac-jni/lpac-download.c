@@ -136,6 +136,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
                                            b64_bound_profile_package);
 
     out:
+    es9p_ctx_free(&es9p_ctx);
     free(b64_authenticate_server_response);
     free(b64_prepare_download_response);
     free(b64_euicc_info_1);
