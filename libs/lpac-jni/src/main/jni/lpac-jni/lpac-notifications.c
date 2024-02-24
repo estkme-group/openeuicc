@@ -19,7 +19,7 @@ void lpac_notifications_init() {
             (*env)->NewGlobalRef(env, local_profile_notification_class);
     local_profile_notification_constructor =
             (*env)->GetMethodID(env, local_profile_notification_class, "<init>",
-                                      "(JLnet/typeblog/lpac_jni/LocalProfileNotification$Operation;Ljava/lang/String;Ljava/lang/String;)V");
+                                "(JLnet/typeblog/lpac_jni/LocalProfileNotification$Operation;Ljava/lang/String;Ljava/lang/String;)V");
 
     local_profile_notification_operation_class =
             (*env)->FindClass(env, "net/typeblog/lpac_jni/LocalProfileNotification$Operation");
@@ -73,7 +73,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10bListNotification(JNIEnv *env, jobject t
 
         notification =
                 (*env)->NewObject(env, local_profile_notification_class,
-                                  local_profile_notification_constructor, curr->seqNumber, operation,
+                                  local_profile_notification_constructor, curr->seqNumber,
+                                  operation,
                                   toJString(env, curr->notificationAddress),
                                   toJString(env, curr->iccid));
 
@@ -91,7 +92,7 @@ JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_handleNotification(JNIEnv *env, jobject thiz, jlong handle,
                                                        jlong seq_number) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es9p_ctx es9p_ctx = { 0 };
+    struct es9p_ctx es9p_ctx = {0};
     struct es10b_pending_notification notification;
     int res;
 

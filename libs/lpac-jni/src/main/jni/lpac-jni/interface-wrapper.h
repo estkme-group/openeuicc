@@ -1,5 +1,6 @@
 #pragma once
 #undef NDEBUG
+
 #include <assert.h>
 #include <euicc/interface.h>
 #include "lpac-jni.h"

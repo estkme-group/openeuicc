@@ -1,4 +1,5 @@
 #pragma once
+
 #include <euicc/euicc.h>
 #include <pthread.h>
 #include <jni.h>

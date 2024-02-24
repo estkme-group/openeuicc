@@ -10,7 +10,7 @@
 #include "lpac-notifications.h"
 #include "interface-wrapper.h"
 
-JavaVM  *jvm = NULL;
+JavaVM *jvm = NULL;
 
 jclass local_profile_info_class;
 jmethodID local_profile_info_constructor;
@@ -38,24 +38,32 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     LPAC_JNI_SETUP_ENV;
     string_class = (*env)->FindClass(env, "java/lang/String");
     string_class = (*env)->NewGlobalRef(env, string_class);
-    string_constructor = (*env)->GetMethodID(env, string_class, "<init>", "([BLjava/lang/String;)V");
+    string_constructor = (*env)->GetMethodID(env, string_class, "<init>",
+                                             "([BLjava/lang/String;)V");
 
     local_profile_info_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/LocalProfileInfo");
     local_profile_info_class = (*env)->NewGlobalRef(env, local_profile_info_class);
     local_profile_info_constructor = (*env)->GetMethodID(env, local_profile_info_class, "<init>",
                                                          "(Ljava/lang/String;Lnet/typeblog/lpac_jni/LocalProfileInfo$State;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;)V");
 
-    local_profile_state_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/LocalProfileInfo$State");
+    local_profile_state_class = (*env)->FindClass(env,
+                                                  "net/typeblog/lpac_jni/LocalProfileInfo$State");
     local_profile_state_class = (*env)->NewGlobalRef(env, local_profile_state_class);
-    local_profile_state_from_string = (*env)->GetStaticMethodID(env, local_profile_state_class, "fromString", "(Ljava/lang/String;)Lnet/typeblog/lpac_jni/LocalProfileInfo$State;");
+    local_profile_state_from_string = (*env)->GetStaticMethodID(env, local_profile_state_class,
+                                                                "fromString",
+                                                                "(Ljava/lang/String;)Lnet/typeblog/lpac_jni/LocalProfileInfo$State;");
 
-    local_profile_class_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/LocalProfileInfo$Clazz");
+    local_profile_class_class = (*env)->FindClass(env,
+                                                  "net/typeblog/lpac_jni/LocalProfileInfo$Clazz");
     local_profile_class_class = (*env)->NewGlobalRef(env, local_profile_class_class);
-    local_profile_class_from_string = (*env)->GetStaticMethodID(env, local_profile_class_class, "fromString", "(Ljava/lang/String;)Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;");
+    local_profile_class_from_string = (*env)->GetStaticMethodID(env, local_profile_class_class,
+                                                                "fromString",
+                                                                "(Ljava/lang/String;)Lnet/typeblog/lpac_jni/LocalProfileInfo$Clazz;");
 
     euicc_info2_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/EuiccInfo2");
     euicc_info2_class = (*env)->NewGlobalRef(env, euicc_info2_class);
-    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II[Ljava/lang/String;[Ljava/lang/String;)V");
+    euicc_info2_constructor = (*env)->GetMethodID(env, euicc_info2_class, "<init>",
+                                                  "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II[Ljava/lang/String;[Ljava/lang/String;)V");
 
     const char _unused[1];
     empty_string = (*env)->NewString(env, _unused, 0);
@@ -292,7 +300,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cDeleteProfile(JNIEnv *env, jobject thiz
 JNIEXPORT jobject JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject thiz, jlong handle) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es10c_ex_euiccinfo2 info = { 0 };
+    struct es10c_ex_euiccinfo2 info = {0};
     jobjectArray euiccCiPKIdListForVerification = NULL;
     jobjectArray euiccCiPKIdListForSigning = NULL;
     jstring sas_accreditation_number = NULL;
@@ -322,7 +330,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject th
     count = LPAC_JNI_NULL_TERM_LIST_COUNT(info.euiccCiPKIdListForVerification, curr);
     euiccCiPKIdListForVerification = (*env)->NewObjectArray(env, count, string_class, NULL);
     LPAC_JNI_NULL_TERM_LIST_FOREACH(info.euiccCiPKIdListForVerification, curr, {
-        (*env)->SetObjectArrayElement(env, euiccCiPKIdListForVerification, i, toJString(env, *curr));
+        (*env)->SetObjectArrayElement(env, euiccCiPKIdListForVerification, i,
+                                      toJString(env, *curr));
     });
 
     ret = (*env)->NewObject(env, euicc_info2_class, euicc_info2_constructor,
