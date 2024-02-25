@@ -79,10 +79,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_createContext(JNIEnv *env, jobject thiz,
     struct lpac_jni_ctx *jni_ctx = NULL;
     struct euicc_ctx *ctx = NULL;
 
-    ctx = malloc(sizeof(struct euicc_ctx));
-    jni_ctx = malloc(sizeof(struct lpac_jni_ctx));
-    memset(ctx, 0, sizeof(struct euicc_ctx));
-    memset(jni_ctx, 0, sizeof(struct lpac_jni_ctx));
+    ctx = calloc(1, sizeof(struct euicc_ctx));
+    jni_ctx = calloc(1, sizeof(struct lpac_jni_ctx));
     ctx->apdu.interface = &lpac_jni_apdu_interface;
     ctx->http.interface = &lpac_jni_http_interface;
     jni_ctx->apdu_interface = (*env)->NewGlobalRef(env, apdu_interface);
