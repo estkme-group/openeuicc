@@ -84,7 +84,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10bListNotification(JNIEnv *env, jobject t
         (*env)->DeleteLocalRef(env, notification);
     });
 
-    es10b_notification_metadata_free_all(info);
+    es10b_notification_metadata_list_free_all(info);
     return ret;
 }
 
@@ -92,25 +92,23 @@ JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_handleNotification(JNIEnv *env, jobject thiz, jlong handle,
                                                        jlong seq_number) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es9p_ctx es9p_ctx = {0};
     struct es10b_pending_notification notification;
     int res;
 
     res = es10b_retrieve_notifications_list(ctx, &notification, (unsigned long) seq_number);
-    syslog(LOG_DEBUG, "es10b_retrieve_notification = %d", res);
+    syslog(LOG_DEBUG, "es10b_retrieve_notification = %d %s", res, notification.b64_PendingNotification);
     if (res < 0)
         goto out;
 
-    es9p_ctx.euicc_ctx = ctx;
-    es9p_ctx.address = notification.notificationAddress;
+    ctx->http.server_address = notification.notificationAddress;
 
-    res = es9p_handle_notification(&es9p_ctx, notification.b64_PendingNotification);
+    res = es9p_handle_notification(ctx, notification.b64_PendingNotification);
     syslog(LOG_DEBUG, "es9p_handle_notification = %d", res);
     if (res < 0)
         goto out;
 
     out:
-    es9p_ctx_free(&es9p_ctx);
+    euicc_http_cleanup(ctx);
     return res;
 }
 

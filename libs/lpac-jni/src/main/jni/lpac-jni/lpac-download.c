@@ -2,6 +2,7 @@
 #include <euicc/es10b.h>
 #include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
 #include "lpac-download.h"
 
 jobject download_state_preparing;
@@ -61,16 +62,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
                                                     jstring imei, jstring confirmation_code,
                                                     jobject callback) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
-    struct es9p_ctx es9p_ctx = {0};
     struct es10b_load_bound_profile_package_result es10b_load_bound_profile_package_result;
-    struct es10b_authenticate_server_param es10b_authenticate_server_param;
-    struct es10b_prepare_download_param es10b_prepare_download_param;
-    char *b64_authenticate_server_response = NULL;
-    char *b64_prepare_download_response = NULL;
-    char *b64_bound_profile_package = NULL;
-    char *b64_euicc_challenge = NULL;
-    char *b64_euicc_info_1 = NULL;
-    char *transaction_id = NULL;
     const char *_confirmation_code = NULL;
     const char *_matching_id = NULL;
     const char *_smdp = NULL;
@@ -85,63 +77,47 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     if (imei != NULL)
         _imei = (*env)->GetStringUTFChars(env, imei, NULL);
 
-    es9p_ctx.euicc_ctx = ctx;
-    es9p_ctx.address = _smdp;
+    ctx->http.server_address = _smdp;
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_preparing);
-    ret = es10b_get_euicc_challenge(ctx, &b64_euicc_challenge);
-    if (ret < 0)
-        goto out;
-
-    ret = es10b_get_euicc_info(ctx, &b64_euicc_info_1);
+    ret = es10b_get_euicc_challenge_and_info(ctx);
+    syslog(LOG_INFO, "es10b_get_euicc_challenge_and_info %d", ret);
     if (ret < 0)
         goto out;
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_connecting);
-    ret = es9p_initiate_authentication(&es9p_ctx, &es10b_authenticate_server_param,
-                                       b64_euicc_challenge, b64_euicc_info_1);
+    ret = es9p_initiate_authentication(ctx);
+    syslog(LOG_INFO, "es9p_initiate_authentication %d", ret);
     if (ret < 0)
         goto out;
-
-    es10b_authenticate_server_param.matchingId = _matching_id;
-    es10b_authenticate_server_param.imei = _imei;
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_authenticating);
-    ret = es10b_authenticate_server(ctx, &b64_authenticate_server_response,
-                                    &es10b_authenticate_server_param);
+    ret = es10b_authenticate_server(ctx, _matching_id, _imei);
+    syslog(LOG_INFO, "es10b_authenticate_server %d", ret);
     if (ret < 0)
         goto out;
 
-    ret = es9p_authenticate_client(&es9p_ctx, &es10b_prepare_download_param,
-                                   b64_authenticate_server_response);
+    ret = es9p_authenticate_client(ctx);
     if (ret < 0)
         goto out;
-
-    es10b_prepare_download_param.confirmationCode = _confirmation_code;
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_downloading);
-    ret = es10b_prepare_download(ctx, &b64_prepare_download_response,
-                                 &es10b_prepare_download_param);
+    ret = es10b_prepare_download(ctx, _confirmation_code);
+    syslog(LOG_INFO, "es10b_prepare_download %d", ret);
     if (ret < 0)
         goto out;
 
-    ret = es9p_get_bound_profile_package(&es9p_ctx, &b64_bound_profile_package,
-                                         b64_prepare_download_response);
+    ret = es9p_get_bound_profile_package(ctx);
     if (ret < 0)
         goto out;
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_finalizing);
     // TODO: Expose error code as Java-side exceptions?
-    ret = es10b_load_bound_profile_package(ctx, &es10b_load_bound_profile_package_result,
-                                           b64_bound_profile_package);
+    ret = es10b_load_bound_profile_package(ctx, &es10b_load_bound_profile_package_result);
+    syslog(LOG_INFO, "es10b_load_bound_profile_package %d", ret);
 
     out:
-    es9p_ctx_free(&es9p_ctx);
-    free(b64_authenticate_server_response);
-    free(b64_prepare_download_response);
-    free(b64_euicc_info_1);
-    free(b64_euicc_challenge);
-    free(transaction_id);
+    euicc_http_cleanup(ctx);
     if (_confirmation_code != NULL)
         (*env)->ReleaseStringUTFChars(env, confirmation_code, _confirmation_code);
     if (_matching_id != NULL)
