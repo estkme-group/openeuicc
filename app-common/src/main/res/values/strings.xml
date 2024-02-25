@@ -35,6 +35,7 @@
     <string name="profile_rename_new_name">New nickname</string>
 
     <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
+    <string name="profile_delete_confirm_input">Type \'%s\' here to confirm deletion</string>
 
     <string name="profile_notifications">Profile Notifications</string>
     <string name="profile_notifications_show">Manage Notifications</string>
