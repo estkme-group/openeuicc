@@ -24,8 +24,9 @@ internal fun keyIdToKeystore(keyIds: Array<String>): KeyStore {
         }
     }
 
-    // If no known certs have been added, add at least the default GSMA CI
-    if (ret.size() == 0) {
+    // At the very least, we should always have GSMA ROOT CI1 trusted
+    // many servers supporting custom roots are served with GSMA ROOT CI1 for TLS
+    if (!ret.isCertificateEntry(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1)) {
         getCertificate(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1)?.let { cert ->
             ret.setCertificateEntry(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1, cert)
         }
