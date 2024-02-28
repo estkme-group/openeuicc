@@ -14,23 +14,12 @@ cc_library_static {
 }
 
 cc_library_static {
-    name: "liblpac-asn1c",
-    defaults: ["lpac-jni-defaults"],
-    local_include_dirs: ["lpac/euicc/asn1c"],
-    cflags: ["-DHAVE_CONFIG_H"],
-    srcs: [
-        "lpac/euicc/asn1c/asn1/*.c",
-    ],
-}
-
-cc_library_static {
     name: "liblpac-euicc",
     defaults: ["lpac-jni-defaults"],
     srcs: [
         "lpac/euicc/*.c",
     ],
     static_libs: [
-        "liblpac-asn1c",
         "liblpac-cjson",
     ],
 }
@@ -44,7 +33,6 @@ cc_library_shared {
     ],
     static_libs: [
         "liblpac-euicc",
-        "liblpac-asn1c",
         "liblpac-cjson",
     ],
     shared_libs: ["liblog"],

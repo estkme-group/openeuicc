@@ -15,19 +15,9 @@ LOCAL_SRC_FILES := \
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-# libasn1c, the ASN parser component from lpac
-LOCAL_MODULE := lpac-asn1c
-LOCAL_C_INCLUDES := \
-	$(LOCAL_PATH)/lpac/euicc/asn1c
-LOCAL_SRC_FILES := \
-	$(call all-c-files-under, lpac/euicc/asn1c/asn1)
-LOCAL_CFLAGS := -DHAVE_CONFIG_H
-include $(BUILD_STATIC_LIBRARY)
-
-include $(CLEAR_VARS)
 # libeuicc component from lpac, which contains the actual implementation
 LOCAL_MODULE := lpac-euicc
-LOCAL_STATIC_LIBRARIES := lpac-asn1c lpac-cjson
+LOCAL_STATIC_LIBRARIES := lpac-cjson
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/lpac
 LOCAL_SRC_FILES := \
