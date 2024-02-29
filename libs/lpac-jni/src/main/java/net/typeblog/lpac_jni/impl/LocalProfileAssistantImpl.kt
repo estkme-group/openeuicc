@@ -115,6 +115,7 @@ class LocalProfileAssistantImpl(
         return LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0
     }
 
+    @Synchronized
     override fun downloadProfile(smdp: String, matchingId: String?, imei: String?,
                                  confirmationCode: String?, callback: ProfileDownloadCallback): Boolean {
         return LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei, confirmationCode, callback) == 0
@@ -123,6 +124,7 @@ class LocalProfileAssistantImpl(
     override fun deleteNotification(seqNumber: Long): Boolean =
         LpacJni.es10bDeleteNotification(contextHandle, seqNumber) == 0
 
+    @Synchronized
     override fun handleNotification(seqNumber: Long): Boolean =
         LpacJni.handleNotification(contextHandle, seqNumber).also {
             Log.d(TAG, "handleNotification $seqNumber = $it")
