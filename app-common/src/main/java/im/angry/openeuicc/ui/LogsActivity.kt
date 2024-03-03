@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,16 +45,7 @@ class LogsActivity : AppCompatActivity() {
     private suspend fun reload() = withContext(Dispatchers.Main) {
         swipeRefresh.isRefreshing = true
 
-        val logStr = withContext(Dispatchers.IO) {
-            try {
-                Runtime.getRuntime().exec("logcat -t 1024").inputStream.readBytes()
-                    .decodeToString()
-            } catch (_: Exception) {
-                ""
-            }
-        }
-
-        logText.text = logStr
+        logText.text = intent.extras?.getString("log") ?: readSelfLog()
 
         swipeRefresh.isRefreshing = false
 

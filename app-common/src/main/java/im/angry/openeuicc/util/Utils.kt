@@ -8,9 +8,11 @@ import androidx.fragment.app.Fragment
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileInfo
 import java.lang.RuntimeException
 import kotlin.coroutines.resume
@@ -25,6 +27,15 @@ val Context.selfAppVersion: String
         } catch (e: PackageManager.NameNotFoundException) {
             throw RuntimeException(e)
         }
+
+suspend fun readSelfLog(lines: Int = 2048): String = withContext(Dispatchers.IO) {
+    try {
+        Runtime.getRuntime().exec("logcat -t $lines").inputStream.readBytes()
+            .decodeToString()
+    } catch (_: Exception) {
+        ""
+    }
+}
 
 interface OpenEuiccContextMarker {
     val openEuiccMarkerContext: Context
