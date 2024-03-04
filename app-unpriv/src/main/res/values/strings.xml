@@ -9,8 +9,8 @@
     <string name="compatibility_check_system_features_no_omapi">Your device has no support for accessing SIM cards via OMAPI.</string>
     <string name="compatibility_check_omapi_connectivity">OMAPI Connectivity</string>
     <string name="compatibility_check_omapi_connectivity_desc">Does your device allow access to Secure Elements on SIM cards via OMAPI?</string>
-    <string name="compatibility_check_omapi_connectivity_fail">Unable to detect Secure Element readers for SIM cards via OMAPI.</string>
-    <string name="compatibility_check_omapi_connectivity_fail_sim_number">Only the following SIM slots are accessible via OMAPI: %s.</string>
+    <string name="compatibility_check_omapi_connectivity_fail">Unable to detect Secure Element readers for SIM cards via OMAPI. If you have not inserted a SIM in this device, try inserting one and retry this check.</string>
+    <string name="compatibility_check_omapi_connectivity_partial_success_sim_number">Successfully detected Secure Element access, but only for the following SIM slots: %s.</string>
     <string name="compatibility_check_isdr_channel">ISD-R Channel Access</string>
     <string name="compatibility_check_isdr_channel_desc">Does your device support opening an ISD-R (management) channel to eSIMs via OMAPI?</string>
     <string name="compatibility_check_isdr_channel_desc_unknown">Cannot determine whether ISD-R access through OMAPI is supported. You might want to retry with SIM cards inserted (any SIM card will do) if not already.</string>

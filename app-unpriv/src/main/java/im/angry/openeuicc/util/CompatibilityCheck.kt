@@ -47,11 +47,13 @@ abstract class CompatibilityCheck(context: Context) {
 
     abstract val title: String
     protected abstract val defaultDescription: String
+    protected lateinit var successDescription: String
     protected lateinit var failureDescription: String
 
     val description: String
         get() = when {
             (state == State.FAILURE || state == State.FAILURE_UNKNOWN) && this::failureDescription.isInitialized -> failureDescription
+            state == State.SUCCESS && this::successDescription.isInitialized -> successDescription
             else -> defaultDescription
         }
 
@@ -111,9 +113,9 @@ internal class OmapiConnCheck(private val context: Context): CompatibilityCheck(
             failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail)
             return State.FAILURE
         } else if (simReaders.size < tm.activeModemCountCompat) {
-            failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail_sim_number,
+            successDescription = context.getString(R.string.compatibility_check_omapi_connectivity_partial_success_sim_number,
                 simReaders.map { it.slotIndex }.joinToString(", "))
-            return State.FAILURE
+            return State.SUCCESS
         }
 
         return State.SUCCESS
