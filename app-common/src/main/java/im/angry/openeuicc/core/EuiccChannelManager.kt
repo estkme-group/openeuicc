@@ -25,7 +25,7 @@ open class EuiccChannelManager(protected val context: Context) : IEuiccChannelMa
     private val lock = Mutex()
 
     protected val tm by lazy {
-        (context.applicationContext as OpenEuiccApplication).telephonyManager
+        (context.applicationContext as OpenEuiccApplication).appContainer.telephonyManager
     }
 
     protected open val uiccCards: Collection<UiccCardInfoCompat>

@@ -32,12 +32,8 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
         const val TAG = "SlotMappingFragment"
     }
 
-    private val tm: TelephonyManager by lazy {
-        (requireContext().applicationContext as OpenEuiccApplication).telephonyManager
-    }
-
     private val ports: List<UiccPortInfoCompat> by lazy {
-        tm.uiccCardsInfoCompat.flatMap { it.ports }
+        telephonyManager.uiccCardsInfoCompat.flatMap { it.ports }
     }
 
     private val portsDesc: List<String> by lazy {
@@ -81,7 +77,7 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
     private fun init() {
         lifecycleScope.launch(Dispatchers.Main) {
             val mapping = withContext(Dispatchers.IO) {
-                tm.simSlotMapping
+                telephonyManager.simSlotMapping
             }
 
             adapter = SlotMappingAdapter(mapping.toMutableList().apply {
@@ -100,14 +96,14 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
                 withContext(Dispatchers.IO) {
                     // Use the utility method from PrivilegedTelephonyUtils to ensure
                     // unmapped ports have all profiles disabled
-                    tm.updateSimSlotMapping(openEuiccApplication.euiccChannelManager, adapter.mappings)
+                    telephonyManager.updateSimSlotMapping(euiccChannelManager, adapter.mappings)
                 }
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), R.string.slot_mapping_failure, Toast.LENGTH_LONG).show()
                 return@launch
             }
             Toast.makeText(requireContext(), R.string.slot_mapping_completed, Toast.LENGTH_LONG).show()
-            openEuiccApplication.euiccChannelManager.invalidate()
+            euiccChannelManager.invalidate()
             requireActivity().finish()
         }
     }
@@ -115,7 +111,7 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
     private suspend fun buildHelpText() = withContext(Dispatchers.IO) {
         val nLogicalSlots = adapter.mappings.size
 
-        val cards = openEuiccApplication.telephonyManager.uiccCardsInfoCompat
+        val cards = telephonyManager.uiccCardsInfoCompat
 
         val nPhysicalSlots = cards.size
         var idxMepCard = -1
@@ -129,7 +125,7 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
         }
 
         val mayEnableDSDS =
-            openEuiccApplication.telephonyManager.supportsDSDS && !openEuiccApplication.telephonyManager.dsdsEnabled
+            telephonyManager.supportsDSDS && !telephonyManager.dsdsEnabled
         val extraText =
             if (nLogicalSlots == 1 && mayEnableDSDS) {
                 getString(R.string.slot_mapping_help_dsds)

@@ -121,7 +121,7 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
         super.onStart()
         profileDownloadIMEI.editText!!.text = Editable.Factory.getInstance().newEditable(
             try {
-                openEuiccApplication.telephonyManager.getImei(channel.logicalSlotId)
+                telephonyManager.getImei(channel.logicalSlotId)
             } catch (e: Exception) {
                 ""
             }

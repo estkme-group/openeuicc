@@ -238,7 +238,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         }
         val success = channel.lpa
             .setNickname(iccid, nickname!!)
-        openEuiccApplication.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
+        appContainer.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
         return if (success) {
             RESULT_OK
         } else {
