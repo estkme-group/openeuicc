@@ -7,7 +7,7 @@ import android.telephony.TelephonyManager
 import androidx.fragment.app.Fragment
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.core.EuiccChannelManager
+import im.angry.openeuicc.core.IEuiccChannelManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -48,7 +48,7 @@ interface OpenEuiccContextMarker {
     val openEuiccApplication: OpenEuiccApplication
         get() = openEuiccMarkerContext.applicationContext as OpenEuiccApplication
 
-    val euiccChannelManager: EuiccChannelManager
+    val euiccChannelManager: IEuiccChannelManager
         get() = openEuiccApplication.euiccChannelManager
 
     val telephonyManager: TelephonyManager

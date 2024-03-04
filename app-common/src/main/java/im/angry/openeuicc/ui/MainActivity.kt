@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,8 +23,6 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
     companion object {
         const val TAG = "MainActivity"
     }
-
-    protected lateinit var manager: EuiccChannelManager
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private lateinit var spinner: Spinner
@@ -44,8 +41,6 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
         noEuiccPlaceholder = findViewById(R.id.no_euicc_placeholder)
 
         tm = telephonyManager
-
-        manager = euiccChannelManager
 
         spinnerAdapter = ArrayAdapter<String>(this, R.layout.spinner_item)
 
@@ -99,19 +94,19 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
 
     private suspend fun init() {
         withContext(Dispatchers.IO) {
-            manager.enumerateEuiccChannels()
-            manager.knownChannels.forEach {
+            euiccChannelManager.enumerateEuiccChannels()
+            euiccChannelManager.knownChannels.forEach {
                 Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
                 Log.d(TAG, it.lpa.eID)
                 // Request the system to refresh the list of profiles every time we start
                 // Note that this is currently supposed to be no-op when unprivileged,
                 // but it could change in the future
-                manager.notifyEuiccProfilesChanged(it.logicalSlotId)
+                euiccChannelManager.notifyEuiccProfilesChanged(it.logicalSlotId)
             }
         }
 
         withContext(Dispatchers.Main) {
-            manager.knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
+            euiccChannelManager.knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
                 spinnerAdapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
                 fragments.add(createEuiccManagementFragment(channel))
             }

@@ -4,7 +4,7 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.telephony.UiccSlotMapping
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.core.EuiccChannelManager
+import im.angry.openeuicc.core.IEuiccChannelManager
 import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
@@ -14,7 +14,7 @@ val TelephonyManager.supportsDSDS: Boolean
 val TelephonyManager.dsdsEnabled: Boolean
     get() = activeModemCount >= 2
 
-fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: Boolean) {
+fun TelephonyManager.setDsdsEnabled(euiccManager: IEuiccChannelManager, enabled: Boolean) {
     runBlocking {
         euiccManager.enumerateEuiccChannels()
     }
@@ -32,7 +32,7 @@ fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: 
 // Disable eSIM profiles before switching the slot mapping
 // This ensures that unmapped eSIM ports never have "ghost" profiles enabled
 fun TelephonyManager.updateSimSlotMapping(
-    euiccManager: EuiccChannelManager, newMapping: Collection<UiccSlotMapping>,
+    euiccManager: IEuiccChannelManager, newMapping: Collection<UiccSlotMapping>,
     currentMapping: Collection<UiccSlotMapping> = simSlotMapping
 ) {
     val unmapped = currentMapping.filterNot { mapping ->

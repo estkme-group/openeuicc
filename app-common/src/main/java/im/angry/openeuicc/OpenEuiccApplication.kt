@@ -5,6 +5,7 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import com.google.android.material.color.DynamicColors
 import im.angry.openeuicc.core.EuiccChannelManager
+import im.angry.openeuicc.core.IEuiccChannelManager
 import im.angry.openeuicc.util.PreferenceRepository
 
 open class OpenEuiccApplication : Application() {
@@ -19,7 +20,7 @@ open class OpenEuiccApplication : Application() {
         getSystemService(TelephonyManager::class.java)!!
     }
 
-    open val euiccChannelManager: EuiccChannelManager by lazy {
+    open val euiccChannelManager: IEuiccChannelManager by lazy {
         EuiccChannelManager(this)
     }
 

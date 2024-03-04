@@ -13,7 +13,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.lang.IllegalArgumentException
 
-open class EuiccChannelManager(protected val context: Context) {
+open class EuiccChannelManager(protected val context: Context) : IEuiccChannelManager {
     companion object {
         const val TAG = "EuiccChannelManager"
     }
@@ -32,9 +32,9 @@ open class EuiccChannelManager(protected val context: Context) {
         get() = (0..<tm.activeModemCountCompat).map { FakeUiccCardInfoCompat(it) }
 
     private suspend fun ensureSEService() {
-         if (seService == null) {
-             seService = connectSEService(context)
-         }
+        if (seService == null) {
+            seService = connectSEService(context)
+        }
     }
 
     protected open fun tryOpenEuiccChannelPrivileged(port: UiccPortInfoCompat): EuiccChannel? {
@@ -52,7 +52,10 @@ open class EuiccChannelManager(protected val context: Context) {
             return OmapiChannel(seService!!, port)
         } catch (e: IllegalArgumentException) {
             // Failed
-            Log.w(TAG, "OMAPI APDU interface unavailable for physical slot ${port.card.physicalSlotIndex}.")
+            Log.w(
+                TAG,
+                "OMAPI APDU interface unavailable for physical slot ${port.card.physicalSlotIndex}."
+            )
         }
 
         return null
@@ -61,7 +64,8 @@ open class EuiccChannelManager(protected val context: Context) {
     private suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat): EuiccChannel? {
         lock.withLock {
             ensureSEService()
-            val existing = channels.find { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex }
+            val existing =
+                channels.find { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex }
             if (existing != null) {
                 if (existing.valid && port.logicalSlotIndex == existing.logicalSlotId) {
                     return existing
@@ -90,7 +94,7 @@ open class EuiccChannelManager(protected val context: Context) {
         }
     }
 
-    fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
+    override fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
         runBlocking {
             withContext(Dispatchers.IO) {
                 for (card in uiccCards) {
@@ -105,54 +109,60 @@ open class EuiccChannelManager(protected val context: Context) {
             }
         }
 
-    fun findEuiccChannelByPhysicalSlotBlocking(physicalSlotId: Int): EuiccChannel? = runBlocking {
-        withContext(Dispatchers.IO) {
+    override fun findEuiccChannelByPhysicalSlotBlocking(physicalSlotId: Int): EuiccChannel? =
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                for (card in uiccCards) {
+                    if (card.physicalSlotIndex != physicalSlotId) continue
+                    for (port in card.ports) {
+                        tryOpenEuiccChannel(port)?.let { return@withContext it }
+                    }
+                }
+
+                null
+            }
+        }
+
+    override fun findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId: Int): List<EuiccChannel>? =
+        runBlocking {
             for (card in uiccCards) {
                 if (card.physicalSlotIndex != physicalSlotId) continue
-                for (port in card.ports) {
-                    tryOpenEuiccChannel(port)?.let { return@withContext it }
+                return@runBlocking card.ports.mapNotNull { tryOpenEuiccChannel(it) }
+                    .ifEmpty { null }
+            }
+            return@runBlocking null
+        }
+
+    override fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel? =
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
+                    card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
                 }
             }
-
-            null
         }
-    }
 
-    fun findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId: Int): List<EuiccChannel>? = runBlocking {
-        for (card in uiccCards) {
-            if (card.physicalSlotIndex != physicalSlotId) continue
-            return@runBlocking card.ports.mapNotNull { tryOpenEuiccChannel(it) }
-                .ifEmpty { null }
-        }
-        return@runBlocking null
-    }
-
-    fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel? = runBlocking {
-        withContext(Dispatchers.IO) {
-            uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
-                card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
-            }
-        }
-    }
-
-    suspend fun enumerateEuiccChannels() {
+    override suspend fun enumerateEuiccChannels() {
         withContext(Dispatchers.IO) {
             ensureSEService()
 
             for (uiccInfo in uiccCards) {
                 for (port in uiccInfo.ports) {
                     if (tryOpenEuiccChannel(port) != null) {
-                        Log.d(TAG, "Found eUICC on slot ${uiccInfo.physicalSlotIndex} port ${port.portIndex}")
+                        Log.d(
+                            TAG,
+                            "Found eUICC on slot ${uiccInfo.physicalSlotIndex} port ${port.portIndex}"
+                        )
                     }
                 }
             }
         }
     }
 
-    val knownChannels: List<EuiccChannel>
+    override val knownChannels: List<EuiccChannel>
         get() = channels.toList()
 
-    fun invalidate() {
+    override fun invalidate() {
         for (channel in channels) {
             channel.close()
         }
@@ -160,9 +170,5 @@ open class EuiccChannelManager(protected val context: Context) {
         channels.clear()
         seService?.shutdown()
         seService = null
-    }
-
-    open fun notifyEuiccProfilesChanged(logicalSlotId: Int) {
-        // No-op for unprivileged
     }
 }
