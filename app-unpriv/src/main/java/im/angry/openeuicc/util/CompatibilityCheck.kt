@@ -132,7 +132,13 @@ internal class IsdrChannelAccessCheck(private val context: Context): Compatibili
 
     override suspend fun doCheck(): State {
         val seService = connectSEService(context)
-        val (validSlotIds, result) = seService.readers.filter { it.isSIM }.map {
+        val readers = seService.readers.filter { it.isSIM }
+        if (readers.isEmpty()) {
+            failureDescription = context.getString(R.string.compatibility_check_isdr_channel_desc_unknown)
+            return State.FAILURE_UNKNOWN
+        }
+
+        val (validSlotIds, result) = readers.map {
             try {
                 it.openSession().openLogicalChannel(ISDR_AID)?.close()
                 Pair(it.slotIndex, State.SUCCESS)
