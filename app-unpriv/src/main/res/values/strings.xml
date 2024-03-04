@@ -6,7 +6,7 @@
     <string name="compatibility_check_system_features">System Features</string>
     <string name="compatibility_check_system_features_desc">Whether your device has all the required features for managing removable eUICC cards. For example, basic telephony and OMAPI support.</string>
     <string name="compatibility_check_system_features_no_telephony">Your device has no telephony features.</string>
-    <string name="compatibility_check_system_features_no_omapi">Your device has no support for accessing SIM cards via OMAPI.</string>
+    <string name="compatibility_check_system_features_no_omapi">Your device has no support for accessing SIM cards via OMAPI. If you are using a custom ROM, consider contacting the developer to determine whether it is due to hardware or a missing feature declaration in the OS.</string>
     <string name="compatibility_check_omapi_connectivity">OMAPI Connectivity</string>
     <string name="compatibility_check_omapi_connectivity_desc">Does your device allow access to Secure Elements on SIM cards via OMAPI?</string>
     <string name="compatibility_check_omapi_connectivity_fail">Unable to detect Secure Element readers for SIM cards via OMAPI. If you have not inserted a SIM in this device, try inserting one and retry this check.</string>
