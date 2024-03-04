@@ -23,4 +23,8 @@ open class DefaultAppContainer(context: Context) : AppContainer {
     override val preferenceRepository by lazy {
         PreferenceRepository(context)
     }
+
+    override val uiComponentFactory by lazy {
+        DefaultUiComponentFactory()
+    }
 }

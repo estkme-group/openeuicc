@@ -88,10 +88,6 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
             else -> super.onOptionsItemSelected(item)
         }
 
-
-    protected open fun createEuiccManagementFragment(channel: EuiccChannel): EuiccManagementFragment =
-        EuiccManagementFragment.newInstance(channel.slotId, channel.portId)
-
     private suspend fun init() {
         withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateEuiccChannels()
@@ -108,7 +104,7 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
         withContext(Dispatchers.Main) {
             euiccChannelManager.knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
                 spinnerAdapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
-                fragments.add(createEuiccManagementFragment(channel))
+                fragments.add(appContainer.uiComponentFactory.createEuiccManagementFragment(channel))
             }
 
             if (fragments.isNotEmpty()) {

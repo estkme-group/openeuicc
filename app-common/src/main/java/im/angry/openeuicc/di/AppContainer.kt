@@ -10,4 +10,5 @@ interface AppContainer {
     val euiccChannelManager: IEuiccChannelManager
     val subscriptionManager: SubscriptionManager
     val preferenceRepository: PreferenceRepository
+    val uiComponentFactory: UiComponentFactory
 }

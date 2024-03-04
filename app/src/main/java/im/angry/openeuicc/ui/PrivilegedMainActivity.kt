@@ -4,7 +4,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import im.angry.openeuicc.R
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 
 class PrivilegedMainActivity : MainActivity() {
@@ -37,7 +36,4 @@ class PrivilegedMainActivity : MainActivity() {
         }
         else -> super.onOptionsItemSelected(item)
     }
-
-    override fun createEuiccManagementFragment(channel: EuiccChannel): EuiccManagementFragment =
-        PrivilegedEuiccManagementFragment.newInstance(channel.slotId, channel.portId)
 }

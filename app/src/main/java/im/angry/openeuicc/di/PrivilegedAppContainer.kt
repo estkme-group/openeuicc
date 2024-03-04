@@ -8,4 +8,8 @@ class PrivilegedAppContainer(context: Context) : DefaultAppContainer(context) {
     override val euiccChannelManager: IEuiccChannelManager by lazy {
         PrivilegedEuiccChannelManager(context)
     }
+
+    override val uiComponentFactory by lazy {
+        PrivilegedUiComponentFactory()
+    }
 }
