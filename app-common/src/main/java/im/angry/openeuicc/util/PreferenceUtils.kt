@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "prefs")
 
 val Context.preferenceRepository: PreferenceRepository
-    get() = (applicationContext as OpenEuiccApplication).preferenceRepository
+    get() = (applicationContext as OpenEuiccApplication).appContainer.preferenceRepository
 
 val Fragment.preferenceRepository: PreferenceRepository
     get() = requireContext().preferenceRepository
