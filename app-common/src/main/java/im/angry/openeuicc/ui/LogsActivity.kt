@@ -23,13 +23,15 @@ class LogsActivity : AppCompatActivity() {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var scrollView: ScrollView
     private lateinit var logText: TextView
+    private lateinit var logStr: String
 
     private val saveLogs =
         registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
             if (uri == null) return@registerForActivityResult
+            if (!this::logStr.isInitialized) return@registerForActivityResult
             contentResolver.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { os ->
-                    os.write(logText.text.toString().encodeToByteArray())
+                    os.write(logStr.encodeToByteArray())
                 }
             }
         }
@@ -76,7 +78,12 @@ class LogsActivity : AppCompatActivity() {
     private suspend fun reload() = withContext(Dispatchers.Main) {
         swipeRefresh.isRefreshing = true
 
-        logText.text = intent.extras?.getString("log") ?: readSelfLog()
+        logStr = intent.extras?.getString("log") ?: readSelfLog()
+
+        logText.text = withContext(Dispatchers.IO) {
+            // Limit the UI to display only 256 lines
+            logStr.lines().takeLast(256).joinToString("\n")
+        }
 
         swipeRefresh.isRefreshing = false
 
