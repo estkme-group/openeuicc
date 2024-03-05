@@ -3,6 +3,7 @@ package im.angry.openeuicc.di
 import android.content.Context
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import im.angry.openeuicc.core.DefaultEuiccChannelFactory
 import im.angry.openeuicc.core.DefaultEuiccChannelManager
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
@@ -13,7 +14,7 @@ open class DefaultAppContainer(context: Context) : AppContainer {
     }
 
     override val euiccChannelManager: EuiccChannelManager by lazy {
-        DefaultEuiccChannelManager(context)
+        DefaultEuiccChannelManager(this, context)
     }
 
     override val subscriptionManager by lazy {
@@ -26,5 +27,9 @@ open class DefaultAppContainer(context: Context) : AppContainer {
 
     override val uiComponentFactory by lazy {
         DefaultUiComponentFactory()
+    }
+
+    override val euiccChannelFactory by lazy {
+        DefaultEuiccChannelFactory(context)
     }
 }

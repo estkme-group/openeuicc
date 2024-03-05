@@ -1,69 +1,41 @@
 package im.angry.openeuicc.core
 
 import android.content.Context
-import android.se.omapi.SEService
 import android.telephony.SubscriptionManager
 import android.util.Log
-import im.angry.openeuicc.OpenEuiccApplication
+import im.angry.openeuicc.di.AppContainer
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.lang.IllegalArgumentException
 
-open class DefaultEuiccChannelManager(protected val context: Context) : EuiccChannelManager {
+open class DefaultEuiccChannelManager(
+    protected val appContainer: AppContainer,
+    protected val context: Context
+) : EuiccChannelManager {
     companion object {
         const val TAG = "EuiccChannelManager"
     }
 
     private val channels = mutableListOf<EuiccChannel>()
 
-    private var seService: SEService? = null
-
     private val lock = Mutex()
 
     protected val tm by lazy {
-        (context.applicationContext as OpenEuiccApplication).appContainer.telephonyManager
+        appContainer.telephonyManager
+    }
+
+    private val euiccChannelFactory by lazy {
+        appContainer.euiccChannelFactory
     }
 
     protected open val uiccCards: Collection<UiccCardInfoCompat>
         get() = (0..<tm.activeModemCountCompat).map { FakeUiccCardInfoCompat(it) }
 
-    private suspend fun ensureSEService() {
-        if (seService == null) {
-            seService = connectSEService(context)
-        }
-    }
-
-    protected open fun tryOpenEuiccChannelPrivileged(port: UiccPortInfoCompat): EuiccChannel? {
-        // No-op when unprivileged
-        return null
-    }
-
-    protected fun tryOpenEuiccChannelUnprivileged(port: UiccPortInfoCompat): EuiccChannel? {
-        if (port.portIndex != 0) {
-            Log.w(TAG, "OMAPI channel attempted on non-zero portId, this may or may not work.")
-        }
-
-        Log.i(TAG, "Trying OMAPI for physical slot ${port.card.physicalSlotIndex}")
-        try {
-            return OmapiChannel(seService!!, port)
-        } catch (e: IllegalArgumentException) {
-            // Failed
-            Log.w(
-                TAG,
-                "OMAPI APDU interface unavailable for physical slot ${port.card.physicalSlotIndex}."
-            )
-        }
-
-        return null
-    }
-
     private suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat): EuiccChannel? {
         lock.withLock {
-            ensureSEService()
             val existing =
                 channels.find { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex }
             if (existing != null) {
@@ -80,17 +52,9 @@ open class DefaultEuiccChannelManager(protected val context: Context) : EuiccCha
                 return null
             }
 
-            var euiccChannel: EuiccChannel? = tryOpenEuiccChannelPrivileged(port)
-
-            if (euiccChannel == null) {
-                euiccChannel = tryOpenEuiccChannelUnprivileged(port)
+            return euiccChannelFactory.tryOpenEuiccChannel(port)?.also {
+                channels.add(it)
             }
-
-            if (euiccChannel != null) {
-                channels.add(euiccChannel)
-            }
-
-            return euiccChannel
         }
     }
 
@@ -144,8 +108,6 @@ open class DefaultEuiccChannelManager(protected val context: Context) : EuiccCha
 
     override suspend fun enumerateEuiccChannels() {
         withContext(Dispatchers.IO) {
-            ensureSEService()
-
             for (uiccInfo in uiccCards) {
                 for (port in uiccInfo.ports) {
                     if (tryOpenEuiccChannel(port) != null) {
@@ -168,7 +130,6 @@ open class DefaultEuiccChannelManager(protected val context: Context) : EuiccCha
         }
 
         channels.clear()
-        seService?.shutdown()
-        seService = null
+        euiccChannelFactory.cleanup()
     }
 }
