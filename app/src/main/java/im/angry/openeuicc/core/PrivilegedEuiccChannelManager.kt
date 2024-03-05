@@ -7,7 +7,7 @@ import im.angry.openeuicc.util.*
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 
-class PrivilegedEuiccChannelManager(context: Context): EuiccChannelManager(context) {
+class PrivilegedEuiccChannelManager(context: Context): DefaultEuiccChannelManager(context) {
     override val uiccCards: Collection<UiccCardInfoCompat>
         get() = tm.uiccCardsInfoCompat
 
