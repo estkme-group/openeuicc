@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,10 +53,15 @@ class CompatibilityCheckActivity: AppCompatActivity() {
     inner class ViewHolder(private val root: View): RecyclerView.ViewHolder(root) {
         private val titleView: TextView = root.findViewById(R.id.compatibility_check_title)
         private val descView: TextView = root.findViewById(R.id.compatibility_check_desc)
+        private val statusContainer: ViewGroup = root.findViewById(R.id.compatibility_check_status_container)
 
         fun bindItem(item: CompatibilityCheck) {
             titleView.text = item.title
             descView.text = item.description
+
+            statusContainer.children.forEach {
+                it.visibility = View.GONE
+            }
 
             when (item.state) {
                 CompatibilityCheck.State.SUCCESS -> {
