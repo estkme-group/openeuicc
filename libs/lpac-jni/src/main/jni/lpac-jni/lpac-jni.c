@@ -236,7 +236,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject th
         (*env)->DeleteLocalRef(env, jinfo);
     });
 
-    es10c_profile_info_free_all(info);
+    es10c_profile_info_list_free_all(info);
     return ret;
 }
 
