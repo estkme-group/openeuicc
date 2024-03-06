@@ -12,7 +12,7 @@ val Project.gitVersionCode: Int
         try {
             val stdout = ByteArrayOutputStream()
             exec {
-                commandLine("git", "rev-list", "--first-parent", "--count", "master")
+                commandLine("git", "rev-list", "--first-parent", "--count", "HEAD")
                 standardOutput = stdout
             }
             stdout.toString("utf-8").trim('\n').toInt()
