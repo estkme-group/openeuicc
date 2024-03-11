@@ -39,13 +39,13 @@ class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccContextMarker 
     ): View? {
         val view = inflater.inflate(R.layout.fragment_slot_select, container, false)
 
-        toolbar = view.findViewById(R.id.toolbar)
+        toolbar = view.requireViewById(R.id.toolbar)
         toolbar.setTitle(R.string.slot_select)
         toolbar.inflateMenu(R.menu.fragment_slot_select)
 
         val adapter = ArrayAdapter<String>(inflater.context, R.layout.spinner_item)
 
-        spinner = view.findViewById(R.id.spinner)
+        spinner = view.requireViewById(R.id.spinner)
         spinner.adapter = adapter
 
         channels.forEach { channel ->

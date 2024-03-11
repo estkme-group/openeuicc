@@ -51,12 +51,12 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_slot_mapping, container, false)
-        toolbar = view.findViewById(R.id.toolbar)
+        toolbar = view.requireViewById(R.id.toolbar)
         toolbar.inflateMenu(R.menu.fragment_slot_mapping)
-        recyclerView = view.findViewById(R.id.mapping_list)
+        recyclerView = view.requireViewById(R.id.mapping_list)
         recyclerView.layoutManager =
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
-        helpTextView = view.findViewById(R.id.mapping_help)
+        helpTextView = view.requireViewById(R.id.mapping_help)
         return view
     }
 
@@ -148,8 +148,8 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
         }
 
     inner class ViewHolder(root: View): RecyclerView.ViewHolder(root), OnItemSelectedListener {
-        private val textViewLogicalSlot: TextView = root.findViewById(R.id.slot_mapping_logical_slot)
-        private val spinnerPorts: Spinner = root.findViewById(R.id.slot_mapping_ports)
+        private val textViewLogicalSlot: TextView = root.requireViewById(R.id.slot_mapping_logical_slot)
+        private val spinnerPorts: Spinner = root.requireViewById(R.id.slot_mapping_ports)
 
         init {
             spinnerPorts.adapter = ArrayAdapter(requireContext(), im.angry.openeuicc.common.R.layout.spinner_item, portsDesc)

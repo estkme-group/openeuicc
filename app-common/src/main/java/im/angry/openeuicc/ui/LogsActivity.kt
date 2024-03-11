@@ -39,12 +39,12 @@ class LogsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_logs)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(requireViewById(R.id.toolbar))
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        swipeRefresh = findViewById(R.id.swipe_refresh)
-        scrollView = findViewById(R.id.scroll_view)
-        logText = findViewById(R.id.log_text)
+        swipeRefresh = requireViewById(R.id.swipe_refresh)
+        scrollView = requireViewById(R.id.scroll_view)
+        logText = requireViewById(R.id.log_text)
 
         swipeRefresh.setOnRefreshListener {
             lifecycleScope.launch {

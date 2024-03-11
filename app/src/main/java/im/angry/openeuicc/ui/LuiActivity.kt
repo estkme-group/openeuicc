@@ -10,10 +10,10 @@ class LuiActivity : AppCompatActivity() {
         super.onStart()
         setContentView(R.layout.activity_lui)
 
-        findViewById<View>(R.id.lui_skip).setOnClickListener { finish() }
+        requireViewById<View>(R.id.lui_skip).setOnClickListener { finish() }
         // TODO: Deactivate LuiActivity if there is no eSIM found.
         // TODO: Support pre-filled download info (from carrier apps); UX
-        findViewById<View>(R.id.lui_download).setOnClickListener {
+        requireViewById<View>(R.id.lui_download).setOnClickListener {
             startActivity(Intent(this, DirectProfileDownloadActivity::class.java))
         }
     }

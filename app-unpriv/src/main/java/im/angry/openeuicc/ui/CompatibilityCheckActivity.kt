@@ -24,10 +24,10 @@ class CompatibilityCheckActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compatibility_check)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(requireViewById(R.id.toolbar))
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        compatibilityCheckList = findViewById(R.id.recycler_view)
+        compatibilityCheckList = requireViewById(R.id.recycler_view)
         compatibilityCheckList.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         compatibilityCheckList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
@@ -51,9 +51,9 @@ class CompatibilityCheckActivity: AppCompatActivity() {
         }
 
     inner class ViewHolder(private val root: View): RecyclerView.ViewHolder(root) {
-        private val titleView: TextView = root.findViewById(R.id.compatibility_check_title)
-        private val descView: TextView = root.findViewById(R.id.compatibility_check_desc)
-        private val statusContainer: ViewGroup = root.findViewById(R.id.compatibility_check_status_container)
+        private val titleView: TextView = root.requireViewById(R.id.compatibility_check_title)
+        private val descView: TextView = root.requireViewById(R.id.compatibility_check_desc)
+        private val statusContainer: ViewGroup = root.requireViewById(R.id.compatibility_check_status_container)
 
         fun bindItem(item: CompatibilityCheck) {
             titleView.text = item.title
@@ -65,16 +65,16 @@ class CompatibilityCheckActivity: AppCompatActivity() {
 
             when (item.state) {
                 CompatibilityCheck.State.SUCCESS -> {
-                    root.findViewById<View>(R.id.compatibility_check_checkmark).visibility = View.VISIBLE
+                    root.requireViewById<View>(R.id.compatibility_check_checkmark).visibility = View.VISIBLE
                 }
                 CompatibilityCheck.State.FAILURE -> {
-                    root.findViewById<View>(R.id.compatibility_check_error).visibility = View.VISIBLE
+                    root.requireViewById<View>(R.id.compatibility_check_error).visibility = View.VISIBLE
                 }
                 CompatibilityCheck.State.FAILURE_UNKNOWN -> {
-                    root.findViewById<View>(R.id.compatibility_check_unknown).visibility = View.VISIBLE
+                    root.requireViewById<View>(R.id.compatibility_check_unknown).visibility = View.VISIBLE
                 }
                 else -> {
-                    root.findViewById<View>(R.id.compatibility_check_progress_bar).visibility = View.VISIBLE
+                    root.requireViewById<View>(R.id.compatibility_check_progress_bar).visibility = View.VISIBLE
                 }
             }
         }

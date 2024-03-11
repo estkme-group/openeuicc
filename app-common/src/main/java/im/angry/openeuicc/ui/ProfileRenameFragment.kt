@@ -46,9 +46,9 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
     ): View {
         val view = inflater.inflate(R.layout.fragment_profile_rename, container, false)
 
-        toolbar = view.findViewById(R.id.toolbar)
-        profileRenameNewName = view.findViewById(R.id.profile_rename_new_name)
-        progress = view.findViewById(R.id.progress)
+        toolbar = view.requireViewById(R.id.toolbar)
+        profileRenameNewName = view.requireViewById(R.id.profile_rename_new_name)
+        progress = view.requireViewById(R.id.progress)
 
         toolbar.inflateMenu(R.menu.fragment_profile_rename)
 

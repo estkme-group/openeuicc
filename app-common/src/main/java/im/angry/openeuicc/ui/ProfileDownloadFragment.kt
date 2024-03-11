@@ -69,13 +69,13 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
     ): View {
         val view = inflater.inflate(R.layout.fragment_profile_download, container, false)
 
-        toolbar = view.findViewById(R.id.toolbar)
-        profileDownloadServer = view.findViewById(R.id.profile_download_server)
-        profileDownloadCode = view.findViewById(R.id.profile_download_code)
-        profileDownloadConfirmationCode = view.findViewById(R.id.profile_download_confirmation_code)
-        profileDownloadIMEI = view.findViewById(R.id.profile_download_imei)
-        profileDownloadFreeSpace = view.findViewById(R.id.profile_download_free_space)
-        progress = view.findViewById(R.id.progress)
+        toolbar = view.requireViewById(R.id.toolbar)
+        profileDownloadServer = view.requireViewById(R.id.profile_download_server)
+        profileDownloadCode = view.requireViewById(R.id.profile_download_code)
+        profileDownloadConfirmationCode = view.requireViewById(R.id.profile_download_confirmation_code)
+        profileDownloadIMEI = view.requireViewById(R.id.profile_download_imei)
+        profileDownloadFreeSpace = view.requireViewById(R.id.profile_download_free_space)
+        progress = view.requireViewById(R.id.progress)
 
         toolbar.inflateMenu(R.menu.fragment_profile_download)
 

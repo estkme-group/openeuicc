@@ -37,14 +37,14 @@ class NotificationsActivity: AppCompatActivity(), OpenEuiccContextMarker {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notifications)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(requireViewById(R.id.toolbar))
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         euiccChannel = euiccChannelManager
             .findEuiccChannelBySlotBlocking(intent.getIntExtra("logicalSlotId", 0))!!
 
-        swipeRefresh = findViewById(R.id.swipe_refresh)
-        notificationList = findViewById(R.id.recycler_view)
+        swipeRefresh = requireViewById(R.id.swipe_refresh)
+        notificationList = requireViewById(R.id.recycler_view)
 
         notificationList.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -118,8 +118,8 @@ class NotificationsActivity: AppCompatActivity(), OpenEuiccContextMarker {
     @SuppressLint("ClickableViewAccessibility")
     inner class NotificationViewHolder(private val root: View):
         RecyclerView.ViewHolder(root), View.OnCreateContextMenuListener, OnMenuItemClickListener {
-        private val address: TextView = root.findViewById(R.id.notification_address)
-        private val profileName: TextView = root.findViewById(R.id.notification_profile_name)
+        private val address: TextView = root.requireViewById(R.id.notification_address)
+        private val profileName: TextView = root.requireViewById(R.id.notification_profile_name)
 
         private lateinit var notification: LocalProfileNotificationWrapper
 

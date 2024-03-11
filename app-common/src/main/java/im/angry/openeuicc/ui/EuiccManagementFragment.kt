@@ -58,9 +58,9 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     ): View {
         val view = inflater.inflate(R.layout.fragment_euicc, container, false)
 
-        swipeRefresh = view.findViewById(R.id.swipe_refresh)
-        fab = view.findViewById(R.id.fab)
-        profileList = view.findViewById(R.id.profile_list)
+        swipeRefresh = view.requireViewById(R.id.swipe_refresh)
+        fab = view.requireViewById(R.id.fab)
+        profileList = view.requireViewById(R.id.profile_list)
 
         return view
     }
@@ -191,11 +191,11 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     }
 
     inner class ProfileViewHolder(private val root: View) : ViewHolder(root) {
-        private val iccid: TextView = root.findViewById(R.id.iccid)
-        private val name: TextView = root.findViewById(R.id.name)
-        private val state: TextView = root.findViewById(R.id.state)
-        private val provider: TextView = root.findViewById(R.id.provider)
-        private val profileMenu: ImageButton = root.findViewById(R.id.profile_menu)
+        private val iccid: TextView = root.requireViewById(R.id.iccid)
+        private val name: TextView = root.requireViewById(R.id.name)
+        private val state: TextView = root.requireViewById(R.id.state)
+        private val provider: TextView = root.requireViewById(R.id.provider)
+        private val profileMenu: ImageButton = root.requireViewById(R.id.profile_menu)
 
         init {
             iccid.setOnClickListener {

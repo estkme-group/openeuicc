@@ -24,7 +24,7 @@ val Context.selfAppVersion: String
     get() =
         try {
             val pInfo = packageManager.getPackageInfo(packageName, 0)
-            pInfo.versionName
+            pInfo.versionName!!
         } catch (e: PackageManager.NameNotFoundException) {
             throw RuntimeException(e)
         }

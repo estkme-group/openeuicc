@@ -17,7 +17,7 @@ class PrivilegedEuiccManagementFragment: EuiccManagementFragment() {
     override suspend fun onCreateFooterViews(parent: ViewGroup): List<View> =
         if (channel.isMEP) {
             val view = layoutInflater.inflate(R.layout.footer_mep, parent, false)
-            view.findViewById<Button>(R.id.footer_mep_slot_mapping).setOnClickListener {
+            view.requireViewById<Button>(R.id.footer_mep_slot_mapping).setOnClickListener {
                 (requireActivity() as PrivilegedMainActivity).showSlotMappingFragment()
             }
             listOf(view)

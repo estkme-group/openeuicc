@@ -104,9 +104,9 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         return GetDefaultDownloadableSubscriptionListResult(RESULT_OK, arrayOf())
     }
 
-    override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult? {
+    override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult {
         Log.i(TAG, "onGetEuiccProfileInfoList slotId=$slotId")
-        val channel = findChannel(slotId) ?: return null
+        val channel = findChannel(slotId)!!
         val profiles = channel.lpa.profiles.operational.map {
             EuiccProfileInfo.Builder(it.iccid).apply {
                 setProfileName(it.name)

@@ -36,9 +36,9 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(requireViewById(R.id.toolbar))
 
-        noEuiccPlaceholder = findViewById(R.id.no_euicc_placeholder)
+        noEuiccPlaceholder = requireViewById(R.id.no_euicc_placeholder)
 
         tm = telephonyManager
 
