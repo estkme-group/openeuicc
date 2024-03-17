@@ -25,6 +25,7 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
     }
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
+    private lateinit var spinnerItem: MenuItem
     private lateinit var spinner: Spinner
 
     private val fragments = arrayListOf<EuiccManagementFragment>()
@@ -54,7 +55,11 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
         menuInflater.inflate(R.menu.activity_main, menu)
 
         if (!this::spinner.isInitialized) {
-            spinner = menu.findItem(R.id.spinner).actionView as Spinner
+            spinnerItem = menu.findItem(R.id.spinner)
+            spinner = spinnerItem.actionView as Spinner
+            if (spinnerAdapter.isEmpty) {
+                spinnerItem.isVisible = false
+            }
             spinner.adapter = spinnerAdapter
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -109,6 +114,9 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
             }
 
             if (fragments.isNotEmpty()) {
+                if (this@MainActivity::spinner.isInitialized) {
+                    spinnerItem.isVisible = true
+                }
                 supportFragmentManager.beginTransaction().replace(R.id.fragment_root, fragments.first()).commit()
             }
         }
