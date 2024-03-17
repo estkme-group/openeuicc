@@ -24,7 +24,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
 
         Log.i(DefaultEuiccChannelManager.TAG, "Trying OMAPI for physical slot ${port.card.physicalSlotIndex}")
         try {
-            return OmapiChannel(seService!!, port)
+            return EuiccChannel(port, OmapiApduInterface(seService!!, port))
         } catch (e: IllegalArgumentException) {
             // Failed
             Log.w(

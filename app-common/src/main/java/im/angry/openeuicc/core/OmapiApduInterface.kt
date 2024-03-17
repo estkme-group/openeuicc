@@ -5,9 +5,6 @@ import android.se.omapi.SEService
 import android.se.omapi.Session
 import im.angry.openeuicc.util.*
 import net.typeblog.lpac_jni.ApduInterface
-import net.typeblog.lpac_jni.LocalProfileAssistant
-import net.typeblog.lpac_jni.impl.HttpInterfaceImpl
-import net.typeblog.lpac_jni.impl.LocalProfileAssistantImpl
 
 class OmapiApduInterface(
     private val service: SEService,
@@ -47,13 +44,4 @@ class OmapiApduInterface(
         return lastChannel.transmit(tx)
     }
 
-}
-
-class OmapiChannel(
-    service: SEService,
-    port: UiccPortInfoCompat,
-) : EuiccChannel(port) {
-    override val lpa: LocalProfileAssistant = LocalProfileAssistantImpl(
-        OmapiApduInterface(service, port),
-        HttpInterfaceImpl())
 }
