@@ -1,12 +1,17 @@
 package im.angry.openeuicc
 
 import android.content.Intent
+import im.angry.openeuicc.di.UnprivilegedAppContainer
 import im.angry.openeuicc.ui.LogsActivity
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.runBlocking
 import kotlin.system.exitProcess
 
 class UnprivilegedOpenEuiccApplication : OpenEuiccApplication() {
+    override val appContainer by lazy {
+        UnprivilegedAppContainer(this)
+    }
+
     override fun onCreate() {
         super.onCreate()
 

@@ -21,15 +21,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
-        <TextView
-            android:id="@+id/no_euicc_placeholder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:gravity="center"
-            android:text="@string/no_euicc" />
-    </FrameLayout>
+        app:layout_constraintTop_toBottomOf="@id/toolbar"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

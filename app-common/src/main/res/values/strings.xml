@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc">No eUICC card on this device is accessible by this app.\nInsert a supported eUICC card, or try out the privileged OpenEUICC app instead.</string>
+    <string name="no_euicc">No removable eUICC card accessible by this app is detected on this device.</string>
     <string name="unknown">Unknown</string>
     <string name="help">Help</string>
 

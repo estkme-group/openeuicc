@@ -29,8 +29,6 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
 
     private val fragments = arrayListOf<EuiccManagementFragment>()
 
-    private lateinit var noEuiccPlaceholder: View
-
     protected lateinit var tm: TelephonyManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +36,10 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
         setContentView(R.layout.activity_main)
         setSupportActionBar(requireViewById(R.id.toolbar))
 
-        noEuiccPlaceholder = requireViewById(R.id.no_euicc_placeholder)
+        supportFragmentManager.beginTransaction().replace(
+            R.id.fragment_root,
+            appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment()
+        ).commit()
 
         tm = telephonyManager
 
@@ -108,7 +109,6 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
             }
 
             if (fragments.isNotEmpty()) {
-                noEuiccPlaceholder.visibility = View.GONE
                 supportFragmentManager.beginTransaction().replace(R.id.fragment_root, fragments.first()).commit()
             }
         }
