@@ -87,7 +87,7 @@ internal class HasSystemFeaturesCheck(private val context: Context): Compatibili
             PackageManager.FEATURE_SE_OMAPI_UICC
         )) {
             failureDescription = context.getString(R.string.compatibility_check_system_features_no_omapi)
-            return State.FAILURE
+            return State.FAILURE_UNKNOWN
         }
 
         return State.SUCCESS
