@@ -163,13 +163,13 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     }
 
     private suspend fun doEnableProfile(iccid: String) =
-        channel.lpa.beginOperation {
+        beginTrackedOperation {
             channel.lpa.enableProfile(iccid, reconnectTimeout = 15 * 1000) &&
                 preferenceRepository.notificationEnableFlow.first()
         }
 
     private suspend fun doDisableProfile(iccid: String) =
-        channel.lpa.beginOperation {
+        beginTrackedOperation {
             channel.lpa.disableProfile(iccid, reconnectTimeout = 15 * 1000) &&
                 preferenceRepository.notificationDisableFlow.first()
         }

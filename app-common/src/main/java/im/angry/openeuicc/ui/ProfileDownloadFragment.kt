@@ -189,15 +189,25 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
         }
     }
 
-    private suspend fun doDownloadProfile(server: String, code: String?, confirmationCode: String?, imei: String?) = channel.lpa.beginOperation {
-        downloadProfile(server, code, imei, confirmationCode, object : ProfileDownloadCallback {
-            override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    progress.isIndeterminate = false
-                    progress.progress = state.progress
+    private suspend fun doDownloadProfile(
+        server: String,
+        code: String?,
+        confirmationCode: String?,
+        imei: String?
+    ) = beginTrackedOperation {
+        channel.lpa.downloadProfile(
+            server,
+            code,
+            imei,
+            confirmationCode,
+            object : ProfileDownloadCallback {
+                override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        progress.isIndeterminate = false
+                        progress.progress = state.progress
+                    }
                 }
-            }
-        })
+            })
 
         // If we get here, we are successful
         // Only send notifications if the user allowed us to

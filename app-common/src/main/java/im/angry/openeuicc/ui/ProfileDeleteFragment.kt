@@ -82,7 +82,7 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
         }
     }
 
-    private suspend fun doDelete() = channel.lpa.beginOperation {
+    private suspend fun doDelete() = beginTrackedOperation {
         channel.lpa.deleteProfile(requireArguments().getString("iccid")!!)
         preferenceRepository.notificationDeleteFlow.first()
     }
