@@ -1,9 +1,6 @@
 package net.typeblog.lpac_jni.impl
 
 import android.util.Log
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import net.typeblog.lpac_jni.LpacJni
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.EuiccInfo2
@@ -14,8 +11,8 @@ import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
-    private val apduInterface: ApduInterface,
-    private val httpInterface: HttpInterface
+    apduInterface: ApduInterface,
+    httpInterface: HttpInterface
 ): LocalProfileAssistant {
     companion object {
         private const val TAG = "LocalProfileAssistantImpl"
@@ -29,48 +26,6 @@ class LocalProfileAssistantImpl(
 
         val pkids = euiccInfo2?.euiccCiPKIdListForVerification ?: arrayOf()
         httpInterface.usePublicKeyIds(pkids)
-    }
-
-    private fun tryReconnect(timeoutMillis: Long) = runBlocking {
-        withTimeout(timeoutMillis) {
-            try {
-                LpacJni.euiccFini(contextHandle)
-                LpacJni.destroyContext(contextHandle)
-                contextHandle = -1
-            } catch (e: Exception) {
-                // Ignored
-            }
-
-            while (true) {
-                try {
-                    apduInterface.disconnect()
-                } catch (e: Exception) {
-                    // Ignored
-                }
-
-                try {
-                    apduInterface.connect()
-                    contextHandle = LpacJni.createContext(apduInterface, httpInterface)
-                    check(LpacJni.euiccInit(contextHandle) >= 0) { "Reconnect attempt failed" }
-                    // Validate that we can actually use the APDU channel by trying to read eID and profiles
-                    check(valid) { "Reconnected channel is invalid" }
-                    break
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    if (contextHandle != -1L) {
-                        try {
-                            LpacJni.euiccFini(contextHandle)
-                            LpacJni.destroyContext(contextHandle)
-                            contextHandle = -1
-                        } catch (e: Exception) {
-                            // Ignored
-                        }
-                    }
-                    // continue retrying
-                    delay(1000)
-                }
-            }
-        }
     }
 
     override val profiles: List<LocalProfileInfo>
@@ -87,21 +42,11 @@ class LocalProfileAssistantImpl(
     override val euiccInfo2: EuiccInfo2?
         get() = LpacJni.es10cexGetEuiccInfo2(contextHandle)
 
-    override fun enableProfile(iccid: String, reconnectTimeout: Long): Boolean {
-        val res = LpacJni.es10cEnableProfile(contextHandle, iccid) == 0
-        if (reconnectTimeout > 0) {
-            tryReconnect(reconnectTimeout)
-        }
-        return res
-    }
+    override fun enableProfile(iccid: String): Boolean =
+        LpacJni.es10cEnableProfile(contextHandle, iccid) == 0
 
-    override fun disableProfile(iccid: String, reconnectTimeout: Long): Boolean {
-        val res = LpacJni.es10cDisableProfile(contextHandle, iccid) == 0
-        if (reconnectTimeout > 0) {
-            tryReconnect(reconnectTimeout)
-        }
-        return res
-    }
+    override fun disableProfile(iccid: String): Boolean =
+        LpacJni.es10cDisableProfile(contextHandle, iccid) == 0
 
     override fun deleteProfile(iccid: String): Boolean {
         return LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0

@@ -6,10 +6,12 @@ import android.util.Log
 import im.angry.openeuicc.di.AppContainer
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 open class DefaultEuiccChannelManager(
     protected val appContainer: AppContainer,
@@ -87,14 +89,18 @@ open class DefaultEuiccChannelManager(
             }
         }
 
+    override suspend fun findAllEuiccChannelsByPhysicalSlot(physicalSlotId: Int): List<EuiccChannel>? {
+        for (card in uiccCards) {
+            if (card.physicalSlotIndex != physicalSlotId) continue
+            return card.ports.mapNotNull { tryOpenEuiccChannel(it) }
+                .ifEmpty { null }
+        }
+        return null
+    }
+
     override fun findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId: Int): List<EuiccChannel>? =
         runBlocking {
-            for (card in uiccCards) {
-                if (card.physicalSlotIndex != physicalSlotId) continue
-                return@runBlocking card.ports.mapNotNull { tryOpenEuiccChannel(it) }
-                    .ifEmpty { null }
-            }
-            return@runBlocking null
+            findAllEuiccChannelsByPhysicalSlot(physicalSlotId)
         }
 
     override fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel? =
@@ -105,6 +111,25 @@ open class DefaultEuiccChannelManager(
                 }
             }
         }
+
+    override suspend fun tryReconnectSlot(physicalSlotId: Int, timeoutMillis: Long) {
+        invalidateByPhysicalSlot(physicalSlotId)
+
+        withTimeout(timeoutMillis) {
+            while (true) {
+                try {
+                    findAllEuiccChannelsByPhysicalSlot(physicalSlotId)!!.forEach {
+                        check(it.valid) { "Invalid channel" }
+                    }
+                    break
+                } catch (e: Exception) {
+                    Log.d(TAG, "Slot reconnect failure, retrying in 1000 ms")
+                    invalidateByPhysicalSlot(physicalSlotId)
+                }
+                delay(1000)
+            }
+        }
+    }
 
     override suspend fun enumerateEuiccChannels() {
         withContext(Dispatchers.IO) {
@@ -131,5 +156,13 @@ open class DefaultEuiccChannelManager(
 
         channels.clear()
         euiccChannelFactory.cleanup()
+    }
+
+    private fun invalidateByPhysicalSlot(physicalSlotId: Int) {
+        val toRemove = channels.filter { it.valid && it.slotId == physicalSlotId }
+        for (channel in toRemove) {
+            channel.close()
+            channels.remove(channel)
+        }
     }
 }

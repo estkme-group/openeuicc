@@ -10,7 +10,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
     private var seService: SEService? = null
 
     private suspend fun ensureSEService() {
-        if (seService == null) {
+        if (seService == null || !seService!!.isConnected) {
             seService = connectSEService(context)
         }
     }

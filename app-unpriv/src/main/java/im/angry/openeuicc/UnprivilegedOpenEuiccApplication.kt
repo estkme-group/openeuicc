@@ -15,7 +15,8 @@ class UnprivilegedOpenEuiccApplication : OpenEuiccApplication() {
     override fun onCreate() {
         super.onCreate()
 
-        Thread.setDefaultUncaughtExceptionHandler { _, _ ->
+        Thread.setDefaultUncaughtExceptionHandler { _, e ->
+            e.printStackTrace()
             Intent(this, LogsActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

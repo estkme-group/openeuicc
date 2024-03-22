@@ -31,7 +31,6 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 
 open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     EuiccChannelFragmentMarker {
@@ -132,47 +131,50 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         fab.isEnabled = false
 
         lifecycleScope.launch {
-            try {
-                if (enable) {
-                    doEnableProfile(iccid)
+            beginTrackedOperation {
+                val res = if (enable) {
+                    channel.lpa.enableProfile(iccid)
                 } else {
-                    doDisableProfile(iccid)
+                    channel.lpa.disableProfile(iccid)
                 }
-                refresh()
-                fab.isEnabled = true
-            } catch (e: TimeoutCancellationException) {
-                // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
-                AlertDialog.Builder(requireContext()).apply {
-                    setMessage(R.string.enable_disable_timeout)
-                    setPositiveButton(android.R.string.ok) { dialog, _ ->
-                        dialog.dismiss()
-                        requireActivity().finish()
-                    }
-                    setOnDismissListener { _ ->
-                        requireActivity().finish()
-                    }
-                    show()
+
+                if (!res) {
+                    Log.d(TAG, "Failed to enable / disable profile $iccid")
+                    Toast.makeText(context, R.string.toast_profile_enable_failed, Toast.LENGTH_LONG)
+                        .show()
+                    return@beginTrackedOperation false
                 }
-            } catch (e: Exception) {
-                Log.d(TAG, "Failed to enable / disable profile $iccid")
-                Log.d(TAG, Log.getStackTraceString(e))
-                fab.isEnabled = true
-                Toast.makeText(context, R.string.toast_profile_enable_failed, Toast.LENGTH_LONG).show()
+
+                try {
+                    euiccChannelManager.tryReconnectSlot(slotId, timeoutMillis = 30 * 1000)
+                } catch (e: TimeoutCancellationException) {
+                    withContext(Dispatchers.Main) {
+                        // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
+                        AlertDialog.Builder(requireContext()).apply {
+                            setMessage(R.string.enable_disable_timeout)
+                            setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                dialog.dismiss()
+                                requireActivity().finish()
+                            }
+                            setOnDismissListener { _ ->
+                                requireActivity().finish()
+                            }
+                            show()
+                        }
+                    }
+                    return@beginTrackedOperation false
+                }
+
+                if (enable) {
+                    preferenceRepository.notificationEnableFlow.first()
+                } else {
+                    preferenceRepository.notificationDisableFlow.first()
+                }
             }
+            refresh()
+            fab.isEnabled = true
         }
     }
-
-    private suspend fun doEnableProfile(iccid: String) =
-        beginTrackedOperation {
-            channel.lpa.enableProfile(iccid, reconnectTimeout = 15 * 1000) &&
-                preferenceRepository.notificationEnableFlow.first()
-        }
-
-    private suspend fun doDisableProfile(iccid: String) =
-        beginTrackedOperation {
-            channel.lpa.disableProfile(iccid, reconnectTimeout = 15 * 1000) &&
-                preferenceRepository.notificationDisableFlow.first()
-        }
 
     protected open fun populatePopupWithProfileActions(popup: PopupMenu, profile: LocalProfileInfo) {
         popup.inflate(R.menu.profile_options)

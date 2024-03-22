@@ -9,6 +9,15 @@ interface EuiccChannelManager {
     suspend fun enumerateEuiccChannels()
 
     /**
+     * Reconnect ALL EuiccChannels belonging to a physical slot
+     * Throws TimeoutCancellationException when timed out
+     * If this operation times out, none of the channels belonging to the slot will be
+     * guaranteed to be consistent. The caller should either call invalidate()
+     * and try again later, or the application should simply exit entirely.
+     */
+    suspend fun tryReconnectSlot(physicalSlotId: Int, timeoutMillis: Long = 1000)
+
+    /**
      * Returns the EuiccChannel corresponding to a **logical** slot
      */
     fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel?
@@ -24,6 +33,7 @@ interface EuiccChannelManager {
      * Returns all EuiccChannels corresponding to a **physical** slot
      * Multiple channels are possible in the case of MEP
      */
+    suspend fun findAllEuiccChannelsByPhysicalSlot(physicalSlotId: Int): List<EuiccChannel>?
     fun findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId: Int): List<EuiccChannel>?
 
     /**
