@@ -16,6 +16,7 @@ import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +27,7 @@ import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -138,6 +140,19 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                 }
                 refresh()
                 fab.isEnabled = true
+            } catch (e: TimeoutCancellationException) {
+                // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
+                AlertDialog.Builder(requireContext()).apply {
+                    setMessage(R.string.enable_disable_timeout)
+                    setPositiveButton(android.R.string.ok) { dialog, _ ->
+                        dialog.dismiss()
+                        requireActivity().finish()
+                    }
+                    setOnDismissListener { _ ->
+                        requireActivity().finish()
+                    }
+                    show()
+                }
             } catch (e: Exception) {
                 Log.d(TAG, "Failed to enable / disable profile $iccid")
                 Log.d(TAG, Log.getStackTraceString(e))

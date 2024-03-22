@@ -90,11 +90,7 @@ class LocalProfileAssistantImpl(
     override fun enableProfile(iccid: String, reconnectTimeout: Long): Boolean {
         val res = LpacJni.es10cEnableProfile(contextHandle, iccid) == 0
         if (reconnectTimeout > 0) {
-            try {
-                tryReconnect(reconnectTimeout)
-            } catch (e: Exception) {
-                return false
-            }
+            tryReconnect(reconnectTimeout)
         }
         return res
     }
@@ -102,11 +98,7 @@ class LocalProfileAssistantImpl(
     override fun disableProfile(iccid: String, reconnectTimeout: Long): Boolean {
         val res = LpacJni.es10cDisableProfile(contextHandle, iccid) == 0
         if (reconnectTimeout > 0) {
-            try {
-                tryReconnect(reconnectTimeout)
-            } catch (e: Exception) {
-                return false
-            }
+            tryReconnect(reconnectTimeout)
         }
         return res
     }

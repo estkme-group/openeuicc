@@ -16,6 +16,8 @@
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
 
+    <string name="enable_disable_timeout">Timed out waiting for the eSIM chip to switch profiles. You might want to restart the application or even the phone.</string>
+
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
     <string name="toast_profile_name_too_long">Nickname cannot be longer than 64 characters</string>
 
