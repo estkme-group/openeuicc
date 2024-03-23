@@ -9,13 +9,11 @@ interface EuiccChannelManager {
     suspend fun enumerateEuiccChannels()
 
     /**
-     * Reconnect ALL EuiccChannels belonging to a physical slot
-     * Throws TimeoutCancellationException when timed out
-     * If this operation times out, none of the channels belonging to the slot will be
-     * guaranteed to be consistent. The caller should either call invalidate()
-     * and try again later, or the application should simply exit entirely.
+     * Wait for a slot + port to reconnect (i.e. become valid again)
+     * If the port is currently valid, this function will return immediately.
+     * On timeout, the caller can decide to either try again later, or alert the user with an error
      */
-    suspend fun tryReconnectSlot(physicalSlotId: Int, timeoutMillis: Long = 1000)
+    suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long = 1000)
 
     /**
      * Returns the EuiccChannel corresponding to a **logical** slot
@@ -39,6 +37,7 @@ interface EuiccChannelManager {
     /**
      * Returns the EuiccChannel corresponding to a **physical** slot and a port ID
      */
+    suspend fun findEuiccChannelByPort(physicalSlotId: Int, portId: Int): EuiccChannel?
     fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel?
 
     /**

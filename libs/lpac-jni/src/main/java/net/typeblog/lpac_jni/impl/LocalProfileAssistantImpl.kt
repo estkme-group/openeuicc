@@ -11,13 +11,14 @@ import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
-    apduInterface: ApduInterface,
+    private val apduInterface: ApduInterface,
     httpInterface: HttpInterface
 ): LocalProfileAssistant {
     companion object {
         private const val TAG = "LocalProfileAssistantImpl"
     }
 
+    private var finalized = false
     private var contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
     init {
         if (LpacJni.euiccInit(contextHandle) < 0) {
@@ -27,6 +28,17 @@ class LocalProfileAssistantImpl(
         val pkids = euiccInfo2?.euiccCiPKIdListForVerification ?: arrayOf()
         httpInterface.usePublicKeyIds(pkids)
     }
+
+    override val valid: Boolean
+        get() = !finalized && apduInterface.valid && try {
+            // If we can read both eID and profiles properly, we are likely looking at
+            // a valid LocalProfileAssistant
+            eID
+            profiles
+            true
+        } catch (e: Exception) {
+            false
+        }
 
     override val profiles: List<LocalProfileInfo>
         get() = LpacJni.es10cGetProfilesInfo(contextHandle)!!.asList()
@@ -71,8 +83,12 @@ class LocalProfileAssistantImpl(
         return LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0
     }
 
+    @Synchronized
     override fun close() {
-        LpacJni.euiccFini(contextHandle)
-        LpacJni.destroyContext(contextHandle)
+        if (!finalized) {
+            LpacJni.euiccFini(contextHandle)
+            LpacJni.destroyContext(contextHandle)
+            finalized = true
+        }
     }
 }

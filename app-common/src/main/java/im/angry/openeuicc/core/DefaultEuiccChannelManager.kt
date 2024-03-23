@@ -103,28 +103,35 @@ open class DefaultEuiccChannelManager(
             findAllEuiccChannelsByPhysicalSlot(physicalSlotId)
         }
 
-    override fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel? =
-        runBlocking {
-            withContext(Dispatchers.IO) {
-                uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
-                    card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
-                }
+    override suspend fun findEuiccChannelByPort(physicalSlotId: Int, portId: Int): EuiccChannel? =
+        withContext(Dispatchers.IO) {
+            uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
+                card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
             }
         }
 
-    override suspend fun tryReconnectSlot(physicalSlotId: Int, timeoutMillis: Long) {
-        invalidateByPhysicalSlot(physicalSlotId)
+    override fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel? =
+        runBlocking {
+            findEuiccChannelByPort(physicalSlotId, portId)
+        }
+
+    override suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long) {
+        // If there is already a valid channel, we close it proactively
+        // Sometimes the current channel can linger on for a bit even after it should have become invalid
+        channels.find { it.slotId == physicalSlotId && it.portId == portId }?.apply {
+            if (valid) close()
+        }
 
         withTimeout(timeoutMillis) {
             while (true) {
                 try {
-                    findAllEuiccChannelsByPhysicalSlot(physicalSlotId)!!.forEach {
-                        check(it.valid) { "Invalid channel" }
-                    }
+                    // tryOpenEuiccChannel() will automatically dispose of invalid channels
+                    // and recreate when needed
+                    val channel = findEuiccChannelByPortBlocking(physicalSlotId, portId)!!
+                    check(channel.valid) { "Invalid channel" }
                     break
                 } catch (e: Exception) {
-                    Log.d(TAG, "Slot reconnect failure, retrying in 1000 ms")
-                    invalidateByPhysicalSlot(physicalSlotId)
+                    Log.d(TAG, "Slot $physicalSlotId port $portId reconnect failure, retrying in 1000 ms")
                 }
                 delay(1000)
             }
@@ -156,13 +163,5 @@ open class DefaultEuiccChannelManager(
 
         channels.clear()
         euiccChannelFactory.cleanup()
-    }
-
-    private fun invalidateByPhysicalSlot(physicalSlotId: Int) {
-        val toRemove = channels.filter { it.valid && it.slotId == physicalSlotId }
-        for (channel in toRemove) {
-            channel.close()
-            channels.remove(channel)
-        }
     }
 }

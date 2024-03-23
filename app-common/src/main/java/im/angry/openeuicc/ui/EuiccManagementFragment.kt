@@ -146,7 +146,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                 }
 
                 try {
-                    euiccChannelManager.tryReconnectSlot(slotId, timeoutMillis = 30 * 1000)
+                    euiccChannelManager.waitForReconnect(slotId, portId, timeoutMillis = 30 * 1000)
                 } catch (e: TimeoutCancellationException) {
                     withContext(Dispatchers.Main) {
                         // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid

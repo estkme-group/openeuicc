@@ -11,6 +11,11 @@ class TelephonyManagerApduInterface(
 ): ApduInterface {
     private var lastChannel: Int = -1
 
+    override val valid: Boolean
+        // TelephonyManager channels will never become truly "invalid",
+        // just that transactions might return errors or nonsense
+        get() = lastChannel != -1
+
     override fun connect() {
         // Do nothing
     }
