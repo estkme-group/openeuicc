@@ -16,12 +16,16 @@ fun getCompatibilityChecks(context: Context): List<CompatibilityCheck> =
         HasSystemFeaturesCheck(context),
         OmapiConnCheck(context),
         IsdrChannelAccessCheck(context),
-        KnownBrokenCheck(context)
+        KnownBrokenCheck(context),
+        Verdict(context),
     )
+
+inline fun <reified T: CompatibilityCheck> List<CompatibilityCheck>.findCheck(): T? =
+    find { it.javaClass == T::class.java }?.let { it as T }
 
 suspend fun List<CompatibilityCheck>.executeAll(callback: () -> Unit) = withContext(Dispatchers.IO) {
     forEach {
-        it.run()
+        it.run(this@executeAll)
         withContext(Dispatchers.Main) {
             callback()
         }
@@ -57,13 +61,13 @@ abstract class CompatibilityCheck(context: Context) {
             else -> defaultDescription
         }
 
-    protected abstract suspend fun doCheck(): State
+    protected abstract suspend fun doCheck(allChecks: List<CompatibilityCheck>): State
 
-    suspend fun run() {
+    suspend fun run(allChecks: List<CompatibilityCheck>) {
         state = State.IN_PROGRESS
         delay(200)
         state = try {
-            doCheck()
+            doCheck(allChecks)
         } catch (_: Exception) {
             State.FAILURE
         }
@@ -76,7 +80,7 @@ internal class HasSystemFeaturesCheck(private val context: Context): Compatibili
     override val defaultDescription: String
         get() = context.getString(R.string.compatibility_check_system_features_desc)
 
-    override suspend fun doCheck(): State {
+    override suspend fun doCheck(allChecks: List<CompatibilityCheck>): State {
         if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
             failureDescription = context.getString(R.string.compatibility_check_system_features_no_telephony)
             return State.FAILURE
@@ -100,7 +104,7 @@ internal class OmapiConnCheck(private val context: Context): CompatibilityCheck(
     override val defaultDescription: String
         get() = context.getString(R.string.compatibility_check_omapi_connectivity_desc)
 
-    override suspend fun doCheck(): State {
+    override suspend fun doCheck(allChecks: List<CompatibilityCheck>): State {
         val seService = connectSEService(context)
         if (!seService.isConnected) {
             failureDescription = context.getString(R.string.compatibility_check_omapi_connectivity_fail)
@@ -132,7 +136,7 @@ internal class IsdrChannelAccessCheck(private val context: Context): Compatibili
     override val defaultDescription: String
         get() = context.getString(R.string.compatibility_check_isdr_channel_desc)
 
-    override suspend fun doCheck(): State {
+    override suspend fun doCheck(allChecks: List<CompatibilityCheck>): State {
         val seService = connectSEService(context)
         val readers = seService.readers.filter { it.isSIM }
         if (readers.isEmpty()) {
@@ -200,10 +204,57 @@ internal class KnownBrokenCheck(private val context: Context): CompatibilityChec
         failureDescription = context.getString(R.string.compatibility_check_known_broken_fail)
     }
 
-    override suspend fun doCheck(): State =
+    override suspend fun doCheck(allChecks: List<CompatibilityCheck>): State =
         if (Build.MANUFACTURER.lowercase() in BROKEN_MANUFACTURERS) {
             State.FAILURE
         } else {
             State.SUCCESS
         }
+}
+
+internal class Verdict(private val context: Context) : CompatibilityCheck(context) {
+    override val title: String
+        get() = context.getString(R.string.compatibility_check_verdict)
+    override val defaultDescription: String
+        get() = context.getString(R.string.compatibility_check_verdict_desc)
+
+    override suspend fun doCheck(allChecks: List<CompatibilityCheck>): State {
+        if (allChecks.findCheck<KnownBrokenCheck>()?.state == State.FAILURE) {
+            failureDescription = context.getString(
+                R.string.compatibility_check_verdict_known_broken,
+                context.getString(R.string.compatibility_check_verdict_fail_shared)
+            )
+            return State.FAILURE
+        }
+
+        if (allChecks.findCheck<OmapiConnCheck>()?.state == State.SUCCESS &&
+            allChecks.findCheck<IsdrChannelAccessCheck>()?.state == State.SUCCESS
+        ) {
+            successDescription = context.getString(R.string.compatibility_check_verdict_ok)
+            return State.SUCCESS
+        }
+
+        if (allChecks.findCheck<OmapiConnCheck>()?.state == State.FAILURE_UNKNOWN ||
+            allChecks.findCheck<IsdrChannelAccessCheck>()?.state == State.FAILURE_UNKNOWN
+        ) {
+            // We are not sure because we can't fully check OMAPI
+            // however we can guess based on feature flags
+            // TODO: We probably need a "known-good" list for these devices as well?
+            failureDescription = context.getString(
+                if (allChecks.findCheck<HasSystemFeaturesCheck>()?.state == State.SUCCESS) {
+                    R.string.compatibility_check_verdict_unknown_likely_ok
+                } else {
+                    R.string.compatibility_check_verdict_unknown_likely_fail
+                },
+                context.getString(R.string.compatibility_check_verdict_fail_shared)
+            )
+            return State.FAILURE_UNKNOWN
+        }
+
+        failureDescription = context.getString(
+            R.string.compatibility_check_verdict_unknown,
+            context.getString(R.string.compatibility_check_verdict_fail_shared)
+        )
+        return State.FAILURE_UNKNOWN
+    }
 }
