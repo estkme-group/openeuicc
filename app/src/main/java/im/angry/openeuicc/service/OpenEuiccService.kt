@@ -1,5 +1,6 @@
 package im.angry.openeuicc.service
 
+import android.os.Build
 import android.service.euicc.*
 import android.telephony.UiccSlotMapping
 import android.telephony.euicc.DownloadableSubscription
@@ -34,6 +35,10 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         lpa.profiles.any { it.iccid == iccid }
 
     private fun ensurePortIsMapped(slotId: Int, portId: Int) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return
+        }
+
         val mappings = telephonyManager.simSlotMapping.toMutableList()
 
         mappings.firstOrNull { it.physicalSlotIndex == slotId && it.portIndex == portId }?.let {

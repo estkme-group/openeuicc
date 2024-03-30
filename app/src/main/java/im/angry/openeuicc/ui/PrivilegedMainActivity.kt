@@ -1,5 +1,6 @@
 package im.angry.openeuicc.ui
 
+import android.os.Build
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -10,6 +11,10 @@ class PrivilegedMainActivity : MainActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.activity_main_privileged, menu)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            menu.findItem(R.id.slot_mapping).isVisible = false
+        }
 
         if (tm.supportsDSDS) {
             val dsds = menu.findItem(R.id.dsds)
