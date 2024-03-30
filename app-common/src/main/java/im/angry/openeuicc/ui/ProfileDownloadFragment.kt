@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
-import android.text.format.Formatter
 import android.util.Log
 import android.view.*
 import android.widget.ProgressBar
@@ -131,7 +130,7 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
             // Fetch remaining NVRAM
             val str = channel.lpa.euiccInfo2?.freeNvram?.also {
                 freeNvram = it
-            }?.let { Formatter.formatShortFileSize(requireContext(), it.toLong()) }
+            }?.let { formatFreeSpace(it) }
 
             withContext(Dispatchers.Main) {
                 profileDownloadFreeSpace.text = getString(R.string.profile_download_free_space,

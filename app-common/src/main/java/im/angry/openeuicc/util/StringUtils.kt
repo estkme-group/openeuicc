@@ -20,3 +20,11 @@ fun ByteArray.encodeHex(): String {
     }
     return sb.toString()
 }
+
+fun formatFreeSpace(size: Int): String =
+    // SIM cards probably won't have much more space anytime soon.
+    if (size >= 1024) {
+        "%.2f KiB".format(size.toDouble() / 1024)
+    } else {
+        "$size B"
+    }
