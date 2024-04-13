@@ -14,6 +14,7 @@ jobs:
         uses: https://gitea.angry.im/actions/checkout@v3
         with:
           submodules: recursive
+          fetch-depth: 0
 
       - name: Decode Secret Signing Configuration
         uses: https://gitea.angry.im/actions/base64-to-file@v1
