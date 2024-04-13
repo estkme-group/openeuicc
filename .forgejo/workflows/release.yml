@@ -34,6 +34,9 @@ jobs:
       - name: Build Release APK (Unprivileged / EasyEUICC only)
         run: ./gradlew --no-daemon :app-unpriv:assembleRelease
 
+      - name: Copy Debug Symbols to Release Path
+        run: cp app-unpriv/build/outputs/native-debug-symbols/jmpRelease/native-debug-symbols.zip app-unpriv/build/outputs/apk/jmp/release/
+
       - name: Create Release
         uses: https://gitea.angry.im/actions/forgejo-release@v1
         with:
