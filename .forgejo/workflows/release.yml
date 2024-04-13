@@ -2,10 +2,6 @@ on:
   push:
     tags: '*'
 
-env:
-  # Enable reproducibility-related build system workarounds
-  REPRODUCIBLE_BUILD: 'true'
-
 jobs:
   release:
     runs-on: [docker, android-app-certs]

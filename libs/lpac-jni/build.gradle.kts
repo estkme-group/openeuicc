@@ -15,12 +15,11 @@ android {
 
         externalNativeBuild {
             ndkBuild {
-                if (System.getenv("REPRODUCIBLE_BUILD") != "true") {
-                    arguments("-j4")
-                } else {
-                    arguments("-j1")
-                    cFlags("-fmacro-prefix-map=${project.projectDir.toString()}=/fake/path/")
-                }
+                cFlags(
+                    "-fmacro-prefix-map=${project.projectDir.toString()}=/fake/path/",
+                    "-fdebug-prefix-map=${project.projectDir.toString()}=/fake/path/",
+                    "-ffile-prefix-map=${project.projectDir.toString()}=/fake/path/"
+                )
             }
         }
     }
