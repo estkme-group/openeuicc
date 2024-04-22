@@ -131,7 +131,12 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             return GetEuiccProfileInfoListResult(RESULT_FIRST_USER, arrayOf(), true)
         }
 
-        val channel = findChannel(slotId)!!
+        // TODO: Temporarily enable the slot to access its profiles if it is currently unmapped
+        val channel = findChannel(slotId) ?: return GetEuiccProfileInfoListResult(
+            RESULT_FIRST_USER,
+            arrayOf(),
+            true
+        )
         val profiles = channel.lpa.profiles.operational.map {
             EuiccProfileInfo.Builder(it.iccid).apply {
                 setProfileName(it.name)
