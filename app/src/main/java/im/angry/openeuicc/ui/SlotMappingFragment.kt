@@ -96,14 +96,17 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
                 withContext(Dispatchers.IO) {
                     // Use the utility method from PrivilegedTelephonyUtils to ensure
                     // unmapped ports have all profiles disabled
-                    telephonyManager.updateSimSlotMapping(euiccChannelManager, adapter.mappings)
+                    telephonyManager.updateSimSlotMapping(
+                        (requireActivity() as BaseEuiccAccessActivity).euiccChannelManager,
+                        adapter.mappings
+                    )
                 }
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), R.string.slot_mapping_failure, Toast.LENGTH_LONG).show()
                 return@launch
             }
             Toast.makeText(requireContext(), R.string.slot_mapping_completed, Toast.LENGTH_LONG).show()
-            euiccChannelManager.invalidate()
+            (requireActivity() as BaseEuiccAccessActivity).euiccChannelManager.invalidate()
             requireActivity().finish()
         }
     }

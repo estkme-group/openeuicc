@@ -1,5 +1,7 @@
 package im.angry.openeuicc.service
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.service.euicc.*
 import android.telephony.UiccSlotMapping
@@ -8,7 +10,9 @@ import android.telephony.euicc.EuiccInfo
 import android.util.Log
 import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.core.EuiccChannel
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.runBlocking
 import java.lang.IllegalStateException
 
 class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
@@ -31,17 +35,51 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             telephonyManager.uiccCardsInfoCompat.firstOrNull { it.isEuicc }?.physicalSlotIndex == physicalSlotId
         }
 
-    private fun findChannel(physicalSlotId: Int): EuiccChannel? =
-        euiccChannelManager.findEuiccChannelByPhysicalSlotBlocking(physicalSlotId)
+    private data class EuiccChannelManagerContext(
+        val euiccChannelManager: EuiccChannelManager
+    ) {
+        fun findChannel(physicalSlotId: Int): EuiccChannel? =
+            euiccChannelManager.findEuiccChannelByPhysicalSlotBlocking(physicalSlotId)
 
-    private fun findChannel(slotId: Int, portId: Int): EuiccChannel? =
-        euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)
+        fun findChannel(slotId: Int, portId: Int): EuiccChannel? =
+            euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)
 
-    private fun findAllChannels(physicalSlotId: Int): List<EuiccChannel>? =
-        euiccChannelManager.findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId)
+        fun findAllChannels(physicalSlotId: Int): List<EuiccChannel>? =
+            euiccChannelManager.findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId)
+    }
 
-    override fun onGetEid(slotId: Int): String? =
+    /**
+     * Bind to EuiccChannelManagerService, run the callback with a EuiccChannelManager instance,
+     * and then unbind after the callback is finished. All methods in this class that require access
+     * to a EuiccChannelManager should be wrapped inside this call.
+     *
+     * This ensures that we only spawn and connect to APDU channels when we absolutely need to,
+     * instead of keeping them open unnecessarily in the background at all times.
+     */
+    private inline fun <T> withEuiccChannelManager(fn: EuiccChannelManagerContext.() -> T): T {
+        val (binder, unbind) = runBlocking {
+            bindServiceSuspended(
+                Intent(
+                    this@OpenEuiccService,
+                    EuiccChannelManagerService::class.java
+                ), Context.BIND_AUTO_CREATE
+            )
+        }
+
+        if (binder == null) {
+            throw RuntimeException("Unable to bind to EuiccChannelManagerService; aborting")
+        }
+
+        val ret =
+            EuiccChannelManagerContext((binder as EuiccChannelManagerService.LocalBinder).service.euiccChannelManager).fn()
+
+        unbind()
+        return ret
+    }
+
+    override fun onGetEid(slotId: Int): String? = withEuiccChannelManager {
         findChannel(slotId)?.lpa?.eID
+    }
 
     // When two eSIM cards are present on one device, the Android settings UI
     // gets confused and sets the incorrect slotId for profiles from one of
@@ -124,7 +162,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         return GetDefaultDownloadableSubscriptionListResult(RESULT_OK, arrayOf())
     }
 
-    override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult {
+    override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult = withEuiccChannelManager {
         Log.i(TAG, "onGetEuiccProfileInfoList slotId=$slotId")
         if (shouldIgnoreSlot(slotId)) {
             Log.i(TAG, "ignoring slot $slotId")
@@ -165,7 +203,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         return EuiccInfo("Unknown") // TODO: Can we actually implement this?
     }
 
-    override fun onDeleteSubscription(slotId: Int, iccid: String): Int {
+    override fun onDeleteSubscription(slotId: Int, iccid: String): Int = withEuiccChannelManager {
         Log.i(TAG, "onDeleteSubscription slotId=$slotId iccid=$iccid")
         if (shouldIgnoreSlot(slotId)) return RESULT_FIRST_USER
 
@@ -212,7 +250,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         portIndex: Int,
         iccid: String?,
         forceDeactivateSim: Boolean
-    ): Int {
+    ): Int = withEuiccChannelManager {
         Log.i(TAG,"onSwitchToSubscriptionWithPort slotId=$slotId portIndex=$portIndex iccid=$iccid forceDeactivateSim=$forceDeactivateSim")
         if (shouldIgnoreSlot(slotId)) return RESULT_FIRST_USER
 
@@ -264,22 +302,26 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         }
     }
 
-    override fun onUpdateSubscriptionNickname(slotId: Int, iccid: String, nickname: String?): Int {
-        Log.i(TAG, "onUpdateSubscriptionNickname slotId=$slotId iccid=$iccid nickname=$nickname")
-        if (shouldIgnoreSlot(slotId)) return RESULT_FIRST_USER
-        val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
-        if (!channel.profileExists(iccid)) {
-            return RESULT_FIRST_USER
+    override fun onUpdateSubscriptionNickname(slotId: Int, iccid: String, nickname: String?): Int =
+        withEuiccChannelManager {
+            Log.i(
+                TAG,
+                "onUpdateSubscriptionNickname slotId=$slotId iccid=$iccid nickname=$nickname"
+            )
+            if (shouldIgnoreSlot(slotId)) return RESULT_FIRST_USER
+            val channel = findChannel(slotId) ?: return RESULT_FIRST_USER
+            if (!channel.profileExists(iccid)) {
+                return RESULT_FIRST_USER
+            }
+            val success = channel.lpa
+                .setNickname(iccid, nickname!!)
+            appContainer.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
+            return if (success) {
+                RESULT_OK
+            } else {
+                RESULT_FIRST_USER
+            }
         }
-        val success = channel.lpa
-            .setNickname(iccid, nickname!!)
-        appContainer.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
-        return if (success) {
-            RESULT_OK
-        } else {
-            RESULT_FIRST_USER
-        }
-    }
 
     @Deprecated("Deprecated in Java")
     override fun onEraseSubscriptions(slotId: Int): Int {

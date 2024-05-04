@@ -1,16 +1,13 @@
 package im.angry.openeuicc.ui
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DirectProfileDownloadActivity : AppCompatActivity(), SlotSelectFragment.SlotSelectedListener, OpenEuiccContextMarker {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+class DirectProfileDownloadActivity : BaseEuiccAccessActivity(), SlotSelectFragment.SlotSelectedListener, OpenEuiccContextMarker {
+    override fun onInit() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 euiccChannelManager.enumerateEuiccChannels()

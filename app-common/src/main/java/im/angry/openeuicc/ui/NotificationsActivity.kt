@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -27,7 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileNotification
 
-class NotificationsActivity: AppCompatActivity(), OpenEuiccContextMarker {
+class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var notificationList: RecyclerView
     private val notificationAdapter = NotificationAdapter()
@@ -39,7 +38,9 @@ class NotificationsActivity: AppCompatActivity(), OpenEuiccContextMarker {
         setContentView(R.layout.activity_notifications)
         setSupportActionBar(requireViewById(R.id.toolbar))
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
 
+    override fun onInit() {
         euiccChannel = euiccChannelManager
             .findEuiccChannelBySlotBlocking(intent.getIntExtra("logicalSlotId", 0))!!
 

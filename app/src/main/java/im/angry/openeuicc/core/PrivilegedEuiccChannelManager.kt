@@ -5,7 +5,10 @@ import im.angry.openeuicc.di.AppContainer
 import im.angry.openeuicc.util.*
 import java.lang.Exception
 
-class PrivilegedEuiccChannelManager(appContainer: AppContainer, context: Context) :
+class PrivilegedEuiccChannelManager(
+    appContainer: AppContainer,
+    context: Context
+) :
     DefaultEuiccChannelManager(appContainer, context) {
     override val uiccCards: Collection<UiccCardInfoCompat>
         get() = tm.uiccCardsInfoCompat

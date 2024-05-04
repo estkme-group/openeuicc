@@ -28,5 +28,9 @@
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />
+
+        <service
+            android:name="im.angry.openeuicc.service.EuiccChannelManagerService"
+            android:exported="false" />
     </application>
 </manifest>

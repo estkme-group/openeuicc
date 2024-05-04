@@ -7,7 +7,6 @@ import android.telephony.TelephonyManager
 import androidx.fragment.app.Fragment
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.di.AppContainer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -15,7 +14,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileInfo
-import java.lang.RuntimeException
+import kotlin.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -51,9 +50,6 @@ interface OpenEuiccContextMarker {
 
     val appContainer: AppContainer
         get() = openEuiccApplication.appContainer
-
-    val euiccChannelManager: EuiccChannelManager
-        get() = appContainer.euiccChannelManager
 
     val telephonyManager: TelephonyManager
         get() = appContainer.telephonyManager

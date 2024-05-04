@@ -10,16 +10,14 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
+open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     companion object {
         const val TAG = "MainActivity"
     }
@@ -45,10 +43,6 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
         tm = telephonyManager
 
         spinnerAdapter = ArrayAdapter<String>(this, R.layout.spinner_item)
-
-        lifecycleScope.launch {
-            init()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -93,6 +87,12 @@ open class MainActivity : AppCompatActivity(), OpenEuiccContextMarker {
             }
             else -> super.onOptionsItemSelected(item)
         }
+
+    override fun onInit() {
+        lifecycleScope.launch {
+            init()
+        }
+    }
 
     private suspend fun init() {
         withContext(Dispatchers.IO) {

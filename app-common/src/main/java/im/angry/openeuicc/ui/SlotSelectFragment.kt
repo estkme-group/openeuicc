@@ -29,7 +29,8 @@ class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccContextMarker 
     private lateinit var toolbar: Toolbar
     private lateinit var spinner: Spinner
     private val channels: List<EuiccChannel> by lazy {
-        euiccChannelManager.knownChannels.sortedBy { it.logicalSlotId }
+        (requireActivity() as BaseEuiccAccessActivity).euiccChannelManager
+            .knownChannels.sortedBy { it.logicalSlotId }
     }
 
     override fun onCreateView(
