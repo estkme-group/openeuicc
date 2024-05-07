@@ -54,8 +54,18 @@ open class DefaultEuiccChannelManager(
                 return null
             }
 
-            return euiccChannelFactory.tryOpenEuiccChannel(port)?.also {
-                channels.add(it)
+            val channel = euiccChannelFactory.tryOpenEuiccChannel(port) ?: return null
+
+            if (channel.valid) {
+                channels.add(channel)
+                return channel
+            } else {
+                Log.i(
+                    TAG,
+                    "Was able to open channel for logical slot ${port.logicalSlotIndex}, but the channel is invalid (cannot get eID or profiles without errors). This slot might be broken, aborting."
+                )
+                channel.close()
+                return null
             }
         }
     }
