@@ -16,8 +16,14 @@ class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccContextMarker 
     companion object {
         const val TAG = "SlotSelectFragment"
 
-        fun newInstance(): SlotSelectFragment {
-            return SlotSelectFragment()
+        fun newInstance(knownChannels: List<EuiccChannel>): SlotSelectFragment {
+            return SlotSelectFragment().apply {
+                arguments = Bundle().apply {
+                    putIntArray("slotIds", knownChannels.map { it.slotId }.toIntArray())
+                    putIntArray("logicalSlotIds", knownChannels.map { it.logicalSlotId }.toIntArray())
+                    putIntArray("portIds", knownChannels.map { it.portId }.toIntArray())
+                }
+            }
         }
     }
 
@@ -28,10 +34,10 @@ class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccContextMarker 
 
     private lateinit var toolbar: Toolbar
     private lateinit var spinner: Spinner
-    private val channels: List<EuiccChannel> by lazy {
-        (requireActivity() as BaseEuiccAccessActivity).euiccChannelManager
-            .knownChannels.sortedBy { it.logicalSlotId }
-    }
+    private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var slotIds: IntArray
+    private lateinit var logicalSlotIds: IntArray
+    private lateinit var portIds: IntArray
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,26 +50,35 @@ class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccContextMarker 
         toolbar.setTitle(R.string.slot_select)
         toolbar.inflateMenu(R.menu.fragment_slot_select)
 
-        val adapter = ArrayAdapter<String>(inflater.context, R.layout.spinner_item)
+        adapter = ArrayAdapter<String>(inflater.context, R.layout.spinner_item)
 
         spinner = view.requireViewById(R.id.spinner)
         spinner.adapter = adapter
 
-        channels.forEach { channel ->
-            adapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
+        return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        slotIds = requireArguments().getIntArray("slotIds")!!
+        logicalSlotIds = requireArguments().getIntArray("logicalSlotIds")!!
+        portIds = requireArguments().getIntArray("portIds")!!
+
+        logicalSlotIds.forEach { id ->
+            adapter.add(getString(R.string.channel_name_format, id))
         }
 
         toolbar.setNavigationOnClickListener {
             (requireActivity() as SlotSelectedListener).onSlotSelectCancelled()
         }
         toolbar.setOnMenuItemClickListener {
-            val channel = channels[spinner.selectedItemPosition]
-            (requireActivity() as SlotSelectedListener).onSlotSelected(channel.slotId, channel.portId)
+            val slotId = slotIds[spinner.selectedItemPosition]
+            val portId = portIds[spinner.selectedItemPosition]
+            (requireActivity() as SlotSelectedListener).onSlotSelected(slotId, portId)
             dismiss()
             true
         }
-
-        return view
     }
 
     override fun onResume() {

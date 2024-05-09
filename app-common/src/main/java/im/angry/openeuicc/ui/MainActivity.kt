@@ -95,9 +95,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     }
 
     private suspend fun init() {
-        withContext(Dispatchers.IO) {
-            euiccChannelManager.enumerateEuiccChannels()
-            euiccChannelManager.knownChannels.forEach {
+        val knownChannels = withContext(Dispatchers.IO) {
+            euiccChannelManager.enumerateEuiccChannels().onEach {
                 Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
                 Log.d(TAG, it.lpa.eID)
                 // Request the system to refresh the list of profiles every time we start
@@ -108,7 +107,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
 
         withContext(Dispatchers.Main) {
-            euiccChannelManager.knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
+            knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
                 spinnerAdapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
                 fragments.add(appContainer.uiComponentFactory.createEuiccManagementFragment(channel))
             }

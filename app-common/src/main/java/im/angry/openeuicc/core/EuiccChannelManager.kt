@@ -1,12 +1,22 @@
 package im.angry.openeuicc.core
 
+/**
+ * EuiccChannelManager holds references to, and manages the lifecycles of, individual
+ * APDU channels to SIM cards. The find* methods will create channels when needed, and
+ * all opened channels will be held in an internal cache until invalidate() is called
+ * or when this instance is destroyed.
+ *
+ * To precisely control the lifecycle of this object itself (and thus its cached channels),
+ * all other compoents must access EuiccChannelManager objects through EuiccChannelManagerService.
+ * Holding references independent of EuiccChannelManagerService is unsupported.
+ */
 interface EuiccChannelManager {
-    val knownChannels: List<EuiccChannel>
-
     /**
-     * Scan all possible sources for EuiccChannels and have them cached for future use
+     * Scan all possible sources for EuiccChannels, return them and have all
+     * scanned channels cached; these channels will remain open for the entire lifetime of
+     * this EuiccChannelManager object, unless disconnected externally or invalidate()'d
      */
-    suspend fun enumerateEuiccChannels()
+    suspend fun enumerateEuiccChannels(): List<EuiccChannel>
 
     /**
      * Wait for a slot + port to reconnect (i.e. become valid again)
@@ -41,7 +51,7 @@ interface EuiccChannelManager {
     fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel?
 
     /**
-     * Invalidate all EuiccChannels previously known by this Manager
+     * Invalidate all EuiccChannels previously cached by this Manager
      */
     fun invalidate()
 

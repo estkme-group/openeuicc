@@ -21,7 +21,7 @@ open class DefaultEuiccChannelManager(
         const val TAG = "EuiccChannelManager"
     }
 
-    private val channels = mutableListOf<EuiccChannel>()
+    private val channelCache = mutableListOf<EuiccChannel>()
 
     private val lock = Mutex()
 
@@ -39,13 +39,13 @@ open class DefaultEuiccChannelManager(
     private suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat): EuiccChannel? {
         lock.withLock {
             val existing =
-                channels.find { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex }
+                channelCache.find { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex }
             if (existing != null) {
                 if (existing.valid && port.logicalSlotIndex == existing.logicalSlotId) {
                     return existing
                 } else {
                     existing.close()
-                    channels.remove(existing)
+                    channelCache.remove(existing)
                 }
             }
 
@@ -57,7 +57,7 @@ open class DefaultEuiccChannelManager(
             val channel = euiccChannelFactory.tryOpenEuiccChannel(port) ?: return null
 
             if (channel.valid) {
-                channels.add(channel)
+                channelCache.add(channel)
                 return channel
             } else {
                 Log.i(
@@ -128,7 +128,7 @@ open class DefaultEuiccChannelManager(
     override suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long) {
         // If there is already a valid channel, we close it proactively
         // Sometimes the current channel can linger on for a bit even after it should have become invalid
-        channels.find { it.slotId == physicalSlotId && it.portId == portId }?.apply {
+        channelCache.find { it.slotId == physicalSlotId && it.portId == portId }?.apply {
             if (valid) close()
         }
 
@@ -148,30 +148,26 @@ open class DefaultEuiccChannelManager(
         }
     }
 
-    override suspend fun enumerateEuiccChannels() {
+    override suspend fun enumerateEuiccChannels(): List<EuiccChannel> =
         withContext(Dispatchers.IO) {
-            for (uiccInfo in uiccCards) {
-                for (port in uiccInfo.ports) {
-                    if (tryOpenEuiccChannel(port) != null) {
+            uiccCards.flatMap { info ->
+                info.ports.mapNotNull { port ->
+                    tryOpenEuiccChannel(port)?.also {
                         Log.d(
                             TAG,
-                            "Found eUICC on slot ${uiccInfo.physicalSlotIndex} port ${port.portIndex}"
+                            "Found eUICC on slot ${info.physicalSlotIndex} port ${port.portIndex}"
                         )
                     }
                 }
             }
         }
-    }
-
-    override val knownChannels: List<EuiccChannel>
-        get() = channels.toList()
 
     override fun invalidate() {
-        for (channel in channels) {
+        for (channel in channelCache) {
             channel.close()
         }
 
-        channels.clear()
+        channelCache.clear()
         euiccChannelFactory.cleanup()
     }
 }

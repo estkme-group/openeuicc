@@ -9,23 +9,23 @@ import kotlinx.coroutines.withContext
 class DirectProfileDownloadActivity : BaseEuiccAccessActivity(), SlotSelectFragment.SlotSelectedListener, OpenEuiccContextMarker {
     override fun onInit() {
         lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
+            val knownChannels = withContext(Dispatchers.IO) {
                 euiccChannelManager.enumerateEuiccChannels()
             }
 
             when {
-                euiccChannelManager.knownChannels.isEmpty() -> {
+                knownChannels.isEmpty() -> {
                     finish()
                 }
-                euiccChannelManager.knownChannels.hasMultipleChips -> {
-                    SlotSelectFragment.newInstance()
+                knownChannels.hasMultipleChips -> {
+                    SlotSelectFragment.newInstance(knownChannels.sortedBy { it.logicalSlotId })
                         .show(supportFragmentManager, SlotSelectFragment.TAG)
                 }
                 else -> {
                     // If the device has only one eSIM "chip" (but may be mapped to multiple slots),
                     // we can skip the slot selection dialog since there is only one chip to save to.
-                    onSlotSelected(euiccChannelManager.knownChannels[0].slotId,
-                        euiccChannelManager.knownChannels[0].portId)
+                    onSlotSelected(knownChannels[0].slotId,
+                        knownChannels[0].portId)
                 }
             }
         }

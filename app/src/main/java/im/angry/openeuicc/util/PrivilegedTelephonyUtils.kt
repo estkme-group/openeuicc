@@ -15,12 +15,12 @@ val TelephonyManager.dsdsEnabled: Boolean
     get() = activeModemCount >= 2
 
 fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: Boolean) {
-    runBlocking {
+    val knownChannels = runBlocking {
         euiccManager.enumerateEuiccChannels()
     }
 
     // Disable all eSIM profiles before performing a DSDS switch (only for internal eSIMs)
-    euiccManager.knownChannels.forEach {
+    knownChannels.forEach {
         if (!it.removable) {
             it.lpa.disableActiveProfileWithUndo()
         }
