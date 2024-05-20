@@ -2,9 +2,14 @@ package im.angry.openeuicc.util
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.se.omapi.SEService
 import android.telephony.TelephonyManager
 import androidx.fragment.app.Fragment
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.common.HybridBinarizer
+import com.google.zxing.qrcode.QRCodeReader
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.di.AppContainer
@@ -88,3 +93,14 @@ suspend fun connectSEService(context: Context): SEService = suspendCoroutine { c
         }
     }
 }
+
+fun decodeQrFromBitmap(bmp: Bitmap): String? =
+     runCatching {
+        val pixels = IntArray(bmp.width * bmp.height)
+        bmp.getPixels(pixels, 0, bmp.width, 0, 0, bmp.width, bmp.height)
+
+        val luminanceSource = RGBLuminanceSource(bmp.width, bmp.height, pixels)
+        val binaryBmp = BinaryBitmap(HybridBinarizer(luminanceSource))
+
+        QRCodeReader().decode(binaryBmp).text
+    }.getOrNull()

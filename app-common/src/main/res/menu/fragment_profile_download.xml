@@ -8,6 +8,12 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/scan_from_gallery"
+        android:icon="@drawable/ic_gallery_black"
+        android:title="@string/profile_download_scan_from_gallery"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/ok"
         android:icon="@drawable/ic_check_black"
         android:title="@string/profile_download_ok"

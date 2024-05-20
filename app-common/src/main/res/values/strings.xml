@@ -31,6 +31,7 @@
     <string name="profile_download_imei">IMEI (Optional)</string>
     <string name="profile_download_free_space">Space remaining: %s</string>
     <string name="profile_download_scan">Scan QR Code</string>
+    <string name="profile_download_scan_from_gallery">Scan QR Code from Gallery</string>
     <string name="profile_download_ok">Download</string>
     <string name="profile_download_failed">Failed to download eSIM. Check your activation / QR code.</string>
 
