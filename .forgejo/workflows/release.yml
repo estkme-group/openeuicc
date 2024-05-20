@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew --no-daemon :app-unpriv:assembleRelease
 
       - name: Copy Debug Symbols to Release Path
-        run: cp app-unpriv/build/outputs/native-debug-symbols/jmpRelease/native-debug-symbols.zip app-unpriv/build/outputs/apk/jmp/release/
+        run: cp app-unpriv/build/outputs/native-debug-symbols/release/native-debug-symbols.zip app-unpriv/build/outputs/apk/release/
 
       - name: Create Release
         uses: https://gitea.angry.im/actions/forgejo-release@v1
