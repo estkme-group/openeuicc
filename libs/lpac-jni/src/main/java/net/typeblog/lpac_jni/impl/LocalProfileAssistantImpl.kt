@@ -20,6 +20,7 @@ class LocalProfileAssistantImpl(
 
     private var finalized = false
     private var contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
+
     init {
         if (LpacJni.euiccInit(contextHandle) < 0) {
             throw IllegalArgumentException("Failed to initialize LPA")
@@ -40,8 +41,11 @@ class LocalProfileAssistantImpl(
             false
         }
 
+    private var _profiles: List<LocalProfileInfo>? = null
     override val profiles: List<LocalProfileInfo>
-        get() = LpacJni.es10cGetProfilesInfo(contextHandle)!!.asList()
+        get() = (_profiles ?: LpacJni.es10cGetProfilesInfo(contextHandle)!!.asList()).also {
+            _profiles = it
+        }
 
     override val notifications: List<LocalProfileNotification>
         get() =
@@ -55,19 +59,26 @@ class LocalProfileAssistantImpl(
         get() = LpacJni.es10cexGetEuiccInfo2(contextHandle)
 
     override fun enableProfile(iccid: String): Boolean =
-        LpacJni.es10cEnableProfile(contextHandle, iccid) == 0
+        (LpacJni.es10cEnableProfile(contextHandle, iccid) == 0).also {
+            _profiles = null
+        }
 
     override fun disableProfile(iccid: String): Boolean =
-        LpacJni.es10cDisableProfile(contextHandle, iccid) == 0
+        (LpacJni.es10cDisableProfile(contextHandle, iccid) == 0).also {
+            _profiles = null
+        }
 
-    override fun deleteProfile(iccid: String): Boolean {
-        return LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0
-    }
+    override fun deleteProfile(iccid: String): Boolean =
+        (LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0).also {
+            _profiles = null
+        }
 
     @Synchronized
     override fun downloadProfile(smdp: String, matchingId: String?, imei: String?,
                                  confirmationCode: String?, callback: ProfileDownloadCallback): Boolean {
-        return LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei, confirmationCode, callback) == 0
+        return (LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei, confirmationCode, callback) == 0).also {
+            _profiles = null
+        }
     }
 
     override fun deleteNotification(seqNumber: Long): Boolean =
@@ -79,9 +90,10 @@ class LocalProfileAssistantImpl(
             Log.d(TAG, "handleNotification $seqNumber = $it")
         } == 0
 
-    override fun setNickname(iccid: String, nickname: String): Boolean {
-        return LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0
-    }
+    override fun setNickname(iccid: String, nickname: String): Boolean =
+        (LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0).also {
+            _profiles = null
+        }
 
     @Synchronized
     override fun close() {
