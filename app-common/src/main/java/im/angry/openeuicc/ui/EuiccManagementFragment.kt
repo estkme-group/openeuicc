@@ -77,10 +77,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             ProfileDownloadFragment.newInstance(slotId, portId)
                 .show(childFragmentManager, ProfileDownloadFragment.TAG)
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
         refresh()
     }
 
