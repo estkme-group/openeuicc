@@ -225,7 +225,7 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
         confirmationCode: String?,
         imei: String?
     ) = beginTrackedOperation {
-        channel.lpa.downloadProfile(
+        val res = channel.lpa.downloadProfile(
             server,
             code,
             imei,
@@ -239,8 +239,14 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
                 }
             })
 
+        if (!res) {
+            // TODO: Provide more details on the error
+            throw RuntimeException("Failed to download profile; this is typically caused by another error happened before.")
+        }
+
         // If we get here, we are successful
-        // Only send notifications if the user allowed us to
+        // This function is wrapped in beginTrackedOperation, so by returning the settings value,
+        // We only send notifications if the user allowed us to
         preferenceRepository.notificationDownloadFlow.first()
     }
 
