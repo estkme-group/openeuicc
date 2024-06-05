@@ -33,6 +33,7 @@ class HttpInterfaceImpl: HttpInterface {
             sslContext.init(null, trustManagers, SecureRandom())
 
             val conn = parsedUrl.openConnection() as HttpsURLConnection
+            conn.connectTimeout = 2000
             conn.sslSocketFactory = sslContext.socketFactory
             conn.requestMethod = "POST"
             conn.doInput = true

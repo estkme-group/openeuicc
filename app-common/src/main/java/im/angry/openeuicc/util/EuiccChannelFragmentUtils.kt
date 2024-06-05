@@ -48,11 +48,16 @@ suspend fun <T> T.beginTrackedOperation(op: suspend () -> Boolean) where T : Fra
         Log.d(TAG, "Latest notification is $latestSeq before operation")
         if (op()) {
             Log.d(TAG, "Operation has requested notification handling")
-            // Note that the exact instance of "channel" might have changed here if reconnected;
-            // so we MUST use the automatic getter for "channel"
-            channel.lpa.notifications.filter { it.seqNumber > latestSeq }.forEach {
-                Log.d(TAG, "Handling notification $it")
-                channel.lpa.handleNotification(it.seqNumber)
+            try {
+                // Note that the exact instance of "channel" might have changed here if reconnected;
+                // so we MUST use the automatic getter for "channel"
+                channel.lpa.notifications.filter { it.seqNumber > latestSeq }.forEach {
+                    Log.d(TAG, "Handling notification $it")
+                    channel.lpa.handleNotification(it.seqNumber)
+                }
+            } catch (e: Exception) {
+                // Ignore any error during notification handling
+                e.printStackTrace()
             }
         }
         Log.d(TAG, "Operation complete")
