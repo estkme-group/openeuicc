@@ -137,8 +137,13 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
                 if (!res) {
                     Log.d(TAG, "Failed to enable / disable profile $iccid")
-                    Toast.makeText(context, R.string.toast_profile_enable_failed, Toast.LENGTH_LONG)
-                        .show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            R.string.toast_profile_enable_failed,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                     return@beginTrackedOperation false
                 }
 
