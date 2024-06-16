@@ -22,7 +22,7 @@ fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: 
     // Disable all eSIM profiles before performing a DSDS switch (only for internal eSIMs)
     knownChannels.forEach {
         if (!it.removable) {
-            it.lpa.disableActiveProfileWithUndo()
+            it.lpa.disableActiveProfileWithUndo(false)
         }
     }
 
@@ -45,7 +45,7 @@ fun TelephonyManager.updateSimSlotMapping(
     val undo = unmapped.mapNotNull { mapping ->
         euiccManager.findEuiccChannelByPortBlocking(mapping.physicalSlotIndex, mapping.portIndex)?.let { channel ->
             if (!channel.removable) {
-                return@mapNotNull channel.lpa.disableActiveProfileWithUndo()
+                return@mapNotNull channel.lpa.disableActiveProfileWithUndo(false)
             } else {
                 // Do not do anything for external eUICCs -- we can't really trust them to work properly
                 // with no profile enabled.
