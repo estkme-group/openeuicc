@@ -11,14 +11,12 @@ import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
 import im.angry.openeuicc.OpenEuiccApplication
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.di.AppContainer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import net.typeblog.lpac_jni.LocalProfileInfo
 import kotlin.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -59,12 +57,6 @@ interface OpenEuiccContextMarker {
     val telephonyManager: TelephonyManager
         get() = appContainer.telephonyManager
 }
-
-val LocalProfileInfo.isEnabled: Boolean
-    get() = state == LocalProfileInfo.State.Enabled
-
-val List<EuiccChannel>.hasMultipleChips: Boolean
-    get() = distinctBy { it.slotId }.size > 1
 
 // Create an instance of OMAPI SEService in a manner that "makes sense" without unpredictable callbacks
 suspend fun connectSEService(context: Context): SEService = suspendCoroutine { cont ->
