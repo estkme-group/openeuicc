@@ -1,5 +1,6 @@
 package im.angry.openeuicc.util
 
+import android.util.Log
 import im.angry.openeuicc.core.EuiccChannel
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
@@ -18,6 +19,16 @@ val List<LocalProfileInfo>.operational: List<LocalProfileInfo>
 
 val List<EuiccChannel>.hasMultipleChips: Boolean
     get() = distinctBy { it.slotId }.size > 1
+
+/**
+ * Disable the current active profile if any. If refresh is true, also cause a refresh command.
+ * See EuiccManager.waitForReconnect()
+ */
+fun LocalProfileAssistant.disableActiveProfile(refresh: Boolean): Boolean =
+    profiles.find { it.isEnabled }?.let {
+        Log.i("LPAUtils", "Disabling active profile ${it.iccid}")
+        disableProfile(it.iccid, refresh)
+    } ?: true
 
 /**
  * Disable the active profile, return a lambda that reverts this action when called.

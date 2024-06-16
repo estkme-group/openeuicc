@@ -130,12 +130,9 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         lifecycleScope.launch {
             beginTrackedOperation {
                 val res = if (enable) {
-                    channel.lpa.profiles.find { it.isEnabled }?.let {
-                        Log.i(TAG, "Profile ${it.iccid} is enabled; disabling before switching to new profile")
-                        // Don't refresh -- we'll refresh later when enabling.
-                        // Also ignore errors -- this is only a hard error if the enabling step fails.
-                        channel.lpa.disableProfile(it.iccid, false)
-                    }
+                    // Disable any active profile first, but don't do a refresh and ignore
+                    // any errors -- we only error if the enabling action fails
+                    channel.lpa.disableActiveProfile(false)
                     channel.lpa.enableProfile(iccid)
                 } else {
                     channel.lpa.disableProfile(iccid)

@@ -284,9 +284,9 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             }
 
             // Disable any active profile first if present
-            channel.lpa.profiles.find {
-                it.state == LocalProfileInfo.State.Enabled
-            }?.let { if (!channel.lpa.disableProfile(it.iccid)) return RESULT_FIRST_USER }
+            if (!channel.lpa.disableActiveProfile(false)) {
+                return RESULT_FIRST_USER
+            }
 
             if (iccid != null) {
                 if (!channel.lpa.enableProfile(iccid)) {
