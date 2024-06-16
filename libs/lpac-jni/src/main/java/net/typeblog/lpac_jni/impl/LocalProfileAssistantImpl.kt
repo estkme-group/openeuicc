@@ -58,13 +58,13 @@ class LocalProfileAssistantImpl(
     override val euiccInfo2: EuiccInfo2?
         get() = LpacJni.es10cexGetEuiccInfo2(contextHandle)
 
-    override fun enableProfile(iccid: String): Boolean =
-        (LpacJni.es10cEnableProfile(contextHandle, iccid) == 0).also {
+    override fun enableProfile(iccid: String, refresh: Boolean): Boolean =
+        (LpacJni.es10cEnableProfile(contextHandle, iccid, refresh) == 0).also {
             _profiles = null
         }
 
-    override fun disableProfile(iccid: String): Boolean =
-        (LpacJni.es10cDisableProfile(contextHandle, iccid) == 0).also {
+    override fun disableProfile(iccid: String, refresh: Boolean): Boolean =
+        (LpacJni.es10cDisableProfile(contextHandle, iccid, refresh) == 0).also {
             _profiles = null
         }
 

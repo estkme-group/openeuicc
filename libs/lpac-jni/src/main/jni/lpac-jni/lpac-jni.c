@@ -242,26 +242,26 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cGetProfilesInfo(JNIEnv *env, jobject th
 
 JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cEnableProfile(JNIEnv *env, jobject thiz, jlong handle,
-                                                       jstring iccid) {
+                                                       jstring iccid, jboolean refresh) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
     const char *_iccid = NULL;
     int ret;
 
     _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    ret = es10c_enable_profile(ctx, _iccid, 1);
+    ret = es10c_enable_profile(ctx, _iccid, refresh ? 1 : 0);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }
 
 JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cDisableProfile(JNIEnv *env, jobject thiz, jlong handle,
-                                                        jstring iccid) {
+                                                        jstring iccid, jboolean refresh) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
     const char *_iccid = NULL;
     int ret;
 
     _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    ret = es10c_disable_profile(ctx, _iccid, 1);
+    ret = es10c_disable_profile(ctx, _iccid, refresh ? 1 : 0);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }

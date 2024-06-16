@@ -10,8 +10,8 @@ interface LocalProfileAssistant {
 
     // All blocking functions in this class assume that they are executed on non-Main threads
     // The IO context in Kotlin's coroutine library is recommended.
-    fun enableProfile(iccid: String): Boolean
-    fun disableProfile(iccid: String): Boolean
+    fun enableProfile(iccid: String, refresh: Boolean = false): Boolean
+    fun disableProfile(iccid: String, refresh: Boolean = false): Boolean
     fun deleteProfile(iccid: String): Boolean
 
     fun downloadProfile(smdp: String, matchingId: String?, imei: String?,

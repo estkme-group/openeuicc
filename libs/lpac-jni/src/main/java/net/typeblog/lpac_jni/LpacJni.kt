@@ -15,8 +15,8 @@ internal object LpacJni {
     // null returns signify errors
     external fun es10cGetEid(handle: Long): String?
     external fun es10cGetProfilesInfo(handle: Long): Array<LocalProfileInfo>?
-    external fun es10cEnableProfile(handle: Long, iccid: String): Int
-    external fun es10cDisableProfile(handle: Long, iccid: String): Int
+    external fun es10cEnableProfile(handle: Long, iccid: String, refresh: Boolean): Int
+    external fun es10cDisableProfile(handle: Long, iccid: String, refresh: Boolean): Int
     external fun es10cDeleteProfile(handle: Long, iccid: String): Int
     external fun es10cSetNickname(handle: Long, iccid: String, nick: String): Int
 
