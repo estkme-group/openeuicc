@@ -3,11 +3,12 @@ package im.angry.openeuicc.util
 import android.util.Log
 import im.angry.openeuicc.core.EuiccChannel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
 
-private const val TAG = "LPAUtils"
+const val TAG = "LPAUtils"
 
 val LocalProfileInfo.displayName: String
     get() = nickName.ifEmpty { name }
@@ -53,21 +54,25 @@ fun LocalProfileAssistant.disableActiveProfileWithUndo(refreshOnDisable: Boolean
  */
 suspend fun LocalProfileAssistant.beginTrackedOperation(op: suspend () -> Boolean) =
     withContext(Dispatchers.IO) {
-        val latestSeq = notifications.firstOrNull()?.seqNumber ?: 0
-        Log.d(TAG, "Latest notification is $latestSeq before operation")
-        if (op()) {
-            Log.d(TAG, "Operation has requested notification handling")
-            try {
-                // Note that the exact instance of "channel" might have changed here if reconnected;
-                // so we MUST use the automatic getter for "channel"
-                notifications.filter { it.seqNumber > latestSeq }.forEach {
-                    Log.d(TAG, "Handling notification $it")
-                    handleNotification(it.seqNumber)
-                }
-            } catch (e: Exception) {
-                // Ignore any error during notification handling
-                e.printStackTrace()
-            }
-        }
-        Log.d(TAG, "Operation complete")
+        beginTrackedOperationBlocking { op() }
     }
+
+inline fun LocalProfileAssistant.beginTrackedOperationBlocking(op: () -> Boolean) {
+    val latestSeq = notifications.firstOrNull()?.seqNumber ?: 0
+    Log.d(TAG, "Latest notification is $latestSeq before operation")
+    if (op()) {
+        Log.d(TAG, "Operation has requested notification handling")
+        try {
+            // Note that the exact instance of "channel" might have changed here if reconnected;
+            // so we MUST use the automatic getter for "channel"
+            notifications.filter { it.seqNumber > latestSeq }.forEach {
+                Log.d(TAG, "Handling notification $it")
+                handleNotification(it.seqNumber)
+            }
+        } catch (e: Exception) {
+            // Ignore any error during notification handling
+            e.printStackTrace()
+        }
+    }
+    Log.d(TAG, "Operation complete")
+}

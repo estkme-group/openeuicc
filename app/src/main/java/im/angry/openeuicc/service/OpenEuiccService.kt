@@ -12,6 +12,8 @@ import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import java.lang.IllegalStateException
 
@@ -226,11 +228,17 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 }
             }
 
-            return if (channels[0].lpa.deleteProfile(iccid)) {
-                RESULT_OK
-            } else {
-                RESULT_FIRST_USER
+            channels[0].lpa.beginTrackedOperationBlocking {
+                if (channels[0].lpa.deleteProfile(iccid)) {
+                    return RESULT_OK
+                }
+
+                runBlocking {
+                    preferenceRepository.notificationDeleteFlow.first()
+                }
             }
+
+            return RESULT_FIRST_USER
         } catch (e: Exception) {
             return RESULT_FIRST_USER
         }
@@ -283,14 +291,20 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 return RESULT_FIRST_USER
             }
 
-            // Disable any active profile first if present
-            if (!channel.lpa.disableActiveProfile(false)) {
-                return RESULT_FIRST_USER
-            }
+            channel.lpa.beginTrackedOperationBlocking {
+                if (iccid != null) {
+                    // Disable any active profile first if present
+                    channel.lpa.disableActiveProfile(false)
+                    if (!channel.lpa.enableProfile(iccid)) {
+                        return RESULT_FIRST_USER
+                    }
+                } else {
+                    channel.lpa.disableActiveProfile(true)
+                }
 
-            if (iccid != null) {
-                if (!channel.lpa.enableProfile(iccid)) {
-                    return RESULT_FIRST_USER
+                runBlocking {
+                    // TODO: The enable / disable operations should really be one
+                    preferenceRepository.notificationEnableFlow.first()
                 }
             }
 
