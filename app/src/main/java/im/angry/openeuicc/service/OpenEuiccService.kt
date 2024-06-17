@@ -299,7 +299,9 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                         return RESULT_FIRST_USER
                     }
                 } else {
-                    channel.lpa.disableActiveProfile(true)
+                    if (!channel.lpa.disableActiveProfile(true)) {
+                        return RESULT_FIRST_USER
+                    }
                 }
 
                 runBlocking {
