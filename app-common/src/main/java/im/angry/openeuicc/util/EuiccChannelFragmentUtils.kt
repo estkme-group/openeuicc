@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 interface EuiccChannelFragmentMarker: OpenEuiccContextMarker
 
@@ -36,5 +38,10 @@ interface EuiccProfilesChangedListener {
     fun onEuiccProfilesChanged()
 }
 
-suspend fun <T> T.beginTrackedOperation(op: suspend () -> Boolean) where T: Fragment, T: EuiccChannelFragmentMarker =
-    channel.lpa.beginTrackedOperation(op)
+suspend fun <T> T.beginTrackedOperation(op: suspend () -> Boolean) where T: Fragment, T: EuiccChannelFragmentMarker {
+    withContext(Dispatchers.IO) {
+        euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {
+            op()
+        }
+    }
+}

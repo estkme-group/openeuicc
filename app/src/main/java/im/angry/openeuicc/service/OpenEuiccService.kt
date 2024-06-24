@@ -228,7 +228,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 }
             }
 
-            channels[0].lpa.beginTrackedOperationBlocking {
+            euiccChannelManager.beginTrackedOperationBlocking(channels[0].slotId, channels[0].portId) {
                 if (channels[0].lpa.deleteProfile(iccid)) {
                     return RESULT_OK
                 }
@@ -291,7 +291,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 return RESULT_FIRST_USER
             }
 
-            channel.lpa.beginTrackedOperationBlocking {
+            euiccChannelManager.beginTrackedOperationBlocking(channel.slotId, channel.portId) {
                 if (iccid != null) {
                     // Disable any active profile first if present
                     channel.lpa.disableActiveProfile(false)
