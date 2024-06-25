@@ -166,7 +166,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
 
     override fun onGetEuiccProfileInfoList(slotId: Int): GetEuiccProfileInfoListResult = withEuiccChannelManager {
         Log.i(TAG, "onGetEuiccProfileInfoList slotId=$slotId")
-        if (shouldIgnoreSlot(slotId)) {
+        if (slotId == -1 || shouldIgnoreSlot(slotId)) {
             Log.i(TAG, "ignoring slot $slotId")
             return GetEuiccProfileInfoListResult(RESULT_FIRST_USER, arrayOf(), true)
         }
