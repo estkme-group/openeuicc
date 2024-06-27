@@ -254,6 +254,9 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         }
 
         private fun showOptionsMenu() {
+            // Prevent users from doing multiple things at once
+            if (invalid || swipeRefresh.isRefreshing) return
+
             PopupMenu(root.context, profileMenu).apply {
                 setOnMenuItemClickListener(::onMenuItemClicked)
                 populatePopupWithProfileActions(this, profile)
