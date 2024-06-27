@@ -47,6 +47,10 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
     private val adapter = EuiccProfileAdapter()
 
+    // Marker for when this fragment might enter an invalid state
+    // e.g. after a failed enable / disable operation
+    private var invalid = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -106,6 +110,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
     @SuppressLint("NotifyDataSetChanged")
     private fun refresh() {
+        if (invalid) return
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
@@ -151,6 +156,8 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     euiccChannelManager.waitForReconnect(slotId, portId, timeoutMillis = 30 * 1000)
                 } catch (e: TimeoutCancellationException) {
                     withContext(Dispatchers.Main) {
+                        // Prevent this Fragment from being used again
+                        invalid = true
                         // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
                         AlertDialog.Builder(requireContext()).apply {
                             setMessage(R.string.enable_disable_timeout)
