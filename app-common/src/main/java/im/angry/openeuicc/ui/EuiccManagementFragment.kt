@@ -134,11 +134,17 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
         lifecycleScope.launch {
             beginTrackedOperation {
-                val res = if (enable) {
-                    channel.lpa.enableProfile(iccid)
-                } else {
-                    channel.lpa.disableProfile(iccid)
-                }
+                val (res, refreshed) =
+                    if (!channel.lpa.switchProfile(iccid, enable, refresh = true)) {
+                        // Sometimes, we *can* enable or disable the profile, but we cannot
+                        // send the refresh command to the modem because the profile somehow
+                        // makes the modem "busy". In this case, we can still switch by setting
+                        // refresh to false, but then the switch cannot take effect until the
+                        // user resets the modem manually by toggling airplane mode or rebooting.
+                        Pair(channel.lpa.switchProfile(iccid, enable, refresh = false), false)
+                    } else {
+                        Pair(true, true)
+                    }
 
                 if (!res) {
                     Log.d(TAG, "Failed to enable / disable profile $iccid")
@@ -150,6 +156,23 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                         ).show()
                     }
                     return@beginTrackedOperation false
+                }
+
+                if (!refreshed) {
+                    withContext(Dispatchers.Main) {
+                        AlertDialog.Builder(requireContext()).apply {
+                            setMessage(R.string.switch_did_not_refresh)
+                            setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                dialog.dismiss()
+                                requireActivity().finish()
+                            }
+                            setOnDismissListener { _ ->
+                                requireActivity().finish()
+                            }
+                            show()
+                        }
+                    }
+                    return@beginTrackedOperation true
                 }
 
                 try {

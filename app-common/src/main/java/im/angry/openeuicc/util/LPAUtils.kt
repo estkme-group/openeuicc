@@ -26,6 +26,17 @@ val List<LocalProfileInfo>.operational: List<LocalProfileInfo>
 val List<EuiccChannel>.hasMultipleChips: Boolean
     get() = distinctBy { it.slotId }.size > 1
 
+fun LocalProfileAssistant.switchProfile(
+    iccid: String,
+    enable: Boolean = false,
+    refresh: Boolean = false
+): Boolean =
+    if (enable) {
+        enableProfile(iccid, refresh)
+    } else {
+        disableProfile(iccid, refresh)
+    }
+
 /**
  * Disable the current active profile if any. If refresh is true, also cause a refresh command.
  * See EuiccManager.waitForReconnect()

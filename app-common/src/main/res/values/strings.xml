@@ -17,6 +17,7 @@
     <string name="rename">Rename</string>
 
     <string name="enable_disable_timeout">Timed out waiting for the eSIM chip to switch profiles. This may be a bug in your phone\'s modem firmware. Try toggling airplane mode, restarting the application, or rebooting the phone.</string>
+    <string name="switch_did_not_refresh">The operation was successful, but your phone\'s modem refused to refresh. You might need to toggle airplane mode or reboot in order to use the new profile.</string>
 
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
     <string name="toast_profile_name_too_long">Nickname cannot be longer than 64 characters</string>
