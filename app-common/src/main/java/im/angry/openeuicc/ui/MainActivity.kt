@@ -52,7 +52,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private val usbPermissionReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == ACTION_USB_PERMISSION) {
-                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                if (usbDevice != null && usbManager.hasPermission(usbDevice)) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         switchToUsbFragmentIfPossible()
                     }
