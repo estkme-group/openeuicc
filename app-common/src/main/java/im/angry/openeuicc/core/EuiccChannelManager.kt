@@ -1,5 +1,7 @@
 package im.angry.openeuicc.core
 
+import android.hardware.usb.UsbDevice
+
 /**
  * EuiccChannelManager holds references to, and manages the lifecycles of, individual
  * APDU channels to SIM cards. The find* methods will create channels when needed, and
@@ -11,12 +13,24 @@ package im.angry.openeuicc.core
  * Holding references independent of EuiccChannelManagerService is unsupported.
  */
 interface EuiccChannelManager {
+    companion object {
+        const val USB_CHANNEL_ID = 99
+    }
+
     /**
-     * Scan all possible sources for EuiccChannels, return them and have all
+     * Scan all possible _device internal_ sources for EuiccChannels, return them and have all
      * scanned channels cached; these channels will remain open for the entire lifetime of
      * this EuiccChannelManager object, unless disconnected externally or invalidate()'d
      */
     suspend fun enumerateEuiccChannels(): List<EuiccChannel>
+
+    /**
+     * Scan all possible USB devices for CCID readers that may contain eUICC cards.
+     * If found, try to open it for access, and add it to the internal EuiccChannel cache
+     * as a "port" with id 99. When user interaction is required to obtain permission
+     * to interact with the device, the second return value (EuiccChannel) will be null.
+     */
+    suspend fun enumerateUsbEuiccChannel(): Pair<UsbDevice?, EuiccChannel?>
 
     /**
      * Wait for a slot + port to reconnect (i.e. become valid again)

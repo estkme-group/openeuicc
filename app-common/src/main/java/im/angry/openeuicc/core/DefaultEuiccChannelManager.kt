@@ -1,8 +1,11 @@
 package im.angry.openeuicc.core
 
 import android.content.Context
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import android.telephony.SubscriptionManager
 import android.util.Log
+import im.angry.openeuicc.core.usb.getSmartCardInterface
 import im.angry.openeuicc.di.AppContainer
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -23,10 +26,16 @@ open class DefaultEuiccChannelManager(
 
     private val channelCache = mutableListOf<EuiccChannel>()
 
+    private var usbChannel: EuiccChannel? = null
+
     private val lock = Mutex()
 
     protected val tm by lazy {
         appContainer.telephonyManager
+    }
+
+    private val usbManager by lazy {
+        context.getSystemService(Context.USB_SERVICE) as UsbManager
     }
 
     private val euiccChannelFactory by lazy {
@@ -38,6 +47,15 @@ open class DefaultEuiccChannelManager(
 
     private suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat): EuiccChannel? {
         lock.withLock {
+            if (port.card.physicalSlotIndex == EuiccChannelManager.USB_CHANNEL_ID) {
+                return if (usbChannel != null && usbChannel!!.valid) {
+                    usbChannel
+                } else {
+                    usbChannel = null
+                    null
+                }
+            }
+
             val existing =
                 channelCache.find { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex }
             if (existing != null) {
@@ -162,11 +180,37 @@ open class DefaultEuiccChannelManager(
             }
         }
 
+    override suspend fun enumerateUsbEuiccChannel(): Pair<UsbDevice?, EuiccChannel?> =
+        withContext(Dispatchers.IO) {
+            usbManager.deviceList.values.forEach { device ->
+                Log.i(TAG, "Scanning USB device ${device.deviceId}:${device.vendorId}")
+                val iface = device.getSmartCardInterface() ?: return@forEach
+                // If we don't have permission, tell UI code that we found a candidate device, but we
+                // need permission to be able to do anything with it
+                if (!usbManager.hasPermission(device)) return@withContext Pair(device, null)
+                Log.i(TAG, "Found CCID interface on ${device.deviceId}:${device.vendorId}, and has permission; trying to open channel")
+                try {
+                    val channel = euiccChannelFactory.tryOpenUsbEuiccChannel(device, iface)
+                    if (channel != null && channel.lpa.valid) {
+                        usbChannel = channel
+                        return@withContext Pair(device, channel)
+                    }
+                } catch (e: Exception) {
+                    // Ignored -- skip forward
+                    e.printStackTrace()
+                }
+                Log.i(TAG, "No valid eUICC channel found on USB device ${device.deviceId}:${device.vendorId}")
+            }
+            return@withContext Pair(null, null)
+        }
+
     override fun invalidate() {
         for (channel in channelCache) {
             channel.close()
         }
 
+        usbChannel?.close()
+        usbChannel = null
         channelCache.clear()
         euiccChannelFactory.cleanup()
     }

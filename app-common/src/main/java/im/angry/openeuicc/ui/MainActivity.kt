@@ -1,6 +1,14 @@
 package im.angry.openeuicc.ui
 
+import android.annotation.SuppressLint
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
+import android.os.Build
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -12,6 +20,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +29,7 @@ import kotlinx.coroutines.withContext
 open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     companion object {
         const val TAG = "MainActivity"
+        const val ACTION_USB_PERMISSION = "im.angry.openeuicc.USB_PERMISSION"
     }
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
@@ -30,6 +40,28 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     protected lateinit var tm: TelephonyManager
 
+    private val usbManager: UsbManager by lazy {
+        getSystemService(USB_SERVICE) as UsbManager
+    }
+
+    private var usbDevice: UsbDevice? = null
+    private var usbChannel: EuiccChannel? = null
+
+    private lateinit var usbPendingIntent: PendingIntent
+
+    private val usbPermissionReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == ACTION_USB_PERMISSION) {
+                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        switchToUsbFragmentIfPossible()
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressLint("WrongConstant", "UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,6 +75,15 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         tm = telephonyManager
 
         spinnerAdapter = ArrayAdapter<String>(this, R.layout.spinner_item)
+
+        usbPendingIntent = PendingIntent.getBroadcast(this, 0,
+            Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE)
+        val filter = IntentFilter(ACTION_USB_PERMISSION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(usbPermissionReceiver, filter, Context.RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(usbPermissionReceiver, filter)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -62,8 +103,15 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                     position: Int,
                     id: Long
                 ) {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_root, fragments[position]).commit()
+                    if (position < fragments.size) {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_root, fragments[position]).commit()
+                    } else if (position == fragments.size) {
+                        // If we are at the last position, this is the USB device
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            switchToUsbFragmentIfPossible()
+                        }
+                    }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -106,11 +154,21 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             }
         }
 
+        withContext(Dispatchers.IO) {
+            val res = euiccChannelManager.enumerateUsbEuiccChannel()
+            usbDevice = res.first
+            usbChannel = res.second
+        }
+
         withContext(Dispatchers.Main) {
             knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
                 spinnerAdapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
                 fragments.add(appContainer.uiComponentFactory.createEuiccManagementFragment(channel))
             }
+
+            // If USB readers exist, add them at the very last
+            // The adapter logic depends on this assumption
+            usbDevice?.let { spinnerAdapter.add(it.productName) }
 
             if (fragments.isNotEmpty()) {
                 if (this@MainActivity::spinner.isInitialized) {
@@ -118,6 +176,29 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                 }
                 supportFragmentManager.beginTransaction().replace(R.id.fragment_root, fragments.first()).commit()
             }
+        }
+    }
+
+    private suspend fun switchToUsbFragmentIfPossible() {
+        if (usbDevice != null && usbChannel == null) {
+            if (!usbManager.hasPermission(usbDevice)) {
+                usbManager.requestPermission(usbDevice, usbPendingIntent)
+                return
+            }  else {
+               val (device, channel) = withContext(Dispatchers.IO) {
+                    euiccChannelManager.enumerateUsbEuiccChannel()
+                }
+
+                if (device != null && channel != null) {
+                    usbDevice = device
+                    usbChannel = channel
+                }
+            }
+        }
+
+        if (usbChannel != null) {
+            supportFragmentManager.beginTransaction().replace(R.id.fragment_root,
+                appContainer.uiComponentFactory.createEuiccManagementFragment(usbChannel!!)).commit()
         }
     }
 }
