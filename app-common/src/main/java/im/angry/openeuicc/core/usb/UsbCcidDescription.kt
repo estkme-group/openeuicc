@@ -96,11 +96,9 @@ data class UsbCcidDescription(
                 }.toTypedArray()
             }
 
-    val hasAutomaticPps: Boolean = hasFeature(FEATURE_AUTOMATIC_PPS)
+    val hasAutomaticPps: Boolean
+        get() = hasFeature(FEATURE_AUTOMATIC_PPS)
 
-    fun checkTransportProtocol() {
-        val hasT1Protocol = dwProtocols and MASK_T1_PROTO != 0
-        val hasT0Protocol = dwProtocols and MASK_T0_PROTO != 0
-        android.util.Log.d("CcidDescription", "hasT1Protocol = $hasT1Protocol, hasT0Protocol = $hasT0Protocol")
-    }
+    val hasT0Protocol: Boolean
+        get() = (dwProtocols and MASK_T0_PROTO) != 0
 }

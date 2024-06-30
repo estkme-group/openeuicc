@@ -91,6 +91,10 @@ open class DefaultEuiccChannelManager(
     override fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
         runBlocking {
             withContext(Dispatchers.IO) {
+                if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+                    return@withContext usbChannel
+                }
+
                 for (card in uiccCards) {
                     for (port in card.ports) {
                         if (port.logicalSlotIndex == logicalSlotId) {
@@ -106,6 +110,10 @@ open class DefaultEuiccChannelManager(
     override fun findEuiccChannelByPhysicalSlotBlocking(physicalSlotId: Int): EuiccChannel? =
         runBlocking {
             withContext(Dispatchers.IO) {
+                if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+                    return@withContext usbChannel
+                }
+
                 for (card in uiccCards) {
                     if (card.physicalSlotIndex != physicalSlotId) continue
                     for (port in card.ports) {
@@ -118,6 +126,10 @@ open class DefaultEuiccChannelManager(
         }
 
     override suspend fun findAllEuiccChannelsByPhysicalSlot(physicalSlotId: Int): List<EuiccChannel>? {
+        if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+            return usbChannel?.let { listOf(it) }
+        }
+
         for (card in uiccCards) {
             if (card.physicalSlotIndex != physicalSlotId) continue
             return card.ports.mapNotNull { tryOpenEuiccChannel(it) }
@@ -133,6 +145,10 @@ open class DefaultEuiccChannelManager(
 
     override suspend fun findEuiccChannelByPort(physicalSlotId: Int, portId: Int): EuiccChannel? =
         withContext(Dispatchers.IO) {
+            if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+                return@withContext usbChannel
+            }
+
             uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
                 card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
             }

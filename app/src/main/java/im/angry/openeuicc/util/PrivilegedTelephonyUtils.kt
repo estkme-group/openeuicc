@@ -74,11 +74,12 @@ fun SubscriptionManager.tryRefreshCachedEuiccInfo(cardId: Int) {
 }
 
 // Every EuiccChannel we use here should be backed by a RealUiccPortInfoCompat
+// except when it is from a USB card reader
 val EuiccChannel.removable
-    get() = (port as RealUiccPortInfoCompat).card.isRemovable
+    get() = (port as? RealUiccPortInfoCompat)?.card?.isRemovable ?: true
 
 val EuiccChannel.cardId
-    get() = (port as RealUiccPortInfoCompat).card.cardId
+    get() = (port as? RealUiccPortInfoCompat)?.card?.cardId ?: -1
 
 val EuiccChannel.isMEP
-    get() = (port as RealUiccPortInfoCompat).card.isMultipleEnabledProfilesSupported
+    get() = (port as? RealUiccPortInfoCompat)?.card?.isMultipleEnabledProfilesSupported ?: false

@@ -6,6 +6,8 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbEndpoint
 import android.hardware.usb.UsbInterface
 
+class UsbTransportException(msg: String) : Exception(msg)
+
 fun UsbInterface.getIoEndpoints(): Pair<UsbEndpoint?, UsbEndpoint?> {
     var bulkIn: UsbEndpoint? = null
     var bulkOut: UsbEndpoint? = null
