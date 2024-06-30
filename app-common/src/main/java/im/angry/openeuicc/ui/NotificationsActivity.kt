@@ -180,8 +180,9 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                         withContext(Dispatchers.IO) {
                             euiccChannel.lpa.handleNotification(notification.inner.seqNumber)
                         }
+
+                        refresh()
                     }
-                    refresh()
                     true
                 }
                 R.id.notification_delete -> {
@@ -189,8 +190,9 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                         withContext(Dispatchers.IO) {
                             euiccChannel.lpa.deleteNotification(notification.inner.seqNumber)
                         }
+
+                        refresh()
                     }
-                    refresh()
                     true
                 }
                 else -> false
