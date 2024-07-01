@@ -95,7 +95,7 @@ class UsbApduInterface(
     }
 
     override val valid: Boolean
-        get() = true
+        get() = channelId != -1
 
     private fun isSuccessResponse(resp: ByteArray): Boolean =
         resp.size >= 2 && resp[resp.size - 2] == 0x90.toByte() && resp[resp.size - 1] == 0x00.toByte()
