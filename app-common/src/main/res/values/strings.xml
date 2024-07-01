@@ -25,6 +25,10 @@
     <string name="slot_select">Select Slot</string>
     <string name="slot_select_select">Select</string>
 
+    <string name="usb_permission">Grant USB permission</string>
+    <string name="usb_permission_needed">Permission is needed to access the USB smart card reader.</string>
+    <string name="usb_failed">Cannot connect to eSIM via a USB smart card reader.</string>
+
     <string name="profile_download">New eSIM</string>
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>
     <string name="profile_download_code">Activation Code</string>
