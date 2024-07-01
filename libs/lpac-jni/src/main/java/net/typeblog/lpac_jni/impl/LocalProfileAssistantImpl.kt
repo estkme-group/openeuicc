@@ -32,10 +32,10 @@ class LocalProfileAssistantImpl(
 
     override val valid: Boolean
         get() = !finalized && apduInterface.valid && try {
-            // If we can read both eID and profiles properly, we are likely looking at
+            // If we can read both eID and euiccInfo2 properly, we are likely looking at
             // a valid LocalProfileAssistant
             eID
-            profiles
+            euiccInfo2
             true
         } catch (e: Exception) {
             false
