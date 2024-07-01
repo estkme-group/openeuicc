@@ -316,8 +316,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 }
 
                 runBlocking {
-                    // TODO: The enable / disable operations should really be one
-                    preferenceRepository.notificationEnableFlow.first()
+                    preferenceRepository.notificationSwitchFlow.first()
                 }
             }
 

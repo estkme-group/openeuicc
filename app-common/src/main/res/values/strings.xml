@@ -67,10 +67,8 @@
     <string name="pref_notifications_download_desc">Send notifications for <i>downloading</i> profiles</string>
     <string name="pref_notifications_delete">Deletion</string>
     <string name="pref_notifications_delete_desc">Send notifications for <i>deleting</i> profiles</string>
-    <string name="pref_notifications_enable">Enabling</string>
-    <string name="pref_notifications_enable_desc">Send notifications for <i>enabling</i> profiles\nNote that this type of notification is unreliable.</string>
-    <string name="pref_notifications_disable">Disabling</string>
-    <string name="pref_notifications_disable_desc">Send notifications for <i>disabling</i> profiles\nNote that this type of notification is unreliable.</string>
+    <string name="pref_notifications_switch">Switching</string>
+    <string name="pref_notifications_switch_desc">Send notifications for <i>switching</i> profiles\nNote that this type of notification is unreliable.</string>
     <string name="pref_advanced">Advanced</string>
     <string name="pref_advanced_logs">Logs</string>
     <string name="pref_advanced_logs_desc">View recent debug logs of the application</string>

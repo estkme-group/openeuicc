@@ -24,6 +24,7 @@ object PreferenceKeys {
     val NOTIFICATION_DELETE = booleanPreferencesKey("notification_delete")
     val NOTIFICATION_ENABLE = booleanPreferencesKey("notification_enable")
     val NOTIFICATION_DISABLE = booleanPreferencesKey("notification_disable")
+    val NOTIFICATION_SWITCH = booleanPreferencesKey("notification_switch")
 }
 
 class PreferenceRepository(context: Context) {
@@ -37,12 +38,8 @@ class PreferenceRepository(context: Context) {
     val notificationDeleteFlow: Flow<Boolean> =
         dataStore.data.map { it[PreferenceKeys.NOTIFICATION_DELETE] ?: true }
 
-    // Enabling / disabling notifications are not sent by default
-    val notificationEnableFlow: Flow<Boolean> =
-        dataStore.data.map { it[PreferenceKeys.NOTIFICATION_ENABLE] ?: false }
-
-    val notificationDisableFlow: Flow<Boolean> =
-        dataStore.data.map { it[PreferenceKeys.NOTIFICATION_DISABLE] ?: false }
+    val notificationSwitchFlow: Flow<Boolean> =
+        dataStore.data.map { it[PreferenceKeys.NOTIFICATION_SWITCH] ?: false }
 
     suspend fun <T> updatePreference(key: Preferences.Key<T>, value: T) {
         dataStore.edit {

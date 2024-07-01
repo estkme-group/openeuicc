@@ -204,11 +204,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     }
                 }
 
-                if (enable) {
-                    preferenceRepository.notificationEnableFlow.first()
-                } else {
-                    preferenceRepository.notificationDisableFlow.first()
-                }
+                preferenceRepository.notificationSwitchFlow.first()
             }
             refresh()
             fab.isEnabled = true
