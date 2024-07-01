@@ -13,6 +13,7 @@ import java.nio.ByteOrder
  * Provides raw, APDU-agnostic transmission to the CCID reader
  * Adapted from <https://github.com/open-keychain/open-keychain/blob/master/OpenKeychain/src/main/java/org/sufficientlysecure/keychain/securitytoken/usb/CcidTransceiver.java>
  */
+@Suppress("unused")
 class UsbCcidTransceiver(
     private val usbConnection: UsbDeviceConnection,
     private val usbBulkIn: UsbEndpoint,
@@ -152,7 +153,7 @@ class UsbCcidTransceiver(
         }
     }
 
-    private fun receiveDataBlock(expectedSequenceNumber: Byte): CcidDataBlock? {
+    private fun receiveDataBlock(expectedSequenceNumber: Byte): CcidDataBlock {
         var response: CcidDataBlock?
         do {
             response = receiveDataBlockImmediate(expectedSequenceNumber)
@@ -163,7 +164,7 @@ class UsbCcidTransceiver(
         return response
     }
 
-    private fun receiveDataBlockImmediate(expectedSequenceNumber: Byte): CcidDataBlock? {
+    private fun receiveDataBlockImmediate(expectedSequenceNumber: Byte): CcidDataBlock {
         /*
          * Some USB CCID devices (notably NitroKey 3) may time-out and need a subsequent poke to
          * carry on communications.  No particular reason why the number 3 was chosen.  If we get a
@@ -236,20 +237,10 @@ class UsbCcidTransceiver(
     }
 
     /**
-     * Transmits XfrBlock
-     * 6.1.4 PC_to_RDR_XfrBlock
-     *
-     * @param payload payload to transmit
-     */
-    fun sendXfrBlock(payload: ByteArray): CcidDataBlock? {
-        return sendXfrBlock(payload, LEVEL_PARAM_START_SINGLE_CMD_APDU)
-    }
-
-    /**
      * Receives a continued XfrBlock. Should be called when a multiblock response is indicated
      * 6.1.4 PC_to_RDR_XfrBlock
      */
-    fun receiveContinuedResponse(): CcidDataBlock? {
+    fun receiveContinuedResponse(): CcidDataBlock {
         return sendXfrBlock(ByteArray(0), LEVEL_PARAM_CONTINUE_RESPONSE)
     }
 
@@ -260,7 +251,10 @@ class UsbCcidTransceiver(
      * @param payload payload to transmit
      * @param levelParam Level parameter
      */
-    private fun sendXfrBlock(payload: ByteArray, levelParam: Short): CcidDataBlock? {
+    fun sendXfrBlock(
+        payload: ByteArray,
+        levelParam: Short = LEVEL_PARAM_START_SINGLE_CMD_APDU
+    ): CcidDataBlock {
         val startTime = SystemClock.elapsedRealtime()
         val l = payload.size
         val sequenceNumber: Byte = currentSequenceNumber++
@@ -279,7 +273,7 @@ class UsbCcidTransceiver(
         val data: ByteArray = headerData + payload
         var sentBytes = 0
         while (sentBytes < data.size) {
-            val bytesToSend = Math.min(usbBulkOut.maxPacketSize, data.size - sentBytes)
+            val bytesToSend = usbBulkOut.maxPacketSize.coerceAtMost(data.size - sentBytes)
             sendRaw(data, sentBytes, bytesToSend)
             sentBytes += bytesToSend
         }
@@ -320,7 +314,7 @@ class UsbCcidTransceiver(
         return response
     }
 
-    private fun iccPowerOnVoltage(voltage: Byte): CcidDataBlock? {
+    private fun iccPowerOnVoltage(voltage: Byte): CcidDataBlock {
         val sequenceNumber = currentSequenceNumber++
         val iccPowerCommand = byteArrayOf(
             MESSAGE_TYPE_PC_TO_RDR_ICC_POWER_ON.toByte(),

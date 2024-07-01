@@ -129,7 +129,7 @@ class UsbApduInterface(
         // OR the channel mask into the CLA byte
         realTx[0] = ((realTx[0].toInt() and 0xFC) or channel.toInt()).toByte()
 
-        var resp = transceiver.sendXfrBlock(realTx)!!.data!!
+        var resp = transceiver.sendXfrBlock(realTx).data!!
 
         if (resp.size >= 2) {
             var sw1 = resp[resp.size - 2].toInt() and 0xFF
@@ -137,14 +137,14 @@ class UsbApduInterface(
 
             if (sw1 == 0x6C) {
                 realTx[realTx.size - 1] = resp[resp.size - 1]
-                resp = transceiver.sendXfrBlock(realTx)!!.data!!
+                resp = transceiver.sendXfrBlock(realTx).data!!
             } else if (sw1 == 0x61) {
                 do {
                     val getResponseCmd = byteArrayOf(
                         realTx[0], 0xC0.toByte(), 0x00, 0x00, sw2.toByte()
                     )
 
-                    val tmp = transceiver.sendXfrBlock(getResponseCmd)!!.data!!
+                    val tmp = transceiver.sendXfrBlock(getResponseCmd).data!!
 
                     resp = resp.sliceArray(0 until (resp.size - 2)) + tmp
 

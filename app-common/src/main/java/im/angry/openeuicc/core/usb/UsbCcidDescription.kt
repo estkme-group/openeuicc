@@ -3,6 +3,7 @@ package im.angry.openeuicc.core.usb
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+@Suppress("unused")
 data class UsbCcidDescription(
     private val bMaxSlotIndex: Byte,
     private val bVoltageSupport: Byte,
