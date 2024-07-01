@@ -35,7 +35,7 @@ class LocalProfileAssistantImpl(
             // If we can read both eID and euiccInfo2 properly, we are likely looking at
             // a valid LocalProfileAssistant
             eID
-            euiccInfo2
+            euiccInfo2!!
             true
         } catch (e: Exception) {
             false
