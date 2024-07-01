@@ -1,4 +1,4 @@
-![](art/OpenEUICCBG_512.png)
+![](art/OpenEUICCBG_768.png)
 
 A fully free and open-source Local Profile Assistant implementation for Android devices.
 
