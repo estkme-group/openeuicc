@@ -22,8 +22,6 @@ val Fragment.preferenceRepository: PreferenceRepository
 object PreferenceKeys {
     val NOTIFICATION_DOWNLOAD = booleanPreferencesKey("notification_download")
     val NOTIFICATION_DELETE = booleanPreferencesKey("notification_delete")
-    val NOTIFICATION_ENABLE = booleanPreferencesKey("notification_enable")
-    val NOTIFICATION_DISABLE = booleanPreferencesKey("notification_disable")
     val NOTIFICATION_SWITCH = booleanPreferencesKey("notification_switch")
 }
 
