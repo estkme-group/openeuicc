@@ -1,4 +1,4 @@
-![](art/OpenEUICCBG_768.png)
+<img src="https://gitea.angry.im/PeterCxy/OpenEUICC/media/branch/master/art/OpenEUICCBG.svg" width="384" height="655">
 
 A fully free and open-source Local Profile Assistant implementation for Android devices.
 
