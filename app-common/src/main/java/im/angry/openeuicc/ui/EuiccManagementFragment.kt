@@ -25,6 +25,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
@@ -158,7 +159,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     return@beginTrackedOperation false
                 }
 
-                if (!refreshed) {
+                if (!refreshed && channel.slotId != EuiccChannelManager.USB_CHANNEL_ID) {
                     withContext(Dispatchers.Main) {
                         AlertDialog.Builder(requireContext()).apply {
                             setMessage(R.string.switch_did_not_refresh)
@@ -175,26 +176,32 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     return@beginTrackedOperation true
                 }
 
-                try {
-                    euiccChannelManager.waitForReconnect(slotId, portId, timeoutMillis = 30 * 1000)
-                } catch (e: TimeoutCancellationException) {
-                    withContext(Dispatchers.Main) {
-                        // Prevent this Fragment from being used again
-                        invalid = true
-                        // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
-                        AlertDialog.Builder(requireContext()).apply {
-                            setMessage(R.string.enable_disable_timeout)
-                            setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                dialog.dismiss()
-                                requireActivity().finish()
+                if (channel.slotId != EuiccChannelManager.USB_CHANNEL_ID) {
+                    try {
+                        euiccChannelManager.waitForReconnect(
+                            slotId,
+                            portId,
+                            timeoutMillis = 30 * 1000
+                        )
+                    } catch (e: TimeoutCancellationException) {
+                        withContext(Dispatchers.Main) {
+                            // Prevent this Fragment from being used again
+                            invalid = true
+                            // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
+                            AlertDialog.Builder(requireContext()).apply {
+                                setMessage(R.string.enable_disable_timeout)
+                                setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                    dialog.dismiss()
+                                    requireActivity().finish()
+                                }
+                                setOnDismissListener { _ ->
+                                    requireActivity().finish()
+                                }
+                                show()
                             }
-                            setOnDismissListener { _ ->
-                                requireActivity().finish()
-                            }
-                            show()
                         }
+                        return@beginTrackedOperation false
                     }
-                    return@beginTrackedOperation false
                 }
 
                 if (enable) {

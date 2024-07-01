@@ -160,6 +160,8 @@ open class DefaultEuiccChannelManager(
         }
 
     override suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long) {
+        if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) return
+
         // If there is already a valid channel, we close it proactively
         // Sometimes the current channel can linger on for a bit even after it should have become invalid
         channelCache.find { it.slotId == physicalSlotId && it.portId == portId }?.apply {
