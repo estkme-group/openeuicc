@@ -46,7 +46,6 @@ class UsbApduInterface(
 
         // OPEN LOGICAL CHANNEL
         val req = manageChannelCmd(true, 0)
-        Log.d(TAG, "OPEN LOGICAL CHANNEL: ${req.encodeHex()}")
 
         val resp = try {
             transmitApduByChannel(req, 0)
@@ -54,24 +53,25 @@ class UsbApduInterface(
             e.printStackTrace()
             return -1
         }
-        Log.d(TAG, "OPEN LOGICAL CHANNEL response: ${resp.encodeHex()}")
 
-        return if (resp.size >= 2 && resp.sliceArray((resp.size - 2) until resp.size).contentEquals(
-                byteArrayOf(0x90.toByte(), 0x00)
-            )
-        ) {
-            channelId = resp[0].toInt()
-            Log.d(TAG, "channelId = $channelId")
-
-            // Then, select AID
-            val selectAid = selectByDfCmd(aid, channelId.toByte())
-            Log.d(TAG, "Select DF command: ${selectAid.encodeHex()}")
-            val selectAidResp = transmitApduByChannel(selectAid, channelId.toByte())
-            Log.d(TAG, "Select DF resp: ${selectAidResp.encodeHex()}")
-            channelId
-        } else {
-            -1
+        if (!isSuccessResponse(resp)) {
+            Log.d(TAG, "OPEN LOGICAL CHANNEL failed: ${resp.encodeHex()}")
+            return -1
         }
+
+        channelId = resp[0].toInt()
+        Log.d(TAG, "channelId = $channelId")
+
+        // Then, select AID
+        val selectAid = selectByDfCmd(aid, channelId.toByte())
+        val selectAidResp = transmitApduByChannel(selectAid, channelId.toByte())
+
+        if (!isSuccessResponse(selectAidResp)) {
+            Log.d(TAG, "Select DF failed : ${selectAidResp.encodeHex()}")
+            return -1
+        }
+
+        return channelId
     }
 
     override fun logicalChannelClose(handle: Int) {
@@ -80,24 +80,25 @@ class UsbApduInterface(
 
         // CLOSE LOGICAL CHANNEL
         val req = manageChannelCmd(false, channelId.toByte())
-        Log.d(TAG, "CLOSE LOGICAL CHANNEL: ${req.encodeHex()}")
-
         val resp = transmitApduByChannel(req, channelId.toByte())
-        Log.d(TAG, "CLOSE LOGICAL CHANNEL response: ${resp.encodeHex()}")
+
+        if (!isSuccessResponse(resp)) {
+            Log.d(TAG, "CLOSE LOGICAL CHANNEL failed: ${resp.encodeHex()}")
+        }
 
         channelId = -1
     }
 
     override fun transmit(tx: ByteArray): ByteArray {
         check(channelId != -1) { "Logical channel is not opened" }
-        Log.d(TAG, "USB APDU command: ${tx.encodeHex()}")
-        val resp = transmitApduByChannel(tx, channelId.toByte())
-        Log.d(TAG, "USB APDU response: ${resp.encodeHex()}")
-        return resp
+        return transmitApduByChannel(tx, channelId.toByte())
     }
 
     override val valid: Boolean
         get() = true
+
+    private fun isSuccessResponse(resp: ByteArray): Boolean =
+        resp.size >= 2 && resp[resp.size - 2] == 0x90.toByte() && resp[resp.size - 1] == 0x00.toByte()
 
     private fun buildCmd(cla: Byte, ins: Byte, p1: Byte, p2: Byte, data: ByteArray?, le: Byte?) =
         byteArrayOf(cla, ins, p1, p2).let {
@@ -131,27 +132,32 @@ class UsbApduInterface(
 
         var resp = transceiver.sendXfrBlock(realTx).data!!
 
-        if (resp.size >= 2) {
-            var sw1 = resp[resp.size - 2].toInt() and 0xFF
-            var sw2 = resp[resp.size - 1].toInt() and 0xFF
+        if (resp.size < 2) throw RuntimeException("APDU response smaller than 2 (sw1 + sw2)!")
 
-            if (sw1 == 0x6C) {
-                realTx[realTx.size - 1] = resp[resp.size - 1]
-                resp = transceiver.sendXfrBlock(realTx).data!!
-            } else if (sw1 == 0x61) {
-                do {
-                    val getResponseCmd = byteArrayOf(
-                        realTx[0], 0xC0.toByte(), 0x00, 0x00, sw2.toByte()
-                    )
+        var sw1 = resp[resp.size - 2].toInt() and 0xFF
+        var sw2 = resp[resp.size - 1].toInt() and 0xFF
 
-                    val tmp = transceiver.sendXfrBlock(getResponseCmd).data!!
+        if (sw1 == 0x6C) {
+            // 0x6C = wrong le
+            // so we fix the le field here
+            realTx[realTx.size - 1] = resp[resp.size - 1]
+            resp = transceiver.sendXfrBlock(realTx).data!!
+        } else if (sw1 == 0x61) {
+            // 0x61 = X bytes available
+            // continue reading by GET RESPONSE
+            do {
+                // GET RESPONSE
+                val getResponseCmd = byteArrayOf(
+                    realTx[0], 0xC0.toByte(), 0x00, 0x00, sw2.toByte()
+                )
 
-                    resp = resp.sliceArray(0 until (resp.size - 2)) + tmp
+                val tmp = transceiver.sendXfrBlock(getResponseCmd).data!!
 
-                    sw1 = resp[resp.size - 2].toInt() and 0xFF
-                    sw2 = resp[resp.size - 1].toInt() and 0xFF
-                } while (sw1 == 0x61)
-            }
+                resp = resp.sliceArray(0 until (resp.size - 2)) + tmp
+
+                sw1 = resp[resp.size - 2].toInt() and 0xFF
+                sw2 = resp[resp.size - 1].toInt() and 0xFF
+            } while (sw1 == 0x61)
         }
 
         return resp
