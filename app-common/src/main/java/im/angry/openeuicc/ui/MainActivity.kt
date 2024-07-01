@@ -17,6 +17,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ProgressBar
 import android.widget.Spinner
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
@@ -35,6 +36,17 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private lateinit var spinnerItem: MenuItem
     private lateinit var spinner: Spinner
+    private lateinit var loadingProgress: ProgressBar
+
+    var loading: Boolean
+        get() = loadingProgress.visibility == View.VISIBLE
+        set(value) {
+            loadingProgress.visibility = if (value) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        }
 
     private val fragments = arrayListOf<EuiccManagementFragment>()
 
@@ -66,11 +78,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(requireViewById(R.id.toolbar))
-
-        supportFragmentManager.beginTransaction().replace(
-            R.id.fragment_root,
-            appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment()
-        ).commit()
+        loadingProgress = requireViewById(R.id.loading)
 
         tm = telephonyManager
 
@@ -143,6 +151,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     }
 
     private suspend fun init() {
+        loading = true
+
         val knownChannels = withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateEuiccChannels().onEach {
                 Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
@@ -161,6 +171,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
 
         withContext(Dispatchers.Main) {
+            loading = false
+
             knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
                 spinnerAdapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
                 fragments.add(appContainer.uiComponentFactory.createEuiccManagementFragment(channel))
@@ -175,6 +187,12 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                     spinnerItem.isVisible = true
                 }
                 supportFragmentManager.beginTransaction().replace(R.id.fragment_root, fragments.first()).commit()
+            } else {
+                // TODO: Handle cases where there is _only_ a USB reader
+                supportFragmentManager.beginTransaction().replace(
+                    R.id.fragment_root,
+                    appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment()
+                ).commit()
             }
         }
     }
