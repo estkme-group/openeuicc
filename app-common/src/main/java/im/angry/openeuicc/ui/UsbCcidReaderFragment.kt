@@ -116,12 +116,20 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
 
     override fun onDetach() {
         super.onDetach()
-        requireContext().unregisterReceiver(usbPermissionReceiver)
+        try {
+            requireContext().unregisterReceiver(usbPermissionReceiver)
+        } catch (_: Exception) {
+
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        requireContext().unregisterReceiver(usbPermissionReceiver)
+        try {
+            requireContext().unregisterReceiver(usbPermissionReceiver)
+        } catch (_: Exception) {
+
+        }
     }
 
     private suspend fun tryLoadUsbChannel() {
