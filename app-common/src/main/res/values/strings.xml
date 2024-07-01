@@ -3,6 +3,7 @@
     <string name="no_euicc">No removable eUICC card accessible by this app is detected on this device.</string>
     <string name="unknown">Unknown</string>
     <string name="help">Help</string>
+    <string name="reload">Reload Slots</string>
 
     <string name="channel_name_format">Logical Slot %d</string>
 

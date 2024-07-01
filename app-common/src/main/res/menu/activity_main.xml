@@ -8,6 +8,11 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/reload"
+        android:title="@string/reload"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/settings"
         android:title="@string/pref_settings"
         app:showAsAction="never" />

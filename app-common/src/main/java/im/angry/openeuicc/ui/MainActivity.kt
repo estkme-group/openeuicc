@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.ProgressBar
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
@@ -98,6 +99,10 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                 startActivity(Intent(this, SettingsActivity::class.java));
                 true
             }
+            R.id.reload -> {
+                refresh()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
 
@@ -152,6 +157,22 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                     appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment()
                 ).commit()
             }
+        }
+    }
+
+    private fun refresh() {
+        lifecycleScope.launch {
+            loading = true
+
+            supportFragmentManager.commit {
+                fragments.firstOrNull()?.let {
+                    remove(it)
+                }
+            }
+            fragments.clear()
+            spinnerAdapter.clear()
+
+            init()
         }
     }
 }
