@@ -1,7 +1,11 @@
 package im.angry.openeuicc.ui
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -13,7 +17,7 @@ import android.widget.ArrayAdapter
 import android.widget.ProgressBar
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
+import androidx.fragment.app.commitNow
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
@@ -45,6 +49,14 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     protected lateinit var tm: TelephonyManager
 
+    private val usbReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == UsbManager.ACTION_USB_DEVICE_ATTACHED || intent?.action == UsbManager.ACTION_USB_DEVICE_DETACHED) {
+                refresh()
+            }
+        }
+    }
+
     @SuppressLint("WrongConstant", "UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +67,16 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         tm = telephonyManager
 
         spinnerAdapter = ArrayAdapter<String>(this, R.layout.spinner_item)
+
+        registerReceiver(usbReceiver, IntentFilter().apply {
+            addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+            addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+        })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(usbReceiver)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -164,8 +186,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         lifecycleScope.launch {
             loading = true
 
-            supportFragmentManager.commit {
-                fragments.firstOrNull()?.let {
+            supportFragmentManager.commitNow {
+                fragments.forEach {
                     remove(it)
                 }
             }
