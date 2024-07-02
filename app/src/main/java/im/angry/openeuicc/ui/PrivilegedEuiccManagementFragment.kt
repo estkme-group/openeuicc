@@ -6,6 +6,8 @@ import android.widget.Button
 import android.widget.PopupMenu
 import im.angry.openeuicc.R
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileInfo
 
 class PrivilegedEuiccManagementFragment: EuiccManagementFragment() {
@@ -15,7 +17,9 @@ class PrivilegedEuiccManagementFragment: EuiccManagementFragment() {
     }
 
     override suspend fun onCreateFooterViews(parent: ViewGroup): List<View> =
-        if (channel.isMEP) {
+        // isMEP can map to a slow operation (UiccCardInfo.isMultipleEnabledProfilesSupported())
+        // so let's do it in the IO context
+        if (withContext(Dispatchers.IO) { channel.isMEP }) {
             val view = layoutInflater.inflate(R.layout.footer_mep, parent, false)
             view.requireViewById<Button>(R.id.footer_mep_slot_mapping).setOnClickListener {
                 (requireActivity() as PrivilegedMainActivity).showSlotMappingFragment()
