@@ -172,11 +172,13 @@ class UsbCcidTransceiver(
          * if things really turn sour.
          */
         var attempts = 3
+        Log.d(TAG, "Receive data block immediate seq=$expectedSequenceNumber")
         var readBytes: Int
         do {
             readBytes = usbConnection.bulkTransfer(
                 usbBulkIn, inputBuffer, inputBuffer.size, DEVICE_COMMUNICATE_TIMEOUT_MILLIS
             )
+            Log.d(TAG, "Received " + readBytes + " bytes: " + inputBuffer.encodeHex())
         } while (readBytes <= 0 && attempts-- > 0)
         if (readBytes < CCID_HEADER_LENGTH) {
             throw UsbTransportException("USB-CCID error - failed to receive CCID header")
@@ -228,6 +230,9 @@ class UsbCcidTransceiver(
             ignoredBytes = usbConnection.bulkTransfer(
                 usbBulkIn, inputBuffer, inputBuffer.size, DEVICE_SKIP_TIMEOUT_MILLIS
             )
+            if (ignoredBytes > 0) {
+                Log.e(TAG, "Skipped $ignoredBytes bytes")
+            }
         } while (ignoredBytes > 0)
     }
 
@@ -274,6 +279,7 @@ class UsbCcidTransceiver(
         }
         val ccidDataBlock = receiveDataBlock(sequenceNumber)
         val elapsedTime = SystemClock.elapsedRealtime() - startTime
+        Log.d(TAG, "USB XferBlock call took " + elapsedTime + "ms")
         return ccidDataBlock
     }
 
