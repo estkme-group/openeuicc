@@ -65,7 +65,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == UsbManager.ACTION_USB_DEVICE_ATTACHED || intent?.action == UsbManager.ACTION_USB_DEVICE_DETACHED) {
-                refresh()
+                refresh(true)
             }
         }
     }
@@ -121,7 +121,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
     }
 
-    private suspend fun init() {
+    private suspend fun init(fromUsbEvent: Boolean = false) {
         loading = true
         viewPager.visibility = View.GONE
         tabs.visibility = View.GONE
@@ -165,10 +165,19 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                 pages.add(Page("") { appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment() })
                 pagerAdapter.notifyDataSetChanged()
             }
+
+            if (fromUsbEvent && usbDevice != null) {
+                // If this refresh was triggered by a USB insertion while active, scroll to that page
+                viewPager.post {
+                    viewPager.setCurrentItem(pages.size - 1, true)
+                }
+            } else {
+                viewPager.currentItem = 0
+            }
         }
     }
 
-    private fun refresh() {
+    private fun refresh(fromUsbEvent: Boolean = false) {
         lifecycleScope.launch {
             loading = true
             viewPager.visibility = View.GONE
@@ -177,7 +186,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             pages.clear()
             pagerAdapter.notifyDataSetChanged()
 
-            init()
+            init(fromUsbEvent)
         }
     }
 }
