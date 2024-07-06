@@ -12,28 +12,43 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.ProgressBar
-import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commitNow
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@SuppressLint("NotifyDataSetChanged")
 open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     companion object {
         const val TAG = "MainActivity"
     }
 
-    private lateinit var spinnerAdapter: ArrayAdapter<String>
-    private lateinit var spinnerItem: MenuItem
-    private lateinit var spinner: Spinner
     private lateinit var loadingProgress: ProgressBar
+    private lateinit var tabs: TabLayout
+    private lateinit var viewPager: ViewPager2
+
+    private data class Page(
+        val title: String,
+        val createFragment: () -> Fragment
+    )
+
+    private val pages: MutableList<Page> = mutableListOf()
+
+    private val pagerAdapter by lazy {
+        object : FragmentStateAdapter(this) {
+            override fun getItemCount() = pages.size
+
+            override fun createFragment(position: Int): Fragment = pages[position].createFragment()
+        }
+    }
 
     var loading: Boolean
         get() = loadingProgress.visibility == View.VISIBLE
@@ -44,8 +59,6 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                 View.GONE
             }
         }
-
-    private val fragments = arrayListOf<Fragment>()
 
     protected lateinit var tm: TelephonyManager
 
@@ -63,10 +76,15 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         setContentView(R.layout.activity_main)
         setSupportActionBar(requireViewById(R.id.toolbar))
         loadingProgress = requireViewById(R.id.loading)
+        tabs = requireViewById(R.id.main_tabs)
+        viewPager = requireViewById(R.id.view_pager)
+
+        viewPager.adapter = pagerAdapter
+        TabLayoutMediator(tabs, viewPager) { tab, pos ->
+            tab.text = pages[pos].title
+        }.attach()
 
         tm = telephonyManager
-
-        spinnerAdapter = ArrayAdapter<String>(this, R.layout.spinner_item)
 
         registerReceiver(usbReceiver, IntentFilter().apply {
             addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
@@ -81,37 +99,6 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_main, menu)
-
-        if (!this::spinner.isInitialized) {
-            spinnerItem = menu.findItem(R.id.spinner)
-            spinner = spinnerItem.actionView as Spinner
-            if (spinnerAdapter.isEmpty) {
-                spinnerItem.isVisible = false
-            }
-            spinner.adapter = spinnerAdapter
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    if (position < fragments.size) {
-                        supportFragmentManager.beginTransaction()
-                            .replace(R.id.fragment_root, fragments[position]).commit()
-                    }
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
-
-            }
-        } else {
-            // Fragments may cause this menu to be inflated multiple times.
-            // Simply reuse the action view in that case
-            menu.findItem(R.id.spinner).actionView = spinner
-        }
-
         return true
     }
 
@@ -136,6 +123,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     private suspend fun init() {
         loading = true
+        viewPager.visibility = View.GONE
+        tabs.visibility = View.GONE
 
         val knownChannels = withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateEuiccChannels().onEach {
@@ -156,28 +145,25 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             loading = false
 
             knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
-                spinnerAdapter.add(getString(R.string.channel_name_format, channel.logicalSlotId))
-                fragments.add(appContainer.uiComponentFactory.createEuiccManagementFragment(channel))
+                pages.add(Page(
+                    getString(R.string.channel_name_format, channel.logicalSlotId)
+                ) { appContainer.uiComponentFactory.createEuiccManagementFragment(channel) })
             }
 
             // If USB readers exist, add them at the very last
             // We use a wrapper fragment to handle logic specific to USB readers
             usbDevice?.let {
-                spinnerAdapter.add(it.productName)
-                fragments.add(UsbCcidReaderFragment())
+                //spinnerAdapter.add(it.productName)
+                pages.add(Page(it.productName ?: "USB") { UsbCcidReaderFragment() })
             }
+            pagerAdapter.notifyDataSetChanged()
+            viewPager.visibility = View.VISIBLE
 
-            if (fragments.isNotEmpty()) {
-                if (this@MainActivity::spinner.isInitialized) {
-                    spinnerItem.isVisible = true
-                }
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_root, fragments.first()).commit()
-            } else {
-                supportFragmentManager.beginTransaction().replace(
-                    R.id.fragment_root,
-                    appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment()
-                ).commit()
+            if (pages.size > 1) {
+                tabs.visibility = View.VISIBLE
+            } else if (pages.isEmpty()) {
+                pages.add(Page("") { appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment() })
+                pagerAdapter.notifyDataSetChanged()
             }
         }
     }
@@ -185,14 +171,11 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private fun refresh() {
         lifecycleScope.launch {
             loading = true
+            viewPager.visibility = View.GONE
+            tabs.visibility = View.GONE
 
-            supportFragmentManager.commitNow {
-                fragments.forEach {
-                    remove(it)
-                }
-            }
-            fragments.clear()
-            spinnerAdapter.clear()
+            pages.clear()
+            pagerAdapter.notifyDataSetChanged()
 
             init()
         }
