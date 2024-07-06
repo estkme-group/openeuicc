@@ -50,16 +50,6 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
     }
 
-    var loading: Boolean
-        get() = loadingProgress.visibility == View.VISIBLE
-        set(value) {
-            loadingProgress.visibility = if (value) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-        }
-
     protected lateinit var tm: TelephonyManager
 
     private val usbReceiver = object : BroadcastReceiver() {
@@ -122,7 +112,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     }
 
     private suspend fun init(fromUsbEvent: Boolean = false) {
-        loading = true
+        loadingProgress.visibility = View.VISIBLE
         viewPager.visibility = View.GONE
         tabs.visibility = View.GONE
 
@@ -142,7 +132,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
 
         withContext(Dispatchers.Main) {
-            loading = false
+            loadingProgress.visibility = View.GONE
 
             knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
                 pages.add(Page(
@@ -179,7 +169,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     private fun refresh(fromUsbEvent: Boolean = false) {
         lifecycleScope.launch {
-            loading = true
+            loadingProgress.visibility = View.VISIBLE
             viewPager.visibility = View.GONE
             tabs.visibility = View.GONE
 

@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -69,6 +70,7 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
 
     private lateinit var text: TextView
     private lateinit var permissionButton: Button
+    private lateinit var loadingProgress: ProgressBar
 
     private var usbDevice: UsbDevice? = null
     private var usbChannel: EuiccChannel? = null
@@ -82,6 +84,7 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
 
         text = view.requireViewById(R.id.usb_reader_text)
         permissionButton = view.requireViewById(R.id.usb_grant_permission)
+        loadingProgress = view.requireViewById(R.id.loading)
 
         permissionButton.setOnClickListener {
             usbManager.requestPermission(usbDevice, usbPendingIntent)
@@ -135,14 +138,13 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
     private suspend fun tryLoadUsbChannel() {
         text.visibility = View.GONE
         permissionButton.visibility = View.GONE
-
-        (requireActivity() as MainActivity).loading = true
+        loadingProgress.visibility = View.VISIBLE
 
         val (device, channel) = withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateUsbEuiccChannel()
         }
 
-        (requireActivity() as MainActivity).loading = false
+        loadingProgress.visibility = View.GONE
 
         usbDevice = device
         usbChannel = channel
