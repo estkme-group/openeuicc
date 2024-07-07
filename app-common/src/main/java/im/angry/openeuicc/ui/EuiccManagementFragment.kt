@@ -216,6 +216,13 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         if (profile.isEnabled) {
             popup.menu.findItem(R.id.enable).isVisible = false
             popup.menu.findItem(R.id.delete).isVisible = false
+
+            // We hide the disable option by default to avoid "bricking" some cards that won't get
+            // recognized again by the phone's modem. However we don't have that worry if we are
+            // accessing it through a USB card reader
+            if (isUsb) {
+                popup.menu.findItem(R.id.disable).isVisible = true
+            }
         }
     }
 
