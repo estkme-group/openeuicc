@@ -35,6 +35,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private lateinit var tabs: TabLayout
     private lateinit var viewPager: ViewPager2
 
+    private var refreshing = false
+
     private data class Page(
         val title: String,
         val createFragment: () -> Fragment
@@ -112,6 +114,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     }
 
     private suspend fun init(fromUsbEvent: Boolean = false) {
+        refreshing = true // We don't check this here -- the check happens in refresh()
         loadingProgress.visibility = View.VISIBLE
         viewPager.visibility = View.GONE
         tabs.visibility = View.GONE
@@ -164,11 +167,15 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             } else {
                 viewPager.currentItem = 0
             }
+
+            refreshing = false
         }
     }
 
     private fun refresh(fromUsbEvent: Boolean = false) {
+        if (refreshing) return
         lifecycleScope.launch {
+            refreshing = true
             loadingProgress.visibility = View.VISIBLE
             viewPager.visibility = View.GONE
             tabs.visibility = View.GONE
@@ -176,7 +183,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             pages.clear()
             pagerAdapter.notifyDataSetChanged()
 
-            init(fromUsbEvent)
+            init(fromUsbEvent) // will set refreshing = false
         }
     }
 }
