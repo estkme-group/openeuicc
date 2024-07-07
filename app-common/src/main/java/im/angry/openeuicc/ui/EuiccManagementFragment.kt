@@ -29,7 +29,9 @@ import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -51,6 +53,10 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     // Marker for when this fragment might enter an invalid state
     // e.g. after a failed enable / disable operation
     private var invalid = false
+
+    // Subscribe to settings we care about outside of coroutine contexts while initializing
+    // This gives us access to the "latest" state without having to launch coroutines
+    private lateinit var disableSafeguardFlow: StateFlow<Boolean>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,6 +121,11 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
+            if (!this@EuiccManagementFragment::disableSafeguardFlow.isInitialized) {
+                disableSafeguardFlow =
+                    preferenceRepository.disableSafeguardFlow.stateIn(lifecycleScope)
+            }
+
             val profiles = withContext(Dispatchers.IO) {
                 euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
                 channel.lpa.profiles
@@ -219,8 +230,8 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
             // We hide the disable option by default to avoid "bricking" some cards that won't get
             // recognized again by the phone's modem. However we don't have that worry if we are
-            // accessing it through a USB card reader
-            if (isUsb) {
+            // accessing it through a USB card reader, or when the user explicitly opted in
+            if (isUsb || disableSafeguardFlow.value) {
                 popup.menu.findItem(R.id.disable).isVisible = true
             }
         }

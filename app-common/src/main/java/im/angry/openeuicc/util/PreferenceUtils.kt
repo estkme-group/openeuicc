@@ -23,6 +23,7 @@ object PreferenceKeys {
     val NOTIFICATION_DOWNLOAD = booleanPreferencesKey("notification_download")
     val NOTIFICATION_DELETE = booleanPreferencesKey("notification_delete")
     val NOTIFICATION_SWITCH = booleanPreferencesKey("notification_switch")
+    val DISABLE_SAFEGUARD_REMOVABLE_ESIM = booleanPreferencesKey("disable_safeguard_removable_esim")
 }
 
 class PreferenceRepository(context: Context) {
@@ -38,6 +39,10 @@ class PreferenceRepository(context: Context) {
 
     val notificationSwitchFlow: Flow<Boolean> =
         dataStore.data.map { it[PreferenceKeys.NOTIFICATION_SWITCH] ?: false }
+
+    // ---- Advanced ----
+    val disableSafeguardFlow: Flow<Boolean> =
+        dataStore.data.map { it[PreferenceKeys.DISABLE_SAFEGUARD_REMOVABLE_ESIM] ?: false }
 
     suspend fun <T> updatePreference(key: Preferences.Key<T>, value: T) {
         dataStore.edit {

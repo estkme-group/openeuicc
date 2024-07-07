@@ -24,6 +24,12 @@
     <PreferenceCategory
         app:title="@string/pref_advanced"
         app:iconSpaceReserved="false">
+        <CheckBoxPreference
+            app:key="pref_advanced_disable_safeguard_removable_esim"
+            app:iconSpaceReserved="false"
+            app:title="@string/pref_advanced_disable_safeguard_removable_esim"
+            app:summary="@string/pref_advanced_disable_safeguard_removable_esim_desc" />
+
         <Preference
             app:key="pref_advanced_logs"
             app:iconSpaceReserved="false"
