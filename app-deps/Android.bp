@@ -10,6 +10,7 @@ java_defaults {
         "androidx.lifecycle_lifecycle-runtime-ktx",
         "androidx.swiperefreshlayout_swiperefreshlayout",
         "androidx.cardview_cardview",
+        "androidx.viewpager2_viewpager2",
         "OpenEUICC_androidx.datastore_datastore-preferences",
         "OpenEUICC_com.journeyapps_zxing-android-embedded",
     ],
