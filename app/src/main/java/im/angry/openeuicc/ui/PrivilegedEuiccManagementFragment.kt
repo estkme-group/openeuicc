@@ -16,17 +16,22 @@ class PrivilegedEuiccManagementFragment: EuiccManagementFragment() {
             newInstanceEuicc(PrivilegedEuiccManagementFragment::class.java, slotId, portId)
     }
 
-    override suspend fun onCreateFooterViews(parent: ViewGroup): List<View> =
-        // isMEP can map to a slow operation (UiccCardInfo.isMultipleEnabledProfilesSupported())
-        // so let's do it in the IO context
-        if (withContext(Dispatchers.IO) { channel.isMEP }) {
-            val view = layoutInflater.inflate(R.layout.footer_mep, parent, false)
-            view.requireViewById<Button>(R.id.footer_mep_slot_mapping).setOnClickListener {
-                (requireActivity() as PrivilegedMainActivity).showSlotMappingFragment()
+    override suspend fun onCreateFooterViews(
+        parent: ViewGroup,
+        profiles: List<LocalProfileInfo>
+    ): List<View> =
+        super.onCreateFooterViews(parent, profiles).let { footers ->
+            // isMEP can map to a slow operation (UiccCardInfo.isMultipleEnabledProfilesSupported())
+            // so let's do it in the IO context
+            if (withContext(Dispatchers.IO) { channel.isMEP }) {
+                val view = layoutInflater.inflate(R.layout.footer_mep, parent, false)
+                view.requireViewById<Button>(R.id.footer_mep_slot_mapping).setOnClickListener {
+                    (requireActivity() as PrivilegedMainActivity).showSlotMappingFragment()
+                }
+                footers + view
+            } else {
+                footers
             }
-            listOf(view)
-        } else {
-            listOf()
         }
 
     override fun populatePopupWithProfileActions(popup: PopupMenu, profile: LocalProfileInfo) {

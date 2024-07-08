@@ -110,10 +110,20 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                 }
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
 
-    protected open suspend fun onCreateFooterViews(parent: ViewGroup): List<View> = listOf()
+    protected open suspend fun onCreateFooterViews(
+        parent: ViewGroup,
+        profiles: List<LocalProfileInfo>
+    ): List<View> =
+        if (profiles.isEmpty()) {
+            val view = layoutInflater.inflate(R.layout.footer_no_profile, parent, false)
+            listOf(view)
+        } else {
+            listOf()
+        }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun refresh() {
@@ -128,12 +138,12 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
             val profiles = withContext(Dispatchers.IO) {
                 euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
-                channel.lpa.profiles
+                channel.lpa.profiles.operational
             }
 
             withContext(Dispatchers.Main) {
-                adapter.profiles = profiles.operational
-                adapter.footerViews = onCreateFooterViews(profileList)
+                adapter.profiles = profiles
+                adapter.footerViews = onCreateFooterViews(profileList, profiles)
                 adapter.notifyDataSetChanged()
                 swipeRefresh.isRefreshing = false
             }
@@ -250,6 +260,13 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     }
 
     inner class FooterViewHolder: ViewHolder(FrameLayout(requireContext())) {
+        init {
+            itemView.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+
         fun attach(view: View) {
             view.parent?.let { (it as ViewGroup).removeView(view) }
             (itemView as FrameLayout).addView(view)
