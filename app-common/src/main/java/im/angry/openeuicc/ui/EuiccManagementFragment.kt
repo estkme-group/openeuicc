@@ -180,7 +180,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     return@beginTrackedOperation false
                 }
 
-                if (!refreshed && channel.slotId != EuiccChannelManager.USB_CHANNEL_ID) {
+                if (!refreshed && !isUsb) {
                     withContext(Dispatchers.Main) {
                         AlertDialog.Builder(requireContext()).apply {
                             setMessage(R.string.switch_did_not_refresh)
@@ -197,7 +197,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     return@beginTrackedOperation true
                 }
 
-                if (channel.slotId != EuiccChannelManager.USB_CHANNEL_ID) {
+                if (!isUsb) {
                     try {
                         euiccChannelManager.waitForReconnect(
                             slotId,

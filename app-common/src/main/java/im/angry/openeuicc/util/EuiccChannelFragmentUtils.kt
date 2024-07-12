@@ -23,11 +23,13 @@ fun <T> newInstanceEuicc(clazz: Class<T>, slotId: Int, portId: Int, addArguments
     return instance
 }
 
+// Convenient methods to avoid using `channel` for these
+// `channel` requires that the channel actually exists in EuiccChannelManager, which is
+// not always the case during operations such as switching
 val <T> T.slotId: Int where T: Fragment, T: EuiccChannelFragmentMarker
     get() = requireArguments().getInt("slotId")
 val <T> T.portId: Int where T: Fragment, T: EuiccChannelFragmentMarker
     get() = requireArguments().getInt("portId")
-
 val <T> T.isUsb: Boolean where T: Fragment, T: EuiccChannelFragmentMarker
     get() = requireArguments().getInt("slotId") == EuiccChannelManager.USB_CHANNEL_ID
 
