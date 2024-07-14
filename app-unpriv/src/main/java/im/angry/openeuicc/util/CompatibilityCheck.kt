@@ -17,6 +17,7 @@ fun getCompatibilityChecks(context: Context): List<CompatibilityCheck> =
         OmapiConnCheck(context),
         IsdrChannelAccessCheck(context),
         KnownBrokenCheck(context),
+        UsbCheck(context),
         Verdict(context),
     )
 
@@ -210,6 +211,26 @@ internal class KnownBrokenCheck(private val context: Context): CompatibilityChec
         } else {
             State.SUCCESS
         }
+}
+
+internal class UsbCheck(private val context: Context) : CompatibilityCheck(context) {
+    override val title: String
+        get() = context.getString(R.string.compatibility_check_usb)
+    override val defaultDescription: String
+        get() = context.getString(R.string.compatibility_check_usb_desc)
+
+    init {
+        successDescription = context.getString(R.string.compatibility_check_usb_ok)
+        failureDescription = context.getString(R.string.compatibility_check_usb_fail)
+    }
+
+    override suspend fun doCheck(allChecks: List<CompatibilityCheck>): State =
+        if (context.packageManager.hasSystemFeature(PackageManager.FEATURE_USB_HOST)) {
+            State.SUCCESS
+        } else {
+            State.FAILURE
+        }
+
 }
 
 internal class Verdict(private val context: Context) : CompatibilityCheck(context) {

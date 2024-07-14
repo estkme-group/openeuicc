@@ -19,12 +19,16 @@
     <string name="compatibility_check_known_broken">Not on the Known Broken List</string>
     <string name="compatibility_check_known_broken_desc">Making sure your device is not known to have bugs associated with removable eSIMs.</string>
     <string name="compatibility_check_known_broken_fail">Oops, your device is known to have bugs when accessing removable eSIMs. This does not necessarily mean that it will not work at all, but you will have to proceed with caution.</string>
-    <string name="compatibility_check_verdict">Verdict</string>
-    <string name="compatibility_check_verdict_desc">Based on all previous checks, how likely is your device to be compatible with removable eSIMs?</string>
-    <string name="compatibility_check_verdict_ok">You can likely use and manage removable eSIMs on this device.</string>
-    <string name="compatibility_check_verdict_known_broken">Your device is known to be buggy when accessing removable eSIMs.\n%s</string>
-    <string name="compatibility_check_verdict_unknown_likely_ok">We cannot determine whether removable eSIMs can be managed on your device. Your device does declare support for OMAPI, though, so it is slightly more likely that it will work.\n%s</string>
-    <string name="compatibility_check_verdict_unknown_likely_fail">We cannot determine whether removable eSIMs can be managed on your device. Since your device does not declare support for OMAPI, it is more likely that managing removable eSIMs on this device is unsupported.\n%s</string>
-    <string name="compatibility_check_verdict_unknown">We cannot determine whether removable eSIMs can be managed on your device.\n%s</string>
-    <string name="compatibility_check_verdict_fail_shared">However, a removable eSIM that has already been loaded with an eSIM profile will still work; this verdict is only for management features via the app, such as switching and downloading profiles.</string>
+    <string name="compatibility_check_usb">USB Card Reader Support</string>
+    <string name="compatibility_check_usb_desc">Does your device support managing eSIMs via USB card readers?</string>
+    <string name="compatibility_check_usb_ok">You can manage eSIMs through USB card readers on this device (even if you had any other check items fail here). Insert the card reader and then open this app to manage eSIMs in this way.</string>
+    <string name="compatibility_check_usb_fail">Your device does not support acting as a USB host.</string>
+    <string name="compatibility_check_verdict">Verdict (non-USB)</string>
+    <string name="compatibility_check_verdict_desc">Based on all previous checks, how likely is your device to be compatible with managing inserted removable eSIMs?</string>
+    <string name="compatibility_check_verdict_ok">You can likely use and manage removable eSIMs inserted into this device.</string>
+    <string name="compatibility_check_verdict_known_broken">Your device is known to be buggy when accessing inserted removable eSIMs.\n%s</string>
+    <string name="compatibility_check_verdict_unknown_likely_ok">We cannot determine whether inserted removable eSIMs can be managed on your device. Your device does declare support for OMAPI, though, so it is slightly more likely that it will work.\n%s</string>
+    <string name="compatibility_check_verdict_unknown_likely_fail">We cannot determine whether inserted removable eSIMs can be managed on your device. Since your device does not declare support for OMAPI, it is more likely that managing removable eSIMs on this device is unsupported.\n%s</string>
+    <string name="compatibility_check_verdict_unknown">We cannot determine whether inserted removable eSIMs can be managed on your device.\n%s</string>
+    <string name="compatibility_check_verdict_fail_shared">However, a removable eSIM that has already been loaded with an eSIM profile will still work; you can also most likely use a USB card reader plugged into this device to manage profiles, even if you cannot manage one inserted into your device.</string>
 </resources>
