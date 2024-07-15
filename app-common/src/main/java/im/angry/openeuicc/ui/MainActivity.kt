@@ -119,7 +119,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         viewPager.visibility = View.GONE
         tabs.visibility = View.GONE
 
-        var knownChannels = withContext(Dispatchers.IO) {
+        val knownChannels = withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateEuiccChannels().onEach {
                 Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
                 Log.d(TAG, it.lpa.eID)
