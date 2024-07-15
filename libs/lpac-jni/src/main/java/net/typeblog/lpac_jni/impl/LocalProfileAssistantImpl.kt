@@ -41,11 +41,8 @@ class LocalProfileAssistantImpl(
             false
         }
 
-    private var _profiles: List<LocalProfileInfo>? = null
     override val profiles: List<LocalProfileInfo>
-        get() = (_profiles ?: LpacJni.es10cGetProfilesInfo(contextHandle)!!.asList()).also {
-            _profiles = it
-        }
+        get() = LpacJni.es10cGetProfilesInfo(contextHandle)?.asList() ?: listOf()
 
     override val notifications: List<LocalProfileNotification>
         get() =
@@ -59,26 +56,25 @@ class LocalProfileAssistantImpl(
         get() = LpacJni.es10cexGetEuiccInfo2(contextHandle)
 
     override fun enableProfile(iccid: String, refresh: Boolean): Boolean =
-        (LpacJni.es10cEnableProfile(contextHandle, iccid, refresh) == 0).also {
-            _profiles = null
-        }
+        LpacJni.es10cEnableProfile(contextHandle, iccid, refresh) == 0
 
     override fun disableProfile(iccid: String, refresh: Boolean): Boolean =
-        (LpacJni.es10cDisableProfile(contextHandle, iccid, refresh) == 0).also {
-            _profiles = null
-        }
+        LpacJni.es10cDisableProfile(contextHandle, iccid, refresh) == 0
 
     override fun deleteProfile(iccid: String): Boolean =
-        (LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0).also {
-            _profiles = null
-        }
+        LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0
 
     @Synchronized
     override fun downloadProfile(smdp: String, matchingId: String?, imei: String?,
                                  confirmationCode: String?, callback: ProfileDownloadCallback): Boolean {
-        return (LpacJni.downloadProfile(contextHandle, smdp, matchingId, imei, confirmationCode, callback) == 0).also {
-            _profiles = null
-        }
+        return LpacJni.downloadProfile(
+            contextHandle,
+            smdp,
+            matchingId,
+            imei,
+            confirmationCode,
+            callback
+        ) == 0
     }
 
     override fun deleteNotification(seqNumber: Long): Boolean =
@@ -91,9 +87,7 @@ class LocalProfileAssistantImpl(
         } == 0
 
     override fun setNickname(iccid: String, nickname: String): Boolean =
-        (LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0).also {
-            _profiles = null
-        }
+        LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0
 
     @Synchronized
     override fun close() {
