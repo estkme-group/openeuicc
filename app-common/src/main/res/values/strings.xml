@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc">No removable eUICC card accessible by this app is detected on this device.</string>
+    <string name="no_euicc">No removable eUICC card accessible by this app is detected on this device. Insert a compatible card or a USB reader.</string>
     <string name="no_profile">No profiles (yet) on this eSIM.</string>
     <string name="unknown">Unknown</string>
     <string name="help">Help</string>
