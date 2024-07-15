@@ -119,7 +119,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         viewPager.visibility = View.GONE
         tabs.visibility = View.GONE
 
-        val knownChannels = withContext(Dispatchers.IO) {
+        var knownChannels = withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateEuiccChannels().onEach {
                 Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
                 Log.d(TAG, it.lpa.eID)
@@ -146,18 +146,20 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             // If USB readers exist, add them at the very last
             // We use a wrapper fragment to handle logic specific to USB readers
             usbDevice?.let {
-                //spinnerAdapter.add(it.productName)
                 pages.add(Page(it.productName ?: "USB") { UsbCcidReaderFragment() })
             }
-            pagerAdapter.notifyDataSetChanged()
             viewPager.visibility = View.VISIBLE
 
             if (pages.size > 1) {
                 tabs.visibility = View.VISIBLE
             } else if (pages.isEmpty()) {
                 pages.add(Page("") { appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment() })
-                pagerAdapter.notifyDataSetChanged()
             }
+
+            pagerAdapter.notifyDataSetChanged()
+            // Reset the adapter so that the current view actually gets cleared
+            // notifyDataSetChanged() doesn't cause the current view to be removed.
+            viewPager.adapter = pagerAdapter
 
             if (fromUsbEvent && usbDevice != null) {
                 // If this refresh was triggered by a USB insertion while active, scroll to that page
@@ -182,6 +184,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
             pages.clear()
             pagerAdapter.notifyDataSetChanged()
+            viewPager.adapter = pagerAdapter
 
             init(fromUsbEvent) // will set refreshing = false
         }
