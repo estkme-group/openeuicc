@@ -1,6 +1,8 @@
 package im.angry.openeuicc.ui
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
@@ -291,6 +293,14 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                 } else {
                     iccid.transformationMethod = null
                 }
+            }
+
+            iccid.setOnLongClickListener {
+                requireContext().getSystemService(ClipboardManager::class.java)
+                    .setPrimaryClip(ClipData.newPlainText("iccid", iccid.text))
+                Toast.makeText(requireContext(), R.string.toast_iccid_copied, Toast.LENGTH_SHORT)
+                    .show()
+                true
             }
 
             profileMenu.setOnClickListener { showOptionsMenu() }
