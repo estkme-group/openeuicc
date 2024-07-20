@@ -8,9 +8,11 @@ There are two variants of this project:
   - Due to its privilege requirement, OpenEUICC must be placed inside `/system/priv-app` and be signed with the platform certificate.
   - The preferred way to including OpenEUICC in a system image is to [build it along with AOSP](#building-aosp).
 - EasyEUICC: Unprivileged version that can run as a user app.
-  - Due to obvious security requirements, EasyEUICC is only able to access eSIM chips whose [ARF/ARA](https://source.android.com/docs/core/connect/uicc#arf) contains the hash of EasyEUICC's signing certificate.
+  - This version supports two modes of operation:
+    1. Inserted, removable eSIMs: Due to obvious security requirements, EasyEUICC is only able to access eSIM chips whose [ARF/ARA](https://source.android.com/docs/core/connect/uicc#arf) contains the hash of EasyEUICC's signing certificate.
+    2. USB CCID Card Readers: Only `T=0` readers that use the standard [USB CCID protocol](https://en.wikipedia.org/wiki/CCID_(protocol)) are supported. In this mode, EasyEUICC can access any eSIM chip loaded in the card reader regardless of their ARF/ARA, as long as they implement the [SGP.22 standard](https://www.gsma.com/solutions-and-impact/technologies/esim/wp-content/uploads/2021/07/SGP.22-v2.3.pdf).
   - Prebuilt release-mode EasyEUICC apks can be downloaded [here](https://gitea.angry.im/PeterCxy/OpenEUICC/releases)
-  - For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC, include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`
+  - For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC when inserted, include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`
 
 Building (Gradle)
 ===
