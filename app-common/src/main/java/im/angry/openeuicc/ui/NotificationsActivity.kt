@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,6 +53,16 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         notificationList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
         notificationList.adapter = notificationAdapter
         registerForContextMenu(notificationList)
+
+        // This is slightly different from the MainActivity logic
+        // due to the length (we don't want to display the full USB product name)
+        val channelTitle = if (euiccChannel.logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+            getString(R.string.usb)
+        } else {
+            getString(R.string.channel_name_format, euiccChannel.logicalSlotId)
+        }
+
+        title = getString(R.string.profile_notifications_detailed_format, channelTitle)
 
         swipeRefresh.setOnRefreshListener {
             refresh()

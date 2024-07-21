@@ -146,7 +146,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             // If USB readers exist, add them at the very last
             // We use a wrapper fragment to handle logic specific to USB readers
             usbDevice?.let {
-                pages.add(Page(it.productName ?: "USB") { UsbCcidReaderFragment() })
+                pages.add(Page(it.productName ?: getString(R.string.usb)) { UsbCcidReaderFragment() })
             }
             viewPager.visibility = View.VISIBLE
 

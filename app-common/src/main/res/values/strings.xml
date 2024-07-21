@@ -7,6 +7,7 @@
     <string name="reload">Reload Slots</string>
 
     <string name="channel_name_format">Logical Slot %d</string>
+    <string name="usb">USB</string>
 
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
@@ -48,7 +49,8 @@
     <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
     <string name="profile_delete_confirm_input">Type \'%s\' here to confirm deletion</string>
 
-    <string name="profile_notifications">Profile Notifications</string>
+    <string name="profile_notifications">Notifications</string>
+    <string name="profile_notifications_detailed_format">Notifications (%s)</string>
     <string name="profile_notifications_show">Manage Notifications</string>
     <string name="profile_notifications_help">eSIM profiles can send notifications to the carrier when they are downloaded, deleted, enabled, or disabled. The queue of these notifications to be sent is listed here.\n\nIn Settings, you can specify whether to send each type of notification automatically. Note that even if a notification has been sent, it will not be deleted automatically from the record, unless the queue runs out of space.\n\nHere, you can manually send or delete each pending notification.</string>
     <string name="profile_notification_operation_download">Downloaded</string>
