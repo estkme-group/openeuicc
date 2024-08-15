@@ -114,7 +114,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_finalizing);
     // TODO: Expose error code as Java-side exceptions?
     ret = es10b_load_bound_profile_package(ctx, &es10b_load_bound_profile_package_result);
-    syslog(LOG_INFO, "es10b_load_bound_profile_package %d", ret);
+    syslog(LOG_INFO, "es10b_load_bound_profile_package %d, reason %d", ret, es10b_load_bound_profile_package_result.errorReason);
 
     out:
     euicc_http_cleanup(ctx);
