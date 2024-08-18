@@ -193,7 +193,7 @@ internal class IsdrChannelAccessCheck(private val context: Context): Compatibili
 
 internal class KnownBrokenCheck(private val context: Context): CompatibilityCheck(context) {
     companion object {
-        val BROKEN_MANUFACTURERS = arrayOf("xiaomi")
+        val BROKEN_MANUFACTURERS = arrayOf("xiaomi", "huawei", "honor")
     }
 
     override val title: String
