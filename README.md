@@ -7,6 +7,7 @@ There are two variants of this project:
 - OpenEUICC: The full-fledged privileged variant.
   - Due to its privilege requirement, OpenEUICC must be placed inside `/system/priv-app` and be signed with the platform certificate.
   - The preferred way to including OpenEUICC in a system image is to [build it along with AOSP](#building-aosp).
+  - __Note__: When privileged, OpenEUICC supports any eUICC chip that implements the SGP.22 standard, internal or external. However, there is __no guarantee__ that external (removable) eSIMs actually follow the standard. Please __DO NOT__ submit bug reports for non-functioning removable eSIMs. They are __NOT__ officially supported unless they also support / are supported by EasyEUICC, the unprivileged variant.
 - EasyEUICC: Unprivileged version that can run as a user app.
   - This version supports two modes of operation:
     1. Inserted, removable eSIMs: Due to obvious security requirements, EasyEUICC is only able to access eSIM chips whose [ARF/ARA](https://source.android.com/docs/core/connect/uicc#arf) contains the hash of EasyEUICC's signing certificate.
