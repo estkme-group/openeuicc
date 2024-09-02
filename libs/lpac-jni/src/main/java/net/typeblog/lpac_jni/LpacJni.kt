@@ -21,7 +21,7 @@ internal object LpacJni {
     external fun es10cSetNickname(handle: Long, iccid: String, nick: String): Int
 
     // es10b
-    external fun es10bListNotification(handle: Long): Array<LocalProfileNotification>?
+    external fun es10bListNotification(handle: Long): Long // A native pointer to a linked list. Handle with linked list-related methods below. May be 0 (null)
     external fun es10bDeleteNotification(handle: Long, seqNumber: Long): Int
 
     // es9p + es10b
@@ -32,4 +32,13 @@ internal object LpacJni {
 
     // es10cex (actually part of es10b)
     external fun es10cexGetEuiccInfo2(handle: Long): EuiccInfo2?
+
+    // C <-> Java struct / linked list handling
+    // Notifications
+    external fun notificationNext(curr: Long): Long
+    external fun notificationGetSeq(curr: Long): Long
+    external fun notificationGetOperationString(curr: Long): String
+    external fun notificationGetAddress(curr: Long): String
+    external fun notificationGetIccid(curr: Long): String
+    external fun notificationsFree(head: Long)
 }

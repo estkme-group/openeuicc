@@ -45,9 +45,22 @@ class LocalProfileAssistantImpl(
         get() = LpacJni.es10cGetProfilesInfo(contextHandle)?.asList() ?: listOf()
 
     override val notifications: List<LocalProfileNotification>
-        get() =
-            (LpacJni.es10bListNotification(contextHandle) ?: arrayOf())
-                .sortedBy { it.seqNumber }.reversed()
+        get() {
+            val head = LpacJni.es10bListNotification(contextHandle)
+            var curr = head
+            val ret = mutableListOf<LocalProfileNotification>()
+            while (curr != 0L) {
+                ret.add(LocalProfileNotification(
+                    LpacJni.notificationGetSeq(curr),
+                    LocalProfileNotification.Operation.fromString(LpacJni.notificationGetOperationString(curr)),
+                    LpacJni.notificationGetAddress(curr),
+                    LpacJni.notificationGetIccid(curr),
+                ))
+                curr = LpacJni.notificationNext(curr)
+            }
+            LpacJni.notificationsFree(head)
+            return ret.sortedBy { it.seqNumber }.reversed()
+        }
 
     override val eID: String
         get() = LpacJni.es10cGetEid(contextHandle)!!
