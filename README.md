@@ -15,6 +15,10 @@ There are two variants of this project:
   - Prebuilt release-mode EasyEUICC apks can be downloaded [here](https://gitea.angry.im/PeterCxy/OpenEUICC/releases)
   - For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC when inserted, include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`
 
+__This project is Free Software licensed under GNU GPL v3, WITHOUT the "or later" clause.__ Any modification and derivative work __MUST__ be released under the SAME license, which means, at the very least, that the source code __MUST__ be available upon request.
+
+__If you are releasing a modification of this app, you are kindly asked to make changes to at least the app name and package name.__  
+
 Building (Gradle)
 ===
 
