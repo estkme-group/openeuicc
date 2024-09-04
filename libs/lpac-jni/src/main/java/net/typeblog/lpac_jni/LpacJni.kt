@@ -35,7 +35,7 @@ internal object LpacJni {
 
     // C <-> Java struct / linked list handling
     // Notifications
-    external fun notificationNext(curr: Long): Long
+    external fun notificationsNext(curr: Long): Long
     external fun notificationGetSeq(curr: Long): Long
     external fun notificationGetOperationString(curr: Long): String
     external fun notificationGetAddress(curr: Long): String

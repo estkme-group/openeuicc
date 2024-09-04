@@ -46,21 +46,6 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10bDeleteNotification(JNIEnv *env, jobject
     return es10b_remove_notification_from_list(ctx, (unsigned long) seq_number);
 }
 
-JNIEXPORT jlong JNICALL
-Java_net_typeblog_lpac_1jni_LpacJni_notificationNext(JNIEnv *env, jobject thiz, jlong curr) {
-    struct es10b_notification_metadata_list *info = (struct es10b_notification_metadata_list *) curr;
-    if (info == NULL) {
-        return 0;
-    }
-    return (jlong) info->next;
-}
-
-JNIEXPORT jlong JNICALL
-Java_net_typeblog_lpac_1jni_LpacJni_notificationGetSeq(JNIEnv *env, jobject thiz, jlong curr) {
-    struct es10b_notification_metadata_list *info = (struct es10b_notification_metadata_list *) curr;
-    return info->seqNumber;
-}
-
 JNIEXPORT jstring JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_notificationGetOperationString(JNIEnv *env, jobject thiz,
                                                                    jlong curr) {
@@ -87,21 +72,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_notificationGetOperationString(JNIEnv *env, 
     return toJString(env, profileManagementOperationStr);
 }
 
-JNIEXPORT jstring JNICALL
-Java_net_typeblog_lpac_1jni_LpacJni_notificationGetAddress(JNIEnv *env, jobject thiz, jlong curr) {
-    struct es10b_notification_metadata_list *info = (struct es10b_notification_metadata_list *) curr;
-    return toJString(env, info->notificationAddress);
-}
-
-JNIEXPORT jstring JNICALL
-Java_net_typeblog_lpac_1jni_LpacJni_notificationGetIccid(JNIEnv *env, jobject thiz, jlong curr) {
-    struct es10b_notification_metadata_list *info = (struct es10b_notification_metadata_list *) curr;
-    return toJString(env, info->iccid);
-}
-
-JNIEXPORT void JNICALL
-Java_net_typeblog_lpac_1jni_LpacJni_notificationsFree(JNIEnv *env, jobject thiz, jlong head) {
-    struct es10b_notification_metadata_list *info = (struct es10b_notification_metadata_list *) head;
-    if (info == NULL) return;
-    es10b_notification_metadata_list_free_all(info);
-}
+LPAC_JNI_STRUCT_GETTER_LINKED_LIST_NEXT(struct es10b_notification_metadata_list, notifications)
+LPAC_JNI_STRUCT_LINKED_LIST_FREE(struct es10b_notification_metadata_list, notifications, es10b_notification_metadata_list_free_all)
+LPAC_JNI_STRUCT_GETTER_LONG(struct es10b_notification_metadata_list, seqNumber, Seq)
+LPAC_JNI_STRUCT_GETTER_STRING(struct es10b_notification_metadata_list, notificationAddress, Address)
+LPAC_JNI_STRUCT_GETTER_STRING(struct es10b_notification_metadata_list, iccid, Iccid)

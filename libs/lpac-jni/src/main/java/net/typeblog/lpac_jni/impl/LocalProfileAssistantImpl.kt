@@ -56,7 +56,7 @@ class LocalProfileAssistantImpl(
                     LpacJni.notificationGetAddress(curr),
                     LpacJni.notificationGetIccid(curr),
                 ))
-                curr = LpacJni.notificationNext(curr)
+                curr = LpacJni.notificationsNext(curr)
             }
             LpacJni.notificationsFree(head)
             return ret.sortedBy { it.seqNumber }.reversed()
