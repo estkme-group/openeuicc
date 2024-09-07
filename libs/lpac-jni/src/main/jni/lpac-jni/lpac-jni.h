@@ -66,15 +66,15 @@ jstring toJString(JNIEnv *env, const char *pat);
             free_func(p);                             \
         }
 
-#define LPAC_JNI_STRUCT_GETTER_LONG(st, name, jname) \
-        JNIEXPORT jlong JNICALL Java_net_typeblog_lpac_1jni_LpacJni_notificationGet##jname(JNIEnv *env, jobject thiz, jlong raw) { \
+#define LPAC_JNI_STRUCT_GETTER_LONG(st, st_name, name, jname) \
+        JNIEXPORT jlong JNICALL Java_net_typeblog_lpac_1jni_LpacJni_##st_name##Get##jname(JNIEnv *env, jobject thiz, jlong raw) { \
             st *p = (st *) raw;                       \
             if (p == NULL) return 0;                  \
             return (jlong) p->name;                   \
         }
 
-#define LPAC_JNI_STRUCT_GETTER_STRING(st, name, jname) \
-        JNIEXPORT jstring JNICALL Java_net_typeblog_lpac_1jni_LpacJni_notificationGet##jname(JNIEnv *env, jobject thiz, jlong raw) { \
+#define LPAC_JNI_STRUCT_GETTER_STRING(st, st_name, name, jname) \
+        JNIEXPORT jstring JNICALL Java_net_typeblog_lpac_1jni_LpacJni_##st_name##Get##jname(JNIEnv *env, jobject thiz, jlong raw) { \
             st *p = (st *) raw;                       \
             return toJString(env, p->name);           \
         }

@@ -42,7 +42,28 @@ class LocalProfileAssistantImpl(
         }
 
     override val profiles: List<LocalProfileInfo>
-        get() = LpacJni.es10cGetProfilesInfo(contextHandle)?.asList() ?: listOf()
+        get() {
+            val head = LpacJni.es10cGetProfilesInfo(contextHandle)
+            var curr = head
+            val ret = mutableListOf<LocalProfileInfo>()
+            while (curr != 0L) {
+                val state = LocalProfileInfo.State.fromString(LpacJni.profileGetStateString(curr))
+                val clazz = LocalProfileInfo.Clazz.fromString(LpacJni.profileGetClassString(curr))
+                ret.add(LocalProfileInfo(
+                    LpacJni.profileGetIccid(curr),
+                    state,
+                    LpacJni.profileGetName(curr),
+                    LpacJni.profileGetNickname(curr),
+                    LpacJni.profileGetServiceProvider(curr),
+                    LpacJni.profileGetIsdpAid(curr),
+                    clazz
+                ))
+                curr = LpacJni.profilesNext(curr)
+            }
+
+            LpacJni.profilesFree(curr)
+            return ret
+        }
 
     override val notifications: List<LocalProfileNotification>
         get() {
