@@ -171,7 +171,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_profileGetClassString(JNIEnv *env, jobject t
 }
 
 LPAC_JNI_STRUCT_GETTER_LINKED_LIST_NEXT(struct es10c_profile_info_list, profiles)
-LPAC_JNI_STRUCT_LINKED_LIST_FREE(struct es10c_profile_info_list, profiles, es10c_profile_info_list_free_all)
+LPAC_JNI_STRUCT_FREE(struct es10c_profile_info_list, profiles, es10c_profile_info_list_free_all)
 LPAC_JNI_STRUCT_GETTER_STRING(struct es10c_profile_info_list, profile, iccid, Iccid)
 LPAC_JNI_STRUCT_GETTER_STRING(struct es10c_profile_info_list, profile, isdpAid, IsdpAid)
 LPAC_JNI_STRUCT_GETTER_STRING(struct es10c_profile_info_list, profile, profileName, Name)

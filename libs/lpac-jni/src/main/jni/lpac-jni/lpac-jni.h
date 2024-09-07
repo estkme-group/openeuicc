@@ -59,7 +59,7 @@ jstring toJString(JNIEnv *env, const char *pat);
             return (jlong) p->next;                   \
         }
 
-#define LPAC_JNI_STRUCT_LINKED_LIST_FREE(st, st_jname, free_func) \
+#define LPAC_JNI_STRUCT_FREE(st, st_jname, free_func) \
         JNIEXPORT void JNICALL Java_net_typeblog_lpac_1jni_LpacJni_##st_jname##Free(JNIEnv *env, jobject thiz, jlong raw) { \
             st *p = (st *) raw;                       \
             if (p == NULL) return;                    \

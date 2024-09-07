@@ -73,7 +73,7 @@ Java_net_typeblog_lpac_1jni_LpacJni_notificationGetOperationString(JNIEnv *env, 
 }
 
 LPAC_JNI_STRUCT_GETTER_LINKED_LIST_NEXT(struct es10b_notification_metadata_list, notifications)
-LPAC_JNI_STRUCT_LINKED_LIST_FREE(struct es10b_notification_metadata_list, notifications, es10b_notification_metadata_list_free_all)
+LPAC_JNI_STRUCT_FREE(struct es10b_notification_metadata_list, notifications, es10b_notification_metadata_list_free_all)
 LPAC_JNI_STRUCT_GETTER_LONG(struct es10b_notification_metadata_list, notification, seqNumber, Seq)
 LPAC_JNI_STRUCT_GETTER_STRING(struct es10b_notification_metadata_list, notification, notificationAddress, Address)
 LPAC_JNI_STRUCT_GETTER_STRING(struct es10b_notification_metadata_list, notification, iccid, Iccid)
