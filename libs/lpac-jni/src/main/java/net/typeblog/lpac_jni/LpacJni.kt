@@ -31,9 +31,12 @@ internal object LpacJni {
     external fun handleNotification(handle: Long, seqNumber: Long): Int
 
     // es10cex (actually part of es10b)
-    external fun es10cexGetEuiccInfo2(handle: Long): EuiccInfo2?
+    external fun es10cexGetEuiccInfo2(handle: Long): Long
 
     // C <-> Java struct / linked list handling
+    // C String arrays
+    external fun stringArrNext(curr: Long): Long
+    external fun stringDeref(curr: Long): String
     // Profiles
     external fun profilesNext(curr: Long): Long
     external fun profilesFree(head: Long): Long
@@ -51,4 +54,16 @@ internal object LpacJni {
     external fun notificationGetAddress(curr: Long): String
     external fun notificationGetIccid(curr: Long): String
     external fun notificationsFree(head: Long)
+    // EuiccInfo2
+    external fun euiccInfo2Free(info: Long)
+    external fun euiccInfo2GetProfileVersion(info: Long): String
+    external fun euiccInfo2GetEuiccFirmwareVersion(info: Long): String
+    external fun euiccInfo2GetGlobalPlatformVersion(info: Long): String
+    external fun euiccInfo2GetSasAcreditationNumber(info: Long): String
+    external fun euiccInfo2GetPpVersion(info: Long): String
+    external fun euiccInfo2GetFreeNonVolatileMemory(info: Long): Long
+    external fun euiccInfo2GetFreeVolatileMemory(info: Long): Long
+    // C String Arrays
+    external fun euiccInfo2GetEuiccCiPKIdListForSigning(info: Long): Long
+    external fun euiccInfo2GetEuiccCiPKIdListForVerification(info: Long): Long
 }

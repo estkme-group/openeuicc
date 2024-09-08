@@ -87,7 +87,36 @@ class LocalProfileAssistantImpl(
         get() = LpacJni.es10cGetEid(contextHandle)!!
 
     override val euiccInfo2: EuiccInfo2?
-        get() = LpacJni.es10cexGetEuiccInfo2(contextHandle)
+        get() {
+            val cInfo = LpacJni.es10cexGetEuiccInfo2(contextHandle)
+            if (cInfo == 0L) return null
+
+            val euiccCiPKIdListForSigning = mutableListOf<String>()
+            var curr = LpacJni.euiccInfo2GetEuiccCiPKIdListForSigning(cInfo)
+            while (curr != 0L) {
+                euiccCiPKIdListForSigning.add(LpacJni.stringDeref(curr))
+                curr = LpacJni.stringArrNext(curr)
+            }
+
+            val euiccCiPKIdListForVerification = mutableListOf<String>()
+            curr = LpacJni.euiccInfo2GetEuiccCiPKIdListForVerification(cInfo)
+            while (curr != 0L) {
+                euiccCiPKIdListForVerification.add(LpacJni.stringDeref(curr))
+                curr = LpacJni.stringArrNext(curr)
+            }
+
+            return EuiccInfo2(
+                LpacJni.euiccInfo2GetProfileVersion(cInfo),
+                LpacJni.euiccInfo2GetEuiccFirmwareVersion(cInfo),
+                LpacJni.euiccInfo2GetGlobalPlatformVersion(cInfo),
+                LpacJni.euiccInfo2GetSasAcreditationNumber(cInfo),
+                LpacJni.euiccInfo2GetPpVersion(cInfo),
+                LpacJni.euiccInfo2GetFreeNonVolatileMemory(cInfo).toInt(),
+                LpacJni.euiccInfo2GetFreeVolatileMemory(cInfo).toInt(),
+                euiccCiPKIdListForSigning.toTypedArray(),
+                euiccCiPKIdListForVerification.toTypedArray()
+            )
+        }
 
     override fun enableProfile(iccid: String, refresh: Boolean): Boolean =
         LpacJni.es10cEnableProfile(contextHandle, iccid, refresh) == 0

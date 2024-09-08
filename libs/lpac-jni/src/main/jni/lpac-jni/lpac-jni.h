@@ -17,36 +17,6 @@ struct lpac_jni_ctx {
     JNIEnv *env; \
     (*jvm)->AttachCurrentThread(jvm, &env, NULL)
 
-#define __LPAC_JNI_LINKED_LIST_FOREACH(list, curr, body, after) { \
-    int i = 0;                                                    \
-    curr = list;                                                  \
-    while (curr != NULL) {                                        \
-        body;                                                     \
-        curr = curr->next;                                        \
-        i++;                                                      \
-    };                                                             \
-    after;                                                        \
-}
-#define LPAC_JNI_LINKED_LIST_FOREACH(list, curr, body) \
-    __LPAC_JNI_LINKED_LIST_FOREACH(list, curr, body, {})
-#define LPAC_JNI_LINKED_LIST_COUNT(list, curr) \
-    (__LPAC_JNI_LINKED_LIST_FOREACH(list, curr, {}, i))
-
-#define __LPAC_JNI_NULL_TERM_LIST_FOREACH(list, curr, body, after) { \
-    int i = 0;                                                       \
-    curr = list;                                                     \
-    while (*curr != NULL) {                                           \
-        body;                                                        \
-        curr++;                                                      \
-        i++;                                                         \
-    };                                                               \
-    after;                                                           \
-}
-#define LPAC_JNI_NULL_TERM_LIST_FOREACH(list, curr, body) \
-    __LPAC_JNI_NULL_TERM_LIST_FOREACH(list, curr, body, {})
-#define LPAC_JNI_NULL_TERM_LIST_COUNT(list, curr) \
-    (__LPAC_JNI_NULL_TERM_LIST_FOREACH(list, curr, {}, i))
-
 extern JavaVM *jvm;
 extern jclass string_class;
 
@@ -57,6 +27,14 @@ jstring toJString(JNIEnv *env, const char *pat);
             st *p = (st *) raw;                       \
             if (p == NULL) return 0;                  \
             return (jlong) p->next;                   \
+        }
+
+#define LPAC_JNI_STRUCT_GETTER_NULL_TERM_LIST_NEXT(st, st_jname) \
+        JNIEXPORT jlong JNICALL Java_net_typeblog_lpac_1jni_LpacJni_##st_jname##Next(JNIEnv *env, jobject thiz, jlong raw) { \
+            st *p = (st *) raw;                     \
+            p++;                                      \
+            if (*p == NULL) return 0;                 \
+            return (jlong) p;                         \
         }
 
 #define LPAC_JNI_STRUCT_FREE(st, st_jname, free_func) \
