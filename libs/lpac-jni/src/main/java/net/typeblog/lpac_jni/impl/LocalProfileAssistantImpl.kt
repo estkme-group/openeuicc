@@ -105,7 +105,7 @@ class LocalProfileAssistantImpl(
                 curr = LpacJni.stringArrNext(curr)
             }
 
-            return EuiccInfo2(
+            val ret = EuiccInfo2(
                 LpacJni.euiccInfo2GetProfileVersion(cInfo),
                 LpacJni.euiccInfo2GetEuiccFirmwareVersion(cInfo),
                 LpacJni.euiccInfo2GetGlobalPlatformVersion(cInfo),
@@ -116,6 +116,10 @@ class LocalProfileAssistantImpl(
                 euiccCiPKIdListForSigning.toTypedArray(),
                 euiccCiPKIdListForVerification.toTypedArray()
             )
+
+            LpacJni.euiccInfo2Free(cInfo)
+
+            return ret
         }
 
     override fun enableProfile(iccid: String, refresh: Boolean): Boolean =
