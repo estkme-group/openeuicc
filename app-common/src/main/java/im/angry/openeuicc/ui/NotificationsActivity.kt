@@ -11,6 +11,7 @@ import android.view.MenuItem.OnMenuItemClickListener
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.forEach
 import androidx.lifecycle.lifecycleScope
@@ -35,9 +36,11 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private lateinit var euiccChannel: EuiccChannel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notifications)
         setSupportActionBar(requireViewById(R.id.toolbar))
+        setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 

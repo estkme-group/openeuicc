@@ -17,13 +17,13 @@ apply {
 
 android {
     namespace = "im.angry.easyeuicc"
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "im.angry.easyeuicc"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
     }
 
     buildTypes {

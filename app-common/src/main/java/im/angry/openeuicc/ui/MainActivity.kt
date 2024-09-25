@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
+import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -64,9 +65,11 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     @SuppressLint("WrongConstant", "UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(requireViewById(R.id.toolbar))
+        setupToolbarInsets()
         loadingProgress = requireViewById(R.id.loading)
         tabs = requireViewById(R.id.main_tabs)
         viewPager = requireViewById(R.id.view_pager)

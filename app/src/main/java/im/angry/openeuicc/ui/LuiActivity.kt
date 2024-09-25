@@ -2,13 +2,27 @@ package im.angry.openeuicc.ui
 
 import android.content.Intent
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import im.angry.openeuicc.R
 
 class LuiActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
+        enableEdgeToEdge()
         setContentView(R.layout.activity_lui)
+
+        ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.lui_container)) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(bars.left, bars.top, bars.right, bars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
 
         requireViewById<View>(R.id.lui_skip).setOnClickListener { finish() }
         // TODO: Deactivate LuiActivity if there is no eSIM found.

@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.lifecycle.lifecycleScope
@@ -22,9 +23,11 @@ class CompatibilityCheckActivity: AppCompatActivity() {
     private val adapter = CompatibilityChecksAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compatibility_check)
         setSupportActionBar(requireViewById(R.id.toolbar))
+        setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         compatibilityCheckList = requireViewById(R.id.recycler_view)

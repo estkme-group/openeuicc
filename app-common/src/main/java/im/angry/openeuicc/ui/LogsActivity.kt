@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -37,9 +38,11 @@ class LogsActivity : AppCompatActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_logs)
         setSupportActionBar(requireViewById(R.id.toolbar))
+        setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         swipeRefresh = requireViewById(R.id.swipe_refresh)
