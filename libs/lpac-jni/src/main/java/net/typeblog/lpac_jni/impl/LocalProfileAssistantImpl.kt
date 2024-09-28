@@ -42,6 +42,7 @@ class LocalProfileAssistantImpl(
         }
 
     override val profiles: List<LocalProfileInfo>
+        @Synchronized
         get() {
             val head = LpacJni.es10cGetProfilesInfo(contextHandle)
             var curr = head
@@ -66,6 +67,7 @@ class LocalProfileAssistantImpl(
         }
 
     override val notifications: List<LocalProfileNotification>
+        @Synchronized
         get() {
             val head = LpacJni.es10bListNotification(contextHandle)
             var curr = head
@@ -84,9 +86,11 @@ class LocalProfileAssistantImpl(
         }
 
     override val eID: String
+        @Synchronized
         get() = LpacJni.es10cGetEid(contextHandle)!!
 
     override val euiccInfo2: EuiccInfo2?
+        @Synchronized
         get() {
             val cInfo = LpacJni.es10cexGetEuiccInfo2(contextHandle)
             if (cInfo == 0L) return null
@@ -122,12 +126,15 @@ class LocalProfileAssistantImpl(
             return ret
         }
 
+    @Synchronized
     override fun enableProfile(iccid: String, refresh: Boolean): Boolean =
         LpacJni.es10cEnableProfile(contextHandle, iccid, refresh) == 0
 
+    @Synchronized
     override fun disableProfile(iccid: String, refresh: Boolean): Boolean =
         LpacJni.es10cDisableProfile(contextHandle, iccid, refresh) == 0
 
+    @Synchronized
     override fun deleteProfile(iccid: String): Boolean =
         LpacJni.es10cDeleteProfile(contextHandle, iccid) == 0
 
@@ -144,6 +151,7 @@ class LocalProfileAssistantImpl(
         ) == 0
     }
 
+    @Synchronized
     override fun deleteNotification(seqNumber: Long): Boolean =
         LpacJni.es10bDeleteNotification(contextHandle, seqNumber) == 0
 
@@ -153,6 +161,7 @@ class LocalProfileAssistantImpl(
             Log.d(TAG, "handleNotification $seqNumber = $it")
         } == 0
 
+    @Synchronized
     override fun setNickname(iccid: String, nickname: String): Boolean =
         LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0
 
