@@ -49,6 +49,8 @@ class LogsActivity : AppCompatActivity() {
         scrollView = requireViewById(R.id.scroll_view)
         logText = requireViewById(R.id.log_text)
 
+        setupRootViewInsets(scrollView)
+
         swipeRefresh.setOnRefreshListener {
             lifecycleScope.launch {
                 reload()

@@ -42,14 +42,16 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         setSupportActionBar(requireViewById(R.id.toolbar))
         setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        swipeRefresh = requireViewById(R.id.swipe_refresh)
+        notificationList = requireViewById(R.id.recycler_view)
+
+        setupRootViewInsets(notificationList)
     }
 
     override fun onInit() {
         euiccChannel = euiccChannelManager
             .findEuiccChannelBySlotBlocking(intent.getIntExtra("logicalSlotId", 0))!!
-
-        swipeRefresh = requireViewById(R.id.swipe_refresh)
-        notificationList = requireViewById(R.id.recycler_view)
 
         notificationList.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)

@@ -35,6 +35,8 @@ class CompatibilityCheckActivity: AppCompatActivity() {
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         compatibilityCheckList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
         compatibilityCheckList.adapter = adapter
+
+        setupRootViewInsets(compatibilityCheckList)
     }
 
     override fun onStart() {

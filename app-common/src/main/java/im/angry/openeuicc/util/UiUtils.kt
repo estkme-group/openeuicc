@@ -55,3 +55,17 @@ fun AppCompatActivity.setupToolbarInsets() {
         WindowInsetsCompat.CONSUMED
     }
 }
+
+fun setupRootViewInsets(view: View) {
+    ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+        val bars = insets.getInsets(
+            WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout()
+        )
+
+        // Don't set padding bottom because we do want scrolling root views to extend into nav bar
+        v.updatePadding(bars.left, v.paddingTop, bars.right, v.paddingBottom)
+
+        WindowInsetsCompat.CONSUMED
+    }
+}
