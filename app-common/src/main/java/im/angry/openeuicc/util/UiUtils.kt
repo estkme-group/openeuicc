@@ -52,7 +52,6 @@ fun AppCompatActivity.setupToolbarInsets() {
             height = v.top
         }
 
-        android.util.Log.d("aaa",  "${(v as Toolbar).minimumHeight}")
         WindowInsetsCompat.CONSUMED
     }
 }
