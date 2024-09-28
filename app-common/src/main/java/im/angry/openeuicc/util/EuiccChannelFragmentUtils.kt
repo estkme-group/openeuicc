@@ -39,6 +39,9 @@ val <T> T.channel: EuiccChannel where T: Fragment, T: EuiccChannelFragmentMarker
     get() =
         euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)!!
 
+suspend fun <T> T.ensureEuiccChannelManager() where T: Fragment, T: EuiccChannelFragmentMarker =
+    (requireActivity() as BaseEuiccAccessActivity).euiccChannelManagerLoaded.await()
+
 interface EuiccProfilesChangedListener {
     fun onEuiccProfilesChanged()
 }

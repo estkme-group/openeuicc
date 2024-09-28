@@ -108,7 +108,10 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             ProfileDownloadFragment.newInstance(slotId, portId)
                 .show(childFragmentManager, ProfileDownloadFragment.TAG)
         }
+    }
 
+    override fun onStart() {
+        super.onStart()
         refresh()
     }
 
@@ -151,6 +154,8 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
+            ensureEuiccChannelManager()
+
             if (!this@EuiccManagementFragment::disableSafeguardFlow.isInitialized) {
                 disableSafeguardFlow =
                     preferenceRepository.disableSafeguardFlow.stateIn(lifecycleScope)

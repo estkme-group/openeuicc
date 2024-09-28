@@ -9,14 +9,17 @@ import android.os.IBinder
 import androidx.appcompat.app.AppCompatActivity
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.service.EuiccChannelManagerService
+import kotlinx.coroutines.CompletableDeferred
 
 abstract class BaseEuiccAccessActivity : AppCompatActivity() {
+    val euiccChannelManagerLoaded = CompletableDeferred<Unit>()
     lateinit var euiccChannelManager: EuiccChannelManager
 
     private val euiccChannelManagerServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             euiccChannelManager =
                 (service!! as EuiccChannelManagerService.LocalBinder).service.euiccChannelManager
+            euiccChannelManagerLoaded.complete(Unit)
             onInit()
         }
 
