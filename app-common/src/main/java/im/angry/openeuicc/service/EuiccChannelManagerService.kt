@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 /**
@@ -161,7 +163,19 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         lifecycleScope.launch(Dispatchers.Main) {
             // Wait until our self-start command has succeeded.
             // We can only call startForeground() after that
-            foregroundStarted.first()
+            val res = withTimeoutOrNull(30 * 1000) {
+                foregroundStarted.first()
+            }
+
+            if (res == null) {
+                // The only case where the wait above could time out is if the subscriber
+                // to the flow is stuck. Or we failed to start foreground.
+                // In that case, we should just set our state back to Idle -- setting it
+                // to Done wouldn't help much because nothing is going to then set it Idle.
+                foregroundTaskState.value = ForegroundTaskState.Idle
+                return@launch
+            }
+
             updateForegroundNotification(title, iconRes)
 
             try {
