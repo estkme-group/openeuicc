@@ -134,6 +134,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         loadingProgress.visibility = View.VISIBLE
         viewPager.visibility = View.GONE
         tabs.visibility = View.GONE
+        // Prevent concurrent access with any running foreground task
+        euiccChannelManagerService.waitForForegroundTask()
 
         val knownChannels = withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateEuiccChannels().onEach {

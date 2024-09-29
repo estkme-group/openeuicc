@@ -16,8 +16,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -184,6 +186,14 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             emit(it)
             it !is ForegroundTaskState.Done
         }.onCompletion { foregroundTaskState.value = ForegroundTaskState.Idle }
+    }
+
+    val isForegroundTaskRunning: Boolean
+        get() = foregroundTaskState.value != ForegroundTaskState.Idle
+
+    suspend fun waitForForegroundTask() {
+        foregroundTaskState.takeWhile { it != ForegroundTaskState.Idle }
+            .collect()
     }
 
     fun launchProfileDownloadTask(

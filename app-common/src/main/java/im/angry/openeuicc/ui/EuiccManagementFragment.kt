@@ -155,6 +155,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
         lifecycleScope.launch {
             ensureEuiccChannelManager()
+            euiccChannelManagerService.waitForForegroundTask()
 
             if (!this@EuiccManagementFragment::disableSafeguardFlow.isInitialized) {
                 disableSafeguardFlow =

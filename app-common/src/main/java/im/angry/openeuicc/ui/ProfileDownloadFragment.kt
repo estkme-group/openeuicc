@@ -160,6 +160,12 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
 
         lifecycleScope.launch(Dispatchers.IO) {
             ensureEuiccChannelManager()
+            if (euiccChannelManagerService.isForegroundTaskRunning) {
+                withContext(Dispatchers.Main) {
+                    dismiss()
+                }
+                return@launch
+            }
 
             // Fetch remaining NVRAM
             val str = channel.lpa.euiccInfo2?.freeNvram?.also {
