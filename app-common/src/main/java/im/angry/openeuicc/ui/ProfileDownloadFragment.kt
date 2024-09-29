@@ -245,11 +245,12 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
             confirmationCode,
             imei
         )!!.onEach {
-            progress.isIndeterminate = false
             if (it is EuiccChannelManagerService.ForegroundTaskState.InProgress) {
                 progress.progress = it.progress
+                progress.isIndeterminate = it.progress == 0
             } else {
                 progress.progress = 100
+                progress.isIndeterminate = false
             }
         }.last()
 
