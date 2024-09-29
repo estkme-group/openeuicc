@@ -178,7 +178,9 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         // until we encounter ForegroundTaskState.Done.
         return foregroundTaskState.transformWhile {
             // Also update our notification when we see an update
-            updateForegroundNotification(title, iconRes)
+            withContext(Dispatchers.Main) {
+                updateForegroundNotification(title, iconRes)
+            }
             emit(it)
             it !is ForegroundTaskState.Done
         }.onCompletion { foregroundTaskState.value = ForegroundTaskState.Idle }
