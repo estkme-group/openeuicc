@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
@@ -119,6 +118,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 .setProgress(100, state.progress, state.progress == 0)
                 .setSmallIcon(iconRes)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setOngoing(true)
                 .build()
 
             if (state.progress == 0) {
