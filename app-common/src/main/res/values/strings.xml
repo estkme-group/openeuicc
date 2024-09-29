@@ -35,6 +35,7 @@
 
     <string name="task_notification">Long-running Tasks</string>
     <string name="task_profile_download">Downloading eSIM profile</string>
+    <string name="task_profile_rename">Renaming eSIM profile</string>
 
     <string name="profile_download">New eSIM</string>
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>

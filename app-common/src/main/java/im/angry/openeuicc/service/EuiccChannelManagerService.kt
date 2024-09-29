@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
@@ -174,12 +175,6 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             updateForegroundNotification(title, iconRes)
         }
 
-        // We 've launched the coroutine, now we can self-start
-        // This is required in order to use startForeground()
-        // This will end up calling onStartCommand(), which will emit
-        // into foregroundStarted and unblock the coroutine above
-        startForegroundService(Intent(this, this::class.java))
-
         // We should be the only task running, so we can subscribe to foregroundTaskState
         // until we encounter ForegroundTaskState.Done.
         // Then, we complete the returned flow, but we also set the state back to Idle.
@@ -192,6 +187,15 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             }
             emit(it)
             it !is ForegroundTaskState.Done
+        }.onStart {
+            // When this Flow is started, we unblock the coroutine launched above by
+            // self-starting as a foreground service.
+            startForegroundService(
+                Intent(
+                    this@EuiccChannelManagerService,
+                    this@EuiccChannelManagerService::class.java
+                )
+            )
         }.onCompletion { foregroundTaskState.value = ForegroundTaskState.Idle }
     }
 
@@ -236,6 +240,26 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 }
 
                 preferenceRepository.notificationDownloadFlow.first()
+            }
+        }
+
+    fun launchProfileRenameTask(
+        slotId: Int,
+        portId: Int,
+        iccid: String,
+        name: String
+    ): Flow<ForegroundTaskState>? =
+        launchForegroundTask(
+            getString(R.string.task_profile_rename),
+            R.drawable.ic_task_rename
+        ) {
+            val res = euiccChannelManager.findEuiccChannelByPort(slotId, portId)!!.lpa.setNickname(
+                iccid,
+                name
+            )
+
+            if (!res) {
+                throw RuntimeException("Profile not renamed")
             }
         }
 }

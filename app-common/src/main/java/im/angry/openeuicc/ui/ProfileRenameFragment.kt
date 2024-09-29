@@ -2,7 +2,6 @@ package im.angry.openeuicc.ui
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.lang.Exception
-import java.lang.RuntimeException
 
 class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragmentMarker {
     companion object {
@@ -97,23 +93,20 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
         progress.visibility = View.VISIBLE
 
         lifecycleScope.launch {
-            try {
-                doRename(name)
-            } catch (e: Exception) {
-                Log.d(TAG, "Failed to rename profile")
-                Log.d(TAG, Log.getStackTraceString(e))
-            } finally {
-                if (parentFragment is EuiccProfilesChangedListener) {
-                    (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
-                }
-                dismiss()
-            }
-        }
-    }
+            ensureEuiccChannelManager()
+            euiccChannelManagerService.waitForForegroundTask()
+            euiccChannelManagerService.launchProfileRenameTask(
+                slotId,
+                portId,
+                requireArguments().getString("iccid")!!,
+                name
+            )?.collect()
 
-    private suspend fun doRename(name: String) = withContext(Dispatchers.IO) {
-        if (!channel.lpa.setNickname(requireArguments().getString("iccid")!!, name)) {
-            throw RuntimeException("Profile nickname not changed")
+            if (parentFragment is EuiccProfilesChangedListener) {
+                (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
+            }
+
+            dismiss()
         }
     }
 }

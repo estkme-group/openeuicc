@@ -213,6 +213,8 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
         progress.visibility = View.VISIBLE
 
         lifecycleScope.launch {
+            ensureEuiccChannelManager()
+            euiccChannelManagerService.waitForForegroundTask()
             try {
                 doDownloadProfile(server, code, confirmationCode, imei)
             } catch (e: Exception) {
