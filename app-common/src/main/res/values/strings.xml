@@ -33,6 +33,9 @@
     <string name="usb_permission_needed">Permission is needed to access the USB smart card reader.</string>
     <string name="usb_failed">Cannot connect to eSIM via a USB smart card reader.</string>
 
+    <string name="task_notification">Long-running Tasks</string>
+    <string name="task_profile_download">Downloading eSIM profile</string>
+
     <string name="profile_download">New eSIM</string>
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>
     <string name="profile_download_code">Activation Code</string>

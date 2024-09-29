@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
+import im.angry.openeuicc.service.EuiccChannelManagerService
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,6 +36,8 @@ val <T> T.isUsb: Boolean where T: Fragment, T: EuiccChannelFragmentMarker
 
 val <T> T.euiccChannelManager: EuiccChannelManager where T: Fragment, T: EuiccChannelFragmentMarker
     get() = (requireActivity() as BaseEuiccAccessActivity).euiccChannelManager
+val <T> T.euiccChannelManagerService: EuiccChannelManagerService where T: Fragment, T: EuiccChannelFragmentMarker
+    get() = (requireActivity() as BaseEuiccAccessActivity).euiccChannelManagerService
 val <T> T.channel: EuiccChannel where T: Fragment, T: EuiccChannelFragmentMarker
     get() =
         euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)!!

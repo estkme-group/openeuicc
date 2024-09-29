@@ -5,7 +5,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.hardware.usb.UsbManager
+import android.os.Build
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -30,6 +32,8 @@ import kotlinx.coroutines.withContext
 open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     companion object {
         const val TAG = "MainActivity"
+
+        const val PERMISSION_REQUEST_CODE = 1000
     }
 
     private lateinit var loadingProgress: ProgressBar
@@ -116,6 +120,15 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
     }
 
+    private fun ensureNotificationPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
     private suspend fun init(fromUsbEvent: Boolean = false) {
         refreshing = true // We don't check this here -- the check happens in refresh()
         loadingProgress.visibility = View.VISIBLE
@@ -171,6 +184,10 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                 }
             } else {
                 viewPager.currentItem = 0
+            }
+
+            if (pages.size > 0) {
+                ensureNotificationPermissions()
             }
 
             refreshing = false

@@ -18,12 +18,13 @@ import com.google.android.material.textfield.TextInputLayout
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.service.EuiccChannelManagerService
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.typeblog.lpac_jni.ProfileDownloadCallback
 import kotlin.Exception
 
 class ProfileDownloadFragment : BaseMaterialDialogFragment(),
@@ -224,30 +225,25 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
         code: String?,
         confirmationCode: String?,
         imei: String?
-    ) = beginTrackedOperation {
-        val res = channel.lpa.downloadProfile(
+    ) = withContext(Dispatchers.Main) {
+        // The service is responsible for launching the actual blocking part on the IO context
+        val res = euiccChannelManagerService.launchProfileDownloadTask(
+            slotId,
+            portId,
             server,
             code,
-            imei,
             confirmationCode,
-            object : ProfileDownloadCallback {
-                override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        progress.isIndeterminate = false
-                        progress.progress = state.progress
-                    }
-                }
-            })
+            imei
+        )!!.onEach {
+            progress.isIndeterminate = false
+            if (it is EuiccChannelManagerService.ForegroundTaskState.InProgress) {
+                progress.progress = it.progress
+            } else {
+                progress.progress = 100
+            }
+        }.last()
 
-        if (!res) {
-            // TODO: Provide more details on the error
-            throw RuntimeException("Failed to download profile; this is typically caused by another error happened before.")
-        }
-
-        // If we get here, we are successful
-        // This function is wrapped in beginTrackedOperation, so by returning the settings value,
-        // We only send notifications if the user allowed us to
-        preferenceRepository.notificationDownloadFlow.first()
+        (res as? EuiccChannelManagerService.ForegroundTaskState.Done)?.error?.let { throw it }
     }
 
     override fun onDismiss(dialog: DialogInterface) {

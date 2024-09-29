@@ -14,11 +14,12 @@ import kotlinx.coroutines.CompletableDeferred
 abstract class BaseEuiccAccessActivity : AppCompatActivity() {
     val euiccChannelManagerLoaded = CompletableDeferred<Unit>()
     lateinit var euiccChannelManager: EuiccChannelManager
+    lateinit var euiccChannelManagerService: EuiccChannelManagerService
 
     private val euiccChannelManagerServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            euiccChannelManager =
-                (service!! as EuiccChannelManagerService.LocalBinder).service.euiccChannelManager
+            euiccChannelManagerService = (service!! as EuiccChannelManagerService.LocalBinder).service
+            euiccChannelManager = euiccChannelManagerService.euiccChannelManager
             euiccChannelManagerLoaded.complete(Unit)
             onInit()
         }

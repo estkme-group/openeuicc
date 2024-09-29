@@ -48,6 +48,7 @@ dependencies {
     //noinspection KtxExtensionAvailable
     api("androidx.preference:preference:1.2.1")
     api("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    api("androidx.lifecycle:lifecycle-service:2.6.2")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     api("androidx.cardview:cardview:1.0.0")
     api("androidx.viewpager2:viewpager2:1.1.0")

@@ -8,6 +8,7 @@ java_defaults {
         "androidx-constraintlayout_constraintlayout",
         "androidx.preference_preference",
         "androidx.lifecycle_lifecycle-runtime-ktx",
+        "androidx.lifecycle_lifecycle-service",
         "androidx.swiperefreshlayout_swiperefreshlayout",
         "androidx.cardview_cardview",
         "androidx.viewpager2_viewpager2",

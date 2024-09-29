@@ -3,8 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="im.angry.openeuicc.common">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application>
         <activity
@@ -31,6 +33,7 @@
 
         <service
             android:name="im.angry.openeuicc.service.EuiccChannelManagerService"
+            android:foregroundServiceType="shortService"
             android:exported="false" />
     </application>
 </manifest>
