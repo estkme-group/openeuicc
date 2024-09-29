@@ -131,9 +131,13 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     /**
      * Launch a potentially blocking foreground task in this service's lifecycle context.
      * This function does not block, but returns a Flow that emits ForegroundTaskState
-     * updates associated with this task.
+     * updates associated with this task. The last update the returned flow will emit is
+     * always ForegroundTaskState.Done.
+     *
      * The task closure is expected to update foregroundTaskState whenever appropriate.
      * If a foreground task is already running, this function returns null.
+     *
+     * The function will set the state back to Idle once it sees ForegroundTaskState.Done.
      */
     private fun launchForegroundTask(
         title: String,
@@ -178,6 +182,9 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
 
         // We should be the only task running, so we can subscribe to foregroundTaskState
         // until we encounter ForegroundTaskState.Done.
+        // Then, we complete the returned flow, but we also set the state back to Idle.
+        // The state update back to Idle won't show up in the returned stream, because
+        // it has been completed by that point.
         return foregroundTaskState.transformWhile {
             // Also update our notification when we see an update
             withContext(Dispatchers.Main) {
