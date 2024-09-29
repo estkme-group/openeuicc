@@ -120,6 +120,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 .setSmallIcon(iconRes)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setOngoing(true)
+                .setOnlyAlertOnce(true)
                 .build()
 
             if (state.progress == 0) {
