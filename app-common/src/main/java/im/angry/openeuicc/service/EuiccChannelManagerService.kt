@@ -133,10 +133,13 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
      * Launch a potentially blocking foreground task in this service's lifecycle context.
      * This function does not block, but returns a Flow that emits ForegroundTaskState
      * updates associated with this task. The last update the returned flow will emit is
-     * always ForegroundTaskState.Done.
+     * always ForegroundTaskState.Done. The returned flow MUST be started in order for the
+     * foreground task to run.
      *
      * The task closure is expected to update foregroundTaskState whenever appropriate.
      * If a foreground task is already running, this function returns null.
+     *
+     * To wait for foreground tasks to be available, use waitForForegroundTask().
      *
      * The function will set the state back to Idle once it sees ForegroundTaskState.Done.
      */
@@ -260,6 +263,25 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
 
             if (!res) {
                 throw RuntimeException("Profile not renamed")
+            }
+        }
+
+    fun launchProfileDeleteTask(
+        slotId: Int,
+        portId: Int,
+        iccid: String
+    ): Flow<ForegroundTaskState>? =
+        launchForegroundTask(
+            getString(R.string.task_profile_delete),
+            R.drawable.ic_task_delete
+        ) {
+            euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {
+                euiccChannelManager.findEuiccChannelByPort(
+                    slotId,
+                    portId
+                )!!.lpa.deleteProfile(iccid)
+
+                preferenceRepository.notificationDeleteFlow.first()
             }
         }
 }

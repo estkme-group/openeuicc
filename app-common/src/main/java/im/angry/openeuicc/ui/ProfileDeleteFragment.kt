@@ -3,16 +3,15 @@ package im.angry.openeuicc.ui
 import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
     companion object {
@@ -67,23 +66,23 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).isEnabled = false
 
-        lifecycleScope.launch {
-            try {
-                doDelete()
-            } catch (e: Exception) {
-                Log.d(ProfileDownloadFragment.TAG, "Error deleting profile")
-                Log.d(ProfileDownloadFragment.TAG, Log.getStackTraceString(e))
-            } finally {
+        requireParentFragment().lifecycleScope.launch {
+            ensureEuiccChannelManager()
+            euiccChannelManagerService.waitForForegroundTask()
+
+            euiccChannelManagerService.launchProfileDeleteTask(
+                slotId,
+                portId,
+                requireArguments().getString("iccid")!!
+            )!!.onStart {
                 if (parentFragment is EuiccProfilesChangedListener) {
+                    // Trigger a refresh in the parent fragment -- it should wait until
+                    // any foreground task is completed before actually doing a refresh
                     (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
                 }
-                dismiss()
-            }
-        }
-    }
 
-    private suspend fun doDelete() = beginTrackedOperation {
-        channel.lpa.deleteProfile(requireArguments().getString("iccid")!!)
-        preferenceRepository.notificationDeleteFlow.first()
+                dismiss()
+            }.collect()
+        }
     }
 }
