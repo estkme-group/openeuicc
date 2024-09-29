@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.yield
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 /**
@@ -102,7 +103,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         }
     }
 
-    private fun updateForegroundNotification(title: String, iconRes: Int) {
+    private suspend fun updateForegroundNotification(title: String, iconRes: Int) {
         val channel =
             NotificationChannelCompat.Builder(CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW)
                 .setName(getString(R.string.task_notification))
@@ -126,6 +127,10 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             } else if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                 NotificationManagerCompat.from(this).notify(FOREGROUND_ID, notification)
             }
+
+            // Yield out so that the main looper can handle the notification event
+            // Without this yield, the notification sent above will not be shown in time.
+            yield()
         } else {
             stopForeground(STOP_FOREGROUND_REMOVE)
         }
@@ -182,14 +187,13 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 withContext(Dispatchers.IO) {
                     this@EuiccChannelManagerService.task()
                 }
+                // This update will be sent by the subscriber (as shown below)
                 foregroundTaskState.value = ForegroundTaskState.Done(null)
             } catch (t: Throwable) {
                 foregroundTaskState.value = ForegroundTaskState.Done(t)
             } finally {
                 stopSelf()
             }
-
-            updateForegroundNotification(title, iconRes)
         }
 
         // We should be the only task running, so we can subscribe to foregroundTaskState
@@ -199,20 +203,26 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         // it has been completed by that point.
         return foregroundTaskState.transformWhile {
             // Also update our notification when we see an update
-            withContext(Dispatchers.Main) {
-                updateForegroundNotification(title, iconRes)
+            // But ignore the first progress = 0 update -- that is the current value.
+            // we need that to be handled by the main coroutine after it finishes.
+            if (it !is ForegroundTaskState.InProgress || it.progress != 0) {
+                withContext(Dispatchers.Main) {
+                    updateForegroundNotification(title, iconRes)
+                }
             }
             emit(it)
             it !is ForegroundTaskState.Done
         }.onStart {
             // When this Flow is started, we unblock the coroutine launched above by
             // self-starting as a foreground service.
-            startForegroundService(
-                Intent(
-                    this@EuiccChannelManagerService,
-                    this@EuiccChannelManagerService::class.java
+            withContext(Dispatchers.Main) {
+                startForegroundService(
+                    Intent(
+                        this@EuiccChannelManagerService,
+                        this@EuiccChannelManagerService::class.java
+                    )
                 )
-            )
+            }
         }.onCompletion { foregroundTaskState.value = ForegroundTaskState.Idle }
     }
 
