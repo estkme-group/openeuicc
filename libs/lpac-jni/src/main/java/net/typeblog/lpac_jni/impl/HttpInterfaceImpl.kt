@@ -34,6 +34,12 @@ class HttpInterfaceImpl: HttpInterface {
 
             val conn = parsedUrl.openConnection() as HttpsURLConnection
             conn.connectTimeout = 2000
+
+            if (url.contains("handleNotification")) {
+                conn.connectTimeout = 1000
+                conn.readTimeout = 1000
+            }
+
             conn.sslSocketFactory = sslContext.socketFactory
             conn.requestMethod = "POST"
             conn.doInput = true
