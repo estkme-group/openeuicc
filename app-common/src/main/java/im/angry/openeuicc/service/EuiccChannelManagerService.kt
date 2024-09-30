@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -49,6 +50,7 @@ import net.typeblog.lpac_jni.ProfileDownloadCallback
  */
 class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     companion object {
+        private const val TAG = "EuiccChannelManagerService"
         private const val CHANNEL_ID = "tasks"
         private const val FOREGROUND_ID = 1000
     }
@@ -192,6 +194,8 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 // This update will be sent by the subscriber (as shown below)
                 foregroundTaskState.value = ForegroundTaskState.Done(null)
             } catch (t: Throwable) {
+                Log.e(TAG, "Foreground task encountered an error")
+                Log.e(TAG, Log.getStackTraceString(t))
                 foregroundTaskState.value = ForegroundTaskState.Done(t)
             } finally {
                 stopSelf()
