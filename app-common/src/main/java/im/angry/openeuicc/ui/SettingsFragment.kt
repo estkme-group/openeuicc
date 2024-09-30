@@ -49,12 +49,9 @@ class SettingsFragment: PreferenceFragmentCompat() {
             ?.bindBooleanFlow(preferenceRepository.disableSafeguardFlow, PreferenceKeys.DISABLE_SAFEGUARD_REMOVABLE_ESIM)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedInstanceState).also(::setupRootViewInsets)
+    override fun onStart() {
+        super.onStart()
+        setupRootViewInsets(requireView().requireViewById(androidx.preference.R.id.recycler_view))
     }
 
     private fun CheckBoxPreference.bindBooleanFlow(flow: Flow<Boolean>, key: Preferences.Key<Boolean>) {

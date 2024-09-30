@@ -56,15 +56,16 @@ fun AppCompatActivity.setupToolbarInsets() {
     }
 }
 
-fun setupRootViewInsets(view: View) {
+fun setupRootViewInsets(view: ViewGroup) {
+    // Disable clipToPadding to make sure content actually display
+    view.clipToPadding = false
     ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
         val bars = insets.getInsets(
             WindowInsetsCompat.Type.systemBars()
                     or WindowInsetsCompat.Type.displayCutout()
         )
 
-        // Don't set padding bottom because we do want scrolling root views to extend into nav bar
-        v.updatePadding(bars.left, v.paddingTop, bars.right, v.paddingBottom)
+        v.updatePadding(bars.left, v.paddingTop, bars.right, bars.bottom)
 
         WindowInsetsCompat.CONSUMED
     }
