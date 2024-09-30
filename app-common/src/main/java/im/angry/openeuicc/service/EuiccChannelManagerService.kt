@@ -13,6 +13,7 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -307,6 +308,59 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 )!!.lpa.deleteProfile(iccid)
 
                 preferenceRepository.notificationDeleteFlow.first()
+            }
+        }
+
+    class SwitchingProfilesRefreshException : Exception()
+
+    fun launchProfileSwitchTask(
+        slotId: Int,
+        portId: Int,
+        iccid: String,
+        enable: Boolean, // Enable or disable the profile indicated in iccid
+        reconnectTimeoutMillis: Long = 0 // 0 = do not wait for reconnect, useful for USB readers
+    ): Flow<ForegroundTaskState>? =
+        launchForegroundTask(
+            getString(R.string.task_profile_switch),
+            R.drawable.ic_task_switch
+        ) {
+            euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {
+                val channel = euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)!!
+                val (res, refreshed) =
+                    if (!channel.lpa.switchProfile(iccid, enable, refresh = true)) {
+                        // Sometimes, we *can* enable or disable the profile, but we cannot
+                        // send the refresh command to the modem because the profile somehow
+                        // makes the modem "busy". In this case, we can still switch by setting
+                        // refresh to false, but then the switch cannot take effect until the
+                        // user resets the modem manually by toggling airplane mode or rebooting.
+                        Pair(channel.lpa.switchProfile(iccid, enable, refresh = false), false)
+                    } else {
+                        Pair(true, true)
+                    }
+
+                if (!res) {
+                    throw RuntimeException("Could not switch profile")
+                }
+
+                if (!refreshed) {
+                    // We may have switched the profile, but we could not refresh. Tell the caller about this
+                    throw SwitchingProfilesRefreshException()
+                }
+
+                if (reconnectTimeoutMillis > 0) {
+                    // Add an unconditional delay first to account for any race condition between
+                    // the card sending the refresh command and the modem actually refreshing
+                    delay(reconnectTimeoutMillis / 10)
+
+                    // This throws TimeoutCancellationException if timed out
+                    euiccChannelManager.waitForReconnect(
+                        slotId,
+                        portId,
+                        reconnectTimeoutMillis / 10 * 9
+                    )
+                }
+
+                preferenceRepository.notificationSwitchFlow.first()
             }
         }
 }

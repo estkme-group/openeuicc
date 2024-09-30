@@ -30,12 +30,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.core.EuiccChannelManager
+import im.angry.openeuicc.service.EuiccChannelManagerService
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -176,67 +176,47 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         }
     }
 
+    private suspend fun showSwitchFailureText() = withContext(Dispatchers.Main) {
+        Toast.makeText(
+            context,
+            R.string.toast_profile_enable_failed,
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
     private fun enableOrDisableProfile(iccid: String, enable: Boolean) {
         swipeRefresh.isRefreshing = true
         fab.isEnabled = false
 
         lifecycleScope.launch {
-            beginTrackedOperation {
-                val (res, refreshed) =
-                    if (!channel.lpa.switchProfile(iccid, enable, refresh = true)) {
-                        // Sometimes, we *can* enable or disable the profile, but we cannot
-                        // send the refresh command to the modem because the profile somehow
-                        // makes the modem "busy". In this case, we can still switch by setting
-                        // refresh to false, but then the switch cannot take effect until the
-                        // user resets the modem manually by toggling airplane mode or rebooting.
-                        Pair(channel.lpa.switchProfile(iccid, enable, refresh = false), false)
-                    } else {
-                        Pair(true, true)
-                    }
+            ensureEuiccChannelManager()
+            euiccChannelManagerService.waitForForegroundTask()
 
-                if (!res) {
-                    Log.d(TAG, "Failed to enable / disable profile $iccid")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            R.string.toast_profile_enable_failed,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    return@beginTrackedOperation false
+            val res = euiccChannelManagerService.launchProfileSwitchTask(
+                slotId,
+                portId,
+                iccid,
+                enable,
+                reconnectTimeoutMillis = if (isUsb) {
+                    0
+                } else {
+                    30 * 1000
                 }
+            )?.last() as? EuiccChannelManagerService.ForegroundTaskState.Done
 
-                if (!refreshed && !isUsb) {
-                    withContext(Dispatchers.Main) {
-                        AlertDialog.Builder(requireContext()).apply {
-                            setMessage(R.string.switch_did_not_refresh)
-                            setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                dialog.dismiss()
-                                requireActivity().finish()
-                            }
-                            setOnDismissListener { _ ->
-                                requireActivity().finish()
-                            }
-                            show()
-                        }
-                    }
-                    return@beginTrackedOperation true
-                }
+            if (res == null) {
+                showSwitchFailureText()
+                return@launch
+            }
 
-                if (!isUsb) {
-                    try {
-                        euiccChannelManager.waitForReconnect(
-                            slotId,
-                            portId,
-                            timeoutMillis = 30 * 1000
-                        )
-                    } catch (e: TimeoutCancellationException) {
+            when (res.error) {
+                null -> {}
+                is EuiccChannelManagerService.SwitchingProfilesRefreshException -> {
+                    // This is only really fatal for internal eSIMs
+                    if (!isUsb) {
                         withContext(Dispatchers.Main) {
-                            // Prevent this Fragment from being used again
-                            invalid = true
-                            // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
                             AlertDialog.Builder(requireContext()).apply {
-                                setMessage(R.string.enable_disable_timeout)
+                                setMessage(R.string.switch_did_not_refresh)
                                 setPositiveButton(android.R.string.ok) { dialog, _ ->
                                     dialog.dismiss()
                                     requireActivity().finish()
@@ -247,12 +227,31 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                                 show()
                             }
                         }
-                        return@beginTrackedOperation false
                     }
                 }
 
-                preferenceRepository.notificationSwitchFlow.first()
+                is TimeoutCancellationException -> {
+                    withContext(Dispatchers.Main) {
+                        // Prevent this Fragment from being used again
+                        invalid = true
+                        // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
+                        AlertDialog.Builder(requireContext()).apply {
+                            setMessage(R.string.enable_disable_timeout)
+                            setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                dialog.dismiss()
+                                requireActivity().finish()
+                            }
+                            setOnDismissListener { _ ->
+                                requireActivity().finish()
+                            }
+                            show()
+                        }
+                    }
+                }
+
+                else -> showSwitchFailureText()
             }
+
             refresh()
             fab.isEnabled = true
         }
