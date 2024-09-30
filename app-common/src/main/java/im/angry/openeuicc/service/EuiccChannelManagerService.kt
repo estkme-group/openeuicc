@@ -107,12 +107,18 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     }
 
     private suspend fun updateForegroundNotification(title: String, iconRes: Int) {
-        val channel =
-            NotificationChannelCompat.Builder(CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW)
-                .setName(getString(R.string.task_notification))
-                .setVibrationEnabled(false)
-                .build()
-        NotificationManagerCompat.from(this).createNotificationChannel(channel)
+        val nm = NotificationManagerCompat.from(this)
+        if (nm.getNotificationChannelCompat(CHANNEL_ID) == null) {
+            val channel =
+                NotificationChannelCompat.Builder(
+                    CHANNEL_ID,
+                    NotificationManagerCompat.IMPORTANCE_LOW
+                )
+                    .setName(getString(R.string.task_notification))
+                    .setVibrationEnabled(false)
+                    .build()
+            nm.createNotificationChannel(channel)
+        }
 
         val state = foregroundTaskState.value
 
@@ -129,7 +135,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             if (state.progress == 0) {
                 startForeground(FOREGROUND_ID, notification)
             } else if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                NotificationManagerCompat.from(this).notify(FOREGROUND_ID, notification)
+                nm.notify(FOREGROUND_ID, notification)
             }
 
             // Yield out so that the main looper can handle the notification event
