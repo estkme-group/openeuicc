@@ -59,16 +59,25 @@ class OmapiApduInterface(
         }
 
         try {
-            return lastChannel.transmit(tx).also {
+            for (i in 0..10) {
+                val res = lastChannel.transmit(tx)
                 if (runBlocking { verboseLoggingFlow.first() }) {
-                    Log.d(TAG, "OMAPI APDU response: ${it.encodeHex()}")
+                    Log.d(TAG, "OMAPI APDU response: ${res.encodeHex()}")
                 }
+
+                if (res.size == 2 && res[0] == 0x66.toByte() && res[1] == 0x01.toByte()) {
+                    Log.d(TAG, "Received checksum error 0x6601, retrying (count = $i)")
+                    continue
+                }
+
+                return res
             }
+
+            throw RuntimeException("Retransmit attempts exhausted; this was likely caused by checksum errors")
         } catch (e: Exception) {
             Log.e(TAG, "OMAPI APDU exception")
             e.printStackTrace()
             throw e
         }
     }
-
 }
