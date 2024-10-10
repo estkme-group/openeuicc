@@ -173,7 +173,7 @@ open class DefaultEuiccChannelManager(
                 try {
                     // tryOpenEuiccChannel() will automatically dispose of invalid channels
                     // and recreate when needed
-                    val channel = findEuiccChannelByPortBlocking(physicalSlotId, portId)!!
+                    val channel = findEuiccChannelByPort(physicalSlotId, portId)!!
                     check(channel.valid) { "Invalid channel" }
                     break
                 } catch (e: Exception) {
