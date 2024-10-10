@@ -5,6 +5,9 @@ import android.hardware.usb.UsbEndpoint
 import android.os.SystemClock
 import android.util.Log
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -18,7 +21,8 @@ class UsbCcidTransceiver(
     private val usbConnection: UsbDeviceConnection,
     private val usbBulkIn: UsbEndpoint,
     private val usbBulkOut: UsbEndpoint,
-    private val usbCcidDescription: UsbCcidDescription
+    private val usbCcidDescription: UsbCcidDescription,
+    private val verboseLoggingFlow: Flow<Boolean>
 ) {
     companion object {
         private const val TAG = "UsbCcidTransceiver"
@@ -178,7 +182,9 @@ class UsbCcidTransceiver(
             readBytes = usbConnection.bulkTransfer(
                 usbBulkIn, inputBuffer, inputBuffer.size, DEVICE_COMMUNICATE_TIMEOUT_MILLIS
             )
-            Log.d(TAG, "Received " + readBytes + " bytes: " + inputBuffer.encodeHex())
+            if (runBlocking { verboseLoggingFlow.first() }) {
+                Log.d(TAG, "Received " + readBytes + " bytes: " + inputBuffer.encodeHex())
+            }
         } while (readBytes <= 0 && attempts-- > 0)
         if (readBytes < CCID_HEADER_LENGTH) {
             throw UsbTransportException("USB-CCID error - failed to receive CCID header")

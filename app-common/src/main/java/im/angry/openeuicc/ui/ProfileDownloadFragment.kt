@@ -56,7 +56,6 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
 
     private val barcodeScannerLauncher = registerForActivityResult(ScanContract()) { result ->
         result.contents?.let { content ->
-            Log.d(TAG, content)
             onScanResult(content)
         }
     }

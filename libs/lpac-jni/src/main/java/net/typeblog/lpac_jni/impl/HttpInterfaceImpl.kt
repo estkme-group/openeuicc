@@ -1,6 +1,9 @@
 package net.typeblog.lpac_jni.impl
 
 import android.util.Log
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import net.typeblog.lpac_jni.HttpInterface
 import java.net.URL
 import java.security.SecureRandom
@@ -9,7 +12,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.TrustManagerFactory
 
-class HttpInterfaceImpl: HttpInterface {
+class HttpInterfaceImpl(private val verboseLoggingFlow: Flow<Boolean>) : HttpInterface {
     companion object {
         private const val TAG = "HttpInterfaceImpl"
     }
@@ -22,6 +25,10 @@ class HttpInterfaceImpl: HttpInterface {
         headers: Array<String>
     ): HttpInterface.HttpResponse {
         Log.d(TAG, "transmit(url = $url)")
+
+        if (runBlocking { verboseLoggingFlow.first() }) {
+            Log.d(TAG, "HTTP tx = ${tx.decodeToString(throwOnInvalidSequence = false)}")
+        }
 
         val parsedUrl = URL(url)
         if (parsedUrl.protocol != "https") {
@@ -56,7 +63,16 @@ class HttpInterfaceImpl: HttpInterface {
 
             Log.d(TAG, "transmit responseCode = ${conn.responseCode}")
 
-            return HttpInterface.HttpResponse(conn.responseCode, conn.inputStream.readBytes())
+            val bytes = conn.inputStream.readBytes().also {
+                if (runBlocking { verboseLoggingFlow.first() }) {
+                    Log.d(
+                        TAG,
+                        "HTTP response body = ${it.decodeToString(throwOnInvalidSequence = false)}"
+                    )
+                }
+            }
+
+            return HttpInterface.HttpResponse(conn.responseCode, bytes)
         } catch (e: Exception) {
             e.printStackTrace()
             throw e

@@ -25,6 +25,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -140,7 +141,9 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         val knownChannels = withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateEuiccChannels().onEach {
                 Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
-                Log.d(TAG, it.lpa.eID)
+                if (preferenceRepository.verboseLoggingFlow.first()) {
+                    Log.d(TAG, it.lpa.eID)
+                }
                 // Request the system to refresh the list of profiles every time we start
                 // Note that this is currently supposed to be no-op when unprivileged,
                 // but it could change in the future

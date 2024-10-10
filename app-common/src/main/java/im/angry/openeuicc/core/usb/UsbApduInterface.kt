@@ -4,12 +4,14 @@ import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbEndpoint
 import android.util.Log
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.flow.Flow
 import net.typeblog.lpac_jni.ApduInterface
 
 class UsbApduInterface(
     private val conn: UsbDeviceConnection,
     private val bulkIn: UsbEndpoint,
-    private val bulkOut: UsbEndpoint
+    private val bulkOut: UsbEndpoint,
+    private val verboseLoggingFlow: Flow<Boolean>
 ): ApduInterface {
     companion object {
         private const val TAG = "UsbApduInterface"
@@ -27,7 +29,7 @@ class UsbApduInterface(
             throw IllegalArgumentException("Unsupported card reader; T=0 support is required")
         }
 
-        transceiver = UsbCcidTransceiver(conn, bulkIn, bulkOut, ccidDescription)
+        transceiver = UsbCcidTransceiver(conn, bulkIn, bulkOut, ccidDescription, verboseLoggingFlow)
 
         try {
             transceiver.iccPowerOn()

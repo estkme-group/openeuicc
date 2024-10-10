@@ -26,7 +26,15 @@ class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFacto
                 "Trying TelephonyManager for slot ${port.card.physicalSlotIndex} port ${port.portIndex}"
             )
             try {
-                return EuiccChannel(port, TelephonyManagerApduInterface(port, tm))
+                return EuiccChannel(
+                    port,
+                    TelephonyManagerApduInterface(
+                        port,
+                        tm,
+                        context.preferenceRepository.verboseLoggingFlow
+                    ),
+                    context.preferenceRepository.verboseLoggingFlow
+                )
             } catch (e: IllegalArgumentException) {
                 // Failed
                 Log.w(

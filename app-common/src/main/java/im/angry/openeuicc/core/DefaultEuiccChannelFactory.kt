@@ -33,7 +33,15 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
 
         Log.i(DefaultEuiccChannelManager.TAG, "Trying OMAPI for physical slot ${port.card.physicalSlotIndex}")
         try {
-            return EuiccChannel(port, OmapiApduInterface(seService!!, port))
+            return EuiccChannel(
+                port,
+                OmapiApduInterface(
+                    seService!!,
+                    port,
+                    context.preferenceRepository.verboseLoggingFlow
+                ),
+                context.preferenceRepository.verboseLoggingFlow
+            )
         } catch (e: IllegalArgumentException) {
             // Failed
             Log.w(
@@ -52,7 +60,13 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
         if (!conn.claimInterface(usbInterface, true)) return null
         return EuiccChannel(
             FakeUiccPortInfoCompat(FakeUiccCardInfoCompat(EuiccChannelManager.USB_CHANNEL_ID)),
-            UsbApduInterface(conn, bulkIn, bulkOut)
+            UsbApduInterface(
+                conn,
+                bulkIn,
+                bulkOut,
+                context.preferenceRepository.verboseLoggingFlow
+            ),
+            context.preferenceRepository.verboseLoggingFlow
         )
     }
 

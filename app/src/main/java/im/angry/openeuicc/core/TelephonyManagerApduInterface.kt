@@ -2,13 +2,22 @@ package im.angry.openeuicc.core
 
 import android.telephony.IccOpenLogicalChannelResponse
 import android.telephony.TelephonyManager
+import android.util.Log
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import net.typeblog.lpac_jni.ApduInterface
 
 class TelephonyManagerApduInterface(
     private val port: UiccPortInfoCompat,
-    private val tm: TelephonyManager
+    private val tm: TelephonyManager,
+    private val verboseLoggingFlow: Flow<Boolean>
 ): ApduInterface {
+    companion object {
+        const val TAG = "TelephonyManagerApduInterface"
+    }
+
     private var lastChannel: Int = -1
 
     override val valid: Boolean
@@ -45,6 +54,10 @@ class TelephonyManagerApduInterface(
     override fun transmit(tx: ByteArray): ByteArray {
         check(lastChannel != -1) { "Uninitialized" }
 
+        if (runBlocking { verboseLoggingFlow.first() }) {
+            Log.d(TAG, "TelephonyManager APDU: ${tx.encodeHex()}")
+        }
+
         val cla = tx[0].toUByte().toInt()
         val instruction = tx[1].toUByte().toInt()
         val p1 = tx[2].toUByte().toInt()
@@ -53,7 +66,17 @@ class TelephonyManagerApduInterface(
         val p4 = tx.drop(5).toByteArray().encodeHex()
 
         return tm.iccTransmitApduLogicalChannelByPortCompat(port.card.physicalSlotIndex, port.portIndex, lastChannel,
-            cla, instruction, p1, p2, p3, p4)?.decodeHex() ?: byteArrayOf()
+            cla,
+            instruction,
+            p1,
+            p2,
+            p3,
+            p4
+        ).also {
+            if (runBlocking { verboseLoggingFlow.first() }) {
+                Log.d(TAG, "TelephonyManager APDU response: $it")
+            }
+        }?.decodeHex() ?: byteArrayOf()
     }
 
 }
