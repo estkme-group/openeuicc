@@ -30,6 +30,10 @@ class LocalProfileAssistantImpl(
         httpInterface.usePublicKeyIds(pkids)
     }
 
+    override fun setEs10xMss(mss: Byte) {
+        LpacJni.euiccSetMss(contextHandle, mss)
+    }
+
     override val valid: Boolean
         get() = !finalized && apduInterface.valid && try {
             // If we can read both eID and euiccInfo2 properly, we are likely looking at

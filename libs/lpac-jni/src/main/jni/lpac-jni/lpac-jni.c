@@ -75,6 +75,13 @@ Java_net_typeblog_lpac_1jni_LpacJni_euiccFini(JNIEnv *env, jobject thiz, jlong h
     euicc_fini(ctx);
 }
 
+JNIEXPORT void JNICALL
+Java_net_typeblog_lpac_1jni_LpacJni_euiccSetMss(JNIEnv *env, jobject thiz, jlong handle,
+                                                jbyte mss) {
+    struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
+    ctx->es10x_mss = (uint8_t) mss;
+}
+
 jstring toJString(JNIEnv *env, const char *pat) {
     jbyteArray bytes = NULL;
     jstring encoding = NULL;

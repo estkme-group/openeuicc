@@ -8,6 +8,13 @@ interface LocalProfileAssistant {
     // Extended EuiccInfo for use with LUIs, containing information such as firmware version
     val euiccInfo2: EuiccInfo2?
 
+    /**
+     * Set the max segment size (mss) for all es10x commands. This can help with removable
+     * eUICCs that may run at a baud rate too fast for the modem.
+     * By default, this is set to 60 by libeuicc.
+     */
+    fun setEs10xMss(mss: Byte)
+
     // All blocking functions in this class assume that they are executed on non-Main threads
     // The IO context in Kotlin's coroutine library is recommended.
     fun enableProfile(iccid: String, refresh: Boolean = true): Boolean
