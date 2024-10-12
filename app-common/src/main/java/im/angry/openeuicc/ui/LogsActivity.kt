@@ -71,6 +71,10 @@ class LogsActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        android.R.id.home -> {
+            finish()
+            true
+        }
         R.id.save -> {
             saveLogs.launch(getString(R.string.logs_filename_template,
                 SimpleDateFormat.getDateTimeInstance().format(Date())

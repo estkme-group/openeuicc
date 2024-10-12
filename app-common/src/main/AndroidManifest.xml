@@ -8,7 +8,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <application>
+    <application
+        android:enableOnBackInvokedCallback="true"
+        tools:targetApi="tiramisu">
         <activity
             android:name="im.angry.openeuicc.ui.SettingsActivity"
             android:label="@string/pref_settings" />
