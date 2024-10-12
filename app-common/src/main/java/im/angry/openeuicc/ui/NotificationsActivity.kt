@@ -50,15 +50,13 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     }
 
     override fun onInit() {
-        val logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
-        euiccChannel = euiccChannelManager
-            .findEuiccChannelBySlotBlocking(logicalSlotId)!!
-
         notificationList.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         notificationList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
         notificationList.adapter = notificationAdapter
         registerForContextMenu(notificationList)
+
+        val logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
 
         // This is slightly different from the MainActivity logic
         // due to the length (we don't want to display the full USB product name)
@@ -106,6 +104,18 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
+            if (!this@NotificationsActivity::euiccChannel.isInitialized) {
+                withContext(Dispatchers.IO) {
+                    euiccChannelManagerLoaded.await()
+                    euiccChannel = euiccChannelManager.findEuiccChannelBySlotBlocking(
+                        intent.getIntExtra(
+                            "logicalSlotId",
+                            0
+                        )
+                    )!!
+                }
+            }
+
             task()
 
             swipeRefresh.isRefreshing = false
