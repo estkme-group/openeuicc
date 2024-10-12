@@ -149,13 +149,6 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
     @SuppressLint("MissingPermission")
     override fun onStart() {
         super.onStart()
-        profileDownloadIMEI.editText!!.text = Editable.Factory.getInstance().newEditable(
-            try {
-                telephonyManager.getImei(channel.logicalSlotId) ?: ""
-            } catch (e: Exception) {
-                ""
-            }
-        )
 
         lifecycleScope.launch(Dispatchers.IO) {
             ensureEuiccChannelManager()
@@ -166,6 +159,12 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
                 return@launch
             }
 
+            val imei = try {
+                telephonyManager.getImei(channel.logicalSlotId) ?: ""
+            } catch (e: Exception) {
+                ""
+            }
+
             // Fetch remaining NVRAM
             val str = channel.lpa.euiccInfo2?.freeNvram?.also {
                 freeNvram = it
@@ -174,6 +173,8 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
             withContext(Dispatchers.Main) {
                 profileDownloadFreeSpace.text = getString(R.string.profile_download_free_space,
                     str ?: getText(R.string.unknown))
+                profileDownloadIMEI.editText!!.text =
+                    Editable.Factory.getInstance().newEditable(imei)
             }
         }
     }

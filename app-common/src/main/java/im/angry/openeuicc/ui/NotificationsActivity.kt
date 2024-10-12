@@ -50,8 +50,9 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     }
 
     override fun onInit() {
+        val logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
         euiccChannel = euiccChannelManager
-            .findEuiccChannelBySlotBlocking(intent.getIntExtra("logicalSlotId", 0))!!
+            .findEuiccChannelBySlotBlocking(logicalSlotId)!!
 
         notificationList.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -61,10 +62,10 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
         // This is slightly different from the MainActivity logic
         // due to the length (we don't want to display the full USB product name)
-        val channelTitle = if (euiccChannel.logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+        val channelTitle = if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
             getString(R.string.usb)
         } else {
-            getString(R.string.channel_name_format, euiccChannel.logicalSlotId)
+            getString(R.string.channel_name_format, logicalSlotId)
         }
 
         title = getString(R.string.profile_notifications_detailed_format, channelTitle)
