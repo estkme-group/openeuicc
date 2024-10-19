@@ -14,6 +14,7 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -194,7 +195,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             updateForegroundNotification(title, iconRes)
 
             try {
-                withContext(Dispatchers.IO) {
+                withContext(Dispatchers.IO + NonCancellable) { // Any LPA-related task must always complete
                     this@EuiccChannelManagerService.task()
                 }
                 // This update will be sent by the subscriber (as shown below)
