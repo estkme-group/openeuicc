@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.transformWhile
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -205,7 +206,9 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 Log.e(TAG, Log.getStackTraceString(t))
                 foregroundTaskState.value = ForegroundTaskState.Done(t)
             } finally {
-                stopSelf()
+                if (isActive) {
+                    stopSelf()
+                }
             }
         }
 
