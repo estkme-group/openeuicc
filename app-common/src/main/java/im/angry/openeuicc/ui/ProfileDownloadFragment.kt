@@ -215,18 +215,22 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
         lifecycleScope.launch {
             ensureEuiccChannelManager()
             euiccChannelManagerService.waitForForegroundTask()
-            try {
-                doDownloadProfile(server, code, confirmationCode, imei)
-            } catch (e: Exception) {
+            val res = doDownloadProfile(server, code, confirmationCode, imei)
+
+            if (res == null || res.error != null) {
                 Log.d(TAG, "Error downloading profile")
-                Log.d(TAG, Log.getStackTraceString(e))
-                Toast.makeText(context, R.string.profile_download_failed, Toast.LENGTH_LONG).show()
-            } finally {
-                if (parentFragment is EuiccProfilesChangedListener) {
-                    (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
+
+                if (res?.error != null) {
+                    Log.d(TAG, Log.getStackTraceString(res.error))
                 }
-                dismiss()
+
+                Toast.makeText(requireContext(), R.string.profile_download_failed, Toast.LENGTH_LONG).show()
             }
+
+            if (parentFragment is EuiccProfilesChangedListener) {
+                (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
+            }
+            dismiss()
         }
     }
 
@@ -254,7 +258,7 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
             }
         }.last()
 
-        (res as? EuiccChannelManagerService.ForegroundTaskState.Done)?.error?.let { throw it }
+        res as? EuiccChannelManagerService.ForegroundTaskState.Done
     }
 
     override fun onDismiss(dialog: DialogInterface) {
