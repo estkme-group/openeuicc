@@ -55,6 +55,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         private const val TAG = "EuiccChannelManagerService"
         private const val CHANNEL_ID = "tasks"
         private const val FOREGROUND_ID = 1000
+        private const val TASK_FAILURE_ID = 1001
     }
 
     inner class LocalBinder : Binder() {
@@ -108,7 +109,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         }
     }
 
-    private suspend fun updateForegroundNotification(title: String, iconRes: Int) {
+    private fun ensureForegroundTaskNotificationChannel() {
         val nm = NotificationManagerCompat.from(this)
         if (nm.getNotificationChannelCompat(CHANNEL_ID) == null) {
             val channel =
@@ -121,7 +122,12 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                     .build()
             nm.createNotificationChannel(channel)
         }
+    }
 
+    private suspend fun updateForegroundNotification(title: String, iconRes: Int) {
+        ensureForegroundTaskNotificationChannel()
+
+        val nm = NotificationManagerCompat.from(this)
         val state = foregroundTaskState.value
 
         if (state is ForegroundTaskState.InProgress) {
@@ -148,6 +154,18 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         }
     }
 
+    private fun postForegroundTaskFailureNotification(title: String) {
+        if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(title)
+            .setSmallIcon(R.drawable.ic_x_black)
+            .build()
+        NotificationManagerCompat.from(this).notify(TASK_FAILURE_ID, notification)
+    }
+
     /**
      * Launch a potentially blocking foreground task in this service's lifecycle context.
      * This function does not block, but returns a Flow that emits ForegroundTaskState
@@ -164,6 +182,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
      */
     private fun launchForegroundTask(
         title: String,
+        failureTitle: String,
         iconRes: Int,
         task: suspend EuiccChannelManagerService.() -> Unit
     ): Flow<ForegroundTaskState>? {
@@ -205,6 +224,10 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 Log.e(TAG, "Foreground task encountered an error")
                 Log.e(TAG, Log.getStackTraceString(t))
                 foregroundTaskState.value = ForegroundTaskState.Done(t)
+
+                if (isActive) {
+                    postForegroundTaskFailureNotification(failureTitle)
+                }
             } finally {
                 if (isActive) {
                     stopSelf()
@@ -260,6 +283,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     ): Flow<ForegroundTaskState>? =
         launchForegroundTask(
             getString(R.string.task_profile_download),
+            getString(R.string.task_profile_download_failure),
             R.drawable.ic_task_sim_card_download
         ) {
             euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {
@@ -294,6 +318,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     ): Flow<ForegroundTaskState>? =
         launchForegroundTask(
             getString(R.string.task_profile_rename),
+            getString(R.string.task_profile_rename_failure),
             R.drawable.ic_task_rename
         ) {
             val res = euiccChannelManager.findEuiccChannelByPort(slotId, portId)!!.lpa.setNickname(
@@ -313,6 +338,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     ): Flow<ForegroundTaskState>? =
         launchForegroundTask(
             getString(R.string.task_profile_delete),
+            getString(R.string.task_profile_delete_failure),
             R.drawable.ic_task_delete
         ) {
             euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {
@@ -336,6 +362,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     ): Flow<ForegroundTaskState>? =
         launchForegroundTask(
             getString(R.string.task_profile_switch),
+            getString(R.string.task_profile_switch_failure),
             R.drawable.ic_task_switch
         ) {
             euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {

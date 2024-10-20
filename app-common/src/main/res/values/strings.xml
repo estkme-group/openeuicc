@@ -35,9 +35,13 @@
 
     <string name="task_notification">Long-running Tasks</string>
     <string name="task_profile_download">Downloading eSIM profile</string>
+    <string name="task_profile_download_failure">Failed to download eSIM profile</string>
     <string name="task_profile_rename">Renaming eSIM profile</string>
+    <string name="task_profile_rename_failure">Failed to rename eSIM profile</string>
     <string name="task_profile_delete">Deleting eSIM profile</string>
+    <string name="task_profile_delete_failure">Failed to delete eSIM profile</string>
     <string name="task_profile_switch">Switching eSIM profile</string>
+    <string name="task_profile_switch_failure">Failed to switch eSIM profile</string>
 
     <string name="profile_download">New eSIM</string>
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>
