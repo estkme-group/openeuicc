@@ -106,7 +106,11 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
                 (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
             }
 
-            dismiss()
+            try {
+                dismiss()
+            } catch (e: IllegalStateException) {
+                // Ignored
+            }
         }
     }
 }
