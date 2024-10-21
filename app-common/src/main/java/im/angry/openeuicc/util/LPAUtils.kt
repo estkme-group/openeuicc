@@ -73,6 +73,42 @@ fun LocalProfileAssistant.disableActiveProfileWithUndo(refreshOnDisable: Boolean
  * should be the concern of op() itself, and this function assumes that when
  * op() returns, the slotId and portId will correspond to a valid channel again.
  */
+suspend inline fun EuiccChannelManager.beginTrackedOperation(
+    slotId: Int,
+    portId: Int,
+    op: () -> Boolean
+) {
+    val latestSeq =
+        findEuiccChannelByPort(slotId, portId)!!.lpa.notifications.firstOrNull()?.seqNumber
+            ?: 0
+    Log.d(TAG, "Latest notification is $latestSeq before operation")
+    if (op()) {
+        Log.d(TAG, "Operation has requested notification handling")
+        try {
+            // Note that the exact instance of "channel" might have changed here if reconnected;
+            // so we MUST use the automatic getter for "channel"
+            findEuiccChannelByPort(
+                slotId,
+                portId
+            )?.lpa?.notifications?.filter { it.seqNumber > latestSeq }?.forEach {
+                Log.d(TAG, "Handling notification $it")
+                findEuiccChannelByPort(
+                    slotId,
+                    portId
+                )?.lpa?.handleNotification(it.seqNumber)
+            }
+        } catch (e: Exception) {
+            // Ignore any error during notification handling
+            e.printStackTrace()
+        }
+    }
+    Log.d(TAG, "Operation complete")
+}
+
+/**
+ * Same as beginTrackedOperation but uses blocking primitives.
+ * TODO: This function needs to be phased out of use.
+ */
 inline fun EuiccChannelManager.beginTrackedOperationBlocking(
     slotId: Int,
     portId: Int,

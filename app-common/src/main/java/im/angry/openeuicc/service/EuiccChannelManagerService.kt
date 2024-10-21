@@ -286,7 +286,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             getString(R.string.task_profile_download_failure),
             R.drawable.ic_task_sim_card_download
         ) {
-            euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {
+            euiccChannelManager.beginTrackedOperation(slotId, portId) {
                 val channel = euiccChannelManager.findEuiccChannelByPort(slotId, portId)
                 val res = channel!!.lpa.downloadProfile(
                     smdp,
@@ -341,7 +341,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             getString(R.string.task_profile_delete_failure),
             R.drawable.ic_task_delete
         ) {
-            euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {
+            euiccChannelManager.beginTrackedOperation(slotId, portId) {
                 euiccChannelManager.findEuiccChannelByPort(
                     slotId,
                     portId
@@ -365,8 +365,8 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             getString(R.string.task_profile_switch_failure),
             R.drawable.ic_task_switch
         ) {
-            euiccChannelManager.beginTrackedOperationBlocking(slotId, portId) {
-                val channel = euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)!!
+            euiccChannelManager.beginTrackedOperation(slotId, portId) {
+                val channel = euiccChannelManager.findEuiccChannelByPort(slotId, portId)!!
                 val (res, refreshed) =
                     if (!channel.lpa.switchProfile(iccid, enable, refresh = true)) {
                         // Sometimes, we *can* enable or disable the profile, but we cannot
