@@ -35,7 +35,7 @@ internal fun keyIdToKeystore(keyIds: Array<String>): KeyStore {
     return ret
 }
 
-// ref: <https://euicc-manual.septs.app/docs/pki/ci/>
+// ref: <https://euicc-manual.osmocom.org/docs/pki/ci/>
 internal val KNOWN_CI_CERTS = hashMapOf(
     // GSM Association - RSP2 Root CI1 (CA: DigiCert)
     // Specs: SGP.21 and SGP.22 version 2 and version 3
