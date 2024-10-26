@@ -26,7 +26,7 @@ class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFacto
                 "Trying TelephonyManager for slot ${port.card.physicalSlotIndex} port ${port.portIndex}"
             )
             try {
-                return EuiccChannel(
+                return EuiccChannelImpl(
                     port,
                     TelephonyManagerApduInterface(
                         port,

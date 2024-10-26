@@ -33,7 +33,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
 
         Log.i(DefaultEuiccChannelManager.TAG, "Trying OMAPI for physical slot ${port.card.physicalSlotIndex}")
         try {
-            return EuiccChannel(
+            return EuiccChannelImpl(
                 port,
                 OmapiApduInterface(
                     seService!!,
@@ -61,7 +61,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
         if (bulkIn == null || bulkOut == null) return null
         val conn = usbManager.openDevice(usbDevice) ?: return null
         if (!conn.claimInterface(usbInterface, true)) return null
-        return EuiccChannel(
+        return EuiccChannelImpl(
             FakeUiccPortInfoCompat(FakeUiccCardInfoCompat(EuiccChannelManager.USB_CHANNEL_ID)),
             UsbApduInterface(
                 conn,
