@@ -3,16 +3,16 @@ package im.angry.openeuicc.core
 import im.angry.openeuicc.util.*
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
-class EuiccChannelWrapper(private val _inner: EuiccChannel) : EuiccChannel {
-    private var wrapperInvalidated = false
+class EuiccChannelWrapper(orig: EuiccChannel) : EuiccChannel {
+    private var _inner: EuiccChannel? = orig
 
     private val channel: EuiccChannel
         get() {
-            if (wrapperInvalidated) {
+            if (_inner == null) {
                 throw IllegalStateException("This wrapper has been invalidated")
             }
 
-            return _inner
+            return _inner!!
         }
     override val port: UiccPortInfoCompat
         get() = channel.port
@@ -23,7 +23,7 @@ class EuiccChannelWrapper(private val _inner: EuiccChannel) : EuiccChannel {
     override val portId: Int
         get() = channel.portId
     private val lpaDelegate = lazy {
-        LocalProfileAssistantWrapper(_inner.lpa)
+        LocalProfileAssistantWrapper(channel.lpa)
     }
     override val lpa: LocalProfileAssistant by lpaDelegate
     override val valid: Boolean
@@ -32,7 +32,7 @@ class EuiccChannelWrapper(private val _inner: EuiccChannel) : EuiccChannel {
     override fun close() = channel.close()
 
     fun invalidateWrapper() {
-        wrapperInvalidated = true
+        _inner = null
 
         if (lpaDelegate.isInitialized()) {
             (lpa as LocalProfileAssistantWrapper).invalidateWrapper()

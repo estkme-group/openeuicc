@@ -6,18 +6,17 @@ import net.typeblog.lpac_jni.LocalProfileInfo
 import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
-class LocalProfileAssistantWrapper(private val _inner: LocalProfileAssistant) :
+class LocalProfileAssistantWrapper(orig: LocalProfileAssistant) :
     LocalProfileAssistant {
-
-    private var wrapperInvalidated = false
+    private var _inner: LocalProfileAssistant? = orig
 
     private val lpa: LocalProfileAssistant
         get() {
-            if (wrapperInvalidated) {
+            if (_inner == null) {
                 throw IllegalStateException("This wrapper has been invalidated")
             }
 
-            return _inner
+            return _inner!!
         }
 
     override val valid: Boolean
@@ -59,6 +58,6 @@ class LocalProfileAssistantWrapper(private val _inner: LocalProfileAssistant) :
     override fun close() = lpa.close()
 
     fun invalidateWrapper() {
-        wrapperInvalidated = true
+        _inner = null
     }
 }
