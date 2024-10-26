@@ -68,7 +68,8 @@ interface EuiccChannelManager {
 
     /**
      * Find a EuiccChannel by its slot and port, then run a callback with a reference to it.
-     * The reference is not supposed to be held outside of the callback.
+     * The reference is not supposed to be held outside of the callback. This is enforced via
+     * a wrapper object.
      *
      * If a channel for that slot / port is not found, EuiccChannelNotFoundException is thrown
      */

@@ -166,7 +166,12 @@ open class DefaultEuiccChannelManager(
     ): R {
         val channel = findEuiccChannelByPortBlocking(physicalSlotId, portId)
             ?: throw EuiccChannelManager.EuiccChannelNotFoundException()
-        return fn(channel)
+        val wrapper = EuiccChannelWrapper(channel)
+        try {
+            return fn(wrapper)
+        } finally {
+            wrapper.invalidateWrapper()
+        }
     }
 
     override suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long) {
