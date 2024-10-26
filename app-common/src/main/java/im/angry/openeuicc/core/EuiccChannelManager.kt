@@ -64,6 +64,16 @@ interface EuiccChannelManager {
     suspend fun findEuiccChannelByPort(physicalSlotId: Int, portId: Int): EuiccChannel?
     fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel?
 
+    class EuiccChannelNotFoundException: Exception("EuiccChannel not found")
+
+    /**
+     * Find a EuiccChannel by its slot and port, then run a callback with a reference to it.
+     * The reference is not supposed to be held outside of the callback.
+     *
+     * If a channel for that slot / port is not found, EuiccChannelNotFoundException is thrown
+     */
+    suspend fun <R> withEuiccChannel(physicalSlotId: Int, portId: Int, fn: (EuiccChannel) -> R): R
+
     /**
      * Invalidate all EuiccChannels previously cached by this Manager
      */
