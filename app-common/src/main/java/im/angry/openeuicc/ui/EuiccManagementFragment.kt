@@ -136,6 +136,16 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                 true
             }
 
+            R.id.euicc_info -> {
+                if (logicalSlotId != -1) {
+                    Intent(requireContext(), EuiccInfoActivity::class.java).apply {
+                        putExtra("logicalSlotId", logicalSlotId)
+                        startActivity(this)
+                    }
+                }
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
 

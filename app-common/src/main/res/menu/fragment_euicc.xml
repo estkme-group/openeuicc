@@ -5,4 +5,9 @@
         android:id="@+id/show_notifications"
         android:title="@string/profile_notifications_show"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/euicc_info"
+        android:title="@string/euicc_info"
+        app:showAsAction="never" />
 </menu>

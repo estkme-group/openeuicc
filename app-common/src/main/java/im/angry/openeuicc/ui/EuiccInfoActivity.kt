@@ -1,0 +1,137 @@
+package im.angry.openeuicc.ui
+
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import im.angry.openeuicc.common.R
+import im.angry.openeuicc.util.*
+import kotlinx.coroutines.launch
+
+class EuiccInfoActivity : BaseEuiccAccessActivity() {
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var infoList: RecyclerView
+
+    private val euiccInfoItems: MutableList<Pair<String, String>> = mutableListOf()
+
+    private var logicalSlotId: Int = -1
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_euicc_info)
+        setSupportActionBar(requireViewById(R.id.toolbar))
+        setupToolbarInsets()
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        swipeRefresh = requireViewById(R.id.swipe_refresh)
+        infoList = requireViewById(R.id.recycler_view)
+
+        infoList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        infoList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        infoList.adapter = EuiccInfoAdapter()
+
+        logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
+
+        swipeRefresh.setOnRefreshListener { refresh() }
+
+        setupRootViewInsets(infoList)
+    }
+
+    override fun onInit() {
+        refresh()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun refresh() {
+        swipeRefresh.isRefreshing = true
+
+        lifecycleScope.launch {
+            euiccInfoItems.clear()
+
+            val unknownStr = getString(R.string.unknown)
+
+            val (euiccInfo2, eID) = euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
+                Pair(channel.lpa.euiccInfo2, channel.lpa.eID)
+            }
+
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_eid),
+                    eID
+                )
+            )
+
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_firmware_version),
+                    euiccInfo2?.euiccFirmwareVersion ?: unknownStr
+                )
+            )
+
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_globalplatform_version),
+                    euiccInfo2?.globalPlatformVersion ?: unknownStr
+                )
+            )
+
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_pp_version),
+                    euiccInfo2?.ppVersion ?: unknownStr
+                )
+            )
+
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_sas_accreditation_number),
+                    euiccInfo2?.sasAccreditationNumber ?: unknownStr
+                )
+            )
+
+            euiccInfoItems.add(Pair(
+                getString(R.string.euicc_info_free_nvram),
+                euiccInfo2?.freeNvram?.let { formatFreeSpace(it) } ?: unknownStr
+            ))
+
+            infoList.adapter!!.notifyDataSetChanged()
+
+            swipeRefresh.isRefreshing = false
+        }
+    }
+
+    inner class EuiccInfoViewHolder(root: View) : ViewHolder(root) {
+        private val title: TextView = root.requireViewById(R.id.euicc_info_title)
+        private val content: TextView = root.requireViewById(R.id.euicc_info_content)
+
+        fun bind(item: Pair<String, String>) {
+            title.text = item.first
+            content.text = item.second
+        }
+    }
+
+    inner class EuiccInfoAdapter : RecyclerView.Adapter<EuiccInfoViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EuiccInfoViewHolder {
+            val root = LayoutInflater.from(parent.context)
+                .inflate(R.layout.euicc_info_item, parent, false)
+            return EuiccInfoViewHolder(root)
+        }
+
+        override fun getItemCount(): Int = euiccInfoItems.size
+
+        override fun onBindViewHolder(holder: EuiccInfoViewHolder, position: Int) {
+            holder.bind(euiccInfoItems[position])
+        }
+    }
+}

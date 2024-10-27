@@ -71,6 +71,14 @@
     <string name="profile_notification_process">Process</string>
     <string name="profile_notification_delete">Delete</string>
 
+    <string name="euicc_info">eUICC Info</string>
+    <string name="euicc_info_eid">EID</string>
+    <string name="euicc_info_firmware_version">eUICC OS Version</string>
+    <string name="euicc_info_globalplatform_version">GlobalPlatform Version</string>
+    <string name="euicc_info_sas_accreditation_number">SAS Accreditation Number</string>
+    <string name="euicc_info_pp_version">Protected Profile Version</string>
+    <string name="euicc_info_free_nvram">Free NVRAM (eSIM profile storage)</string>
+
     <string name="logs_save">Save</string>
     <string name="logs_filename_template">Logs at %s</string>
 
