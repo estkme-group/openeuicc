@@ -150,32 +150,36 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             listOf()
         }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun refresh() {
         if (invalid) return
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
-            ensureEuiccChannelManager()
-            euiccChannelManagerService.waitForForegroundTask()
+            doRefresh()
+        }
+    }
 
-            if (!this@EuiccManagementFragment::disableSafeguardFlow.isInitialized) {
-                disableSafeguardFlow =
-                    preferenceRepository.disableSafeguardFlow.stateIn(lifecycleScope)
-            }
+    @SuppressLint("NotifyDataSetChanged")
+    protected open suspend fun doRefresh() {
+        ensureEuiccChannelManager()
+        euiccChannelManagerService.waitForForegroundTask()
 
-            val profiles = withEuiccChannel { channel ->
-                logicalSlotId = channel.logicalSlotId
-                euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
-                channel.lpa.profiles.operational
-            }
+        if (!this@EuiccManagementFragment::disableSafeguardFlow.isInitialized) {
+            disableSafeguardFlow =
+                preferenceRepository.disableSafeguardFlow.stateIn(lifecycleScope)
+        }
 
-            withContext(Dispatchers.Main) {
-                adapter.profiles = profiles
-                adapter.footerViews = onCreateFooterViews(profileList, profiles)
-                adapter.notifyDataSetChanged()
-                swipeRefresh.isRefreshing = false
-            }
+        val profiles = withEuiccChannel { channel ->
+            logicalSlotId = channel.logicalSlotId
+            euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
+            channel.lpa.profiles.operational
+        }
+
+        withContext(Dispatchers.Main) {
+            adapter.profiles = profiles
+            adapter.footerViews = onCreateFooterViews(profileList, profiles)
+            adapter.notifyDataSetChanged()
+            swipeRefresh.isRefreshing = false
         }
     }
 
