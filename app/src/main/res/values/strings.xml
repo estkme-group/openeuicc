@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">OpenEUICC</string>
     <string name="no_euicc">No eUICC found on this device.\nOn some devices, you may need to enable dual SIM first in the menu of this app.</string>
+    <string name="telephony_manager">TelephonyManager (Privileged)</string>
 
     <string name="dsds">Dual SIM</string>
 

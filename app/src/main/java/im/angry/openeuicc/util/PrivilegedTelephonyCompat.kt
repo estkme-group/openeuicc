@@ -33,7 +33,7 @@ class RealUiccCardInfoCompat(val inner: UiccCardInfo): UiccCardInfoCompat {
     val isEuicc: Boolean
         get() = inner.isEuicc
 
-    val isRemovable: Boolean
+    override val isRemovable: Boolean
         get() = inner.isRemovable
 
     val isMultipleEnabledProfilesSupported: Boolean

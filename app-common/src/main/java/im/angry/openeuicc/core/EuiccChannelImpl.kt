@@ -8,6 +8,7 @@ import net.typeblog.lpac_jni.impl.HttpInterfaceImpl
 import net.typeblog.lpac_jni.impl.LocalProfileAssistantImpl
 
 class EuiccChannelImpl(
+    override val type: String,
     override val port: UiccPortInfoCompat,
     apduInterface: ApduInterface,
     verboseLoggingFlow: Flow<Boolean>

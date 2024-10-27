@@ -8,6 +8,7 @@
 
     <string name="channel_name_format">Logical Slot %d</string>
     <string name="usb">USB</string>
+    <string name="omapi">OpenMobile API (OMAPI)</string>
 
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
@@ -73,6 +74,8 @@
 
     <string name="euicc_info">eUICC Info</string>
     <string name="euicc_info_activity_title">eUICC Info (%s)</string>
+    <string name="euicc_info_access_mode">Access Mode</string>
+    <string name="euicc_info_removable">Removable</string>
     <string name="euicc_info_eid">EID</string>
     <string name="euicc_info_firmware_version">eUICC OS Version</string>
     <string name="euicc_info_globalplatform_version">GlobalPlatform Version</string>
@@ -84,6 +87,9 @@
 
     <string name="supported">Supported</string>
     <string name="unsupported">Unsupported</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string name="logs_save">Save</string>
     <string name="logs_filename_template">Logs at %s</string>

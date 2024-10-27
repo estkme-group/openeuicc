@@ -45,6 +45,8 @@ fun SEService.getUiccReaderCompat(slotNumber: Int): Reader {
 interface UiccCardInfoCompat {
     val physicalSlotIndex: Int
     val ports: Collection<UiccPortInfoCompat>
+    val isRemovable: Boolean
+        get() = true // This defaults to removable unless overridden
 }
 
 interface UiccPortInfoCompat {

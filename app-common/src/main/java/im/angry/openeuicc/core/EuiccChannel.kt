@@ -4,6 +4,8 @@ import im.angry.openeuicc.util.*
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
 interface EuiccChannel {
+    val type: String
+
     val port: UiccPortInfoCompat
 
     val slotId: Int // PHYSICAL slot

@@ -68,16 +68,34 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
 
             val unknownStr = getString(R.string.unknown)
 
-            val (euiccInfo2, eID) = euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
-                Pair(channel.lpa.euiccInfo2, channel.lpa.eID)
-            }
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_access_mode),
+                    euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.type }
+                )
+            )
+
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_removable),
+                    if (euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.port.card.isRemovable }) {
+                        getString(R.string.yes)
+                    } else {
+                        getString(R.string.no)
+                    }
+                )
+            )
 
             euiccInfoItems.add(
                 Pair(
                     getString(R.string.euicc_info_eid),
-                    eID
+                    euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.lpa.eID }
                 )
             )
+
+            val euiccInfo2 = euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
+                channel.lpa.euiccInfo2
+            }
 
             euiccInfoItems.add(
                 Pair(

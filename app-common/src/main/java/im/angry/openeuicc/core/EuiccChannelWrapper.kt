@@ -14,6 +14,9 @@ class EuiccChannelWrapper(orig: EuiccChannel) : EuiccChannel {
 
             return _inner!!
         }
+
+    override val type: String
+        get() = channel.type
     override val port: UiccPortInfoCompat
         get() = channel.port
     override val slotId: Int

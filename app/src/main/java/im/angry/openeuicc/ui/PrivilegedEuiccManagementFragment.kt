@@ -21,7 +21,7 @@ class PrivilegedEuiccManagementFragment: EuiccManagementFragment() {
         super.doRefresh()
         withEuiccChannel { channel ->
             isMEP = channel.isMEP
-            isRemovable = channel.removable
+            isRemovable = channel.port.card.isRemovable
         }
     }
 
