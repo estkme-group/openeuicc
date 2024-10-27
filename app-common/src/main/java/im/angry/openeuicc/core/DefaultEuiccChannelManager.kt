@@ -176,6 +176,22 @@ open class DefaultEuiccChannelManager(
         }
     }
 
+    override suspend fun <R> withEuiccChannel(
+        logicalSlotId: Int,
+        fn: suspend (EuiccChannel) -> R
+    ): R {
+        val channel = findEuiccChannelBySlotBlocking(logicalSlotId)
+            ?: throw EuiccChannelManager.EuiccChannelNotFoundException()
+        val wrapper = EuiccChannelWrapper(channel)
+        try {
+            return withContext(Dispatchers.IO) {
+                fn(wrapper)
+            }
+        } finally {
+            wrapper.invalidateWrapper()
+        }
+    }
+
     override suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long) {
         if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) return
 

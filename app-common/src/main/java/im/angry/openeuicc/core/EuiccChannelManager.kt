@@ -82,6 +82,14 @@ interface EuiccChannelManager {
     ): R
 
     /**
+     * Same as withEuiccChannel(Int, Int, (EuiccChannel) -> R) but instead uses logical slot ID
+     */
+    suspend fun <R> withEuiccChannel(
+        logicalSlotId: Int,
+        fn: suspend (EuiccChannel) -> R
+    ): R
+
+    /**
      * Invalidate all EuiccChannels previously cached by this Manager
      */
     fun invalidate()
