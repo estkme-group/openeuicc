@@ -287,19 +287,20 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             R.drawable.ic_task_sim_card_download
         ) {
             euiccChannelManager.beginTrackedOperation(slotId, portId) {
-                val channel = euiccChannelManager.findEuiccChannelByPort(slotId, portId)
-                val res = channel!!.lpa.downloadProfile(
-                    smdp,
-                    matchingId,
-                    imei,
-                    confirmationCode,
-                    object : ProfileDownloadCallback {
-                        override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
-                            if (state.progress == 0) return
-                            foregroundTaskState.value =
-                                ForegroundTaskState.InProgress(state.progress)
-                        }
-                    })
+                val res = euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+                    channel.lpa.downloadProfile(
+                        smdp,
+                        matchingId,
+                        imei,
+                        confirmationCode,
+                        object : ProfileDownloadCallback {
+                            override fun onStateUpdate(state: ProfileDownloadCallback.DownloadState) {
+                                if (state.progress == 0) return
+                                foregroundTaskState.value =
+                                    ForegroundTaskState.InProgress(state.progress)
+                            }
+                        })
+                }
 
                 if (!res) {
                     // TODO: Provide more details on the error
@@ -321,10 +322,12 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             getString(R.string.task_profile_rename_failure),
             R.drawable.ic_task_rename
         ) {
-            val res = euiccChannelManager.findEuiccChannelByPort(slotId, portId)!!.lpa.setNickname(
-                iccid,
-                name
-            )
+            val res = euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+                channel.lpa.setNickname(
+                    iccid,
+                    name
+                )
+            }
 
             if (!res) {
                 throw RuntimeException("Profile not renamed")
@@ -342,10 +345,9 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             R.drawable.ic_task_delete
         ) {
             euiccChannelManager.beginTrackedOperation(slotId, portId) {
-                euiccChannelManager.findEuiccChannelByPort(
-                    slotId,
-                    portId
-                )!!.lpa.deleteProfile(iccid)
+                euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+                    channel.lpa.deleteProfile(iccid)
+                }
 
                 preferenceRepository.notificationDeleteFlow.first()
             }
@@ -366,8 +368,10 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             R.drawable.ic_task_switch
         ) {
             euiccChannelManager.beginTrackedOperation(slotId, portId) {
-                val channel = euiccChannelManager.findEuiccChannelByPort(slotId, portId)!!
-                val (res, refreshed) =
+                val (res, refreshed) = euiccChannelManager.withEuiccChannel(
+                    slotId,
+                    portId
+                ) { channel ->
                     if (!channel.lpa.switchProfile(iccid, enable, refresh = true)) {
                         // Sometimes, we *can* enable or disable the profile, but we cannot
                         // send the refresh command to the modem because the profile somehow
@@ -378,6 +382,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                     } else {
                         Pair(true, true)
                     }
+                }
 
                 if (!res) {
                     throw RuntimeException("Could not switch profile")
