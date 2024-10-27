@@ -7,6 +7,9 @@ import java.security.cert.CertificateFactory
 
 const val DEFAULT_PKID_GSMA_RSP2_ROOT_CI1 = "81370f5125d0b1d408d4c3b232e6d25e795bebfb"
 
+val PKID_GSMA_TEST_CI =
+    arrayOf("34eecf13156518d48d30bdf06853404d115f955d", "2209f61cd9ec5c9c854e787341ff83ecf9776a5b")
+
 private fun getCertificate(keyId: String): Certificate? =
     KNOWN_CI_CERTS[keyId]?.toByteArray()?.let { cert ->
         ByteArrayInputStream(cert).use { stream ->

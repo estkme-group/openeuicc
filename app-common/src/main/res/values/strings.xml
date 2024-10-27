@@ -78,6 +78,11 @@
     <string name="euicc_info_sas_accreditation_number">SAS Accreditation Number</string>
     <string name="euicc_info_pp_version">Protected Profile Version</string>
     <string name="euicc_info_free_nvram">Free NVRAM (eSIM profile storage)</string>
+    <string name="euicc_info_gsma_prod">GSMA Production Certificate</string>
+    <string name="euicc_info_gsma_test">GSMA Test Certificate</string>
+
+    <string name="supported">Supported</string>
+    <string name="unsupported">Unsupported</string>
 
     <string name="logs_save">Save</string>
     <string name="logs_filename_template">Logs at %s</string>

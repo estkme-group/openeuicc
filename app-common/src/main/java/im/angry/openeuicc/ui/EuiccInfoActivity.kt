@@ -16,6 +16,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.launch
+import net.typeblog.lpac_jni.impl.DEFAULT_PKID_GSMA_RSP2_ROOT_CI1
+import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
 
 class EuiccInfoActivity : BaseEuiccAccessActivity() {
     private lateinit var swipeRefresh: SwipeRefreshLayout
@@ -104,6 +106,31 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
                 getString(R.string.euicc_info_free_nvram),
                 euiccInfo2?.freeNvram?.let { formatFreeSpace(it) } ?: unknownStr
             ))
+
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_gsma_prod),
+                    if (euiccInfo2?.euiccCiPKIdListForSigning?.contains(
+                            DEFAULT_PKID_GSMA_RSP2_ROOT_CI1
+                        ) == true
+                    ) {
+                        getString(R.string.supported)
+                    } else {
+                        getString(R.string.unsupported)
+                    }
+                )
+            )
+
+            euiccInfoItems.add(
+                Pair(
+                    getString(R.string.euicc_info_gsma_test),
+                    if (PKID_GSMA_TEST_CI.any { euiccInfo2?.euiccCiPKIdListForSigning?.contains(it) == true }) {
+                        getString(R.string.supported)
+                    } else {
+                        getString(R.string.unsupported)
+                    }
+                )
+            )
 
             infoList.adapter!!.notifyDataSetChanged()
 
