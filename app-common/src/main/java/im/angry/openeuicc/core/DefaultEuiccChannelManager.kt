@@ -88,23 +88,26 @@ open class DefaultEuiccChannelManager(
         }
     }
 
-    override fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
-        runBlocking {
-            withContext(Dispatchers.IO) {
-                if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
-                    return@withContext usbChannel
-                }
+    private suspend fun findEuiccChannelBySlot(logicalSlotId: Int): EuiccChannel? =
+        withContext(Dispatchers.IO) {
+            if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+                return@withContext usbChannel
+            }
 
-                for (card in uiccCards) {
-                    for (port in card.ports) {
-                        if (port.logicalSlotIndex == logicalSlotId) {
-                            return@withContext tryOpenEuiccChannel(port)
-                        }
+            for (card in uiccCards) {
+                for (port in card.ports) {
+                    if (port.logicalSlotIndex == logicalSlotId) {
+                        return@withContext tryOpenEuiccChannel(port)
                     }
                 }
-
-                null
             }
+
+            null
+        }
+
+    override fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
+        runBlocking {
+            findEuiccChannelBySlot(logicalSlotId)
         }
 
     override fun findEuiccChannelByPhysicalSlotBlocking(physicalSlotId: Int): EuiccChannel? =
@@ -164,7 +167,7 @@ open class DefaultEuiccChannelManager(
         portId: Int,
         fn: suspend (EuiccChannel) -> R
     ): R {
-        val channel = findEuiccChannelByPortBlocking(physicalSlotId, portId)
+        val channel = findEuiccChannelByPort(physicalSlotId, portId)
             ?: throw EuiccChannelManager.EuiccChannelNotFoundException()
         val wrapper = EuiccChannelWrapper(channel)
         try {
@@ -180,7 +183,7 @@ open class DefaultEuiccChannelManager(
         logicalSlotId: Int,
         fn: suspend (EuiccChannel) -> R
     ): R {
-        val channel = findEuiccChannelBySlotBlocking(logicalSlotId)
+        val channel = findEuiccChannelBySlot(logicalSlotId)
             ?: throw EuiccChannelManager.EuiccChannelNotFoundException()
         val wrapper = EuiccChannelWrapper(channel)
         try {
