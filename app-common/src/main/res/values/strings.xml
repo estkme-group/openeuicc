@@ -72,6 +72,7 @@
     <string name="profile_notification_delete">Delete</string>
 
     <string name="euicc_info">eUICC Info</string>
+    <string name="euicc_info_activity_title">eUICC Info (%s)</string>
     <string name="euicc_info_eid">EID</string>
     <string name="euicc_info_firmware_version">eUICC OS Version</string>
     <string name="euicc_info_globalplatform_version">GlobalPlatform Version</string>

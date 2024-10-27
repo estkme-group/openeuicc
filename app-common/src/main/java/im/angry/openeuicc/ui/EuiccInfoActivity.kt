@@ -45,6 +45,11 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
 
         logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
 
+        title = getString(
+            R.string.euicc_info_activity_title,
+            getString(R.string.channel_name_format, logicalSlotId)
+        )
+
         swipeRefresh.setOnRefreshListener { refresh() }
 
         setupRootViewInsets(infoList)
