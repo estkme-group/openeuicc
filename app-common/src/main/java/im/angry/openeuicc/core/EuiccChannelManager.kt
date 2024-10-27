@@ -71,9 +71,15 @@ interface EuiccChannelManager {
      * The reference is not supposed to be held outside of the callback. This is enforced via
      * a wrapper object.
      *
+     * The callback is run on Dispatchers.IO by default.
+     *
      * If a channel for that slot / port is not found, EuiccChannelNotFoundException is thrown
      */
-    suspend fun <R> withEuiccChannel(physicalSlotId: Int, portId: Int, fn: (EuiccChannel) -> R): R
+    suspend fun <R> withEuiccChannel(
+        physicalSlotId: Int,
+        portId: Int,
+        fn: suspend (EuiccChannel) -> R
+    ): R
 
     /**
      * Invalidate all EuiccChannels previously cached by this Manager

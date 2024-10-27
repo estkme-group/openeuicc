@@ -162,13 +162,15 @@ open class DefaultEuiccChannelManager(
     override suspend fun <R> withEuiccChannel(
         physicalSlotId: Int,
         portId: Int,
-        fn: (EuiccChannel) -> R
+        fn: suspend (EuiccChannel) -> R
     ): R {
         val channel = findEuiccChannelByPortBlocking(physicalSlotId, portId)
             ?: throw EuiccChannelManager.EuiccChannelNotFoundException()
         val wrapper = EuiccChannelWrapper(channel)
         try {
-            return fn(wrapper)
+            return withContext(Dispatchers.IO) {
+                fn(wrapper)
+            }
         } finally {
             wrapper.invalidateWrapper()
         }
