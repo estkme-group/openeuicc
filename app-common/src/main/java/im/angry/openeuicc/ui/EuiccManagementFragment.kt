@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -52,6 +51,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var fab: FloatingActionButton
     private lateinit var profileList: RecyclerView
+    private var logicalSlotId: Int = -1
 
     private val adapter = EuiccProfileAdapter()
 
@@ -127,9 +127,11 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.show_notifications -> {
-                Intent(requireContext(), NotificationsActivity::class.java).apply {
-                    putExtra("logicalSlotId", channel.logicalSlotId)
-                    startActivity(this)
+                if (logicalSlotId != -1) {
+                    Intent(requireContext(), NotificationsActivity::class.java).apply {
+                        putExtra("logicalSlotId", logicalSlotId)
+                        startActivity(this)
+                    }
                 }
                 true
             }
@@ -162,7 +164,8 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     preferenceRepository.disableSafeguardFlow.stateIn(lifecycleScope)
             }
 
-            val profiles = withContext(Dispatchers.IO) {
+            val profiles = withEuiccChannel { channel ->
+                logicalSlotId = channel.logicalSlotId
                 euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
                 channel.lpa.profiles.operational
             }
