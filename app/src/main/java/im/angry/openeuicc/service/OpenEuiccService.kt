@@ -207,7 +207,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         return@withEuiccChannelManager GetEuiccProfileInfoListResult(
             RESULT_OK,
             profiles.toTypedArray(),
-            channel.removable
+            channel.port.card.isRemovable
         )
     }
 
