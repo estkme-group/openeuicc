@@ -3,6 +3,7 @@ package im.angry.openeuicc.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -53,6 +54,15 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
         swipeRefresh.setOnRefreshListener { refresh() }
 
         setupRootViewInsets(infoList)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        android.R.id.home -> {
+            finish()
+            true
+        }
+
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onInit() {
