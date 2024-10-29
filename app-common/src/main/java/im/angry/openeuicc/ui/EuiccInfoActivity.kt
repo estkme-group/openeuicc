@@ -24,8 +24,6 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var infoList: RecyclerView
 
-    private val euiccInfoItems: MutableList<Pair<String, String>> = mutableListOf()
-
     private var logicalSlotId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,23 +67,22 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
         refresh()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun refresh() {
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
-            euiccInfoItems.clear()
-
             val unknownStr = getString(R.string.unknown)
 
-            euiccInfoItems.add(
+            val newItems = mutableListOf<Pair<String, String>>()
+
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_access_mode),
                     euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.type }
                 )
             )
 
-            euiccInfoItems.add(
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_removable),
                     if (euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.port.card.isRemovable }) {
@@ -96,7 +93,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
                 )
             )
 
-            euiccInfoItems.add(
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_eid),
                     euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.lpa.eID }
@@ -107,40 +104,41 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
                 channel.lpa.euiccInfo2
             }
 
-            euiccInfoItems.add(
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_firmware_version),
                     euiccInfo2?.euiccFirmwareVersion ?: unknownStr
                 )
             )
 
-            euiccInfoItems.add(
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_globalplatform_version),
                     euiccInfo2?.globalPlatformVersion ?: unknownStr
                 )
             )
 
-            euiccInfoItems.add(
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_pp_version),
                     euiccInfo2?.ppVersion ?: unknownStr
                 )
             )
 
-            euiccInfoItems.add(
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_sas_accreditation_number),
                     euiccInfo2?.sasAccreditationNumber ?: unknownStr
                 )
             )
 
-            euiccInfoItems.add(Pair(
+            newItems.add(
+                Pair(
                 getString(R.string.euicc_info_free_nvram),
                 euiccInfo2?.freeNvram?.let { formatFreeSpace(it) } ?: unknownStr
             ))
 
-            euiccInfoItems.add(
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_gsma_prod),
                     if (euiccInfo2?.euiccCiPKIdListForSigning?.contains(
@@ -154,7 +152,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
                 )
             )
 
-            euiccInfoItems.add(
+            newItems.add(
                 Pair(
                     getString(R.string.euicc_info_gsma_test),
                     if (PKID_GSMA_TEST_CI.any { euiccInfo2?.euiccCiPKIdListForSigning?.contains(it) == true }) {
@@ -165,7 +163,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
                 )
             )
 
-            infoList.adapter!!.notifyDataSetChanged()
+            (infoList.adapter!! as EuiccInfoAdapter).euiccInfoItems = newItems
 
             swipeRefresh.isRefreshing = false
         }
@@ -182,6 +180,13 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
     }
 
     inner class EuiccInfoAdapter : RecyclerView.Adapter<EuiccInfoViewHolder>() {
+        var euiccInfoItems: List<Pair<String, String>> = listOf()
+            @SuppressLint("NotifyDataSetChanged")
+            set(newVal) {
+                field = newVal
+                notifyDataSetChanged()
+            }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EuiccInfoViewHolder {
             val root = LayoutInflater.from(parent.context)
                 .inflate(R.layout.euicc_info_item, parent, false)
