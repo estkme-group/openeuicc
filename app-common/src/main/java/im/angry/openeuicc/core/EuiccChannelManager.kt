@@ -1,6 +1,7 @@
 package im.angry.openeuicc.core
 
 import android.hardware.usb.UsbDevice
+import kotlinx.coroutines.flow.Flow
 
 /**
  * EuiccChannelManager holds references to, and manages the lifecycles of, individual
@@ -23,6 +24,8 @@ interface EuiccChannelManager {
      * this EuiccChannelManager object, unless disconnected externally or invalidate()'d
      */
     suspend fun enumerateEuiccChannels(): List<EuiccChannel>
+
+    fun flowEuiccPorts(): Flow<Pair<Int, Int>>
 
     /**
      * Scan all possible USB devices for CCID readers that may contain eUICC cards.

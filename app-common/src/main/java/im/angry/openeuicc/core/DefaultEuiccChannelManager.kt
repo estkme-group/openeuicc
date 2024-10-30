@@ -10,6 +10,15 @@ import im.angry.openeuicc.di.AppContainer
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -222,17 +231,25 @@ open class DefaultEuiccChannelManager(
 
     override suspend fun enumerateEuiccChannels(): List<EuiccChannel> =
         withContext(Dispatchers.IO) {
-            uiccCards.flatMap { info ->
-                info.ports.mapNotNull { port ->
-                    tryOpenEuiccChannel(port)?.also {
-                        Log.d(
-                            TAG,
-                            "Found eUICC on slot ${info.physicalSlotIndex} port ${port.portIndex}"
-                        )
-                    }
+            flowEuiccPorts().mapNotNull { (slotId, portId) ->
+                findEuiccChannelByPort(slotId, portId)
+            }.toList()
+        }
+
+    override fun flowEuiccPorts(): Flow<Pair<Int, Int>> = flow {
+        uiccCards.forEach { info ->
+            info.ports.forEach { port ->
+                tryOpenEuiccChannel(port)?.also {
+                    Log.d(
+                        TAG,
+                        "Found eUICC on slot ${info.physicalSlotIndex} port ${port.portIndex}"
+                    )
+
+                    emit(Pair(info.physicalSlotIndex, port.portIndex))
                 }
             }
         }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun enumerateUsbEuiccChannel(): Pair<UsbDevice?, EuiccChannel?> =
         withContext(Dispatchers.IO) {
