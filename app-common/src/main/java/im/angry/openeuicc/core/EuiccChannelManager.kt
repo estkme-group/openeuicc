@@ -19,12 +19,13 @@ interface EuiccChannelManager {
     }
 
     /**
-     * Scan all possible _device internal_ sources for EuiccChannels, return them and have all
-     * scanned channels cached; these channels will remain open for the entire lifetime of
-     * this EuiccChannelManager object, unless disconnected externally or invalidate()'d
+     * Scan all possible _device internal_ sources for EuiccChannels, as a flow, return their physical
+     * (slotId, portId) and have all scanned channels cached; these channels will remain open
+     * for the entire lifetime of this EuiccChannelManager object, unless disconnected externally
+     * or invalidate()'d.
+     *
+     * To obtain a temporary reference to a EuiccChannel, use `withEuiccChannel()`.
      */
-    suspend fun enumerateEuiccChannels(): List<EuiccChannel>
-
     fun flowEuiccPorts(): Flow<Pair<Int, Int>>
 
     /**

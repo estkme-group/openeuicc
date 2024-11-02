@@ -11,14 +11,8 @@ import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -228,13 +222,6 @@ open class DefaultEuiccChannelManager(
             }
         }
     }
-
-    override suspend fun enumerateEuiccChannels(): List<EuiccChannel> =
-        withContext(Dispatchers.IO) {
-            flowEuiccPorts().mapNotNull { (slotId, portId) ->
-                findEuiccChannelByPort(slotId, portId)
-            }.toList()
-        }
 
     override fun flowEuiccPorts(): Flow<Pair<Int, Int>> = flow {
         uiccCards.forEach { info ->
