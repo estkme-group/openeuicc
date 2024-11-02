@@ -3,6 +3,8 @@ package im.angry.openeuicc.ui
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -10,22 +12,32 @@ class DirectProfileDownloadActivity : BaseEuiccAccessActivity(), SlotSelectFragm
     override fun onInit() {
         lifecycleScope.launch {
             val knownChannels = withContext(Dispatchers.IO) {
-                euiccChannelManager.enumerateEuiccChannels()
+                euiccChannelManager.flowEuiccPorts().map { (slotId, portId) ->
+                    euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+                        Triple(slotId, channel.logicalSlotId, portId)
+                    }
+                }.toList().sortedBy { it.second }
             }
 
             when {
                 knownChannels.isEmpty() -> {
                     finish()
                 }
-                knownChannels.hasMultipleChips -> {
-                    SlotSelectFragment.newInstance(knownChannels.sortedBy { it.logicalSlotId })
+                // Detect multiple eUICC chips
+                knownChannels.distinctBy { it.first }.size > 1 -> {
+                    SlotSelectFragment.newInstance(
+                        knownChannels.map { it.first },
+                        knownChannels.map { it.second },
+                        knownChannels.map { it.third })
                         .show(supportFragmentManager, SlotSelectFragment.TAG)
                 }
                 else -> {
                     // If the device has only one eSIM "chip" (but may be mapped to multiple slots),
                     // we can skip the slot selection dialog since there is only one chip to save to.
-                    onSlotSelected(knownChannels[0].slotId,
-                        knownChannels[0].portId)
+                    onSlotSelected(
+                        knownChannels[0].first,
+                        knownChannels[0].third
+                    )
                 }
             }
         }

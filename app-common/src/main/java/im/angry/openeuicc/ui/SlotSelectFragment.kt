@@ -16,12 +16,12 @@ class SlotSelectFragment : BaseMaterialDialogFragment(), OpenEuiccContextMarker 
     companion object {
         const val TAG = "SlotSelectFragment"
 
-        fun newInstance(knownChannels: List<EuiccChannel>): SlotSelectFragment {
+        fun newInstance(slotIds: List<Int>, logicalSlotIds: List<Int>, portIds: List<Int>): SlotSelectFragment {
             return SlotSelectFragment().apply {
                 arguments = Bundle().apply {
-                    putIntArray("slotIds", knownChannels.map { it.slotId }.toIntArray())
-                    putIntArray("logicalSlotIds", knownChannels.map { it.logicalSlotId }.toIntArray())
-                    putIntArray("portIds", knownChannels.map { it.portId }.toIntArray())
+                    putIntArray("slotIds", slotIds.toIntArray())
+                    putIntArray("logicalSlotIds", logicalSlotIds.toIntArray())
+                    putIntArray("portIds", portIds.toIntArray())
                 }
             }
         }
