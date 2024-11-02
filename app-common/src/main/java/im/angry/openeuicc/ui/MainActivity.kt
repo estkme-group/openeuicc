@@ -143,7 +143,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         euiccChannelManagerService.waitForForegroundTask()
 
         val (usbDevice, _) = withContext(Dispatchers.IO) {
-            euiccChannelManager.enumerateUsbEuiccChannel()
+            euiccChannelManager.tryOpenUsbEuiccChannel()
         }
 
         val newPages: MutableList<Page> = mutableListOf()

@@ -251,20 +251,20 @@ open class DefaultEuiccChannelManager(
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun enumerateUsbEuiccChannel(): Pair<UsbDevice?, EuiccChannel?> =
+    override suspend fun tryOpenUsbEuiccChannel(): Pair<UsbDevice?, Boolean> =
         withContext(Dispatchers.IO) {
             usbManager.deviceList.values.forEach { device ->
                 Log.i(TAG, "Scanning USB device ${device.deviceId}:${device.vendorId}")
                 val iface = device.getSmartCardInterface() ?: return@forEach
                 // If we don't have permission, tell UI code that we found a candidate device, but we
                 // need permission to be able to do anything with it
-                if (!usbManager.hasPermission(device)) return@withContext Pair(device, null)
+                if (!usbManager.hasPermission(device)) return@withContext Pair(device, false)
                 Log.i(TAG, "Found CCID interface on ${device.deviceId}:${device.vendorId}, and has permission; trying to open channel")
                 try {
                     val channel = euiccChannelFactory.tryOpenUsbEuiccChannel(device, iface)
                     if (channel != null && channel.lpa.valid) {
                         usbChannel = channel
-                        return@withContext Pair(device, channel)
+                        return@withContext Pair(device, true)
                     }
                 } catch (e: Exception) {
                     // Ignored -- skip forward
@@ -272,7 +272,7 @@ open class DefaultEuiccChannelManager(
                 }
                 Log.i(TAG, "No valid eUICC channel found on USB device ${device.deviceId}:${device.vendorId}")
             }
-            return@withContext Pair(null, null)
+            return@withContext Pair(null, false)
         }
 
     override fun invalidate() {

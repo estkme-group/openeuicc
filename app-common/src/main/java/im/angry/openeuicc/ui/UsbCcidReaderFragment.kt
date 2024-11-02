@@ -20,7 +20,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -73,7 +72,6 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
     private lateinit var loadingProgress: ProgressBar
 
     private var usbDevice: UsbDevice? = null
-    private var usbChannel: EuiccChannel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -140,26 +138,25 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
         permissionButton.visibility = View.GONE
         loadingProgress.visibility = View.VISIBLE
 
-        val (device, channel) = withContext(Dispatchers.IO) {
-            euiccChannelManager.enumerateUsbEuiccChannel()
+        val (device, canOpen) = withContext(Dispatchers.IO) {
+            euiccChannelManager.tryOpenUsbEuiccChannel()
         }
 
         loadingProgress.visibility = View.GONE
 
         usbDevice = device
-        usbChannel = channel
 
-        if (device != null && channel == null && !usbManager.hasPermission(device)) {
+        if (device != null && !canOpen && !usbManager.hasPermission(device)) {
             text.text = getString(R.string.usb_permission_needed)
             text.visibility = View.VISIBLE
             permissionButton.visibility = View.VISIBLE
-        } else if (device != null && channel != null) {
+        } else if (device != null && canOpen) {
             childFragmentManager.commit {
                 replace(
                     R.id.child_container,
                     appContainer.uiComponentFactory.createEuiccManagementFragment(
-                        channel.slotId,
-                        channel.portId
+                        EuiccChannelManager.USB_CHANNEL_ID,
+                        0
                     )
                 )
             }

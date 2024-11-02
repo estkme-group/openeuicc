@@ -31,9 +31,13 @@ interface EuiccChannelManager {
      * Scan all possible USB devices for CCID readers that may contain eUICC cards.
      * If found, try to open it for access, and add it to the internal EuiccChannel cache
      * as a "port" with id 99. When user interaction is required to obtain permission
-     * to interact with the device, the second return value (EuiccChannel) will be null.
+     * to interact with the device, the second return value will be false.
+     *
+     * Returns (usbDevice, canOpen). canOpen is false if either (1) no usb reader is found;
+     * or (2) usb reader is found, but user interaction is required for access;
+     * or (3) usb reader is found, but we are unable to open ISD-R.
      */
-    suspend fun enumerateUsbEuiccChannel(): Pair<UsbDevice?, EuiccChannel?>
+    suspend fun tryOpenUsbEuiccChannel(): Pair<UsbDevice?, Boolean>
 
     /**
      * Wait for a slot + port to reconnect (i.e. become valid again)
