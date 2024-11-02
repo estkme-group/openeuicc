@@ -5,6 +5,7 @@ import android.telephony.TelephonyManager
 import android.telephony.UiccSlotMapping
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
@@ -15,14 +16,14 @@ val TelephonyManager.dsdsEnabled: Boolean
     get() = activeModemCount >= 2
 
 fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: Boolean) {
-    val knownChannels = runBlocking {
-        euiccManager.enumerateEuiccChannels()
-    }
-
     // Disable all eSIM profiles before performing a DSDS switch (only for internal eSIMs)
-    knownChannels.forEach {
-        if (!it.port.card.isRemovable) {
-            it.lpa.disableActiveProfileWithUndo(false)
+    runBlocking {
+        euiccManager.flowEuiccPorts().onEach { (slotId, portId) ->
+            euiccManager.withEuiccChannel(slotId, portId) {
+                if (!it.port.card.isRemovable) {
+                    it.lpa.disableActiveProfileWithUndo(false)
+                }
+            }
         }
     }
 
