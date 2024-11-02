@@ -22,9 +22,12 @@
 
         <activity
             android:name="im.angry.openeuicc.ui.CompatibilityCheckActivity"
-            android:label="@string/compatibility_check"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/compatibility_check" />
 
     </application>
 
+    <queries>
+        <package android:name="com.android.stk" />
+    </queries>
 </manifest>

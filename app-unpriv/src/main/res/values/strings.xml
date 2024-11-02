@@ -2,6 +2,7 @@
     <string name="app_name" translatable="false">EasyEUICC</string>
     <string name="channel_name_format">SIM %d</string>
     <string name="compatibility_check">Compatibility Check</string>
+    <string name="open_sim_toolkit">Open SIM Toolkit</string>
 
     <!-- Compatibility Check Descriptions -->
     <string name="compatibility_check_system_features">System Features</string>
