@@ -23,9 +23,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -44,6 +47,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private var refreshing = false
 
     private data class Page(
+        val logicalSlotId: Int,
         val title: String,
         val createFragment: () -> Fragment
     )
@@ -138,65 +142,83 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         // Prevent concurrent access with any running foreground task
         euiccChannelManagerService.waitForForegroundTask()
 
-        val knownChannels = withContext(Dispatchers.IO) {
-            euiccChannelManager.enumerateEuiccChannels().onEach {
-                Log.d(TAG, "slot ${it.slotId} port ${it.portId}")
-                if (preferenceRepository.verboseLoggingFlow.first()) {
-                    Log.d(TAG, it.lpa.eID)
-                }
-                // Request the system to refresh the list of profiles every time we start
-                // Note that this is currently supposed to be no-op when unprivileged,
-                // but it could change in the future
-                euiccChannelManager.notifyEuiccProfilesChanged(it.logicalSlotId)
-            }
-        }
-
         val (usbDevice, _) = withContext(Dispatchers.IO) {
             euiccChannelManager.enumerateUsbEuiccChannel()
         }
 
-        withContext(Dispatchers.Main) {
-            loadingProgress.visibility = View.GONE
+        val newPages: MutableList<Page> = mutableListOf()
 
-            knownChannels.sortedBy { it.logicalSlotId }.forEach { channel ->
-                pages.add(Page(
-                    getString(R.string.channel_name_format, channel.logicalSlotId)
-                ) { appContainer.uiComponentFactory.createEuiccManagementFragment(channel) })
-            }
+        euiccChannelManager.flowEuiccPorts().onEach { (slotId, portId) ->
+            Log.d(TAG, "slot $slotId port $portId")
 
-            // If USB readers exist, add them at the very last
-            // We use a wrapper fragment to handle logic specific to USB readers
-            usbDevice?.let {
-                pages.add(Page(it.productName ?: getString(R.string.usb)) { UsbCcidReaderFragment() })
-            }
-            viewPager.visibility = View.VISIBLE
-
-            if (pages.size > 1) {
-                tabs.visibility = View.VISIBLE
-            } else if (pages.isEmpty()) {
-                pages.add(Page("") { appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment() })
-            }
-
-            pagerAdapter.notifyDataSetChanged()
-            // Reset the adapter so that the current view actually gets cleared
-            // notifyDataSetChanged() doesn't cause the current view to be removed.
-            viewPager.adapter = pagerAdapter
-
-            if (fromUsbEvent && usbDevice != null) {
-                // If this refresh was triggered by a USB insertion while active, scroll to that page
-                viewPager.post {
-                    viewPager.setCurrentItem(pages.size - 1, true)
+            euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+                if (preferenceRepository.verboseLoggingFlow.first()) {
+                    Log.d(TAG, channel.lpa.eID)
                 }
-            } else {
-                viewPager.currentItem = 0
-            }
+                // Request the system to refresh the list of profiles every time we start
+                // Note that this is currently supposed to be no-op when unprivileged,
+                // but it could change in the future
+                euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
 
-            if (pages.size > 0) {
-                ensureNotificationPermissions()
+                newPages.add(
+                    Page(
+                        channel.logicalSlotId,
+                        getString(R.string.channel_name_format, channel.logicalSlotId)
+                    ) {
+                        appContainer.uiComponentFactory.createEuiccManagementFragment(
+                            slotId,
+                            portId
+                        )
+                    })
             }
+        }.collect()
 
-            refreshing = false
+        // If USB readers exist, add them at the very last
+        // We use a wrapper fragment to handle logic specific to USB readers
+        usbDevice?.let {
+            pages.add(
+                Page(
+                    EuiccChannelManager.USB_CHANNEL_ID,
+                    it.productName ?: getString(R.string.usb)
+                ) { UsbCcidReaderFragment() })
         }
+        viewPager.visibility = View.VISIBLE
+
+        if (pages.size > 1) {
+            tabs.visibility = View.VISIBLE
+        } else if (pages.isEmpty()) {
+            pages.add(
+                Page(
+                    -1,
+                    ""
+                ) { appContainer.uiComponentFactory.createNoEuiccPlaceholderFragment() })
+        }
+
+        newPages.sortBy { it.logicalSlotId }
+
+        pages.clear()
+        pages.addAll(newPages)
+
+        loadingProgress.visibility = View.GONE
+        pagerAdapter.notifyDataSetChanged()
+        // Reset the adapter so that the current view actually gets cleared
+        // notifyDataSetChanged() doesn't cause the current view to be removed.
+        viewPager.adapter = pagerAdapter
+
+        if (fromUsbEvent && usbDevice != null) {
+            // If this refresh was triggered by a USB insertion while active, scroll to that page
+            viewPager.post {
+                viewPager.setCurrentItem(pages.size - 1, true)
+            }
+        } else {
+            viewPager.currentItem = 0
+        }
+
+        if (pages.size > 0) {
+            ensureNotificationPermissions()
+        }
+
+        refreshing = false
     }
 
     private fun refresh(fromUsbEvent: Boolean = false) {

@@ -157,7 +157,10 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
             childFragmentManager.commit {
                 replace(
                     R.id.child_container,
-                    appContainer.uiComponentFactory.createEuiccManagementFragment(channel)
+                    appContainer.uiComponentFactory.createEuiccManagementFragment(
+                        channel.slotId,
+                        channel.portId
+                    )
                 )
             }
         } else {
