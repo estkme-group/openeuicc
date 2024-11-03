@@ -72,6 +72,12 @@ interface EuiccChannelManager {
     suspend fun findEuiccChannelByPort(physicalSlotId: Int, portId: Int): EuiccChannel?
     fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel?
 
+    /**
+     * Returns the first mapped & available port ID for a physical slot, or -1 if
+     * not found.
+     */
+    suspend fun findFirstAvailablePort(physicalSlotId: Int): Int
+
     class EuiccChannelNotFoundException: Exception("EuiccChannel not found")
 
     /**
