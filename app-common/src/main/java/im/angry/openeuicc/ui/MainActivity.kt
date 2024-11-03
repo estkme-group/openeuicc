@@ -176,7 +176,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         // If USB readers exist, add them at the very last
         // We use a wrapper fragment to handle logic specific to USB readers
         usbDevice?.let {
-            pages.add(
+            newPages.add(
                 Page(
                     EuiccChannelManager.USB_CHANNEL_ID,
                     it.productName ?: getString(R.string.usb)
@@ -184,10 +184,10 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
         viewPager.visibility = View.VISIBLE
 
-        if (pages.size > 1) {
+        if (newPages.size > 1) {
             tabs.visibility = View.VISIBLE
-        } else if (pages.isEmpty()) {
-            pages.add(
+        } else if (newPages.isEmpty()) {
+            newPages.add(
                 Page(
                     -1,
                     ""
