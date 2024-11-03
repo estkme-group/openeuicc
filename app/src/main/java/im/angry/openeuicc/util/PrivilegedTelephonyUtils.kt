@@ -21,7 +21,7 @@ fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: 
         euiccManager.flowEuiccPorts().onEach { (slotId, portId) ->
             euiccManager.withEuiccChannel(slotId, portId) {
                 if (!it.port.card.isRemovable) {
-                    it.lpa.disableActiveProfileWithUndo(false)
+                    it.lpa.disableActiveProfile(false)
                 }
             }
         }
@@ -32,7 +32,7 @@ fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: 
 
 // Disable eSIM profiles before switching the slot mapping
 // This ensures that unmapped eSIM ports never have "ghost" profiles enabled
-fun TelephonyManager.updateSimSlotMapping(
+suspend fun TelephonyManager.updateSimSlotMapping(
     euiccManager: EuiccChannelManager, newMapping: Collection<UiccSlotMapping>,
     currentMapping: Collection<UiccSlotMapping> = simSlotMapping
 ) {
@@ -43,14 +43,24 @@ fun TelephonyManager.updateSimSlotMapping(
         }
     }
 
-    val undo = unmapped.mapNotNull { mapping ->
-        euiccManager.findEuiccChannelByPortBlocking(mapping.physicalSlotIndex, mapping.portIndex)?.let { channel ->
+    val undo: List<suspend () -> Unit> = unmapped.mapNotNull { mapping ->
+        euiccManager.withEuiccChannel(mapping.physicalSlotIndex, mapping.portIndex) { channel ->
             if (!channel.port.card.isRemovable) {
-                return@mapNotNull channel.lpa.disableActiveProfileWithUndo(false)
+                channel.lpa.disableActiveProfileKeepIccId(false)
             } else {
                 // Do not do anything for external eUICCs -- we can't really trust them to work properly
                 // with no profile enabled.
-                return@mapNotNull null
+                null
+            }
+        }?.let { iccid ->
+            // Generate undo closure because we can't keep reference to `channel` in the closure above
+            {
+                euiccManager.withEuiccChannel(
+                    mapping.physicalSlotIndex,
+                    mapping.portIndex
+                ) { channel ->
+                    channel.lpa.enableProfile(iccid)
+                }
             }
         }
     }
