@@ -29,5 +29,7 @@
 
     <queries>
         <package android:name="com.android.stk" />
+        <package android:name="com.android.stk1" />
+        <package android:name="com.android.stk2" />
     </queries>
 </manifest>

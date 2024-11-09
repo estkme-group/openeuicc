@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="Typos">
+    <string-array name="sim_toolkit_slot_selection">
+        <item>com.android.stk/.StkMain</item>
+        <item>com.android.stk/.StkMainHide</item>
+        <item>com.android.stk/.StkListActivity</item>
+        <item>com.android.stk/.StkLauncherListActivity</item>
+    </string-array>
+    <string-array name="sim_toolkit_slot_1">
+        <item>com.android.stk/.StkMain1</item>
+        <item>com.android.stk/.PrimaryStkMain</item>
+        <item>com.android.stk/.StkLauncherActivity</item>
+        <item>com.android.stk/.StkLauncherActivity_Chn</item>
+        <item>com.android.stk/.StkLauncherActivityI</item>
+        <item>com.android.stk/.OppoStkLauncherActivity1</item>
+        <item>com.android.stk/.OplusStkLauncherActivity1</item>
+        <item>com.android.stk/.mtk.StkLauncherActivityI</item>
+    </string-array>
+    <string-array name="sim_toolkit_slot_2">
+        <item>com.android.stk/.StkMain2</item>
+        <item>com.android.stk/.SecondaryStkMain</item>
+        <item>com.android.stk/.StkLauncherActivity2</item>
+        <item>com.android.stk/.StkLauncherActivityII</item>
+        <item>com.android.stk/.OppoStkLauncherActivity2</item>
+        <item>com.android.stk/.OplusStkLauncherActivity2</item>
+        <item>com.android.stk/.mtk.StkLauncherActivityII</item>
+        <item>com.android.stk1/.StkLauncherActivity</item>
+        <item>com.android.stk2/.StkLauncherActivity</item>
+        <item>com.android.stk2/.StkLauncherActivity_Chn</item>
+        <item>com.android.stk2/.StkLauncherActivity2</item>
+    </string-array>
+</resources>
