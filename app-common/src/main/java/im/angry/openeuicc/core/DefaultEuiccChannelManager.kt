@@ -174,6 +174,15 @@ open class DefaultEuiccChannelManager(
             findAllEuiccChannelsByPhysicalSlot(physicalSlotId)?.getOrNull(0)?.portId ?: -1
         }
 
+    override suspend fun findAvailablePorts(physicalSlotId: Int): List<Int> =
+        withContext(Dispatchers.IO) {
+            if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+                return@withContext listOf(0)
+            }
+
+            findAllEuiccChannelsByPhysicalSlot(physicalSlotId)?.map { it.portId } ?: listOf()
+        }
+
     override suspend fun <R> withEuiccChannel(
         physicalSlotId: Int,
         portId: Int,
