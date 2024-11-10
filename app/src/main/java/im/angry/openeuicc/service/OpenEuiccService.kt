@@ -11,6 +11,7 @@ import android.util.Log
 import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
+import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
@@ -259,8 +260,8 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         if (enabledAnywhere) return@withEuiccChannelManager RESULT_FIRST_USER
 
         euiccChannelManagerService.waitForForegroundTask()
-        val success = (euiccChannelManagerService.launchProfileDeleteTask(slotId, ports[0], iccid)
-            ?.last() as? EuiccChannelManagerService.ForegroundTaskState.Done)!!.error == null
+        val success = euiccChannelManagerService.launchProfileDeleteTask(slotId, ports[0], iccid)
+            .waitDone() == null
 
         return@withEuiccChannelManager if (success) {
             RESULT_OK
@@ -357,7 +358,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             euiccChannelManagerService.waitForForegroundTask()
             val success =
                 (euiccChannelManagerService.launchProfileRenameTask(slotId, port, iccid, nickname!!)
-                    ?.last() as? EuiccChannelManagerService.ForegroundTaskState.Done)!!.error == null
+                    .waitDone()) == null
 
             euiccChannelManager.withEuiccChannel(slotId, port) { channel ->
                 appContainer.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)

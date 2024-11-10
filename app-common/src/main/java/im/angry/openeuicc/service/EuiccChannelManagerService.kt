@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.takeWhile
@@ -55,7 +57,14 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         private const val TAG = "EuiccChannelManagerService"
         private const val CHANNEL_ID = "tasks"
         private const val FOREGROUND_ID = 1000
-        private const val TASK_FAILURE_ID = 1001
+        private const val TASK_FAILURE_ID = 1000
+
+        /**
+         * Utility function to wait for a foreground task to be done, return its
+         * error if any, or null on success.
+         */
+        suspend fun Flow<ForegroundTaskState>.waitDone(): Throwable? =
+            (this.last() as ForegroundTaskState.Done).error
     }
 
     inner class LocalBinder : Binder() {
@@ -185,7 +194,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         failureTitle: String,
         iconRes: Int,
         task: suspend EuiccChannelManagerService.() -> Unit
-    ): Flow<ForegroundTaskState>? {
+    ): Flow<ForegroundTaskState> {
         // Atomically set the state to InProgress. If this returns true, we are
         // the only task currently in progress.
         if (!foregroundTaskState.compareAndSet(
@@ -193,7 +202,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 ForegroundTaskState.InProgress(0)
             )
         ) {
-            return null
+            return flow { emit(ForegroundTaskState.Done(IllegalStateException("There are tasks currently running"))) }
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
@@ -280,7 +289,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         matchingId: String?,
         confirmationCode: String?,
         imei: String?
-    ): Flow<ForegroundTaskState>? =
+    ): Flow<ForegroundTaskState> =
         launchForegroundTask(
             getString(R.string.task_profile_download),
             getString(R.string.task_profile_download_failure),
@@ -316,7 +325,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         portId: Int,
         iccid: String,
         name: String
-    ): Flow<ForegroundTaskState>? =
+    ): Flow<ForegroundTaskState> =
         launchForegroundTask(
             getString(R.string.task_profile_rename),
             getString(R.string.task_profile_rename_failure),
@@ -338,7 +347,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         slotId: Int,
         portId: Int,
         iccid: String
-    ): Flow<ForegroundTaskState>? =
+    ): Flow<ForegroundTaskState> =
         launchForegroundTask(
             getString(R.string.task_profile_delete),
             getString(R.string.task_profile_delete_failure),
@@ -361,7 +370,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         iccid: String,
         enable: Boolean, // Enable or disable the profile indicated in iccid
         reconnectTimeoutMillis: Long = 0 // 0 = do not wait for reconnect, useful for USB readers
-    ): Flow<ForegroundTaskState>? =
+    ): Flow<ForegroundTaskState> =
         launchForegroundTask(
             getString(R.string.task_profile_switch),
             getString(R.string.task_profile_switch_failure),

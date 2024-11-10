@@ -19,9 +19,9 @@ import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.service.EuiccChannelManagerService
+import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -219,14 +219,11 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
         lifecycleScope.launch {
             ensureEuiccChannelManager()
             euiccChannelManagerService.waitForForegroundTask()
-            val res = doDownloadProfile(server, code, confirmationCode, imei)
+            val err = doDownloadProfile(server, code, confirmationCode, imei)
 
-            if (res == null || res.error != null) {
+            if (err != null) {
                 Log.d(TAG, "Error downloading profile")
-
-                if (res?.error != null) {
-                    Log.d(TAG, Log.getStackTraceString(res.error))
-                }
+                Log.d(TAG, Log.getStackTraceString(err))
 
                 Toast.makeText(requireContext(), R.string.profile_download_failed, Toast.LENGTH_LONG).show()
             }
@@ -250,14 +247,15 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
         imei: String?
     ) = withContext(Dispatchers.Main) {
         // The service is responsible for launching the actual blocking part on the IO context
-        val res = euiccChannelManagerService.launchProfileDownloadTask(
+        // On our side, we need the Main context because  of the UI updates
+        euiccChannelManagerService.launchProfileDownloadTask(
             slotId,
             portId,
             server,
             code,
             confirmationCode,
             imei
-        )!!.onEach {
+        ).onEach {
             if (it is EuiccChannelManagerService.ForegroundTaskState.InProgress) {
                 progress.progress = it.progress
                 progress.isIndeterminate = it.progress == 0
@@ -265,9 +263,7 @@ class ProfileDownloadFragment : BaseMaterialDialogFragment(),
                 progress.progress = 100
                 progress.isIndeterminate = false
             }
-        }.last()
-
-        res as? EuiccChannelManagerService.ForegroundTaskState.Done
+        }.waitDone()
     }
 
     override fun onDismiss(dialog: DialogInterface) {

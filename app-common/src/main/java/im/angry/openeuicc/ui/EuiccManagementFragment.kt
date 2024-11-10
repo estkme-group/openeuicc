@@ -30,11 +30,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.service.EuiccChannelManagerService
+import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -209,7 +209,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             ensureEuiccChannelManager()
             euiccChannelManagerService.waitForForegroundTask()
 
-            val res = euiccChannelManagerService.launchProfileSwitchTask(
+            val err = euiccChannelManagerService.launchProfileSwitchTask(
                 slotId,
                 portId,
                 iccid,
@@ -219,14 +219,9 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                 } else {
                     30 * 1000
                 }
-            )?.last() as? EuiccChannelManagerService.ForegroundTaskState.Done
+            ).waitDone()
 
-            if (res == null) {
-                showSwitchFailureText()
-                return@launch
-            }
-
-            when (res.error) {
+            when (err) {
                 null -> {}
                 is EuiccChannelManagerService.SwitchingProfilesRefreshException -> {
                     // This is only really fatal for internal eSIMs

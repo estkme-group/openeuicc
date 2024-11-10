@@ -11,8 +11,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragmentMarker {
@@ -100,7 +100,7 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
                 portId,
                 requireArguments().getString("iccid")!!,
                 name
-            )?.collect()
+            ).waitDone()
 
             if (parentFragment is EuiccProfilesChangedListener) {
                 (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
