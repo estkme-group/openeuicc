@@ -242,39 +242,30 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         Log.i(TAG, "onDeleteSubscription slotId=$slotId iccid=$iccid")
         if (shouldIgnoreSlot(slotId)) return@withEuiccChannelManager RESULT_FIRST_USER
 
-        try {
-            val channels =
-                findAllChannels(slotId) ?: return@withEuiccChannelManager RESULT_FIRST_USER
+        val ports = euiccChannelManager.findAvailablePorts(slotId)
+        if (ports.isEmpty()) return@withEuiccChannelManager RESULT_FIRST_USER
 
-            if (!channels[0].profileExists(iccid)) {
-                return@withEuiccChannelManager RESULT_FIRST_USER
-            }
-
-            // If the profile is enabled by ANY channel (port), we cannot delete it
-            channels.forEach { channel ->
+        // Check that the profile has been disabled on all slots
+        val enabledAnywhere = ports.any { port ->
+            euiccChannelManager.withEuiccChannel(slotId, port) { channel ->
                 val profile = channel.lpa.profiles.find {
                     it.iccid == iccid
-                } ?: return@withEuiccChannelManager RESULT_FIRST_USER
+                } ?: return@withEuiccChannel false
 
-                if (profile.state == LocalProfileInfo.State.Enabled) {
-                    // Must disable the profile first
-                    return@withEuiccChannelManager RESULT_FIRST_USER
-                }
+                profile.state == LocalProfileInfo.State.Enabled
             }
+        }
 
-            euiccChannelManager.beginTrackedOperationBlocking(channels[0].slotId, channels[0].portId) {
-                if (channels[0].lpa.deleteProfile(iccid)) {
-                    return@withEuiccChannelManager RESULT_OK
-                }
+        if (enabledAnywhere) return@withEuiccChannelManager RESULT_FIRST_USER
 
-                runBlocking {
-                    preferenceRepository.notificationDeleteFlow.first()
-                }
-            }
+        euiccChannelManagerService.waitForForegroundTask()
+        val success = (euiccChannelManagerService.launchProfileDeleteTask(slotId, ports[0], iccid)
+            ?.last() as? EuiccChannelManagerService.ForegroundTaskState.Done)!!.error == null
 
-            return@withEuiccChannelManager RESULT_FIRST_USER
-        } catch (e: Exception) {
-            return@withEuiccChannelManager RESULT_FIRST_USER
+        return@withEuiccChannelManager if (success) {
+            RESULT_OK
+        } else {
+            RESULT_FIRST_USER
         }
     }
 
@@ -362,9 +353,11 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             if (port < 0) {
                 return@withEuiccChannelManager RESULT_FIRST_USER
             }
+
+            euiccChannelManagerService.waitForForegroundTask()
             val success =
                 (euiccChannelManagerService.launchProfileRenameTask(slotId, port, iccid, nickname!!)
-                    ?.last() as? EuiccChannelManagerService.ForegroundTaskState.Done)?.error == null
+                    ?.last() as? EuiccChannelManagerService.ForegroundTaskState.Done)!!.error == null
 
             euiccChannelManager.withEuiccChannel(slotId, port) { channel ->
                 appContainer.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
