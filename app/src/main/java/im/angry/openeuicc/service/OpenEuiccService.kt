@@ -42,15 +42,6 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
     ) {
         val euiccChannelManager
             get() = euiccChannelManagerService.euiccChannelManager
-
-        fun findChannel(physicalSlotId: Int): EuiccChannel? =
-            euiccChannelManager.findEuiccChannelByPhysicalSlotBlocking(physicalSlotId)
-
-        fun findChannel(slotId: Int, portId: Int): EuiccChannel? =
-            euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)
-
-        fun findAllChannels(physicalSlotId: Int): List<EuiccChannel>? =
-            euiccChannelManager.findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId)
     }
 
     /**
@@ -88,7 +79,11 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
     }
 
     override fun onGetEid(slotId: Int): String? = withEuiccChannelManager {
-        findChannel(slotId)?.lpa?.eID
+        val portId = euiccChannelManager.findFirstAvailablePort(slotId)
+        if (portId < 0) return@withEuiccChannelManager null
+        euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+            channel.lpa.eID
+        }
     }
 
     // When two eSIM cards are present on one device, the Android settings UI
