@@ -80,24 +80,21 @@ suspend inline fun EuiccChannelManager.beginTrackedOperation(
     portId: Int,
     op: () -> Boolean
 ) {
-    val latestSeq =
-        findEuiccChannelByPort(slotId, portId)!!.lpa.notifications.firstOrNull()?.seqNumber
+    val latestSeq = withEuiccChannel(slotId, portId) { channel ->
+        channel.lpa.notifications.firstOrNull()?.seqNumber
             ?: 0
+    }
     Log.d(TAG, "Latest notification is $latestSeq before operation")
     if (op()) {
         Log.d(TAG, "Operation has requested notification handling")
         try {
             // Note that the exact instance of "channel" might have changed here if reconnected;
-            // so we MUST use the automatic getter for "channel"
-            findEuiccChannelByPort(
-                slotId,
-                portId
-            )?.lpa?.notifications?.filter { it.seqNumber > latestSeq }?.forEach {
-                Log.d(TAG, "Handling notification $it")
-                findEuiccChannelByPort(
-                    slotId,
-                    portId
-                )?.lpa?.handleNotification(it.seqNumber)
+            // this is why we need to use two distinct calls to withEuiccChannel()
+            withEuiccChannel(slotId, portId) { channel ->
+                channel.lpa.notifications.filter { it.seqNumber > latestSeq }.forEach {
+                    Log.d(TAG, "Handling notification $it")
+                    channel.lpa.handleNotification(it.seqNumber)
+                }
             }
         } catch (e: Exception) {
             // Ignore any error during notification handling
