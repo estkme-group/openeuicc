@@ -91,7 +91,7 @@ open class DefaultEuiccChannelManager(
         }
     }
 
-    private suspend fun findEuiccChannelBySlot(logicalSlotId: Int): EuiccChannel? =
+    private suspend fun findEuiccChannelByLogicalSlot(logicalSlotId: Int): EuiccChannel? =
         withContext(Dispatchers.IO) {
             if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
                 return@withContext usbChannel
@@ -108,9 +108,9 @@ open class DefaultEuiccChannelManager(
             null
         }
 
-    protected fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
+    protected fun findEuiccChannelByLogicalSlotBlocking(logicalSlotId: Int): EuiccChannel? =
         runBlocking {
-            findEuiccChannelBySlot(logicalSlotId)
+            findEuiccChannelByLogicalSlot(logicalSlotId)
         }
 
     private suspend fun findAllEuiccChannelsByPhysicalSlot(physicalSlotId: Int): List<EuiccChannel>? {
@@ -176,7 +176,7 @@ open class DefaultEuiccChannelManager(
         logicalSlotId: Int,
         fn: suspend (EuiccChannel) -> R
     ): R {
-        val channel = findEuiccChannelBySlot(logicalSlotId)
+        val channel = findEuiccChannelByLogicalSlot(logicalSlotId)
             ?: throw EuiccChannelManager.EuiccChannelNotFoundException()
         val wrapper = EuiccChannelWrapper(channel)
         try {
