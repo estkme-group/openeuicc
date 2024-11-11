@@ -13,10 +13,9 @@ import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import java.lang.IllegalStateException
+import kotlin.IllegalStateException
 
 class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
     companion object {
@@ -129,7 +128,11 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         telephonyManager.simSlotMapping = mappings.reversed()
     }
 
-    private fun <T> retryWithTimeout(timeoutMillis: Int, backoff: Int = 1000, f: () -> T?): T? {
+    private suspend fun <T> retryWithTimeout(
+        timeoutMillis: Int,
+        backoff: Int = 1000,
+        f: suspend () -> T?
+    ): T? {
         val startTimeMillis = System.currentTimeMillis()
         do {
             try {
@@ -137,7 +140,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             } catch (_: Exception) {
                 // Ignore
             } finally {
-                Thread.sleep(backoff.toLong())
+                delay(backoff.toLong())
             }
         } while (System.currentTimeMillis() - startTimeMillis < timeoutMillis)
         return null
@@ -289,51 +292,90 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         if (shouldIgnoreSlot(slotId)) return@withEuiccChannelManager RESULT_FIRST_USER
 
         try {
+            // First, try to find a pair of slotId and portId we can use for the switching operation
             // retryWithTimeout is needed here because this function may be called just after
             // AOSP has switched slot mappings, in which case the slots may not be ready yet.
-            val channel = if (portIndex == -1) {
-                retryWithTimeout(5000) { findChannel(slotId) }
-            } else {
-                retryWithTimeout(5000) { findChannel(slotId, portIndex) }
+            val (foundSlotId, foundPortId) = retryWithTimeout(5000) {
+                if (portIndex == -1) {
+                    // If port is not indicated, we can use any port
+                    val port = euiccChannelManager.findFirstAvailablePort(slotId).let {
+                        if (it < 0) {
+                            throw IllegalStateException("No mapped port available; may need to try again")
+                        }
+
+                        it
+                    }
+
+                    Pair(slotId, port)
+                } else {
+                    // Else, check until the indicated port is available
+                    euiccChannelManager.withEuiccChannel(slotId, portIndex) { channel ->
+                        if (!channel.valid) {
+                            throw IllegalStateException("Indicated slot / port combination is unavailable; may need to try again")
+                        }
+                    }
+
+                    Pair(slotId, portIndex)
+                }
             } ?: run {
+                // Failure case: mapped slots / ports aren't usable per constraints
+                // If we can't find a usable slot / port already mapped, and we aren't allowed to
+                // deactivate a SIM, we can only abort
                 if (!forceDeactivateSim) {
-                    // The user must select which SIM to deactivate
                     return@withEuiccChannelManager RESULT_MUST_DEACTIVATE_SIM
+                }
+
+                // If port ID is not indicated, we just try to map port 0
+                // This is because in order to get here, we have to have failed findFirstAvailablePort(),
+                // which means no eUICC port is mapped or connected properly whatsoever.
+                val foundPortId = if (portIndex == -1) {
+                    0
                 } else {
-                    try {
-                        // If we are allowed to deactivate any SIM we like, try mapping the indicated port first
-                        ensurePortIsMapped(slotId, portIndex)
-                        retryWithTimeout(5000) { findChannel(slotId, portIndex) }
-                    } catch (e: Exception) {
-                        // We cannot map the port (or it is already mapped)
-                        // but we can also use any port available on the card
-                        retryWithTimeout(5000) { findChannel(slotId) }
-                    } ?: return@withEuiccChannelManager RESULT_FIRST_USER
+                    portIndex
                 }
-            }
 
-            if (iccid != null && !channel.profileExists(iccid)) {
-                Log.i(TAG, "onSwitchToSubscriptionWithPort iccid=$iccid not found")
-                return@withEuiccChannelManager RESULT_FIRST_USER
-            }
+                // Now we can try to map an unused port
+                try {
+                    ensurePortIsMapped(slotId, foundPortId)
+                } catch (_: Exception) {
+                    return@withEuiccChannelManager RESULT_FIRST_USER
+                }
 
-            euiccChannelManager.beginTrackedOperationBlocking(channel.slotId, channel.portId) {
-                if (iccid != null) {
-                    // Disable any active profile first if present
-                    channel.lpa.disableActiveProfile(false)
-                    if (!channel.lpa.enableProfile(iccid)) {
-                        return@withEuiccChannelManager RESULT_FIRST_USER
+                // Wait for availability again
+                retryWithTimeout(5000) {
+                    euiccChannelManager.withEuiccChannel(slotId, foundPortId) { channel ->
+                        if (!channel.valid) {
+                            throw IllegalStateException("Indicated slot / port combination is unavailable; may need to try again")
+                        }
                     }
-                } else {
-                    if (!channel.lpa.disableActiveProfile(true)) {
-                        return@withEuiccChannelManager RESULT_FIRST_USER
-                    }
-                }
+                } ?: return@withEuiccChannelManager RESULT_FIRST_USER
 
-                runBlocking {
-                    preferenceRepository.notificationSwitchFlow.first()
-                }
+                Pair(slotId, foundPortId)
             }
+
+            Log.i(TAG, "Found slotId=$foundSlotId, portId=$foundPortId for switching")
+
+            // Now, figure out what they want us to do: disabling a profile, or enabling a new one?
+            val (foundIccid, enable) = if (iccid == null) {
+                // iccid == null means disabling
+                val foundIccid =
+                    euiccChannelManager.withEuiccChannel(foundSlotId, foundPortId) { channel ->
+                        channel.lpa.profiles.find { it.state == LocalProfileInfo.State.Enabled }
+                    }?.iccid ?: return@withEuiccChannelManager RESULT_FIRST_USER
+                Pair(foundIccid, false)
+            } else {
+                Pair(iccid, true)
+            }
+
+            val res = euiccChannelManagerService.launchProfileSwitchTask(
+                foundSlotId,
+                foundPortId,
+                foundIccid,
+                enable,
+                30 * 1000
+            ).waitDone()
+
+            if (res != null) return@withEuiccChannelManager RESULT_FIRST_USER
 
             return@withEuiccChannelManager RESULT_OK
         } catch (e: Exception) {
