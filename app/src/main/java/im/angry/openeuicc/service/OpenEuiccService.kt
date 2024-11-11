@@ -9,7 +9,6 @@ import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
 import android.util.Log
 import net.typeblog.lpac_jni.LocalProfileInfo
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
@@ -85,12 +84,6 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             channel.lpa.eID
         }
     }
-
-    // When two eSIM cards are present on one device, the Android settings UI
-    // gets confused and sets the incorrect slotId for profiles from one of
-    // the cards. This function helps Detect this case and abort early.
-    private fun EuiccChannel.profileExists(iccid: String?) =
-        lpa.profiles.any { it.iccid == iccid }
 
     private fun ensurePortIsMapped(slotId: Int, portId: Int) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
