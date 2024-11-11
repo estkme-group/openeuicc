@@ -48,11 +48,6 @@ interface EuiccChannelManager {
     suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long = 1000)
 
     /**
-     * Returns the EuiccChannel corresponding to a **logical** slot
-     */
-    fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel?
-
-    /**
      * Returns the first mapped & available port ID for a physical slot, or -1 if
      * not found.
      */

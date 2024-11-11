@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +32,7 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private lateinit var notificationList: RecyclerView
     private val notificationAdapter = NotificationAdapter()
 
-    private lateinit var euiccChannel: EuiccChannel
+    private var logicalSlotId = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -56,7 +55,7 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         notificationList.adapter = notificationAdapter
         registerForContextMenu(notificationList)
 
-        val logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
+        logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
 
         // This is slightly different from the MainActivity logic
         // due to the length (we don't want to display the full USB product name)
@@ -104,16 +103,8 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
-            if (!this@NotificationsActivity::euiccChannel.isInitialized) {
-                withContext(Dispatchers.IO) {
-                    euiccChannelManagerLoaded.await()
-                    euiccChannel = euiccChannelManager.findEuiccChannelBySlotBlocking(
-                        intent.getIntExtra(
-                            "logicalSlotId",
-                            0
-                        )
-                    )!!
-                }
+            withContext(Dispatchers.IO) {
+                euiccChannelManagerLoaded.await()
             }
 
             task()
@@ -124,13 +115,11 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     private fun refresh() {
        launchTask {
-           val profiles = withContext(Dispatchers.IO) {
-               euiccChannel.lpa.profiles
-           }
-
            notificationAdapter.notifications =
-               withContext(Dispatchers.IO) {
-                   euiccChannel.lpa.notifications.map {
+               euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
+                   val profiles = channel.lpa.profiles
+
+                   channel.lpa.notifications.map {
                        val profile = profiles.find { p -> p.iccid == it.iccid }
                        LocalProfileNotificationWrapper(it, profile?.displayName ?: "???")
                    }
@@ -205,7 +194,9 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                 R.id.notification_process -> {
                     launchTask {
                         withContext(Dispatchers.IO) {
-                            euiccChannel.lpa.handleNotification(notification.inner.seqNumber)
+                            euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
+                                channel.lpa.handleNotification(notification.inner.seqNumber)
+                            }
                         }
 
                         refresh()
@@ -215,7 +206,9 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                 R.id.notification_delete -> {
                     launchTask {
                         withContext(Dispatchers.IO) {
-                            euiccChannel.lpa.deleteNotification(notification.inner.seqNumber)
+                            euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
+                                channel.lpa.deleteNotification(notification.inner.seqNumber)
+                            }
                         }
 
                         refresh()

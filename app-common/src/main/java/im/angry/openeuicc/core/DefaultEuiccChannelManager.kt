@@ -108,7 +108,7 @@ open class DefaultEuiccChannelManager(
             null
         }
 
-    override fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
+    protected fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel? =
         runBlocking {
             findEuiccChannelBySlot(logicalSlotId)
         }
