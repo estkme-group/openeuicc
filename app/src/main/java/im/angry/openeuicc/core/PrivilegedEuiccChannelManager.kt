@@ -28,9 +28,9 @@ class PrivilegedEuiccChannelManager(
         }
     }
 
-    override fun notifyEuiccProfilesChanged(logicalSlotId: Int) {
+    override suspend fun notifyEuiccProfilesChanged(logicalSlotId: Int) {
         appContainer.subscriptionManager.apply {
-            findEuiccChannelByLogicalSlotBlocking(logicalSlotId)?.let {
+            findEuiccChannelByLogicalSlot(logicalSlotId)?.let {
                 tryRefreshCachedEuiccInfo(it.cardId)
             }
         }

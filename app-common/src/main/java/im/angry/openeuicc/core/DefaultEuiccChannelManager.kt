@@ -91,7 +91,7 @@ open class DefaultEuiccChannelManager(
         }
     }
 
-    private suspend fun findEuiccChannelByLogicalSlot(logicalSlotId: Int): EuiccChannel? =
+    protected suspend fun findEuiccChannelByLogicalSlot(logicalSlotId: Int): EuiccChannel? =
         withContext(Dispatchers.IO) {
             if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
                 return@withContext usbChannel
@@ -106,11 +106,6 @@ open class DefaultEuiccChannelManager(
             }
 
             null
-        }
-
-    protected fun findEuiccChannelByLogicalSlotBlocking(logicalSlotId: Int): EuiccChannel? =
-        runBlocking {
-            findEuiccChannelByLogicalSlot(logicalSlotId)
         }
 
     private suspend fun findAllEuiccChannelsByPhysicalSlot(physicalSlotId: Int): List<EuiccChannel>? {

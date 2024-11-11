@@ -93,7 +93,7 @@ interface EuiccChannelManager {
      * This is only expected to be implemented when the application is privileged
      * TODO: Remove this from the common interface
      */
-    fun notifyEuiccProfilesChanged(logicalSlotId: Int) {
+    suspend fun notifyEuiccProfilesChanged(logicalSlotId: Int) {
         // no-op by default
     }
 }
