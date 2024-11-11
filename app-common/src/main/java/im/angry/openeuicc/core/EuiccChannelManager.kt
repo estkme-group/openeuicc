@@ -53,20 +53,6 @@ interface EuiccChannelManager {
     fun findEuiccChannelBySlotBlocking(logicalSlotId: Int): EuiccChannel?
 
     /**
-     * Returns the first EuiccChannel corresponding to a **physical** slot
-     * If the physical slot supports MEP and has multiple ports, it is undefined
-     * which of the two channels will be returned.
-     */
-    fun findEuiccChannelByPhysicalSlotBlocking(physicalSlotId: Int): EuiccChannel?
-
-    /**
-     * Returns all EuiccChannels corresponding to a **physical** slot
-     * Multiple channels are possible in the case of MEP
-     */
-    suspend fun findAllEuiccChannelsByPhysicalSlot(physicalSlotId: Int): List<EuiccChannel>?
-    fun findAllEuiccChannelsByPhysicalSlotBlocking(physicalSlotId: Int): List<EuiccChannel>?
-
-    /**
      * Returns the EuiccChannel corresponding to a **physical** slot and a port ID
      */
     suspend fun findEuiccChannelByPort(physicalSlotId: Int, portId: Int): EuiccChannel?

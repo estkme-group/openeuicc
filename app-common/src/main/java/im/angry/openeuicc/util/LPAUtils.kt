@@ -3,9 +3,6 @@ package im.angry.openeuicc.util
 import android.util.Log
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
 
@@ -98,42 +95,6 @@ suspend inline fun EuiccChannelManager.beginTrackedOperation(
             )?.lpa?.notifications?.filter { it.seqNumber > latestSeq }?.forEach {
                 Log.d(TAG, "Handling notification $it")
                 findEuiccChannelByPort(
-                    slotId,
-                    portId
-                )?.lpa?.handleNotification(it.seqNumber)
-            }
-        } catch (e: Exception) {
-            // Ignore any error during notification handling
-            e.printStackTrace()
-        }
-    }
-    Log.d(TAG, "Operation complete")
-}
-
-/**
- * Same as beginTrackedOperation but uses blocking primitives.
- * TODO: This function needs to be phased out of use.
- */
-inline fun EuiccChannelManager.beginTrackedOperationBlocking(
-    slotId: Int,
-    portId: Int,
-    op: () -> Boolean
-) {
-    val latestSeq =
-        findEuiccChannelByPortBlocking(slotId, portId)!!.lpa.notifications.firstOrNull()?.seqNumber
-            ?: 0
-    Log.d(TAG, "Latest notification is $latestSeq before operation")
-    if (op()) {
-        Log.d(TAG, "Operation has requested notification handling")
-        try {
-            // Note that the exact instance of "channel" might have changed here if reconnected;
-            // so we MUST use the automatic getter for "channel"
-            findEuiccChannelByPortBlocking(
-                slotId,
-                portId
-            )?.lpa?.notifications?.filter { it.seqNumber > latestSeq }?.forEach {
-                Log.d(TAG, "Handling notification $it")
-                findEuiccChannelByPortBlocking(
                     slotId,
                     portId
                 )?.lpa?.handleNotification(it.seqNumber)
