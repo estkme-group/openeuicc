@@ -126,7 +126,7 @@ open class DefaultEuiccChannelManager(
         return null
     }
 
-    override suspend fun findEuiccChannelByPort(physicalSlotId: Int, portId: Int): EuiccChannel? =
+    private suspend fun findEuiccChannelByPort(physicalSlotId: Int, portId: Int): EuiccChannel? =
         withContext(Dispatchers.IO) {
             if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
                 return@withContext usbChannel
@@ -135,11 +135,6 @@ open class DefaultEuiccChannelManager(
             uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
                 card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
             }
-        }
-
-    override fun findEuiccChannelByPortBlocking(physicalSlotId: Int, portId: Int): EuiccChannel? =
-        runBlocking {
-            findEuiccChannelByPort(physicalSlotId, portId)
         }
 
     override suspend fun findFirstAvailablePort(physicalSlotId: Int): Int =

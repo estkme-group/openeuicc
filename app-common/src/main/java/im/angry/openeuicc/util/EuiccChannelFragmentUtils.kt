@@ -36,9 +36,6 @@ val <T> T.euiccChannelManager: EuiccChannelManager where T: Fragment, T: EuiccCh
     get() = (requireActivity() as BaseEuiccAccessActivity).euiccChannelManager
 val <T> T.euiccChannelManagerService: EuiccChannelManagerService where T: Fragment, T: EuiccChannelFragmentMarker
     get() = (requireActivity() as BaseEuiccAccessActivity).euiccChannelManagerService
-val <T> T.channel: EuiccChannel where T: Fragment, T: EuiccChannelFragmentMarker
-    get() =
-        euiccChannelManager.findEuiccChannelByPortBlocking(slotId, portId)!!
 
 suspend fun <T, R> T.withEuiccChannel(fn: suspend (EuiccChannel) -> R): R where T : Fragment, T : EuiccChannelFragmentMarker {
     ensureEuiccChannelManager()
