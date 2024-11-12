@@ -34,13 +34,16 @@ class SIMToolkit(private val context: Context) {
         null
     }
 
-    private fun getActivities(packageName: String) = try {
-        val pm = context.packageManager
-        val packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
-        packageInfo.activities!!.filter { it.exported }
-            .map { ComponentName(it.packageName, it.name) }
-    } catch (_: PackageManager.NameNotFoundException) {
-        emptyList()
+    private fun getActivities(packageName: String): List<ComponentName> {
+        return try {
+            val pm = context.packageManager
+            val packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+            val activities = packageInfo.activities
+            if (activities.isNullOrEmpty()) return emptyList()
+            activities.filter { it.exported }.map { ComponentName(it.packageName, it.name) }
+        } catch (_: PackageManager.NameNotFoundException) {
+            emptyList()
+        }
     }
 
     private fun getComponentNames(@ArrayRes id: Int) =
