@@ -1,7 +1,6 @@
 package im.angry.openeuicc.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -68,20 +67,13 @@ class CompatibilityCheckActivity: AppCompatActivity() {
                 it.visibility = View.GONE
             }
 
-            when (item.state) {
-                CompatibilityCheck.State.SUCCESS -> {
-                    root.requireViewById<View>(R.id.compatibility_check_checkmark).visibility = View.VISIBLE
-                }
-                CompatibilityCheck.State.FAILURE -> {
-                    root.requireViewById<View>(R.id.compatibility_check_error).visibility = View.VISIBLE
-                }
-                CompatibilityCheck.State.FAILURE_UNKNOWN -> {
-                    root.requireViewById<View>(R.id.compatibility_check_unknown).visibility = View.VISIBLE
-                }
-                else -> {
-                    root.requireViewById<View>(R.id.compatibility_check_progress_bar).visibility = View.VISIBLE
-                }
+            val viewId = when (item.state) {
+                CompatibilityCheck.State.SUCCESS -> R.id.compatibility_check_checkmark
+                CompatibilityCheck.State.FAILURE -> R.id.compatibility_check_error
+                CompatibilityCheck.State.FAILURE_UNKNOWN -> R.id.compatibility_check_unknown
+                else -> R.id.compatibility_check_progress_bar
             }
+            root.requireViewById<View>(viewId).visibility = View.VISIBLE
         }
     }
 
