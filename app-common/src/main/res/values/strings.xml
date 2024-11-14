@@ -55,6 +55,9 @@
     <string name="profile_download_ok">Download</string>
     <string name="profile_download_failed">Failed to download eSIM. Check your activation / QR code.</string>
 
+    <string name="profile_download_low_nvram_title">This download may fail</string>
+    <string name="profile_download_low_nvram_message">This download may fail due to low remaining capacity.</string>
+
     <string name="profile_rename_new_name">New nickname</string>
 
     <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
