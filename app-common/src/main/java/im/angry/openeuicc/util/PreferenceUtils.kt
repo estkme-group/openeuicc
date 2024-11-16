@@ -25,6 +25,7 @@ object PreferenceKeys {
     val NOTIFICATION_SWITCH = booleanPreferencesKey("notification_switch")
     val DISABLE_SAFEGUARD_REMOVABLE_ESIM = booleanPreferencesKey("disable_safeguard_removable_esim")
     val VERBOSE_LOGGING = booleanPreferencesKey("verbose_logging")
+    val EXPERIMENTAL_DOWNLOAD_WIZARD = booleanPreferencesKey("experimental_download_wizard")
 }
 
 class PreferenceRepository(context: Context) {
@@ -47,6 +48,9 @@ class PreferenceRepository(context: Context) {
 
     val verboseLoggingFlow: Flow<Boolean> =
         dataStore.data.map { it[PreferenceKeys.VERBOSE_LOGGING] ?: false }
+
+    val experimentalDownloadWizardFlow: Flow<Boolean> =
+        dataStore.data.map { it[PreferenceKeys.EXPERIMENTAL_DOWNLOAD_WIZARD] ?: false }
 
     suspend fun <T> updatePreference(key: Preferences.Key<T>, value: T) {
         dataStore.edit {

@@ -3,9 +3,6 @@ package im.angry.openeuicc.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
@@ -50,6 +47,9 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         findPreference<CheckBoxPreference>("pref_advanced_verbose_logging")
             ?.bindBooleanFlow(preferenceRepository.verboseLoggingFlow, PreferenceKeys.VERBOSE_LOGGING)
+
+        findPreference<CheckBoxPreference>("pref_advanced_experimental_download_wizard")
+            ?.bindBooleanFlow(preferenceRepository.experimentalDownloadWizardFlow, PreferenceKeys.EXPERIMENTAL_DOWNLOAD_WIZARD)
     }
 
     override fun onStart() {

@@ -31,10 +31,12 @@ import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.service.EuiccChannelManagerService
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
+import im.angry.openeuicc.ui.wizard.DownloadWizardActivity
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -105,8 +107,14 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
         fab.setOnClickListener {
-            ProfileDownloadFragment.newInstance(slotId, portId)
-                .show(childFragmentManager, ProfileDownloadFragment.TAG)
+            lifecycleScope.launch {
+                if (preferenceRepository.experimentalDownloadWizardFlow.first()) {
+                    startActivity(Intent(requireContext(), DownloadWizardActivity::class.java))
+                } else {
+                    ProfileDownloadFragment.newInstance(slotId, portId)
+                        .show(childFragmentManager, ProfileDownloadFragment.TAG)
+                }
+            }
         }
     }
 

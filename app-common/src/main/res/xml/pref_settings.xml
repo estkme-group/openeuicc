@@ -41,6 +41,12 @@
             app:iconSpaceReserved="false"
             app:title="@string/pref_advanced_logs"
             app:summary="@string/pref_advanced_logs_desc" />
+
+        <CheckBoxPreference
+            app:key="pref_advanced_experimental_download_wizard"
+            app:iconSpaceReserved="false"
+            app:title="@string/pref_advanced_experimental_download_wizard"
+            app:summary="@string/pref_advanced_experimental_download_wizard_desc" />
     </PreferenceCategory>
 
     <PreferenceCategory
