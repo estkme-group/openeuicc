@@ -123,6 +123,8 @@
     <string name="pref_developer">Developer Options</string>
     <string name="pref_developer_experimental_download_wizard">Experimental Download Wizard</string>
     <string name="pref_developer_experimental_download_wizard_desc">Enable the experimental new download wizard. Note that it is not fully working yet.</string>
+    <string name="pref_developer_ignore_tls_certificate">Ignore SM-DP+ TLS certificate</string>
+    <string name="pref_developer_ignore_tls_certificate_desc">Ignore SM-DP+ TLS certificate, allow any RSP</string>
     <string name="pref_info">Info</string>
     <string name="pref_info_app_version">App Version</string>
     <string name="pref_info_source_code">Source Code</string>

@@ -55,6 +55,12 @@
             app:title="@string/pref_developer_experimental_download_wizard"
             app:summary="@string/pref_developer_experimental_download_wizard_desc" />
 
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
+            app:key="pref_developer_ignore_tls_certificate"
+            app:summary="@string/pref_developer_ignore_tls_certificate_desc"
+            app:title="@string/pref_developer_ignore_tls_certificate" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

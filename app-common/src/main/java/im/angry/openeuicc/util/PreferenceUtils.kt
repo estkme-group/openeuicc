@@ -20,13 +20,19 @@ val Fragment.preferenceRepository: PreferenceRepository
     get() = requireContext().preferenceRepository
 
 object PreferenceKeys {
+    // ---- Profile Notifications ----
     val NOTIFICATION_DOWNLOAD = booleanPreferencesKey("notification_download")
     val NOTIFICATION_DELETE = booleanPreferencesKey("notification_delete")
     val NOTIFICATION_SWITCH = booleanPreferencesKey("notification_switch")
+
+    // ---- Advanced ----
     val DISABLE_SAFEGUARD_REMOVABLE_ESIM = booleanPreferencesKey("disable_safeguard_removable_esim")
     val VERBOSE_LOGGING = booleanPreferencesKey("verbose_logging")
+
+    // ---- Developer Options ----
     val DEVELOPER_OPTIONS_ENABLED = booleanPreferencesKey("developer_options_enabled")
     val EXPERIMENTAL_DOWNLOAD_WIZARD = booleanPreferencesKey("experimental_download_wizard")
+    val IGNORE_TLS_CERTIFICATE = booleanPreferencesKey("ignore_tls_certificate")
 }
 
 class PreferenceRepository(context: Context) {
@@ -56,6 +62,9 @@ class PreferenceRepository(context: Context) {
 
     val experimentalDownloadWizardFlow: Flow<Boolean> =
         dataStore.data.map { it[PreferenceKeys.EXPERIMENTAL_DOWNLOAD_WIZARD] ?: false }
+
+    val ignoreTLSCertificateFlow: Flow<Boolean> =
+        dataStore.data.map { it[PreferenceKeys.IGNORE_TLS_CERTIFICATE] ?: false }
 
     suspend fun <T> updatePreference(key: Preferences.Key<T>, value: T) {
         dataStore.edit {

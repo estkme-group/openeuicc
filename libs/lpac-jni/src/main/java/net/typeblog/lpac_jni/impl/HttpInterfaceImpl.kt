@@ -9,10 +9,14 @@ import java.net.URL
 import java.security.SecureRandom
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManager
 import javax.net.ssl.TrustManagerFactory
 
-class HttpInterfaceImpl(private val verboseLoggingFlow: Flow<Boolean>) : HttpInterface {
+class HttpInterfaceImpl(
+    private val verboseLoggingFlow: Flow<Boolean>,
+    private val ignoreTLSCertificateFlow: Flow<Boolean>
+) : HttpInterface {
     companion object {
         private const val TAG = "HttpInterfaceImpl"
     }
@@ -36,9 +40,6 @@ class HttpInterfaceImpl(private val verboseLoggingFlow: Flow<Boolean>) : HttpInt
         }
 
         try {
-            val sslContext = SSLContext.getInstance("TLS")
-            sslContext.init(null, trustManagers, SecureRandom())
-
             val conn = parsedUrl.openConnection() as HttpsURLConnection
             conn.connectTimeout = 2000
 
@@ -47,7 +48,7 @@ class HttpInterfaceImpl(private val verboseLoggingFlow: Flow<Boolean>) : HttpInt
                 conn.readTimeout = 1000
             }
 
-            conn.sslSocketFactory = sslContext.socketFactory
+            conn.sslSocketFactory = getSocketFactory()
             conn.requestMethod = "POST"
             conn.doInput = true
             conn.doOutput = true
@@ -77,6 +78,18 @@ class HttpInterfaceImpl(private val verboseLoggingFlow: Flow<Boolean>) : HttpInt
             e.printStackTrace()
             throw e
         }
+    }
+
+    private fun getSocketFactory(): SSLSocketFactory {
+        val trustManagers =
+            if (runBlocking { ignoreTLSCertificateFlow.first() }) {
+                arrayOf(IgnoreTLSCertificate())
+            } else {
+                this.trustManagers
+            }
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagers, SecureRandom())
+        return sslContext.socketFactory
     }
 
     override fun usePublicKeyIds(pkids: Array<String>) {

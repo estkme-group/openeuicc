@@ -11,14 +11,15 @@ class EuiccChannelImpl(
     override val type: String,
     override val port: UiccPortInfoCompat,
     apduInterface: ApduInterface,
-    verboseLoggingFlow: Flow<Boolean>
+    verboseLoggingFlow: Flow<Boolean>,
+    ignoreTLSCertificateFlow: Flow<Boolean>
 ) : EuiccChannel {
     override val slotId = port.card.physicalSlotIndex
     override val logicalSlotId = port.logicalSlotIndex
     override val portId = port.portIndex
 
     override val lpa: LocalProfileAssistant =
-        LocalProfileAssistantImpl(apduInterface, HttpInterfaceImpl(verboseLoggingFlow))
+        LocalProfileAssistantImpl(apduInterface, HttpInterfaceImpl(verboseLoggingFlow, ignoreTLSCertificateFlow))
 
     override val valid: Boolean
         get() = lpa.valid
