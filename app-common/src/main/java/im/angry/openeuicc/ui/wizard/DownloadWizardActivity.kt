@@ -2,6 +2,7 @@ package im.angry.openeuicc.ui.wizard
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
@@ -11,6 +12,8 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 
 class DownloadWizardActivity: BaseEuiccAccessActivity() {
+    private lateinit var progressBar: ProgressBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -20,6 +23,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
                 // TODO: Actually implement this
             }
         })
+
+        progressBar = requireViewById(R.id.progress)
 
         val navigation = requireViewById<View>(R.id.download_wizard_navigation)
         val origHeight = navigation.layoutParams.height
@@ -38,6 +43,6 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     }
 
     override fun onInit() {
-
+        progressBar.visibility = View.GONE
     }
 }
