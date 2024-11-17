@@ -32,9 +32,9 @@ val <T> T.portId: Int where T: Fragment, T: EuiccChannelFragmentMarker
 val <T> T.isUsb: Boolean where T: Fragment, T: EuiccChannelFragmentMarker
     get() = requireArguments().getInt("slotId") == EuiccChannelManager.USB_CHANNEL_ID
 
-val <T> T.euiccChannelManager: EuiccChannelManager where T: Fragment, T: EuiccChannelFragmentMarker
+val <T> T.euiccChannelManager: EuiccChannelManager where T: Fragment, T: OpenEuiccContextMarker
     get() = (requireActivity() as BaseEuiccAccessActivity).euiccChannelManager
-val <T> T.euiccChannelManagerService: EuiccChannelManagerService where T: Fragment, T: EuiccChannelFragmentMarker
+val <T> T.euiccChannelManagerService: EuiccChannelManagerService where T: Fragment, T: OpenEuiccContextMarker
     get() = (requireActivity() as BaseEuiccAccessActivity).euiccChannelManagerService
 
 suspend fun <T, R> T.withEuiccChannel(fn: suspend (EuiccChannel) -> R): R where T : Fragment, T : EuiccChannelFragmentMarker {
@@ -42,7 +42,7 @@ suspend fun <T, R> T.withEuiccChannel(fn: suspend (EuiccChannel) -> R): R where 
     return euiccChannelManager.withEuiccChannel(slotId, portId, fn)
 }
 
-suspend fun <T> T.ensureEuiccChannelManager() where T: Fragment, T: EuiccChannelFragmentMarker =
+suspend fun <T> T.ensureEuiccChannelManager() where T: Fragment, T: OpenEuiccContextMarker =
     (requireActivity() as BaseEuiccAccessActivity).euiccChannelManagerLoaded.await()
 
 interface EuiccProfilesChangedListener {

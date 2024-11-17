@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10sp"
+    android:layout_marginTop="10sp"
+    android:paddingStart="20sp"
+    android:paddingEnd="20sp">
+
+    <TextView
+        android:id="@+id/slot_item_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10sp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/slot_item_eid_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/download_wizard_slot_eid"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/slot_item_eid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/slot_item_active_profile_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/download_wizard_slot_active_profile"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/slot_item_active_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="14sp" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="10sp"
+        app:constraint_referenced_ids="slot_item_eid_label,slot_item_eid,slot_item_active_profile_label,slot_item_active_profile"
+        app:flow_wrapMode="aligned"
+        app:flow_horizontalAlign="start"
+        app:flow_horizontalBias="1"
+        app:flow_horizontalGap="10sp"
+        app:flow_horizontalStyle="packed"
+        app:flow_maxElementsWrap="2"
+        app:flow_verticalBias="0"
+        app:flow_verticalGap="16sp"
+        app:flow_verticalStyle="packed"
+        app:layout_constraintEnd_toStartOf="@id/slot_checkbox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/slot_item_title" />
+
+    <CheckBox
+        android:id="@+id/slot_checkbox"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/flow1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
