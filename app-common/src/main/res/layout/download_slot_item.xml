@@ -22,6 +22,7 @@
         android:id="@+id/slot_item_eid_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="100dp"
         android:text="@string/download_wizard_slot_eid"
         android:textSize="14sp" />
 
@@ -35,6 +36,7 @@
         android:id="@+id/slot_item_active_profile_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="100dp"
         android:text="@string/download_wizard_slot_active_profile"
         android:textSize="14sp" />
 
