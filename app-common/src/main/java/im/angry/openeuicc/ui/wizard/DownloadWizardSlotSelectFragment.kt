@@ -22,6 +22,9 @@ import net.typeblog.lpac_jni.LocalProfileInfo
 class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
     private data class SlotInfo(
         val logicalSlotId: Int,
+        val isRemovable: Boolean,
+        val hasMultiplePorts: Boolean,
+        val portId: Int,
         val eID: String,
         val enabledProfileName: String?
     )
@@ -71,6 +74,9 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
                 SlotInfo(
                     channel.logicalSlotId,
+                    channel.port.card.isRemovable,
+                    channel.port.card.ports.size > 1,
+                    channel.portId,
                     channel.lpa.eID,
                     channel.lpa.profiles.find { it.state == LocalProfileInfo.State.Enabled }?.displayName
                 )
@@ -85,6 +91,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
 
     private class SlotItemHolder(val adapter: SlotInfoAdapter, val root: View) : ViewHolder(root) {
         private val title = root.requireViewById<TextView>(R.id.slot_item_title)
+        private val type = root.requireViewById<TextView>(R.id.slot_item_type)
         private val eID = root.requireViewById<TextView>(R.id.slot_item_eid)
         private val activeProfile = root.requireViewById<TextView>(R.id.slot_item_active_profile)
         private val checkBox = root.requireViewById<CheckBox>(R.id.slot_checkbox)
@@ -108,6 +115,18 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
 
         fun bind(item: SlotInfo, idx: Int) {
             curIdx = idx
+
+            type.text = if (item.isRemovable) {
+                root.context.getString(R.string.download_wizard_slot_type_removable)
+            } else if (!item.hasMultiplePorts) {
+                root.context.getString(R.string.download_wizard_slot_type_internal)
+            } else {
+                root.context.getString(
+                    R.string.download_wizard_slot_type_internal_port,
+                    item.portId
+                )
+            }
+
             title.text = root.context.getString(R.string.download_wizard_slot_title, item.logicalSlotId)
             eID.text = item.eID
             activeProfile.text = item.enabledProfileName ?: root.context.getString(R.string.unknown)

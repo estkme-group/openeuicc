@@ -23,7 +23,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintHeight_max="300dp" />
+        app:layout_constrainedHeight="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

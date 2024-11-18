@@ -63,6 +63,10 @@
     <string name="download_wizard_next">Next</string>
     <string name="download_wizard_slot_select">Confirm the eSIM slot:</string>
     <string name="download_wizard_slot_title">Logical slot %d</string>
+    <string name="download_wizard_slot_type">Type:</string>
+    <string name="download_wizard_slot_type_removable">Removable</string>
+    <string name="download_wizard_slot_type_internal">Internal</string>
+    <string name="download_wizard_slot_type_internal_port">Internal, port %d</string>
     <string name="download_wizard_slot_eid">eID:</string>
     <string name="download_wizard_slot_active_profile">Active Profile:</string>
 
