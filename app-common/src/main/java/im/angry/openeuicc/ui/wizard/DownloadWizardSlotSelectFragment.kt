@@ -69,6 +69,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
 
     @SuppressLint("NotifyDataSetChanged")
     private suspend fun init() {
+        ensureEuiccChannelManager()
         showProgressBar(-1)
         val slots = euiccChannelManager.flowEuiccPorts().map { (slotId, portId) ->
             euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
