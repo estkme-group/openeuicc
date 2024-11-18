@@ -79,6 +79,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         adapter.slots = slots
         adapter.notifyDataSetChanged()
         hideProgressBar()
+        loaded = true
         refreshButtons()
     }
 

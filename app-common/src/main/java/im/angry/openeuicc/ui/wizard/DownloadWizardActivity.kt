@@ -80,7 +80,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             } else {
                 View.GONE
             }
-            prevButton.visibility = if (it.hasNext) {
+            prevButton.visibility = if (it.hasPrev) {
                 View.VISIBLE
             } else {
                 View.GONE
