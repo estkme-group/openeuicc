@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -51,6 +53,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         recyclerView.adapter = adapter
         recyclerView.layoutManager =
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL))
         return view
     }
 
@@ -79,30 +82,51 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         refreshButtons()
     }
 
-    private class SlotItemHolder(val root: View) : ViewHolder(root) {
+    private class SlotItemHolder(val adapter: SlotInfoAdapter, val root: View) : ViewHolder(root) {
         private val title = root.requireViewById<TextView>(R.id.slot_item_title)
         private val eID = root.requireViewById<TextView>(R.id.slot_item_eid)
         private val activeProfile = root.requireViewById<TextView>(R.id.slot_item_active_profile)
+        private val checkBox = root.requireViewById<CheckBox>(R.id.slot_checkbox)
 
-        fun bind(item: SlotInfo) {
+        private var curIdx = -1
+
+        init {
+            root.setOnClickListener(this::onSelect)
+            checkBox.setOnClickListener(this::onSelect)
+        }
+
+        @Suppress("UNUSED_PARAMETER")
+        fun onSelect(view: View) {
+            if (curIdx < 0) return
+            if (adapter.currentSelectedIdx == curIdx) return
+            val lastIdx = adapter.currentSelectedIdx
+            adapter.currentSelectedIdx = curIdx
+            adapter.notifyItemChanged(lastIdx)
+            adapter.notifyItemChanged(curIdx)
+        }
+
+        fun bind(item: SlotInfo, idx: Int) {
+            curIdx = idx
             title.text = root.context.getString(R.string.download_wizard_slot_title, item.logicalSlotId)
             eID.text = item.eID
             activeProfile.text = item.enabledProfileName ?: root.context.getString(R.string.unknown)
+            checkBox.isChecked = adapter.currentSelectedIdx == idx
         }
     }
 
     private class SlotInfoAdapter : RecyclerView.Adapter<SlotItemHolder>() {
         var slots: List<SlotInfo> = listOf()
+        var currentSelectedIdx = 0
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlotItemHolder {
             val root = LayoutInflater.from(parent.context).inflate(R.layout.download_slot_item, parent, false)
-            return SlotItemHolder(root)
+            return SlotItemHolder(this, root)
         }
 
         override fun getItemCount(): Int = slots.size
 
         override fun onBindViewHolder(holder: SlotItemHolder, position: Int) {
-            holder.bind(slots[position])
+            holder.bind(slots[position], position)
         }
     }
 }
