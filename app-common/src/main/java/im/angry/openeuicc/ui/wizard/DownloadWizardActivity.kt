@@ -15,6 +15,12 @@ import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 import im.angry.openeuicc.util.*
 
 class DownloadWizardActivity: BaseEuiccAccessActivity() {
+    data class DownloadWizardState(
+        var selectedLogicalSlot: Int
+    )
+
+    private lateinit var state: DownloadWizardState
+
     private lateinit var progressBar: ProgressBar
     private lateinit var nextButton: Button
     private lateinit var prevButton: Button
@@ -30,6 +36,10 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
                 // TODO: Actually implement this
             }
         })
+
+        state = DownloadWizardState(
+            intent.getIntExtra("selectedLogicalSlot", 0)
+        )
 
         progressBar = requireViewById(R.id.progress)
         nextButton = requireViewById(R.id.download_wizard_next)
@@ -89,10 +99,13 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     }
 
     abstract class DownloadWizardStepFragment : Fragment(), OpenEuiccContextMarker {
+        protected val state: DownloadWizardState
+            get() = (requireActivity() as DownloadWizardActivity).state
+
         abstract val hasNext: Boolean
         abstract val hasPrev: Boolean
-        abstract fun createNextFragment(): DownloadWizardStepFragment
-        abstract fun createPrevFragment(): DownloadWizardStepFragment
+        abstract fun createNextFragment(): DownloadWizardStepFragment?
+        abstract fun createPrevFragment(): DownloadWizardStepFragment?
 
         protected fun hideProgressBar() {
             (requireActivity() as DownloadWizardActivity).progressBar.visibility = View.GONE

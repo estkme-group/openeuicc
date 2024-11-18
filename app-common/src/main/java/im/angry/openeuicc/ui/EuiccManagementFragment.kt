@@ -109,7 +109,10 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         fab.setOnClickListener {
             lifecycleScope.launch {
                 if (preferenceRepository.experimentalDownloadWizardFlow.first()) {
-                    startActivity(Intent(requireContext(), DownloadWizardActivity::class.java))
+                    Intent(requireContext(), DownloadWizardActivity::class.java).apply {
+                        putExtra("selectedLogicalSlot", logicalSlotId)
+                        startActivity(this)
+                    }
                 } else {
                     ProfileDownloadFragment.newInstance(slotId, portId)
                         .show(childFragmentManager, ProfileDownloadFragment.TAG)

@@ -34,17 +34,15 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
     private val adapter = SlotInfoAdapter()
 
     override val hasNext: Boolean
-        get() = loaded
+        get() = loaded && adapter.slots.isNotEmpty()
     override val hasPrev: Boolean
-        get() = false
+        get() = true
 
-    override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment {
+    override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment? {
         TODO("Not yet implemented")
     }
 
-    override fun createPrevFragment(): DownloadWizardActivity.DownloadWizardStepFragment {
-        TODO("Not yet implemented")
-    }
+    override fun createPrevFragment(): DownloadWizardActivity.DownloadWizardStepFragment? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,13 +82,25 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             }
         }.toList()
         adapter.slots = slots
+
+        // Ensure we always have a selected slot by default
+        val selectedIdx = slots.indexOfFirst { it.logicalSlotId == state.selectedLogicalSlot }
+        adapter.currentSelectedIdx = if (selectedIdx > 0) {
+            selectedIdx
+        } else {
+            if (slots.isNotEmpty()) {
+                state.selectedLogicalSlot = slots[0].logicalSlotId
+            }
+            0
+        }
+
         adapter.notifyDataSetChanged()
         hideProgressBar()
         loaded = true
         refreshButtons()
     }
 
-    private class SlotItemHolder(val adapter: SlotInfoAdapter, val root: View) : ViewHolder(root) {
+    private inner class SlotItemHolder(val root: View) : ViewHolder(root) {
         private val title = root.requireViewById<TextView>(R.id.slot_item_title)
         private val type = root.requireViewById<TextView>(R.id.slot_item_type)
         private val eID = root.requireViewById<TextView>(R.id.slot_item_eid)
@@ -112,6 +122,8 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             adapter.currentSelectedIdx = curIdx
             adapter.notifyItemChanged(lastIdx)
             adapter.notifyItemChanged(curIdx)
+            // Selected index isn't logical slot ID directly, needs a conversion
+            state.selectedLogicalSlot = adapter.slots[adapter.currentSelectedIdx].logicalSlotId
         }
 
         fun bind(item: SlotInfo, idx: Int) {
@@ -135,13 +147,13 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         }
     }
 
-    private class SlotInfoAdapter : RecyclerView.Adapter<SlotItemHolder>() {
+    private inner class SlotInfoAdapter : RecyclerView.Adapter<SlotItemHolder>() {
         var slots: List<SlotInfo> = listOf()
-        var currentSelectedIdx = 0
+        var currentSelectedIdx = -1
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlotItemHolder {
             val root = LayoutInflater.from(parent.context).inflate(R.layout.download_slot_item, parent, false)
-            return SlotItemHolder(this, root)
+            return SlotItemHolder(root)
         }
 
         override fun getItemCount(): Int = slots.size
