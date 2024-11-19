@@ -33,7 +33,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         setContentView(R.layout.activity_download_wizard)
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // TODO: Actually implement this
+                // Make back == prev
+                onPrevPressed()
             }
         })
 
@@ -46,25 +47,11 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         prevButton = requireViewById(R.id.download_wizard_back)
 
         nextButton.setOnClickListener {
-            if (currentFragment?.hasNext == true) {
-                val nextFrag = currentFragment?.createNextFragment()
-                if (nextFrag == null) {
-                    finish()
-                } else {
-                    showFragment(nextFrag, R.anim.slide_in_right, R.anim.slide_out_left)
-                }
-            }
+            onNextPressed()
         }
 
         prevButton.setOnClickListener {
-            if (currentFragment?.hasPrev == true) {
-                val prevFrag = currentFragment?.createPrevFragment()
-                if (prevFrag == null) {
-                    finish()
-                } else {
-                    showFragment(prevFrag, R.anim.slide_in_left, R.anim.slide_out_right)
-                }
-            }
+            onPrevPressed()
         }
 
         val navigation = requireViewById<View>(R.id.download_wizard_navigation)
@@ -90,6 +77,28 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             )
             v.updatePadding(bars.left, bars.top, bars.right, 0)
             WindowInsetsCompat.CONSUMED
+        }
+    }
+
+    private fun onPrevPressed() {
+        if (currentFragment?.hasPrev == true) {
+            val prevFrag = currentFragment?.createPrevFragment()
+            if (prevFrag == null) {
+                finish()
+            } else {
+                showFragment(prevFrag, R.anim.slide_in_left, R.anim.slide_out_right)
+            }
+        }
+    }
+
+    private fun onNextPressed() {
+        if (currentFragment?.hasNext == true) {
+            val nextFrag = currentFragment?.createNextFragment()
+            if (nextFrag == null) {
+                finish()
+            } else {
+                showFragment(nextFrag, R.anim.slide_in_right, R.anim.slide_out_left)
+            }
         }
     }
 
