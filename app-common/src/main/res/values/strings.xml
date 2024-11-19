@@ -69,6 +69,7 @@
     <string name="download_wizard_slot_type_internal_port">Internal, port %d</string>
     <string name="download_wizard_slot_eid">eID:</string>
     <string name="download_wizard_slot_active_profile">Active Profile:</string>
+    <string name="download_wizard_slot_free_space">Free Space:</string>
 
     <string name="profile_rename_new_name">New nickname</string>
 

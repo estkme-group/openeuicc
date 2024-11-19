@@ -61,6 +61,20 @@
         android:layout_height="wrap_content"
         android:textSize="14sp" />
 
+    <TextView
+        android:id="@+id/slot_item_free_space_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="@string/download_wizard_slot_free_space"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/slot_item_free_space"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="14sp" />
+
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/flow1"
         android:layout_width="0dp"
@@ -68,7 +82,7 @@
         android:layout_marginStart="10sp"
         android:layout_marginTop="20sp"
         android:layout_marginEnd="10sp"
-        app:constraint_referenced_ids="slot_item_type_label,slot_item_type,slot_item_eid_label,slot_item_eid,slot_item_active_profile_label,slot_item_active_profile"
+        app:constraint_referenced_ids="slot_item_type_label,slot_item_type,slot_item_eid_label,slot_item_eid,slot_item_active_profile_label,slot_item_active_profile,slot_item_free_space_label,slot_item_free_space"
         app:flow_wrapMode="aligned"
         app:flow_horizontalAlign="start"
         app:flow_horizontalBias="1"

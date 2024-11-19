@@ -26,6 +26,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         val hasMultiplePorts: Boolean,
         val portId: Int,
         val eID: String,
+        val freeSpace: Int,
         val enabledProfileName: String?
     )
 
@@ -77,6 +78,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
                     channel.port.card.ports.size > 1,
                     channel.portId,
                     channel.lpa.eID,
+                    channel.lpa.euiccInfo2?.freeNvram ?: 0,
                     channel.lpa.profiles.find { it.state == LocalProfileInfo.State.Enabled }?.displayName
                 )
             }
@@ -105,6 +107,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         private val type = root.requireViewById<TextView>(R.id.slot_item_type)
         private val eID = root.requireViewById<TextView>(R.id.slot_item_eid)
         private val activeProfile = root.requireViewById<TextView>(R.id.slot_item_active_profile)
+        private val freeSpace = root.requireViewById<TextView>(R.id.slot_item_free_space)
         private val checkBox = root.requireViewById<CheckBox>(R.id.slot_checkbox)
 
         private var curIdx = -1
@@ -143,6 +146,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             title.text = root.context.getString(R.string.download_wizard_slot_title, item.logicalSlotId)
             eID.text = item.eID
             activeProfile.text = item.enabledProfileName ?: root.context.getString(R.string.unknown)
+            freeSpace.text = formatFreeSpace(item.freeSpace)
             checkBox.isChecked = adapter.currentSelectedIdx == idx
         }
     }
