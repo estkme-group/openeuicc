@@ -39,9 +39,8 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
     override val hasPrev: Boolean
         get() = true
 
-    override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment? {
-        TODO("Not yet implemented")
-    }
+    override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment =
+        DownloadWizardMethodSelectFragment()
 
     override fun createPrevFragment(): DownloadWizardActivity.DownloadWizardStepFragment? = null
 

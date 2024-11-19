@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="20dp"
+    android:background="?attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/download_method_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:tint="?attr/colorAccent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/download_method_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:textSize="15sp"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/download_method_icon"
+        app:layout_constraintEnd_toStartOf="@id/download_method_chevron"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constrainedWidth="true" />
+
+    <ImageView
+        android:id="@+id/download_method_chevron"
+        android:src="@drawable/ic_chevron_right"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:tint="?attr/colorAccent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

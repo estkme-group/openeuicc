@@ -70,6 +70,10 @@
     <string name="download_wizard_slot_eid">eID:</string>
     <string name="download_wizard_slot_active_profile">Active Profile:</string>
     <string name="download_wizard_slot_free_space">Free Space:</string>
+    <string name="download_wizard_method_select">How would you like to download the eSIM profile?</string>
+    <string name="download_wizard_method_qr_code">Scan a QR code with camera</string>
+    <string name="download_wizard_method_gallery">Load a QR code from gallery</string>
+    <string name="download_wizard_method_manual">Enter manually</string>
 
     <string name="profile_rename_new_name">New nickname</string>
 
