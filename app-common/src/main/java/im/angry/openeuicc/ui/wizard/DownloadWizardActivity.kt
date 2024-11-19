@@ -45,6 +45,28 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         nextButton = requireViewById(R.id.download_wizard_next)
         prevButton = requireViewById(R.id.download_wizard_back)
 
+        nextButton.setOnClickListener {
+            if (currentFragment?.hasNext == true) {
+                val nextFrag = currentFragment?.createNextFragment()
+                if (nextFrag == null) {
+                    finish()
+                } else {
+                    showFragment(nextFrag)
+                }
+            }
+        }
+
+        prevButton.setOnClickListener {
+            if (currentFragment?.hasPrev == true) {
+                val prevFrag = currentFragment?.createPrevFragment()
+                if (prevFrag == null) {
+                    finish()
+                } else {
+                    showFragment(prevFrag)
+                }
+            }
+        }
+
         val navigation = requireViewById<View>(R.id.download_wizard_navigation)
         val origHeight = navigation.layoutParams.height
 
