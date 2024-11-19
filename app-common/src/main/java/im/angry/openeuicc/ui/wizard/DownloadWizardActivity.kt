@@ -143,6 +143,15 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         abstract fun createNextFragment(): DownloadWizardStepFragment?
         abstract fun createPrevFragment(): DownloadWizardStepFragment?
 
+        protected fun gotoNextFragment(next: DownloadWizardStepFragment? = null) {
+            val realNext = next ?: createNextFragment()
+            (requireActivity() as DownloadWizardActivity).showFragment(
+                realNext!!,
+                R.anim.slide_in_right,
+                R.anim.slide_out_left
+            )
+        }
+
         protected fun hideProgressBar() {
             (requireActivity() as DownloadWizardActivity).progressBar.visibility = View.GONE
         }

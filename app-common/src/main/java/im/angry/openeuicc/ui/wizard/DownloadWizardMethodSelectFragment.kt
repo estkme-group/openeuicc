@@ -27,7 +27,7 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
 
         },
         DownloadMethod(R.drawable.ic_edit, R.string.download_wizard_method_manual) {
-
+            gotoNextFragment(DownloadWizardDetailsFragment())
         }
     )
 
