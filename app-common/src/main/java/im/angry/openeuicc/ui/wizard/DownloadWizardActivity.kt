@@ -51,7 +51,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
                 if (nextFrag == null) {
                     finish()
                 } else {
-                    showFragment(nextFrag)
+                    showFragment(nextFrag, R.anim.slide_in_right, R.anim.slide_out_left)
                 }
             }
         }
@@ -62,7 +62,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
                 if (prevFrag == null) {
                     finish()
                 } else {
-                    showFragment(prevFrag)
+                    showFragment(prevFrag, R.anim.slide_in_left, R.anim.slide_out_right)
                 }
             }
         }
@@ -98,9 +98,14 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         showFragment(DownloadWizardSlotSelectFragment())
     }
 
-    private fun showFragment(nextFrag: DownloadWizardStepFragment) {
+    private fun showFragment(
+        nextFrag: DownloadWizardStepFragment,
+        enterAnim: Int = 0,
+        exitAnim: Int = 0
+    ) {
         currentFragment = nextFrag
-        supportFragmentManager.beginTransaction().replace(R.id.step_fragment_container, nextFrag)
+        supportFragmentManager.beginTransaction().setCustomAnimations(enterAnim, exitAnim)
+            .replace(R.id.step_fragment_container, nextFrag)
             .commit()
         refreshButtons()
     }
