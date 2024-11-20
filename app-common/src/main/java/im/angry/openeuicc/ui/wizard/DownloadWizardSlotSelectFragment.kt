@@ -87,7 +87,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
                     channel.lpa.profiles.find { it.state == LocalProfileInfo.State.Enabled }?.displayName
                 )
             }
-        }.toList()
+        }.toList().sortedBy { it.logicalSlotId }
         adapter.slots = slots
 
         // Ensure we always have a selected slot by default
