@@ -16,7 +16,11 @@ import im.angry.openeuicc.util.*
 
 class DownloadWizardActivity: BaseEuiccAccessActivity() {
     data class DownloadWizardState(
-        var selectedLogicalSlot: Int
+        var selectedLogicalSlot: Int,
+        var smdp: String,
+        var matchingId: String,
+        var confirmationCode: String,
+        var imei: String,
     )
 
     private lateinit var state: DownloadWizardState
@@ -39,7 +43,11 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         })
 
         state = DownloadWizardState(
-            intent.getIntExtra("selectedLogicalSlot", 0)
+            intent.getIntExtra("selectedLogicalSlot", 0),
+            "",
+            "",
+            "",
+            ""
         )
 
         progressBar = requireViewById(R.id.progress)

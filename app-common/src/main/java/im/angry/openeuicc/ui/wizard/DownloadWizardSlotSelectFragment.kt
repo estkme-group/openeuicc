@@ -27,6 +27,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         val portId: Int,
         val eID: String,
         val freeSpace: Int,
+        val imei: String,
         val enabledProfileName: String?
     )
 
@@ -65,7 +66,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("NotifyDataSetChanged", "MissingPermission")
     private suspend fun init() {
         ensureEuiccChannelManager()
         showProgressBar(-1)
@@ -78,6 +79,11 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
                     channel.portId,
                     channel.lpa.eID,
                     channel.lpa.euiccInfo2?.freeNvram ?: 0,
+                    try {
+                        telephonyManager.getImei(channel.logicalSlotId) ?: ""
+                    } catch (e: Exception) {
+                        ""
+                    },
                     channel.lpa.profiles.find { it.state == LocalProfileInfo.State.Enabled }?.displayName
                 )
             }
@@ -93,6 +99,10 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
                 state.selectedLogicalSlot = slots[0].logicalSlotId
             }
             0
+        }
+
+        if (slots.isNotEmpty()) {
+            state.imei = slots[adapter.currentSelectedIdx].imei
         }
 
         adapter.notifyDataSetChanged()
@@ -126,6 +136,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             adapter.notifyItemChanged(curIdx)
             // Selected index isn't logical slot ID directly, needs a conversion
             state.selectedLogicalSlot = adapter.slots[adapter.currentSelectedIdx].logicalSlotId
+            state.imei = adapter.slots[adapter.currentSelectedIdx].imei
         }
 
         fun bind(item: SlotInfo, idx: Int) {
