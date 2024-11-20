@@ -16,6 +16,7 @@ import im.angry.openeuicc.util.*
 
 class DownloadWizardActivity: BaseEuiccAccessActivity() {
     data class DownloadWizardState(
+        var currentStepFragmentClassName: String?,
         var selectedLogicalSlot: Int,
         var smdp: String,
         var matchingId: String,
@@ -30,6 +31,12 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     private lateinit var prevButton: Button
 
     private var currentFragment: DownloadWizardStepFragment? = null
+        set(value) {
+            if (this::state.isInitialized) {
+                state.currentStepFragmentClassName = value?.javaClass?.name
+            }
+            field = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -43,6 +50,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         })
 
         state = DownloadWizardState(
+            null,
             intent.getIntExtra("selectedLogicalSlot", 0),
             "",
             "",
@@ -88,6 +96,29 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("currentStepFragmentClassName", state.currentStepFragmentClassName)
+        outState.putInt("selectedLogicalSlot", state.selectedLogicalSlot)
+        outState.putString("smdp", state.smdp)
+        outState.putString("matchingId", state.matchingId)
+        outState.putString("confirmationCode", state.confirmationCode)
+        outState.putString("imei", state.imei)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        state.currentStepFragmentClassName = savedInstanceState.getString(
+            "currentStepFragmentClassName",
+            state.currentStepFragmentClassName
+        )
+        state.selectedLogicalSlot =
+            savedInstanceState.getInt("selectedLogicalSlot", state.selectedLogicalSlot)
+        state.smdp = savedInstanceState.getString("smdp", state.smdp)
+        state.matchingId = savedInstanceState.getString("matchingId", state.matchingId)
+        state.imei = savedInstanceState.getString("imei", state.imei)
+    }
+
     private fun onPrevPressed() {
         if (currentFragment?.hasPrev == true) {
             val prevFrag = currentFragment?.createPrevFragment()
@@ -112,7 +143,13 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
 
     override fun onInit() {
         progressBar.visibility = View.GONE
-        showFragment(DownloadWizardSlotSelectFragment())
+
+        if (state.currentStepFragmentClassName != null) {
+            val clazz = Class.forName(state.currentStepFragmentClassName!!)
+            showFragment(clazz.getDeclaredConstructor().newInstance() as DownloadWizardStepFragment)
+        } else {
+            showFragment(DownloadWizardSlotSelectFragment())
+        }
     }
 
     private fun showFragment(
