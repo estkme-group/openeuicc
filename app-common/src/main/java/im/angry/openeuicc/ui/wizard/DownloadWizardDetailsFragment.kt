@@ -24,9 +24,10 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
 
     override fun beforeNext() {
         state.smdp = smdp.editText!!.text.toString().trim()
-        state.matchingId = matchingId.editText!!.text.toString().trim()
-        state.confirmationCode = confirmationCode.editText!!.text.toString().trim()
-        state.imei = imei.editText!!.text.toString()
+        // Treat empty inputs as null -- this is important for the download step
+        state.matchingId = matchingId.editText!!.text.toString().trim().ifBlank { null }
+        state.confirmationCode = confirmationCode.editText!!.text.toString().trim().ifBlank { null }
+        state.imei = imei.editText!!.text.toString().ifBlank { null }
     }
 
     override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment =

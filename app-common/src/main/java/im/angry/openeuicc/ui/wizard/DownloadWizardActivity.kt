@@ -19,9 +19,9 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         var currentStepFragmentClassName: String?,
         var selectedLogicalSlot: Int,
         var smdp: String,
-        var matchingId: String,
-        var confirmationCode: String,
-        var imei: String,
+        var matchingId: String?,
+        var confirmationCode: String?,
+        var imei: String?,
     )
 
     private lateinit var state: DownloadWizardState
@@ -53,9 +53,9 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             null,
             intent.getIntExtra("selectedLogicalSlot", 0),
             "",
-            "",
-            "",
-            ""
+            null,
+            null,
+            null
         )
 
         progressBar = requireViewById(R.id.progress)
