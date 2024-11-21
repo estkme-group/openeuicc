@@ -132,6 +132,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
 
     private fun onNextPressed() {
         if (currentFragment?.hasNext == true) {
+            currentFragment?.beforeNext()
             val nextFrag = currentFragment?.createNextFragment()
             if (nextFrag == null) {
                 finish()
@@ -216,5 +217,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         protected fun refreshButtons() {
             (requireActivity() as DownloadWizardActivity).refreshButtons()
         }
+
+        open fun beforeNext() {}
     }
 }

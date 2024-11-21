@@ -22,9 +22,15 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
     private lateinit var confirmationCode: TextInputLayout
     private lateinit var imei: TextInputLayout
 
-    override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment? {
-        TODO("Not yet implemented")
+    override fun beforeNext() {
+        state.smdp = smdp.editText!!.text.toString().trim()
+        state.matchingId = matchingId.editText!!.text.toString().trim()
+        state.confirmationCode = confirmationCode.editText!!.text.toString().trim()
+        state.imei = imei.editText!!.text.toString()
     }
+
+    override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment =
+        DownloadWizardProgressFragment()
 
     override fun createPrevFragment(): DownloadWizardActivity.DownloadWizardStepFragment =
         DownloadWizardMethodSelectFragment()
