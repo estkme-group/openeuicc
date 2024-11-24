@@ -22,6 +22,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         var matchingId: String?,
         var confirmationCode: String?,
         var imei: String?,
+        var downloadStarted: Boolean,
+        var downloadTaskID: Long,
     )
 
     private lateinit var state: DownloadWizardState
@@ -55,7 +57,9 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             "",
             null,
             null,
-            null
+            null,
+            false,
+            -1
         )
 
         progressBar = requireViewById(R.id.progress)
@@ -104,6 +108,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         outState.putString("matchingId", state.matchingId)
         outState.putString("confirmationCode", state.confirmationCode)
         outState.putString("imei", state.imei)
+        outState.putBoolean("downloadStarted", state.downloadStarted)
+        outState.putLong("downloadTaskID", state.downloadTaskID)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -117,6 +123,9 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         state.smdp = savedInstanceState.getString("smdp", state.smdp)
         state.matchingId = savedInstanceState.getString("matchingId", state.matchingId)
         state.imei = savedInstanceState.getString("imei", state.imei)
+        state.downloadStarted =
+            savedInstanceState.getBoolean("downloadStarted", state.downloadStarted)
+        state.downloadTaskID = savedInstanceState.getLong("downloadTaskID", state.downloadTaskID)
     }
 
     private fun onPrevPressed() {

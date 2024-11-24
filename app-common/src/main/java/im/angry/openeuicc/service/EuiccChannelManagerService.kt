@@ -197,6 +197,14 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     }
 
     /**
+     * Recover the subscriber to a foreground task that is recently launched.
+     *
+     * null if the task doesn't exist, or was launched too long ago.
+     */
+    fun recoverForegroundTaskSubscriber(taskId: Long): ForegroundTaskSubscriberFlow? =
+        foregroundTaskSubscribers[taskId]
+
+    /**
      * Launch a potentially blocking foreground task in this service's lifecycle context.
      * This function does not block, but returns a Flow that emits ForegroundTaskState
      * updates associated with this task. The last update the returned flow will emit is

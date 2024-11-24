@@ -7,12 +7,32 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.service.EuiccChannelManagerService
+import im.angry.openeuicc.util.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
+    companion object {
+        /**
+         * An array of LPA-side state types, mapping 1:1 to progressItems
+         */
+        val LPA_PROGRESS_STATES = arrayOf(
+            ProfileDownloadCallback.DownloadState.Preparing,
+            ProfileDownloadCallback.DownloadState.Connecting,
+            ProfileDownloadCallback.DownloadState.Authenticating,
+            ProfileDownloadCallback.DownloadState.Downloading,
+            ProfileDownloadCallback.DownloadState.Finalizing,
+        )
+    }
+
     private enum class ProgressState {
         NotStarted,
         InProgress,
@@ -22,7 +42,7 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
 
     private data class ProgressItem(
         val titleRes: Int,
-        val state: ProgressState
+        var state: ProgressState
     )
 
     private val progressItems = arrayOf(
@@ -38,8 +58,10 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
 
     private val adapter = ProgressItemAdapter()
 
+    private var isDone = false
+
     override val hasNext: Boolean
-        get() = false
+        get() = isDone
     override val hasPrev: Boolean
         get() = false
 
@@ -64,6 +86,97 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
             )
         )
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        lifecycleScope.launch {
+            showProgressBar(-1) // set indeterminate first
+            ensureEuiccChannelManager()
+
+            val subscriber = startDownloadOrSubscribe()
+
+            if (subscriber == null) {
+                requireActivity().finish()
+                return@launch
+            }
+
+            subscriber.onEach {
+                when (it) {
+                    is EuiccChannelManagerService.ForegroundTaskState.Done -> {
+                        hideProgressBar()
+
+                        // Change the state of the last InProgress item to Error
+                        progressItems.forEachIndexed { index, progressItem ->
+                            if (progressItem.state == ProgressState.InProgress) {
+                                progressItem.state = ProgressState.Error
+                            }
+
+                            adapter.notifyItemChanged(index)
+                        }
+
+                        isDone = true
+                        refreshButtons()
+                    }
+
+                    is EuiccChannelManagerService.ForegroundTaskState.InProgress -> {
+                        updateProgress(it.progress)
+                    }
+
+                    else -> {}
+                }
+            }.collect()
+        }
+    }
+
+    private suspend fun startDownloadOrSubscribe(): EuiccChannelManagerService.ForegroundTaskSubscriberFlow? =
+        if (state.downloadStarted) {
+            // This will also return null if task ID is -1 (uninitialized), too
+            euiccChannelManagerService.recoverForegroundTaskSubscriber(state.downloadTaskID)
+        } else {
+            euiccChannelManagerService.waitForForegroundTask()
+
+            val (slotId, portId) = euiccChannelManager.withEuiccChannel(state.selectedLogicalSlot) { channel ->
+                Pair(channel.slotId, channel.portId)
+            }
+
+            // Set started to true even before we start -- in case we get killed in the middle
+            state.downloadStarted = true
+
+            val ret = euiccChannelManagerService.launchProfileDownloadTask(
+                slotId,
+                portId,
+                state.smdp,
+                state.matchingId,
+                state.confirmationCode,
+                state.imei
+            )
+
+            state.downloadTaskID = ret.taskId
+
+            ret
+        }
+
+    private fun updateProgress(progress: Int) {
+        showProgressBar(progress)
+
+        val lpaState = ProfileDownloadCallback.lookupStateFromProgress(progress)
+        val stateIndex = LPA_PROGRESS_STATES.indexOf(lpaState)
+
+        if (stateIndex > 0) {
+            for (i in (0..<stateIndex)) {
+                if (progressItems[i].state != ProgressState.Done) {
+                    progressItems[i].state = ProgressState.Done
+                    adapter.notifyItemChanged(i)
+                }
+            }
+        }
+
+        if (progressItems[stateIndex].state != ProgressState.InProgress) {
+            progressItems[stateIndex].state = ProgressState.InProgress
+            adapter.notifyItemChanged(stateIndex)
+        }
     }
 
     private inner class ProgressItemHolder(val root: View) : RecyclerView.ViewHolder(root) {
