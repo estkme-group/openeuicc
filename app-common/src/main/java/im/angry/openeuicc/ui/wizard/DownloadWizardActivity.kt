@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.service.EuiccChannelManagerService
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 import im.angry.openeuicc.util.*
 
@@ -24,6 +25,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         var imei: String?,
         var downloadStarted: Boolean,
         var downloadTaskID: Long,
+        var downloadError: EuiccChannelManagerService.ProfileDownloadException?,
     )
 
     private lateinit var state: DownloadWizardState
@@ -59,7 +61,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             null,
             null,
             false,
-            -1
+            -1,
+            null
         )
 
         progressBar = requireViewById(R.id.progress)

@@ -65,7 +65,12 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
     override val hasPrev: Boolean
         get() = false
 
-    override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment? = null
+    override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment? =
+        if (state.downloadError != null) {
+            DownloadWizardDiagnosticsFragment()
+        } else {
+            null
+        }
 
     override fun createPrevFragment(): DownloadWizardActivity.DownloadWizardStepFragment? = null
 
@@ -115,6 +120,9 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
 
                             adapter.notifyItemChanged(index)
                         }
+
+                        state.downloadError =
+                            it.error as? EuiccChannelManagerService.ProfileDownloadException
 
                         isDone = true
                         refreshButtons()

@@ -1,6 +1,7 @@
 package im.angry.openeuicc.core
 
 import net.typeblog.lpac_jni.EuiccInfo2
+import net.typeblog.lpac_jni.HttpInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
 import net.typeblog.lpac_jni.LocalProfileNotification
@@ -18,6 +19,9 @@ class LocalProfileAssistantWrapper(orig: LocalProfileAssistant) :
 
             return _inner!!
         }
+
+    override val lastHttpResponse: HttpInterface.HttpResponse?
+        get() = lpa.lastHttpResponse
 
     override val valid: Boolean
         get() = lpa.valid
