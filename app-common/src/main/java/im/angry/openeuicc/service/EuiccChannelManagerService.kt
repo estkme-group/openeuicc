@@ -100,6 +100,25 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     private val foregroundTaskState: MutableStateFlow<ForegroundTaskState> =
         MutableStateFlow(ForegroundTaskState.Idle)
 
+    /**
+     * A simple wrapper over a flow with taskId added.
+     *
+     * taskID is the exact millisecond-precision timestamp when the task is launched.
+     */
+    class ForegroundTaskSubscriberFlow(val taskId: Long, inner: Flow<ForegroundTaskState>) :
+        Flow<ForegroundTaskState> by inner
+
+    /**
+     * A cache of subscribers to 5 recently-launched foreground tasks, identified by ID
+     *
+     * Only one can be run at the same time, but those that are done will be kept in this
+     * map for a little while -- because UI components may be stopped and recreated while
+     * tasks are running. Having this buffer allows the components to re-subscribe even if
+     * the task completes while they are being recreated.
+     */
+    private val foregroundTaskSubscribers: MutableMap<Long, ForegroundTaskSubscriberFlow> =
+        mutableMapOf()
+
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         return LocalBinder()
@@ -196,7 +215,9 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         failureTitle: String,
         iconRes: Int,
         task: suspend EuiccChannelManagerService.() -> Unit
-    ): Flow<ForegroundTaskState> {
+    ): ForegroundTaskSubscriberFlow {
+        val taskID = System.currentTimeMillis()
+
         // Atomically set the state to InProgress. If this returns true, we are
         // the only task currently in progress.
         if (!foregroundTaskState.compareAndSet(
@@ -204,7 +225,9 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                 ForegroundTaskState.InProgress(0)
             )
         ) {
-            return flow { emit(ForegroundTaskState.Done(IllegalStateException("There are tasks currently running"))) }
+            return ForegroundTaskSubscriberFlow(
+                taskID,
+                flow { emit(ForegroundTaskState.Done(IllegalStateException("There are tasks currently running"))) })
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
@@ -281,7 +304,18 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             // even if the returned flow isn't subscribed to
             .buffer(capacity = 2, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-        return subscriberFlow
+        val ret = ForegroundTaskSubscriberFlow(taskID, subscriberFlow)
+        foregroundTaskSubscribers[taskID] = ret
+
+        if (foregroundTaskSubscribers.size > 5) {
+            // Remove enough elements so that the size is kept at 5
+            for (key in foregroundTaskSubscribers.keys.sorted()
+                .take(foregroundTaskSubscribers.size - 5)) {
+                foregroundTaskSubscribers.remove(key)
+            }
+        }
+
+        return ret
     }
 
     val isForegroundTaskRunning: Boolean
@@ -299,7 +333,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         matchingId: String?,
         confirmationCode: String?,
         imei: String?
-    ): Flow<ForegroundTaskState> =
+    ): ForegroundTaskSubscriberFlow =
         launchForegroundTask(
             getString(R.string.task_profile_download),
             getString(R.string.task_profile_download_failure),
@@ -335,7 +369,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         portId: Int,
         iccid: String,
         name: String
-    ): Flow<ForegroundTaskState> =
+    ): ForegroundTaskSubscriberFlow =
         launchForegroundTask(
             getString(R.string.task_profile_rename),
             getString(R.string.task_profile_rename_failure),
@@ -357,7 +391,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         slotId: Int,
         portId: Int,
         iccid: String
-    ): Flow<ForegroundTaskState> =
+    ): ForegroundTaskSubscriberFlow =
         launchForegroundTask(
             getString(R.string.task_profile_delete),
             getString(R.string.task_profile_delete_failure),
@@ -380,7 +414,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         iccid: String,
         enable: Boolean, // Enable or disable the profile indicated in iccid
         reconnectTimeoutMillis: Long = 0 // 0 = do not wait for reconnect, useful for USB readers
-    ): Flow<ForegroundTaskState> =
+    ): ForegroundTaskSubscriberFlow =
         launchForegroundTask(
             getString(R.string.task_profile_switch),
             getString(R.string.task_profile_switch_failure),
