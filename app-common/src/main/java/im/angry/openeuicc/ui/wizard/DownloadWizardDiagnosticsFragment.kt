@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.util.*
 
 class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
     override val hasNext: Boolean
@@ -59,7 +60,15 @@ class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardS
 
             ret.appendLine(getString(R.string.download_wizard_diagnostics_last_http_response))
             ret.appendLine()
-            ret.appendLine(resp.data.decodeToString(throwOnInvalidSequence = false))
+
+            val str = resp.data.decodeToString(throwOnInvalidSequence = false)
+            ret.appendLine(
+                if (str.startsWith('{')) {
+                    str.prettyPrintJson()
+                } else {
+                    str
+                }
+            )
         }
 
         ret.toString()
