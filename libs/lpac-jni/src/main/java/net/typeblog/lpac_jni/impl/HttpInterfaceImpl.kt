@@ -23,6 +23,8 @@ class HttpInterfaceImpl(
 
     private lateinit var trustManagers: Array<TrustManager>
 
+    override var lastHttpResponse: HttpInterface.HttpResponse? = null
+
     override fun transmit(
         url: String,
         tx: ByteArray,
@@ -73,7 +75,9 @@ class HttpInterfaceImpl(
                 }
             }
 
-            return HttpInterface.HttpResponse(conn.responseCode, bytes)
+            return HttpInterface.HttpResponse(conn.responseCode, bytes).also {
+                lastHttpResponse = it
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             throw e

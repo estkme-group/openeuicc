@@ -1,5 +1,7 @@
 package net.typeblog.lpac_jni
 
+import net.typeblog.lpac_jni.HttpInterface.HttpResponse
+
 interface LocalProfileAssistant {
     val valid: Boolean
     val profiles: List<LocalProfileInfo>
@@ -7,6 +9,7 @@ interface LocalProfileAssistant {
     val eID: String
     // Extended EuiccInfo for use with LUIs, containing information such as firmware version
     val euiccInfo2: EuiccInfo2?
+    val lastHttpResponse: HttpResponse?
 
     /**
      * Set the max segment size (mss) for all es10x commands. This can help with removable

@@ -12,7 +12,7 @@ import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
     private val apduInterface: ApduInterface,
-    httpInterface: HttpInterface
+    private val httpInterface: HttpInterface
 ): LocalProfileAssistant {
     companion object {
         private const val TAG = "LocalProfileAssistantImpl"
@@ -33,6 +33,9 @@ class LocalProfileAssistantImpl(
     override fun setEs10xMss(mss: Byte) {
         LpacJni.euiccSetMss(contextHandle, mss)
     }
+
+    override val lastHttpResponse: HttpInterface.HttpResponse?
+        get() = httpInterface.lastHttpResponse
 
     override val valid: Boolean
         get() = !finalized && apduInterface.valid && try {

@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
+import net.typeblog.lpac_jni.HttpInterface
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 /**
@@ -370,6 +371,10 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             .collect()
     }
 
+    data class ProfileDownloadException(
+        val lastHttpResponse: HttpInterface.HttpResponse?
+    ) : Exception("Failed to download profile")
+
     fun launchProfileDownloadTask(
         slotId: Int,
         portId: Int,
@@ -384,8 +389,8 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             R.drawable.ic_task_sim_card_download
         ) {
             euiccChannelManager.beginTrackedOperation(slotId, portId) {
-                val res = euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
-                    channel.lpa.downloadProfile(
+                euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+                    val res = channel.lpa.downloadProfile(
                         smdp,
                         matchingId,
                         imei,
@@ -397,11 +402,12 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                                     ForegroundTaskState.InProgress(state.progress)
                             }
                         })
-                }
 
-                if (!res) {
-                    // TODO: Provide more details on the error
-                    throw RuntimeException("Failed to download profile; this is typically caused by another error happened before.")
+                    if (!res) {
+                        throw ProfileDownloadException(
+                            channel.lpa.lastHttpResponse
+                        )
+                    }
                 }
 
                 preferenceRepository.notificationDownloadFlow.first()
