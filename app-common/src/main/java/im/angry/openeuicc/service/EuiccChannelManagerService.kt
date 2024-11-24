@@ -15,10 +15,12 @@ import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -249,29 +251,37 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         // Then, we complete the returned flow, but we also set the state back to Idle.
         // The state update back to Idle won't show up in the returned stream, because
         // it has been completed by that point.
-        return foregroundTaskState.transformWhile {
-            // Also update our notification when we see an update
-            // But ignore the first progress = 0 update -- that is the current value.
-            // we need that to be handled by the main coroutine after it finishes.
-            if (it !is ForegroundTaskState.InProgress || it.progress != 0) {
-                withContext(Dispatchers.Main) {
-                    updateForegroundNotification(title, iconRes)
+        val subscriberFlow = foregroundTaskState
+            .transformWhile {
+                // Also update our notification when we see an update
+                // But ignore the first progress = 0 update -- that is the current value.
+                // we need that to be handled by the main coroutine after it finishes.
+                if (it !is ForegroundTaskState.InProgress || it.progress != 0) {
+                    withContext(Dispatchers.Main) {
+                        updateForegroundNotification(title, iconRes)
+                    }
                 }
-            }
-            emit(it)
-            it !is ForegroundTaskState.Done
-        }.onStart {
-            // When this Flow is started, we unblock the coroutine launched above by
-            // self-starting as a foreground service.
-            withContext(Dispatchers.Main) {
-                startForegroundService(
-                    Intent(
-                        this@EuiccChannelManagerService,
-                        this@EuiccChannelManagerService::class.java
+                emit(it)
+                it !is ForegroundTaskState.Done
+            }.onStart {
+                // When this Flow is started, we unblock the coroutine launched above by
+                // self-starting as a foreground service.
+                withContext(Dispatchers.Main) {
+                    startForegroundService(
+                        Intent(
+                            this@EuiccChannelManagerService,
+                            this@EuiccChannelManagerService::class.java
+                        )
                     )
-                )
-            }
-        }.onCompletion { foregroundTaskState.value = ForegroundTaskState.Idle }
+                }
+            }.onCompletion { foregroundTaskState.value = ForegroundTaskState.Idle }
+            // Buffer the returned flow by 2, so that if there is an error,
+            // we always get a copy of the last process update before completion.
+            // This also guarantees that our onCompletion callback is always run
+            // even if the returned flow isn't subscribed to
+            .buffer(capacity = 2, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+        return subscriberFlow
     }
 
     val isForegroundTaskRunning: Boolean
