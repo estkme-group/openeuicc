@@ -81,6 +81,11 @@ fun String.prettyPrintJson(): String {
                 inQuotes = !inQuotes
             }
 
+            !inQuotes && c == ' ' -> {
+                // Do nothing -- we ignore spaces outside of quotes by default
+                // This is to ensure predictable formatting
+            }
+
             else -> ret.append(c)
         }
 
