@@ -68,6 +68,18 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
          */
         suspend fun Flow<ForegroundTaskState>.waitDone(): Throwable? =
             (this.last() as ForegroundTaskState.Done).error
+
+        /**
+         * Apply transform to a ForegroundTaskState flow so that it completes when a Done is seen.
+         *
+         * This must be applied each time a flow is returned for subscription purposes. If applied
+         * beforehand, we lose the ability to subscribe multiple times.
+         */
+        private fun Flow<ForegroundTaskState>.applyCompletionTransform() =
+            transformWhile {
+                emit(it)
+                it !is ForegroundTaskState.Done
+            }
     }
 
     inner class LocalBinder : Binder() {
@@ -196,18 +208,6 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             .build()
         NotificationManagerCompat.from(this).notify(TASK_FAILURE_ID, notification)
     }
-
-    /**
-     * Apply transform to a ForegroundTaskState flow so that it completes when a Done is seen.
-     *
-     * This must be applied each time a flow is returned for subscription purposes. If applied
-     * beforehand, we lose the ability to subscribe multiple times.
-     */
-    private fun Flow<ForegroundTaskState>.applyCompletionTransform() =
-        transformWhile {
-            emit(it)
-            it !is ForegroundTaskState.Done
-        }
 
     /**
      * Recover the subscriber to a foreground task that is recently launched.
