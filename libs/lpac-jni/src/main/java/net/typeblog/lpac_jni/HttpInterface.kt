@@ -35,6 +35,11 @@ interface HttpInterface {
      */
     val lastHttpResponse: HttpResponse?
 
+    /**
+     * The last exception that has been thrown during a HTTP connection
+     */
+    val lastHttpException: Exception?
+
     fun transmit(url: String, tx: ByteArray, headers: Array<String>): HttpResponse
     // The LPA is supposed to pass in a list of pkIds supported by the eUICC.
     // HttpInterface is responsible for providing TrustManager implementations that

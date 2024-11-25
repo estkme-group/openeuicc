@@ -24,6 +24,7 @@ class HttpInterfaceImpl(
     private lateinit var trustManagers: Array<TrustManager>
 
     override var lastHttpResponse: HttpInterface.HttpResponse? = null
+    override var lastHttpException: Exception? = null
 
     override fun transmit(
         url: String,
@@ -80,6 +81,11 @@ class HttpInterfaceImpl(
             }
         } catch (e: Exception) {
             e.printStackTrace()
+
+            // Reset response to null because there's no response here
+            lastHttpResponse = null
+            lastHttpException = e
+
             throw e
         }
     }

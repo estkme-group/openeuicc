@@ -4,7 +4,8 @@ import net.typeblog.lpac_jni.HttpInterface.HttpResponse
 
 interface LocalProfileAssistant {
     data class ProfileDownloadException(
-        val lastHttpResponse: HttpResponse?
+        val lastHttpResponse: HttpResponse?,
+        val lastHttpException: Exception?,
     ) : Exception("Failed to download profile")
 
     val valid: Boolean

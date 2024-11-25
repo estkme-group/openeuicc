@@ -69,6 +69,16 @@ class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardS
                     str
                 }
             )
+
+            ret.appendLine()
+        }
+
+        err.lastHttpException?.let { e ->
+            ret.appendLine(getString(R.string.download_wizard_diagnostics_last_http_exception))
+            ret.appendLine()
+            ret.appendLine("${e.javaClass.name}: ${e.message}")
+            ret.appendLine(e.stackTrace.joinToString("\n"))
+            ret.appendLine()
         }
 
         ret.toString()

@@ -155,7 +155,10 @@ class LocalProfileAssistantImpl(
         )
 
         if (res != 0) {
-            throw LocalProfileAssistant.ProfileDownloadException(httpInterface.lastHttpResponse)
+            throw LocalProfileAssistant.ProfileDownloadException(
+                httpInterface.lastHttpResponse,
+                httpInterface.lastHttpException
+            )
         }
     }
 

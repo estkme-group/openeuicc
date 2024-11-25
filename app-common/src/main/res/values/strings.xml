@@ -84,6 +84,7 @@
     <string name="download_wizard_diagnostics">Error diagnostics</string>
     <string name="download_wizard_diagnostics_last_http_status">Last HTTP status: %d</string>
     <string name="download_wizard_diagnostics_last_http_response">Last HTTP response:</string>
+    <string name="download_wizard_diagnostics_last_http_exception">Last HTTP exception:</string>
 
     <string name="profile_rename_new_name">New nickname</string>
 
