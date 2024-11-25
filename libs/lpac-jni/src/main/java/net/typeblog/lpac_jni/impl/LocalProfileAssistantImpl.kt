@@ -5,6 +5,7 @@ import net.typeblog.lpac_jni.LpacJni
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.EuiccInfo2
 import net.typeblog.lpac_jni.HttpInterface
+import net.typeblog.lpac_jni.HttpInterface.HttpResponse
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
 import net.typeblog.lpac_jni.LocalProfileNotification
@@ -12,7 +13,7 @@ import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
     rawApduInterface: ApduInterface,
-    private val httpInterface: HttpInterface
+    rawHttpInterface: HttpInterface
 ): LocalProfileAssistant {
     companion object {
         private const val TAG = "LocalProfileAssistantImpl"
@@ -38,7 +39,39 @@ class LocalProfileAssistantImpl(
             }
     }
 
+    /**
+     * Same for HTTP for diagnostics
+     */
+    private class HttpInterfaceWrapper(val httpInterface: HttpInterface) :
+        HttpInterface by httpInterface {
+        /**
+         * The last HTTP response we have received from the SM-DP+ server.
+         *
+         * This is intended for error diagnosis. However, note that most SM-DP+ servers
+         * respond with 200 even when there is an error. This needs to be taken into
+         * account when designing UI.
+         */
+        var lastHttpResponse: HttpResponse? = null
+
+        /**
+         * The last exception that has been thrown during a HTTP connection
+         */
+        var lastHttpException: Exception? = null
+
+        override fun transmit(url: String, tx: ByteArray, headers: Array<String>): HttpResponse =
+            try {
+                httpInterface.transmit(url, tx, headers).also {
+                    lastHttpResponse = it
+                }
+            } catch (e: Exception) {
+                lastHttpResponse = null
+                lastHttpException = e
+                throw e
+            }
+    }
+
     private val apduInterface = ApduInterfaceWrapper(rawApduInterface)
+    private val httpInterface = HttpInterfaceWrapper(rawHttpInterface)
 
     private var finalized = false
     private var contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)

@@ -26,20 +26,6 @@ interface HttpInterface {
         }
     }
 
-    /**
-     * The last HTTP response we have received from the SM-DP+ server.
-     *
-     * This is intended for error diagnosis. However, note that most SM-DP+ servers
-     * respond with 200 even when there is an error. This needs to be taken into
-     * account when designing UI.
-     */
-    val lastHttpResponse: HttpResponse?
-
-    /**
-     * The last exception that has been thrown during a HTTP connection
-     */
-    val lastHttpException: Exception?
-
     fun transmit(url: String, tx: ByteArray, headers: Array<String>): HttpResponse
     // The LPA is supposed to pass in a list of pkIds supported by the eUICC.
     // HttpInterface is responsible for providing TrustManager implementations that
