@@ -30,6 +30,7 @@ class LocalProfileAssistantImpl(
         override fun transmit(tx: ByteArray): ByteArray =
             try {
                 apduInterface.transmit(tx).also {
+                    lastApduException = null
                     lastApduResponse = it
                 }
             } catch (e: Exception) {
@@ -61,6 +62,7 @@ class LocalProfileAssistantImpl(
         override fun transmit(url: String, tx: ByteArray, headers: Array<String>): HttpResponse =
             try {
                 httpInterface.transmit(url, tx, headers).also {
+                    lastHttpException = null
                     lastHttpResponse = it
                 }
             } catch (e: Exception) {
