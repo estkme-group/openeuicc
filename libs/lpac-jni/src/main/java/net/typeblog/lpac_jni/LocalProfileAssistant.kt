@@ -3,9 +3,12 @@ package net.typeblog.lpac_jni
 import net.typeblog.lpac_jni.HttpInterface.HttpResponse
 
 interface LocalProfileAssistant {
+    @Suppress("ArrayInDataClass")
     data class ProfileDownloadException(
         val lastHttpResponse: HttpResponse?,
         val lastHttpException: Exception?,
+        val lastApduResponse: ByteArray?,
+        val lastApduException: Exception?,
     ) : Exception("Failed to download profile")
 
     val valid: Boolean

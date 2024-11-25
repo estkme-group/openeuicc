@@ -11,12 +11,34 @@ import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
-    private val apduInterface: ApduInterface,
+    rawApduInterface: ApduInterface,
     private val httpInterface: HttpInterface
 ): LocalProfileAssistant {
     companion object {
         private const val TAG = "LocalProfileAssistantImpl"
     }
+
+    /**
+     * A thin wrapper over ApduInterface to acquire exceptions and errors transparently
+     */
+    private class ApduInterfaceWrapper(val apduInterface: ApduInterface) :
+        ApduInterface by apduInterface {
+        var lastApduResponse: ByteArray? = null
+        var lastApduException: Exception? = null
+
+        override fun transmit(tx: ByteArray): ByteArray =
+            try {
+                apduInterface.transmit(tx).also {
+                    lastApduResponse = it
+                }
+            } catch (e: Exception) {
+                lastApduResponse = null
+                lastApduException = e
+                throw e
+            }
+    }
+
+    private val apduInterface = ApduInterfaceWrapper(rawApduInterface)
 
     private var finalized = false
     private var contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
@@ -157,7 +179,9 @@ class LocalProfileAssistantImpl(
         if (res != 0) {
             throw LocalProfileAssistant.ProfileDownloadException(
                 httpInterface.lastHttpResponse,
-                httpInterface.lastHttpException
+                httpInterface.lastHttpException,
+                apduInterface.lastApduResponse,
+                apduInterface.lastApduException,
             )
         }
     }
