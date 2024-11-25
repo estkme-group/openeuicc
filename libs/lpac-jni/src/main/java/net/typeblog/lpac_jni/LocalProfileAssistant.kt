@@ -3,13 +3,16 @@ package net.typeblog.lpac_jni
 import net.typeblog.lpac_jni.HttpInterface.HttpResponse
 
 interface LocalProfileAssistant {
+    data class ProfileDownloadException(
+        val lastHttpResponse: HttpResponse?
+    ) : Exception("Failed to download profile")
+
     val valid: Boolean
     val profiles: List<LocalProfileInfo>
     val notifications: List<LocalProfileNotification>
     val eID: String
     // Extended EuiccInfo for use with LUIs, containing information such as firmware version
     val euiccInfo2: EuiccInfo2?
-    val lastHttpResponse: HttpResponse?
 
     /**
      * Set the max segment size (mss) for all es10x commands. This can help with removable
@@ -25,7 +28,7 @@ interface LocalProfileAssistant {
     fun deleteProfile(iccid: String): Boolean
 
     fun downloadProfile(smdp: String, matchingId: String?, imei: String?,
-                        confirmationCode: String?, callback: ProfileDownloadCallback): Boolean
+                        confirmationCode: String?, callback: ProfileDownloadCallback)
 
     fun deleteNotification(seqNumber: Long): Boolean
     fun handleNotification(seqNumber: Long): Boolean

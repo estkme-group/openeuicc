@@ -17,6 +17,7 @@ import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
@@ -122,7 +123,7 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
                         }
 
                         state.downloadError =
-                            it.error as? EuiccChannelManagerService.ProfileDownloadException
+                            it.error as? LocalProfileAssistant.ProfileDownloadException
 
                         isDone = true
                         refreshButtons()

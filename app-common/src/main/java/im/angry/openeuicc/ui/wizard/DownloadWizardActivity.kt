@@ -11,9 +11,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.service.EuiccChannelManagerService
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 import im.angry.openeuicc.util.*
+import net.typeblog.lpac_jni.LocalProfileAssistant
 
 class DownloadWizardActivity: BaseEuiccAccessActivity() {
     data class DownloadWizardState(
@@ -25,7 +25,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         var imei: String?,
         var downloadStarted: Boolean,
         var downloadTaskID: Long,
-        var downloadError: EuiccChannelManagerService.ProfileDownloadException?,
+        var downloadError: LocalProfileAssistant.ProfileDownloadException?,
     )
 
     private lateinit var state: DownloadWizardState

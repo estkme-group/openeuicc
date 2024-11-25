@@ -34,9 +34,6 @@ class LocalProfileAssistantImpl(
         LpacJni.euiccSetMss(contextHandle, mss)
     }
 
-    override val lastHttpResponse: HttpInterface.HttpResponse?
-        get() = httpInterface.lastHttpResponse
-
     override val valid: Boolean
         get() = !finalized && apduInterface.valid && try {
             // If we can read both eID and euiccInfo2 properly, we are likely looking at
@@ -147,15 +144,19 @@ class LocalProfileAssistantImpl(
 
     @Synchronized
     override fun downloadProfile(smdp: String, matchingId: String?, imei: String?,
-                                 confirmationCode: String?, callback: ProfileDownloadCallback): Boolean {
-        return LpacJni.downloadProfile(
+                                 confirmationCode: String?, callback: ProfileDownloadCallback) {
+        val res = LpacJni.downloadProfile(
             contextHandle,
             smdp,
             matchingId,
             imei,
             confirmationCode,
             callback
-        ) == 0
+        )
+
+        if (res != 0) {
+            throw LocalProfileAssistant.ProfileDownloadException(httpInterface.lastHttpResponse)
+        }
     }
 
     @Synchronized
