@@ -82,20 +82,22 @@ class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardS
         }
 
         err.lastApduResponse?.let { resp ->
-            ret.appendLine(
-                getString(
-                    R.string.download_wizard_diagnostics_last_apdu_response,
-                    resp.encodeHex()
-                )
-            )
-            ret.appendLine()
-
             val isSuccess =
                 resp.size >= 2 && resp[resp.size - 2] == 0x90.toByte() && resp[resp.size - 1] == 0x00.toByte()
 
             if (isSuccess) {
                 ret.appendLine(getString(R.string.download_wizard_diagnostics_last_apdu_response_success))
             } else {
+                // Only show the full APDU response when it's a failure
+                // Otherwise it's going to get very crammed
+                ret.appendLine(
+                    getString(
+                        R.string.download_wizard_diagnostics_last_apdu_response,
+                        resp.encodeHex()
+                    )
+                )
+                ret.appendLine()
+
                 ret.appendLine(getString(R.string.download_wizard_diagnostics_last_apdu_response_fail))
             }
         }
