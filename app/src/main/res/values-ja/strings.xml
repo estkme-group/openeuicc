@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">OpenEUICC</string>
+  <string name="no_euicc">このデバイスで eUICC が見つかりません。\nデバイスによってはアプリのメニューからデュアル SIM を有効化する必要があります。</string>
+  <string name="telephony_manager">TelephonyManager (特権)</string>
+  <string name="dsds">デュアル SIM</string>
+  <string name="toast_dsds_switched">DSDS の状態が切り替わりました。モデムが再起動するまでお待ちください。</string>
+  <string name="footer_mep">このスロットは MEP (Multiple Enabled Profiles) をサポートしています。この機能を有効化または無効化するには「スロットマッピングツール」を使用してください。</string>
+  <string name="slot_mapping">スロットマッピング</string>
+  <string name="slot_mapping_logical_slot">論理スロット %d:</string>
+  <string name="slot_mapping_port">スロット %1$d ポート %2$d</string>
+  <string name="slot_mapping_help">使用しているデバイスは、%1$d 個の論理 SIM スロットと %2$d 個の物理 SIM スロットがあります。%3$s\n\n各論理スロットに対応する物理スロットまたはポートを選択してください。すべてのマッピングモードがハードウェアでサポートされているわけではないことにご注意ください。</string>
+  <string name="slot_mapping_help_mep">\n\n物理スロット %1$d は、複数の有効なプロファイル (MEP) をサポートしています。この機能を使用するには、%2$d の仮想ポートを上記の異なる論理スロットに割り当てます。\n\nMEP を有効化すると、ポートは共有プロファイルの一覧を除いて OpenEUICC の個別の eSIM スロットのように動作します。</string>
+  <string name="slot_mapping_help_dsds">\nデュアル SIM モードはサポートされていますが、無効化されています。デバイスに内部 eSIM チップが搭載されている場合は、デフォルトで有効化されていない可能性があります。上記のマッピングを変更するか、デュアル SIM を有効化して eSIM にアクセスしてください。</string>
+  <string name="slot_mapping_completed">新しいスロットマッピングが設定されました。モデムがスロットを更新するまでお待ちください。</string>
+  <string name="slot_mapping_failure">指定されたマッピングが無効化されているか、ハードウェアがサポートをしていない可能性があります。</string>
+  <string name="lui_title">eSIM をダウンロードしてモバイルネットワークに接続</string>
+  <string name="lui_desc">使用しているデバイスは eSIM をサポートしています。モバイルネットワークに接続するには通信事業者が発行した eSIM をダウンロードするか、物理 SIM を挿入してください。</string>
+  <string name="lui_skip">スキップ</string>
+  <string name="lui_download">eSIM をダウンロード</string>
+</resources>
