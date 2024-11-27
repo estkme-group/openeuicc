@@ -1,13 +1,11 @@
-*.iml
-.gradle
-/local.properties
-/keystore.properties
-.DS_Store
-/build
+/.gradle
 /captures
-.externalNativeBuild
-.cxx
-local.properties
-/libs/**/build
-/buildSrc/build
-/app-deps/libs
+
+# Configuration files
+
+/keystore.properties
+/local.properties
+
+# macOS
+
+.DS_Store
