@@ -40,7 +40,7 @@
   <string name="profile_download_code">アクティベーションコード</string>
   <string name="profile_download_confirmation_code">確認コード (オプション)</string>
   <string name="profile_download_imei">IMEI (オプション)</string>
-  <string name="profile_download_free_space">残りのスペース: %s</string>
+  <string name="profile_download_free_space">残りの容量: %s</string>
   <string name="profile_download_scan">QR コードをスキャン</string>
   <string name="profile_download_scan_from_gallery">ギャラリーから QR コードをスキャン</string>
   <string name="profile_download_ok">ダウンロード</string>
