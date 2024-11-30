@@ -65,6 +65,8 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     // This gives us access to the "latest" state without having to launch coroutines
     private lateinit var disableSafeguardFlow: StateFlow<Boolean>
 
+    private lateinit var unfilteredProfileListFlow: StateFlow<Boolean>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -185,15 +187,22 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         ensureEuiccChannelManager()
         euiccChannelManagerService.waitForForegroundTask()
 
-        if (!this@EuiccManagementFragment::disableSafeguardFlow.isInitialized) {
+        if (!::disableSafeguardFlow.isInitialized) {
             disableSafeguardFlow =
                 preferenceRepository.disableSafeguardFlow.stateIn(lifecycleScope)
+        }
+        if (!::unfilteredProfileListFlow.isInitialized) {
+            unfilteredProfileListFlow =
+                preferenceRepository.unfilteredProfileListFlow.stateIn(lifecycleScope)
         }
 
         val profiles = withEuiccChannel { channel ->
             logicalSlotId = channel.logicalSlotId
             euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
-            channel.lpa.profiles.operational
+            if (unfilteredProfileListFlow.value)
+                channel.lpa.profiles
+            else
+                channel.lpa.profiles.operational
         }
 
         withContext(Dispatchers.Main) {
@@ -302,7 +311,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
             companion object {
                 fun fromInt(value: Int) =
-                    Type.values().first { it.value == value }
+                    entries.first { it.value == value }
             }
         }
     }

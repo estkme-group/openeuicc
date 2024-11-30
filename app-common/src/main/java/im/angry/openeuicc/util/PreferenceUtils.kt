@@ -32,6 +32,7 @@ object PreferenceKeys {
     // ---- Developer Options ----
     val DEVELOPER_OPTIONS_ENABLED = booleanPreferencesKey("developer_options_enabled")
     val EXPERIMENTAL_DOWNLOAD_WIZARD = booleanPreferencesKey("experimental_download_wizard")
+    val UNFILTERED_PROFILE_LIST = booleanPreferencesKey("unfiltered_profile_list")
     val IGNORE_TLS_CERTIFICATE = booleanPreferencesKey("ignore_tls_certificate")
 }
 
@@ -62,6 +63,9 @@ class PreferenceRepository(context: Context) {
 
     val experimentalDownloadWizardFlow: Flow<Boolean> =
         dataStore.data.map { it[PreferenceKeys.EXPERIMENTAL_DOWNLOAD_WIZARD] ?: false }
+
+    val unfilteredProfileListFlow: Flow<Boolean> =
+        dataStore.data.map { it[PreferenceKeys.UNFILTERED_PROFILE_LIST] ?: false }
 
     val ignoreTLSCertificateFlow: Flow<Boolean> =
         dataStore.data.map { it[PreferenceKeys.IGNORE_TLS_CERTIFICATE] ?: false }

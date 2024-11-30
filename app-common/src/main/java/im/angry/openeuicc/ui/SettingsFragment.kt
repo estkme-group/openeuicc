@@ -76,13 +76,16 @@ class SettingsFragment: PreferenceFragmentCompat() {
         findPreference<CheckBoxPreference>("pref_developer_experimental_download_wizard")
             ?.bindBooleanFlow(preferenceRepository.experimentalDownloadWizardFlow, PreferenceKeys.EXPERIMENTAL_DOWNLOAD_WIZARD)
 
+        findPreference<CheckBoxPreference>("pref_developer_unfiltered_profile_list")
+            ?.bindBooleanFlow(preferenceRepository.unfilteredProfileListFlow, PreferenceKeys.UNFILTERED_PROFILE_LIST)
+
         findPreference<CheckBoxPreference>("pref_ignore_tls_certificate")
             ?.bindBooleanFlow(preferenceRepository.ignoreTLSCertificateFlow, PreferenceKeys.IGNORE_TLS_CERTIFICATE)
     }
 
     override fun onStart() {
         super.onStart()
-        setupRootViewInsets(requireView().requireViewById(androidx.preference.R.id.recycler_view))
+        setupRootViewInsets(requireView().requireViewById(R.id.recycler_view))
     }
 
     @Suppress("UNUSED_PARAMETER")

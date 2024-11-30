@@ -13,6 +13,7 @@ import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlin.IllegalStateException
 
@@ -190,7 +191,12 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 slotId,
                 port
             ) { channel ->
-                val profiles = channel.lpa.profiles.operational.map {
+                val filteredProfiles =
+                    if (runBlocking { preferenceRepository.unfilteredProfileListFlow.first() })
+                        channel.lpa.profiles
+                    else
+                        channel.lpa.profiles.operational
+                val profiles = filteredProfiles.map {
                     EuiccProfileInfo.Builder(it.iccid).apply {
                         setProfileName(it.name)
                         setNickname(it.displayName)
