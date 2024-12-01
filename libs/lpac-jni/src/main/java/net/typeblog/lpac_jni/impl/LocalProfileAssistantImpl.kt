@@ -212,12 +212,18 @@ class LocalProfileAssistantImpl(
         )
 
         if (res != 0) {
-            throw LocalProfileAssistant.ProfileDownloadException(
+            // Construct the error now to store any error information we _can_ access
+            val err = LocalProfileAssistant.ProfileDownloadException(
                 httpInterface.lastHttpResponse,
                 httpInterface.lastHttpException,
                 apduInterface.lastApduResponse,
                 apduInterface.lastApduException,
             )
+
+            // Cancel sessions if possible. This will overwrite recorded errors from HTTP and APDU interfaces.
+            LpacJni.cancelSessions(contextHandle)
+
+            throw err
         }
     }
 

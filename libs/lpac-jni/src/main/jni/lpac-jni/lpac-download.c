@@ -117,7 +117,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     syslog(LOG_INFO, "es10b_load_bound_profile_package %d, reason %d", ret, es10b_load_bound_profile_package_result.errorReason);
 
     out:
-    euicc_http_cleanup(ctx);
+    // We expect Java side to call cancelSessions after any error -- thus, `euicc_http_cleanup` is done there
+    // This is so that Java side can access the last HTTP and/or APDU errors when we return.
     if (_confirmation_code != NULL)
         (*env)->ReleaseStringUTFChars(env, confirmation_code, _confirmation_code);
     if (_matching_id != NULL)
@@ -126,4 +127,13 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     if (_imei != NULL)
         (*env)->ReleaseStringUTFChars(env, imei, _imei);
     return ret;
+}
+
+
+JNIEXPORT void JNICALL
+Java_net_typeblog_lpac_1jni_LpacJni_cancelSessions(JNIEnv *env, jobject thiz, jlong handle) {
+    struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
+    es9p_cancel_session(ctx);
+    es10b_cancel_session(ctx, ES10B_CANCEL_SESSION_REASON_UNDEFINED);
+    euicc_http_cleanup(ctx);
 }
