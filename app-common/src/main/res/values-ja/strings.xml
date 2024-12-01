@@ -136,4 +136,8 @@
     <string name="pref_info">情報</string>
     <string name="pref_info_app_version">アプリバージョン</string>
     <string name="pref_info_source_code">ソースコード</string>
+    <string name="pref_language">言語</string>
+    <string name="pref_language_desc">アプリの言語を選択</string>
+    <string name="pref_developer_unfiltered_profile_list">すべてのプロファイルを表示</string>
+    <string name="pref_developer_unfiltered_profile_list_desc">プロダクション以外のプロファイルも表示する</string>
 </resources>
