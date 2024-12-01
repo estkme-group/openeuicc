@@ -146,6 +146,8 @@
     <string name="pref_advanced_disable_safeguard_removable_esim_desc">By default, this app prevents you from disabling the active profile on a removable eSIM inserted in the device, because doing so may <i>sometimes</i> render it inaccessible.\nCheck this box to <i>remove</i> this safeguard.</string>
     <string name="pref_advanced_verbose_logging">Verbose Logging</string>
     <string name="pref_advanced_verbose_logging_desc">Enable verbose logs, which may contain sensitive information. Only share your logs with someone you trust after turning this on.</string>
+    <string name="pref_language">Language</string>
+    <string name="pref_language_desc">Select current language</string>
     <string name="pref_advanced_logs">Logs</string>
     <string name="pref_advanced_logs_desc">View recent debug logs of the application</string>
     <string name="pref_developer">Developer Options</string>
