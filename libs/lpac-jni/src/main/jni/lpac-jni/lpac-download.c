@@ -82,39 +82,51 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_preparing);
     ret = es10b_get_euicc_challenge_and_info(ctx);
     syslog(LOG_INFO, "es10b_get_euicc_challenge_and_info %d", ret);
-    if (ret < 0)
+    if (ret < 0) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
         goto out;
+    }
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_connecting);
     ret = es9p_initiate_authentication(ctx);
     syslog(LOG_INFO, "es9p_initiate_authentication %d", ret);
-    if (ret < 0)
+    if (ret < 0) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
         goto out;
+    }
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_authenticating);
     ret = es10b_authenticate_server(ctx, _matching_id, _imei);
     syslog(LOG_INFO, "es10b_authenticate_server %d", ret);
-    if (ret < 0)
+    if (ret < 0) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
         goto out;
+    }
 
     ret = es9p_authenticate_client(ctx);
-    if (ret < 0)
+    if (ret < 0) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
         goto out;
+    }
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_downloading);
     ret = es10b_prepare_download(ctx, _confirmation_code);
     syslog(LOG_INFO, "es10b_prepare_download %d", ret);
-    if (ret < 0)
+    if (ret < 0) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
         goto out;
+    }
 
     ret = es9p_get_bound_profile_package(ctx);
     if (ret < 0)
         goto out;
 
     (*env)->CallVoidMethod(env, callback, on_state_update, download_state_finalizing);
-    // TODO: Expose error code as Java-side exceptions?
     ret = es10b_load_bound_profile_package(ctx, &es10b_load_bound_profile_package_result);
     syslog(LOG_INFO, "es10b_load_bound_profile_package %d, reason %d", ret, es10b_load_bound_profile_package_result.errorReason);
+    if (ret < 0) {
+        ret = - (int) es10b_load_bound_profile_package_result.errorReason;
+    }
 
     out:
     // We expect Java side to call cancelSessions after any error -- thus, `euicc_http_cleanup` is done there
