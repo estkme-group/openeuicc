@@ -38,25 +38,20 @@ class SettingsFragment: PreferenceFragmentCompat() {
             }.collect()
         }
 
-        findPreference<Preference>("pref_info_app_version")
-            ?.apply {
-                summary = requireContext().selfAppVersion
+        findPreference<Preference>("pref_info_app_version")?.apply {
+            summary = requireContext().selfAppVersion
 
-                // Enable developer options when this is clicked for 7 times
-                setOnPreferenceClickListener(this@SettingsFragment::onAppVersionClicked)
-            }
+            // Enable developer options when this is clicked for 7 times
+            setOnPreferenceClickListener(::onAppVersionClicked)
+        }
 
-        findPreference<Preference>("pref_info_source_code")
-            ?.setOnPreferenceClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.summary.toString())))
-                true
-            }
+        findPreference<Preference>("pref_info_source_code")?.apply {
+            intent = Intent(Intent.ACTION_VIEW, Uri.parse(summary.toString()))
+        }
 
-        findPreference<Preference>("pref_advanced_logs")
-            ?.setOnPreferenceClickListener {
-                startActivity(Intent(requireContext(), LogsActivity::class.java))
-                true
-            }
+        findPreference<Preference>("pref_advanced_logs")?.apply {
+            intent = Intent(requireContext(), LogsActivity::class.java)
+        }
 
         findPreference<CheckBoxPreference>("pref_notifications_download")
             ?.bindBooleanFlow(preferenceRepository.notificationDownloadFlow, PreferenceKeys.NOTIFICATION_DOWNLOAD)
