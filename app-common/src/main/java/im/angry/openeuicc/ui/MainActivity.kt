@@ -109,7 +109,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java));
+                startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
             R.id.reload -> {

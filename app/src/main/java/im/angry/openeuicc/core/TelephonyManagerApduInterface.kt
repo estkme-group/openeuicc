@@ -39,7 +39,7 @@ class TelephonyManagerApduInterface(
         val hex = aid.encodeHex()
         val channel = tm.iccOpenLogicalChannelByPortCompat(port.card.physicalSlotIndex, port.portIndex, hex, 0)
         if (channel.status != IccOpenLogicalChannelResponse.STATUS_NO_ERROR || channel.channel == IccOpenLogicalChannelResponse.INVALID_CHANNEL) {
-            throw IllegalArgumentException("Cannot open logical channel $hex via TelephonManager on slot ${port.card.physicalSlotIndex} port ${port.portIndex}");
+            throw IllegalArgumentException("Cannot open logical channel $hex via TelephonManager on slot ${port.card.physicalSlotIndex} port ${port.portIndex}")
         }
         lastChannel = channel.channel
         return lastChannel
