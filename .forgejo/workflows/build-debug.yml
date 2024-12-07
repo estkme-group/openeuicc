@@ -35,11 +35,12 @@ jobs:
       - name: Build Debug APKs
         run: ./gradlew --no-daemon assembleDebug
 
+      - name: Copy Artifacts
+        run: find . -name 'app*-debug.apk' -exec cp {} . \;
+
       - name: Upload Artifacts
         uses: https://gitea.angry.im/actions/upload-artifact@v3
         with:
           name: Debug APKs
           compression-level: 0
-          path: |
-            app-unpriv/build/outputs/apk/debug/app-unpriv-debug.apk
-            app/build/outputs/apk/debug/app-debug.apk
+          path: app*-debug.apk
