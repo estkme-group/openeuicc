@@ -52,6 +52,8 @@ class LocalProfileAssistantWrapper(orig: LocalProfileAssistant) :
 
     override fun handleNotification(seqNumber: Long): Boolean = lpa.handleNotification(seqNumber)
 
+    override fun euiccMemoryReset() = lpa.euiccMemoryReset()
+
     override fun setNickname(iccid: String, nickname: String): Boolean =
         lpa.setNickname(iccid, nickname)
 
