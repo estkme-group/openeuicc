@@ -117,11 +117,14 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
        launchTask {
            notificationAdapter.notifications =
                euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
-                   val profiles = channel.lpa.profiles
+                   val nameMap = buildMap {
+                       for (profile in channel.lpa.profiles) {
+                           put(profile.iccid, profile.displayName)
+                       }
+                   }
 
                    channel.lpa.notifications.map {
-                       val profile = profiles.find { p -> p.iccid == it.iccid }
-                       LocalProfileNotificationWrapper(it, profile?.displayName ?: "???")
+                       LocalProfileNotificationWrapper(it, nameMap[it.iccid] ?: "???")
                    }
                }
        }
@@ -136,6 +139,8 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     inner class NotificationViewHolder(private val root: View):
         RecyclerView.ViewHolder(root), View.OnCreateContextMenuListener, OnMenuItemClickListener {
         private val address: TextView = root.requireViewById(R.id.notification_address)
+        private val sequenceNumber: TextView =
+            root.requireViewById(R.id.notification_sequence_number)
         private val profileName: TextView = root.requireViewById(R.id.notification_profile_name)
 
         private lateinit var notification: LocalProfileNotificationWrapper
@@ -157,6 +162,7 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             }
         }
 
+
         private fun operationToLocalizedText(operation: LocalProfileNotification.Operation) =
             root.context.getText(
                 when (operation) {
@@ -170,6 +176,10 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             notification = value
 
             address.text = value.inner.notificationAddress
+            sequenceNumber.text = root.context.getString(
+                R.string.profile_notification_sequence_number_format,
+                value.inner.seqNumber
+            )
             profileName.text = Html.fromHtml(
                 root.context.getString(R.string.profile_notification_name_format,
                     operationToLocalizedText(value.inner.profileManagementOperation),

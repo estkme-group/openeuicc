@@ -89,7 +89,6 @@
     <string name="profile_notification_operation_delete">削除しました</string>
     <string name="profile_notification_operation_enable">有効化しました</string>
     <string name="profile_notification_operation_disable">無効化しました</string>
-    <string name="profile_notification_name_format">&lt;b&gt;%1$s&lt;/b&gt; %2$s (%3$s)</string>
     <string name="profile_notification_process">処理</string>
     <string name="profile_notification_delete">削除</string>
     <string name="euicc_info">eUICC 情報</string>

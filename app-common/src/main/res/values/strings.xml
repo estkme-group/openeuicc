@@ -103,7 +103,8 @@
     <string name="profile_notification_operation_delete">Deleted</string>
     <string name="profile_notification_operation_enable">Enabled</string>
     <string name="profile_notification_operation_disable">Disabled</string>
-    <string name="profile_notification_name_format">&lt;b&gt;%1$s&lt;/b&gt; %2$s (%3$s)</string>
+    <string name="profile_notification_name_format" translatable="false">&lt;b&gt;%1$s&lt;/b&gt; %2$s (%3$s)</string>
+    <string name="profile_notification_sequence_number_format" translatable="false">#%d</string>
     <string name="profile_notification_process">Process</string>
     <string name="profile_notification_delete">Delete</string>
 
