@@ -13,7 +13,11 @@
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="provider">Provider:</string>
-    <string name="iccid">ICCID:</string>
+    <string name="profile_class">Class:</string>
+    <string name="profile_class_testing">Testing</string>
+    <string name="profile_class_provisioning">Provisioning</string>
+    <string name="profile_class_operational">Operational</string>
+    <string name="iccid" translatable="false">ICCID:</string>
 
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>

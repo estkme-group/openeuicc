@@ -11,7 +11,6 @@
     <string name="enabled">有効済み</string>
     <string name="disabled">無効済み</string>
     <string name="provider">プロバイダー:</string>
-    <string name="iccid">ICCID:</string>
     <string name="enable">有効化</string>
     <string name="disable">無効化</string>
     <string name="delete">削除</string>
