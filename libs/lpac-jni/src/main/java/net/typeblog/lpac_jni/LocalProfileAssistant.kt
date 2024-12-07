@@ -37,6 +37,8 @@ interface LocalProfileAssistant {
     fun deleteNotification(seqNumber: Long): Boolean
     fun handleNotification(seqNumber: Long): Boolean
 
+    fun euiccMemoryReset()
+
     fun setNickname(
         iccid: String, nickname: String
     ): Boolean

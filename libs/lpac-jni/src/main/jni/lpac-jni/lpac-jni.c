@@ -245,6 +245,15 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cexGetEuiccInfo2(JNIEnv *env, jobject th
     return (jlong) info;
 }
 
+
+JNIEXPORT jint JNICALL
+Java_net_typeblog_lpac_1jni_LpacJni_es10cEuiccMemoryReset(JNIEnv *env, jobject thiz, jlong handle) {
+    struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
+    int ret;
+    ret = es10c_euicc_memory_reset(ctx);
+    return ret
+}
+
 JNIEXPORT jstring JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_stringDeref(JNIEnv *env, jobject thiz, jlong curr) {
     return toJString(env, *((char **) curr));

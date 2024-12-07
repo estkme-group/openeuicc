@@ -33,6 +33,8 @@ internal object LpacJni {
     // Cancel any ongoing es9p and/or es10b sessions
     external fun cancelSessions(handle: Long)
 
+    // ES10c
+    external fun es10cEuiccMemoryReset(handle: Long): Int
     // es10cex (actually part of es10b)
     external fun es10cexGetEuiccInfo2(handle: Long): Long
 

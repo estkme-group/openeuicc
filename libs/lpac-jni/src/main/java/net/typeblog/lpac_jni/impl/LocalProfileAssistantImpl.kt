@@ -241,6 +241,10 @@ class LocalProfileAssistantImpl(
     override fun setNickname(iccid: String, nickname: String): Boolean =
         LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0
 
+    override fun euiccMemoryReset() {
+        LpacJni.es10cEuiccMemoryReset(contextHandle)
+    }
+
     @Synchronized
     override fun close() {
         if (!finalized) {
