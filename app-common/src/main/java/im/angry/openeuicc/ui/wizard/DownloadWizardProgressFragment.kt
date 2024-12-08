@@ -113,17 +113,18 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
                     is EuiccChannelManagerService.ForegroundTaskState.Done -> {
                         hideProgressBar()
 
-                        // Change the state of the last InProgress item to Error
+                        state.downloadError =
+                            it.error as? LocalProfileAssistant.ProfileDownloadException
+
+                        // Change the state of the last InProgress item to success (or error)
                         progressItems.forEachIndexed { index, progressItem ->
                             if (progressItem.state == ProgressState.InProgress) {
-                                progressItem.state = ProgressState.Error
+                                progressItem.state =
+                                    if (state.downloadError == null) ProgressState.Done else ProgressState.Error
                             }
 
                             adapter.notifyItemChanged(index)
                         }
-
-                        state.downloadError =
-                            it.error as? LocalProfileAssistant.ProfileDownloadException
 
                         isDone = true
                         refreshButtons()
