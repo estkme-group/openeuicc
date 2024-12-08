@@ -83,7 +83,7 @@ class HttpInterfaceImpl(
     private fun getSocketFactory(): SSLSocketFactory {
         val trustManagers =
             if (runBlocking { ignoreTLSCertificateFlow.first() }) {
-                arrayOf(IgnoreTLSCertificate())
+                arrayOf(AllowAllTrustManager())
             } else {
                 this.trustManagers
             }
