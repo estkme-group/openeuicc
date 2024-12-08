@@ -28,7 +28,8 @@
                 app:layout_constraintRight_toLeftOf="@+id/profile_menu"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/state"
-                app:layout_constraintHorizontal_bias="0" />
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constrainedWidth="true" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/profile_menu"
