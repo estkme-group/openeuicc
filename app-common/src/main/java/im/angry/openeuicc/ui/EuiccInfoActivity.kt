@@ -22,6 +22,11 @@ import net.typeblog.lpac_jni.impl.DEFAULT_PKID_GSMA_RSP2_ROOT_CI1
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
 
 class EuiccInfoActivity : BaseEuiccAccessActivity() {
+    companion object {
+        private val YES_NO = Pair(R.string.yes, R.string.no)
+        private val SUPPORTED_UNSUPPORTED = Pair(R.string.supported, R.string.unsupported)
+    }
+
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var infoList: RecyclerView
 
@@ -82,13 +87,13 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
     }
 
     private fun buildPairs(channel: EuiccChannel) = buildList {
-        val forYesNo: (ok: Boolean) -> String =
-            { ok -> getString(if (ok) R.string.yes else R.string.no) }
-        val forSupport: (supported: Boolean) -> String =
-            { supported -> getString(if (supported) R.string.supported else R.string.unsupported) }
-        // @formatter:off
         add(Pair(R.string.euicc_info_access_mode, channel.type))
-        add(Pair(R.string.euicc_info_removable, forYesNo(channel.port.card.isRemovable)))
+        add(
+            Pair(
+                R.string.euicc_info_removable,
+                formatByBoolean(channel.port.card.isRemovable, YES_NO)
+            )
+        )
         add(Pair(R.string.euicc_info_eid, channel.lpa.eID))
         channel.lpa.euiccInfo2.let { info ->
             add(Pair(R.string.euicc_info_firmware_version, info?.euiccFirmwareVersion))
@@ -98,11 +103,32 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
             add(Pair(R.string.euicc_info_free_nvram, info?.freeNvram?.let(::formatFreeSpace)))
         }
         channel.lpa.euiccInfo2?.euiccCiPKIdListForSigning.orEmpty().let { signers ->
-            add(Pair(R.string.euicc_info_gsma_prod, forSupport(signers.contains(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1))))
-            add(Pair(R.string.euicc_info_gsma_test, forSupport(PKID_GSMA_TEST_CI.any(signers::contains))))
+            add(
+                Pair(
+                    R.string.euicc_info_gsma_prod,
+                    formatByBoolean(
+                        signers.contains(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1),
+                        SUPPORTED_UNSUPPORTED
+                    )
+                )
+            )
+            add(
+                Pair(
+                    R.string.euicc_info_gsma_test,
+                    formatByBoolean(PKID_GSMA_TEST_CI.any(signers::contains), SUPPORTED_UNSUPPORTED)
+                )
+            )
         }
-        // @formatter:on
     }
+
+    private fun formatByBoolean(b: Boolean, res: Pair<Int, Int>): String =
+        getString(
+            if (b) {
+                res.first
+            } else {
+                res.second
+            }
+        )
 
     inner class EuiccInfoViewHolder(root: View) : ViewHolder(root) {
         private val title: TextView = root.requireViewById(R.id.euicc_info_title)
