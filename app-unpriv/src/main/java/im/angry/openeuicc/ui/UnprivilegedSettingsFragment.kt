@@ -29,8 +29,8 @@ class UnprivilegedSettingsFragment : SettingsFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         addPreferencesFromResource(R.xml.pref_unprivileged_settings)
-        findPreference<Preference>("pref_developer_ara_m")?.apply {
-            bindCategory(this, "pref_developer")
+        findPreference<Preference>("pref_info_ara_m")?.apply {
+            moveCategory(this, "pref_info")
             isVisible = true
             summary = firstSigner.encodeHex()
             setOnPreferenceClickListener {
@@ -43,7 +43,7 @@ class UnprivilegedSettingsFragment : SettingsFragment() {
         }
     }
 
-    private fun bindCategory(preference: Preference, key: String) {
+    private fun moveCategory(preference: Preference, key: String) {
         preference.parent!!.removePreference(preference)
         findPreference<PreferenceCategory>(key)!!.addPreference(preference)
     }

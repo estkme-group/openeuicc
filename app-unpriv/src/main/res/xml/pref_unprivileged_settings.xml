@@ -4,6 +4,6 @@
         app:enableCopying="true"
         app:iconSpaceReserved="false"
         app:isPreferenceVisible="false"
-        app:key="pref_developer_ara_m"
+        app:key="pref_info_ara_m"
         app:title="@string/pref_developer_ara_m" />
 </PreferenceScreen>

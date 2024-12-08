@@ -72,6 +72,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:key="pref_info"
         app:title="@string/pref_info"
         app:iconSpaceReserved="false">
         <Preference
