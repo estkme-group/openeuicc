@@ -214,6 +214,7 @@ class LocalProfileAssistantImpl(
         if (res != 0) {
             // Construct the error now to store any error information we _can_ access
             val err = LocalProfileAssistant.ProfileDownloadException(
+                lpaErrorReason = LpacJni.downloadErrCodeToString(-res),
                 httpInterface.lastHttpResponse,
                 httpInterface.lastHttpException,
                 apduInterface.lastApduResponse,

@@ -29,6 +29,7 @@ internal object LpacJni {
     // We do not expose all of the functions because of tediousness :)
     external fun downloadProfile(handle: Long, smdp: String, matchingId: String?, imei: String?,
                                  confirmationCode: String?, callback: ProfileDownloadCallback): Int
+    external fun downloadErrCodeToString(code: Int): String
     external fun handleNotification(handle: Long, seqNumber: Long): Int
     // Cancel any ongoing es9p and/or es10b sessions
     external fun cancelSessions(handle: Long)
