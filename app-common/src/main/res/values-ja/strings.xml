@@ -136,4 +136,8 @@
     <string name="pref_language_desc">アプリの言語を選択</string>
     <string name="pref_developer_unfiltered_profile_list">すべてのプロファイルを表示</string>
     <string name="pref_developer_unfiltered_profile_list_desc">プロダクション以外のプロファイルも表示する</string>
+    <string name="profile_class">タイプ:</string>
+    <string name="profile_class_testing">テスティング</string>
+    <string name="profile_class_provisioning">準備中</string>
+    <string name="profile_class_operational">動作中</string>
 </resources>
