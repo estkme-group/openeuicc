@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.DEFAULT_PKID_GSMA_RSP2_ROOT_CI1
@@ -71,102 +72,36 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
-            val unknownStr = getString(R.string.unknown)
-
-            val newItems = mutableListOf<Pair<String, String>>()
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_access_mode),
-                    euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.type }
-                )
-            )
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_removable),
-                    if (euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.port.card.isRemovable }) {
-                        getString(R.string.yes)
-                    } else {
-                        getString(R.string.no)
-                    }
-                )
-            )
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_eid),
-                    euiccChannelManager.withEuiccChannel(logicalSlotId) { channel -> channel.lpa.eID }
-                )
-            )
-
-            val euiccInfo2 = euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
-                channel.lpa.euiccInfo2
-            }
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_firmware_version),
-                    euiccInfo2?.euiccFirmwareVersion ?: unknownStr
-                )
-            )
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_globalplatform_version),
-                    euiccInfo2?.globalPlatformVersion ?: unknownStr
-                )
-            )
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_pp_version),
-                    euiccInfo2?.ppVersion ?: unknownStr
-                )
-            )
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_sas_accreditation_number),
-                    euiccInfo2?.sasAccreditationNumber ?: unknownStr
-                )
-            )
-
-            newItems.add(
-                Pair(
-                getString(R.string.euicc_info_free_nvram),
-                euiccInfo2?.freeNvram?.let { formatFreeSpace(it) } ?: unknownStr
-            ))
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_gsma_prod),
-                    if (euiccInfo2?.euiccCiPKIdListForSigning?.contains(
-                            DEFAULT_PKID_GSMA_RSP2_ROOT_CI1
-                        ) == true
-                    ) {
-                        getString(R.string.supported)
-                    } else {
-                        getString(R.string.unsupported)
-                    }
-                )
-            )
-
-            newItems.add(
-                Pair(
-                    getString(R.string.euicc_info_gsma_test),
-                    if (PKID_GSMA_TEST_CI.any { euiccInfo2?.euiccCiPKIdListForSigning?.contains(it) == true }) {
-                        getString(R.string.supported)
-                    } else {
-                        getString(R.string.unsupported)
-                    }
-                )
-            )
-
-            (infoList.adapter!! as EuiccInfoAdapter).euiccInfoItems = newItems
+            (infoList.adapter!! as EuiccInfoAdapter).euiccInfoItems =
+                euiccChannelManager.withEuiccChannel(logicalSlotId, ::buildPairs).map {
+                    Pair(getString(it.first), it.second ?: getString(R.string.unknown))
+                }
 
             swipeRefresh.isRefreshing = false
         }
+    }
+
+    private fun buildPairs(channel: EuiccChannel) = buildList {
+        val forYesNo: (ok: Boolean) -> String =
+            { ok -> getString(if (ok) R.string.yes else R.string.no) }
+        val forSupport: (supported: Boolean) -> String =
+            { supported -> getString(if (supported) R.string.supported else R.string.unsupported) }
+        // @formatter:off
+        add(Pair(R.string.euicc_info_access_mode, channel.type))
+        add(Pair(R.string.euicc_info_removable, forYesNo(channel.port.card.isRemovable)))
+        add(Pair(R.string.euicc_info_eid, channel.lpa.eID))
+        channel.lpa.euiccInfo2.let { info ->
+            add(Pair(R.string.euicc_info_firmware_version, info?.euiccFirmwareVersion))
+            add(Pair(R.string.euicc_info_globalplatform_version, info?.globalPlatformVersion))
+            add(Pair(R.string.euicc_info_pp_version, info?.ppVersion))
+            add(Pair(R.string.euicc_info_sas_accreditation_number, info?.sasAccreditationNumber))
+            add(Pair(R.string.euicc_info_free_nvram, info?.freeNvram?.let(::formatFreeSpace)))
+        }
+        channel.lpa.euiccInfo2?.euiccCiPKIdListForSigning.orEmpty().let { signers ->
+            add(Pair(R.string.euicc_info_gsma_prod, forSupport(signers.contains(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1))))
+            add(Pair(R.string.euicc_info_gsma_test, forSupport(PKID_GSMA_TEST_CI.any(signers::contains))))
+        }
+        // @formatter:on
     }
 
     inner class EuiccInfoViewHolder(root: View) : ViewHolder(root) {
