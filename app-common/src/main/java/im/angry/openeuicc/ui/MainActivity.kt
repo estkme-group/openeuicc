@@ -66,9 +66,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent?.action) {
-                UsbManager.ACTION_USB_DEVICE_ATTACHED -> refresh(fromUsbEvent = true)
-                UsbManager.ACTION_USB_DEVICE_DETACHED -> refresh(fromUsbEvent = true)
+            if (intent?.action == UsbManager.ACTION_USB_DEVICE_ATTACHED || intent?.action == UsbManager.ACTION_USB_DEVICE_DETACHED) {
+                refresh(true)
             }
         }
     }
@@ -127,7 +126,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     }
 
     private fun ensureNotificationPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(
                 PERMISSION_REQUEST_CODE,
                 android.Manifest.permission.POST_NOTIFICATIONS
