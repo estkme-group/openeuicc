@@ -94,6 +94,8 @@
     <string name="download_wizard_diagnostics_last_apdu_response_success">Last APDU response (from SIM) is successful</string>
     <string name="download_wizard_diagnostics_last_apdu_response_fail">Last APDU response (from SIM) is a failure</string>
     <string name="download_wizard_diagnostics_last_apdu_exception">Last APDU exception:</string>
+    <string name="download_wizard_diagnostics_save">Save</string>
+    <string name="download_wizard_diagnostics_file_template">Diagnostics at %s</string>
 
     <string name="profile_rename_new_name">New nickname</string>
 

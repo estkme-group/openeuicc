@@ -1,12 +1,16 @@
 package im.angry.openeuicc.ui.wizard
 
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
+import java.io.FileOutputStream
+import java.util.Date
 
 class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
     override val hasNext: Boolean
@@ -15,6 +19,16 @@ class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardS
         get() = false
 
     private lateinit var diagnosticTextView: TextView
+
+    private val saveDiagnostics =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
+            if (uri == null) return@registerForActivityResult
+            requireActivity().contentResolver.openFileDescriptor(uri, "w")?.use {
+                FileOutputStream(it.fileDescriptor).use { os ->
+                    os.write(diagnosticTextView.text.toString().encodeToByteArray())
+                }
+            }
+        }
 
     override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment? = null
 
@@ -26,7 +40,15 @@ class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardS
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_download_diagnostics, container, false)
-        diagnosticTextView = view.requireViewById<TextView>(R.id.download_wizard_diagnostics_text)
+        view.requireViewById<View>(R.id.download_wizard_diagnostics_save).setOnClickListener {
+            saveDiagnostics.launch(
+                getString(
+                    R.string.download_wizard_diagnostics_file_template,
+                    SimpleDateFormat.getDateTimeInstance().format(Date())
+                )
+            )
+        }
+        diagnosticTextView = view.requireViewById(R.id.download_wizard_diagnostics_text)
         return view
     }
 

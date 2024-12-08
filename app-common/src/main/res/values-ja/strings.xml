@@ -76,6 +76,8 @@
     <string name="download_wizard_diagnostics_last_apdu_response_success">最終の APDU レスポンス (SIM) は成功しました</string>
     <string name="download_wizard_diagnostics_last_apdu_response_fail">最終の APDU レスポンス (SIM) は失敗しました</string>
     <string name="download_wizard_diagnostics_last_apdu_exception">最終の APDU 例外:</string>
+    <string name="download_wizard_diagnostics_save">保存</string>
+    <string name="download_wizard_diagnostics_file_template">%s のエラー診断</string>
     <string name="profile_rename_new_name">新しいニックネーム</string>
     <string name="profile_delete_confirm">%s のプロファイルを削除してもよろしいですか？この操作は元に戻せません。</string>
     <string name="profile_delete_confirm_input">削除を確認するには「%s」を入力してください</string>
