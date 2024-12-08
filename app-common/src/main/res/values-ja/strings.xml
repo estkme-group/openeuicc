@@ -37,11 +37,6 @@
     <string name="profile_download_code">アクティベーションコード</string>
     <string name="profile_download_confirmation_code">確認コード (オプション)</string>
     <string name="profile_download_imei">IMEI (オプション)</string>
-    <string name="profile_download_free_space">残りの容量: %s</string>
-    <string name="profile_download_scan">QR コードをスキャン</string>
-    <string name="profile_download_scan_from_gallery">ギャラリーから QR コードをスキャン</string>
-    <string name="profile_download_ok">ダウンロード</string>
-    <string name="profile_download_failed">eSIM のダウンロードに失敗しました。アクティベーションまたは QR コードを確認してください。</string>
     <string name="profile_download_low_nvram_title">ダウンロードに失敗する可能性があります</string>
     <string name="profile_download_low_nvram_message">残り容量が少ないため、ダウンロードに失敗する可能性があります。</string>
     <string name="download_wizard">ダウンロードウィザード</string>
@@ -128,8 +123,6 @@
     <string name="pref_advanced_logs">ログ</string>
     <string name="pref_advanced_logs_desc">アプリの最新デバッグログを表示します</string>
     <string name="pref_developer">開発者オプション</string>
-    <string name="pref_developer_experimental_download_wizard">実験的なダウンロードウィザード</string>
-    <string name="pref_developer_experimental_download_wizard_desc">実験的な新しいダウンロードウィザードを有効化します。まだ完全に機能していないことにご注意ください。</string>
     <string name="pref_developer_ignore_tls_certificate">SM-DP+ TLS 証明書を無視する</string>
     <string name="pref_developer_ignore_tls_certificate_desc">SM-DP+ TLS 証明書を無視して任意の RSP を許可します</string>
     <string name="pref_info">情報</string>

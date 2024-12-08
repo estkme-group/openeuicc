@@ -58,12 +58,6 @@
         app:iconSpaceReserved="false">
 
         <CheckBoxPreference
-            app:key="pref_developer_experimental_download_wizard"
-            app:iconSpaceReserved="false"
-            app:title="@string/pref_developer_experimental_download_wizard"
-            app:summary="@string/pref_developer_experimental_download_wizard_desc" />
-
-        <CheckBoxPreference
             app:iconSpaceReserved="false"
             app:key="pref_developer_unfiltered_profile_list"
             app:summary="@string/pref_developer_unfiltered_profile_list_desc"

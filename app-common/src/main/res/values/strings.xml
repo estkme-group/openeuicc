@@ -53,11 +53,6 @@
     <string name="profile_download_code">Activation Code</string>
     <string name="profile_download_confirmation_code">Confirmation Code (Optional)</string>
     <string name="profile_download_imei">IMEI (Optional)</string>
-    <string name="profile_download_free_space">Space remaining: %s</string>
-    <string name="profile_download_scan">Scan QR Code</string>
-    <string name="profile_download_scan_from_gallery">Scan QR Code from Gallery</string>
-    <string name="profile_download_ok">Download</string>
-    <string name="profile_download_failed">Failed to download eSIM. Check your activation / QR code.</string>
 
     <string name="profile_download_low_nvram_title">This download may fail</string>
     <string name="profile_download_low_nvram_message">This download may fail due to low remaining capacity.</string>
@@ -159,8 +154,6 @@
     <string name="pref_advanced_logs">Logs</string>
     <string name="pref_advanced_logs_desc">View recent debug logs of the application</string>
     <string name="pref_developer">Developer Options</string>
-    <string name="pref_developer_experimental_download_wizard">Experimental Download Wizard</string>
-    <string name="pref_developer_experimental_download_wizard_desc">Enable the experimental new download wizard. Note that it is not fully working yet.</string>
     <string name="pref_developer_unfiltered_profile_list">Show unfiltered profile list</string>
     <string name="pref_developer_unfiltered_profile_list_desc">Include non-production profiles in the list</string>
     <string name="pref_developer_ignore_tls_certificate">Ignore SM-DP+ TLS certificate</string>
