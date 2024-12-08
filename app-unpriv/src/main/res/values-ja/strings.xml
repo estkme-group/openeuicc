@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="channel_name_format">SIM %d</string>
     <string name="compatibility_check">互換性のチェック</string>
     <string name="open_sim_toolkit">SIM ツールキットを開く</string>
     <!-- Compatibility Check Descriptions -->
@@ -18,7 +17,7 @@
     <string name="compatibility_check_isdr_channel_desc_partial_fail">ISD-R への OMAPI アクセスは、次のスロットでのみ可能です: <b>SIM%s</b>.</string>
     <string name="compatibility_check_known_broken">既知の破損リストに掲載されていない</string>
     <string name="compatibility_check_known_broken_desc">取り外し可能な eSIM に関連するバグがデバイスに存在しないかを確認します。</string>
-    <string name="compatibility_check_known_broken_fail">おっと...使用しているデバイスには、取り外し可能な eSIM へのアクセス時にバグが存在します。これは必ずしも全く機能しないことを意味するわけではありませんが、注意して進める必要があります。</string>
+    <string name="compatibility_check_known_broken_fail">おっと…使用しているデバイスには、取り外し可能な eSIM へのアクセス時にバグが存在します。これは必ずしも全く機能しないことを意味するわけではありませんが、注意して進める必要があります。</string>
     <string name="compatibility_check_usb">USB カードリーダーのサポート</string>
     <string name="compatibility_check_usb_desc">使用しているデバイスは、USB カードリーダー経由の eSIM の管理をサポートしていますか？</string>
     <string name="compatibility_check_usb_ok">このデバイスの標準 USB CCID リーダーを介して eSIM を管理できます (ここで他のチェック項目に失敗した場合でも)。カードリーダーを挿入し、このアプリを開いてこの方法で eSIM を管理できます。</string>

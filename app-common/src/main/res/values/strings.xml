@@ -7,8 +7,8 @@
     <string name="reload">Reload Slots</string>
 
     <string name="channel_name_format">Logical Slot %d</string>
-    <string name="usb">USB</string>
-    <string name="omapi">OpenMobile API (OMAPI)</string>
+    <string name="usb" translatable="false">USB</string>
+    <string name="omapi" translatable="false">OpenMobile API (OMAPI)</string>
 
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>

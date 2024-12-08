@@ -6,8 +6,6 @@
     <string name="help">ヘルプ</string>
     <string name="reload">スロットを再読み込み</string>
     <string name="channel_name_format">論理スロット %d</string>
-    <string name="usb">USB</string>
-    <string name="omapi">OpenMobile API (OMAPI)</string>
     <string name="enabled">有効済み</string>
     <string name="disabled">無効済み</string>
     <string name="provider">プロバイダー:</string>
