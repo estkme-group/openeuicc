@@ -17,19 +17,16 @@ class PrivilegedEuiccManagementFragment: EuiccManagementFragment() {
     private var isMEP = false
     private var isRemovable = false
 
-    override suspend fun doRefresh() {
-        super.doRefresh()
-        withEuiccChannel { channel ->
-            isMEP = channel.isMEP
-            isRemovable = channel.port.card.isRemovable
-        }
-    }
-
     override suspend fun onCreateFooterViews(
         parent: ViewGroup,
         profiles: List<LocalProfileInfo>
     ): List<View> =
         super.onCreateFooterViews(parent, profiles).let { footers ->
+            withEuiccChannel { channel ->
+                isMEP = channel.isMEP
+                isRemovable = channel.port.card.isRemovable
+            }
+
             if (isMEP) {
                 val view = layoutInflater.inflate(R.layout.footer_mep, parent, false)
                 view.requireViewById<Button>(R.id.footer_mep_slot_mapping).setOnClickListener {
