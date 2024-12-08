@@ -367,10 +367,6 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         private lateinit var profile: LocalProfileInfo
 
         fun setProfile(profile: LocalProfileInfo) {
-            if (unfilteredProfileListFlow.value) {
-                profileClassLabel.isVisible = true
-                profileClass.isVisible = true
-            }
             this.profile = profile
             name.text = profile.displayName
 
@@ -382,7 +378,9 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                 }
             )
             provider.text = profile.providerName
-            if (profileClass.isVisible) profileClass.setText(
+            profileClassLabel.isVisible = unfilteredProfileListFlow.value
+            profileClass.isVisible = unfilteredProfileListFlow.value
+            profileClass.setText(
                 when (profile.profileClass) {
                     LocalProfileInfo.Clazz.Testing -> R.string.profile_class_testing
                     LocalProfileInfo.Clazz.Provisioning -> R.string.profile_class_provisioning

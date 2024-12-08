@@ -85,6 +85,7 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:singleLine="true"
+                android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/provider_label"
                 app:layout_constraintBottom_toTopOf="@+id/iccid_label"/>
@@ -97,6 +98,7 @@
                 android:layout_marginStart="7dp"
                 android:textSize="14sp"
                 android:singleLine="true"
+                android:visibility="gone"
                 app:layout_constraintLeft_toRightOf="@id/profile_class_label"
                 app:layout_constraintTop_toBottomOf="@id/provider"
                 app:layout_constraintBottom_toTopOf="@+id/iccid"/>
