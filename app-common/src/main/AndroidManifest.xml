@@ -28,10 +28,12 @@
             android:label="@string/pref_advanced_logs" />
 
         <activity
+            android:exported="true"
             android:name="im.angry.openeuicc.ui.wizard.DownloadWizardActivity"
             android:label="@string/download_wizard" />
 
         <activity-alias
+            android:exported="true"
             android:name="im.angry.openeuicc.ui.DirectProfileDownloadActivity"
             android:targetActivity="im.angry.openeuicc.ui.wizard.DownloadWizardActivity" />
 
