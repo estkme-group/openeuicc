@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.preference.Preference
-import androidx.preference.PreferenceCategory
 import im.angry.easyeuicc.R
 import im.angry.openeuicc.util.encodeHex
 import java.security.MessageDigest
@@ -29,9 +28,9 @@ class UnprivilegedSettingsFragment : SettingsFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         addPreferencesFromResource(R.xml.pref_unprivileged_settings)
+        mergePreferenceOverlay("pref_info_overlay", "pref_info")
+
         findPreference<Preference>("pref_info_ara_m")?.apply {
-            moveCategory(this, "pref_info")
-            isVisible = true
             summary = firstSigner.encodeHex()
             setOnPreferenceClickListener {
                 requireContext().getSystemService(ClipboardManager::class.java)!!
@@ -41,10 +40,5 @@ class UnprivilegedSettingsFragment : SettingsFragment() {
                 true
             }
         }
-    }
-
-    private fun moveCategory(preference: Preference, key: String) {
-        preference.parent!!.removePreference(preference)
-        findPreference<PreferenceCategory>(key)!!.addPreference(preference)
     }
 }

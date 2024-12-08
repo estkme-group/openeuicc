@@ -1,6 +1,5 @@
 package im.angry.openeuicc.ui
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -136,5 +135,23 @@ open class SettingsFragment: PreferenceFragmentCompat() {
             }
             true
         }
+    }
+
+    protected fun mergePreferenceOverlay(overlayKey: String, targetKey: String) {
+        val overlayCat = findPreference<PreferenceCategory>(overlayKey)!!
+        val targetCat = findPreference<PreferenceCategory>(targetKey)!!
+
+        val prefs = buildList {
+            for (i in 0..<overlayCat.preferenceCount) {
+                add(overlayCat.getPreference(i))
+            }
+        }
+
+        prefs.forEach {
+            overlayCat.removePreference(it)
+            targetCat.addPreference(it)
+        }
+
+        overlayCat.parent?.removePreference(overlayCat)
     }
 }

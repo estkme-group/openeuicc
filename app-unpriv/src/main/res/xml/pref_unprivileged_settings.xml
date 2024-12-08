@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-    <Preference
-        app:enableCopying="true"
-        app:iconSpaceReserved="false"
+    <PreferenceCategory
         app:isPreferenceVisible="false"
-        app:key="pref_info_ara_m"
-        app:title="@string/pref_developer_ara_m" />
+        app:key="pref_info_overlay">
+        <Preference
+            app:enableCopying="true"
+            app:iconSpaceReserved="false"
+            app:key="pref_info_ara_m"
+            app:title="@string/pref_developer_ara_m" />
+    </PreferenceCategory>
 </PreferenceScreen>
