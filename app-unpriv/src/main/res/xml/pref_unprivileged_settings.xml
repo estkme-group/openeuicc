@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Preference
+        app:enableCopying="true"
+        app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
+        app:key="pref_developer_ara_m"
+        app:title="@string/pref_developer_ara_m" />
+</PreferenceScreen>

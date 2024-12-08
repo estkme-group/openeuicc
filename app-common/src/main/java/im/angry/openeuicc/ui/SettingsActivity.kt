@@ -4,10 +4,14 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
 
 class SettingsActivity: AppCompatActivity() {
+    private val appContainer
+        get() = (application as OpenEuiccApplication).appContainer
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -15,8 +19,9 @@ class SettingsActivity: AppCompatActivity() {
         setSupportActionBar(requireViewById(R.id.toolbar))
         setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        val settingsFragment = appContainer.uiComponentFactory.createSettingsFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.settings_container, SettingsFragment())
+            .replace(R.id.settings_container, settingsFragment)
             .commit()
     }
 

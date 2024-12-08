@@ -4,6 +4,12 @@
     <string name="compatibility_check">Compatibility Check</string>
     <string name="open_sim_toolkit">Open SIM Toolkit</string>
 
+    <!-- Settings -->
+    <string name="pref_developer_ara_m" translatable="false">ARA-M SHA-1</string>
+
+    <!-- Toast -->
+    <string name="toast_ara_m_copied">ARA-M SHA-1 copied to clipboard</string>
+
     <!-- Compatibility Check Descriptions -->
     <string name="compatibility_check_system_features">System Features</string>
     <string name="compatibility_check_system_features_desc">Whether your device has all the required features for managing removable eUICC cards. For example, basic telephony and OMAPI support.</string>

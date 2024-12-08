@@ -1,5 +1,6 @@
 package im.angry.openeuicc.ui
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -20,7 +21,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class SettingsFragment: PreferenceFragmentCompat() {
+open class SettingsFragment: PreferenceFragmentCompat() {
     private lateinit var developerPref: PreferenceCategory
 
     // Hidden developer options switch
@@ -35,9 +36,9 @@ class SettingsFragment: PreferenceFragmentCompat() {
 
         // Show / hide developer preference based on whether it is enabled
         lifecycleScope.launch {
-            preferenceRepository.developerOptionsEnabledFlow.onEach {
-                developerPref.isVisible = it
-            }.collect()
+            preferenceRepository.developerOptionsEnabledFlow
+                .onEach { developerPref.isVisible = it }
+                .collect()
         }
 
         findPreference<Preference>("pref_info_app_version")?.apply {
