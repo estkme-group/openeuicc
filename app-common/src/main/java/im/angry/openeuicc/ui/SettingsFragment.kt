@@ -47,10 +47,6 @@ class SettingsFragment: PreferenceFragmentCompat() {
             setOnPreferenceClickListener(::onAppVersionClicked)
         }
 
-        findPreference<Preference>("pref_info_source_code")?.apply {
-            intent = Intent(Intent.ACTION_VIEW, Uri.parse(summary.toString()))
-        }
-
         findPreference<Preference>("pref_language")?.apply {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@apply
             isVisible = true
