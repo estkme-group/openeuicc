@@ -128,8 +128,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private fun ensureNotificationPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(
-                PERMISSION_REQUEST_CODE,
-                android.Manifest.permission.POST_NOTIFICATIONS
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                PERMISSION_REQUEST_CODE
             )
         }
     }
