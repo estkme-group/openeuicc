@@ -20,11 +20,6 @@
             android:label="@string/profile_notifications" />
 
         <activity
-            android:name="im.angry.openeuicc.ui.DirectProfileDownloadActivity"
-            android:label="@string/profile_download"
-            android:theme="@style/Theme.AppCompat.Translucent" />
-
-        <activity
             android:name="im.angry.openeuicc.ui.EuiccInfoActivity"
             android:label="@string/euicc_info" />
 
@@ -35,6 +30,10 @@
         <activity
             android:name="im.angry.openeuicc.ui.wizard.DownloadWizardActivity"
             android:label="@string/download_wizard" />
+
+        <activity-alias
+            android:name="im.angry.openeuicc.ui.DirectProfileDownloadActivity"
+            android:targetActivity="im.angry.openeuicc.ui.wizard.DownloadWizardActivity" />
 
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"

@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import im.angry.openeuicc.R
+import im.angry.openeuicc.ui.wizard.DownloadWizardActivity
 
 class LuiActivity : AppCompatActivity() {
     override fun onStart() {
@@ -25,10 +26,11 @@ class LuiActivity : AppCompatActivity() {
         }
 
         requireViewById<View>(R.id.lui_skip).setOnClickListener { finish() }
-        // TODO: Deactivate LuiActivity if there is no eSIM found.
+        // TODO: Deactivate DownloadWizardActivity if there is no eSIM found.
         // TODO: Support pre-filled download info (from carrier apps); UX
         requireViewById<View>(R.id.lui_download).setOnClickListener {
-            startActivity(Intent(this, DirectProfileDownloadActivity::class.java))
+            startActivity(Intent(this, DownloadWizardActivity::class.java))
+            finish()
         }
     }
 }
