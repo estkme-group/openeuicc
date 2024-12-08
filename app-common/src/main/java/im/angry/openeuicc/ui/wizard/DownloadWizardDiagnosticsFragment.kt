@@ -44,6 +44,14 @@ class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardS
     private fun buildDiagnosticsText(): String? = state.downloadError?.let { err ->
         val ret = StringBuilder()
 
+        ret.appendLine(
+            getString(
+                R.string.download_wizard_diagnostics_error_code,
+                err.lpaErrorReason
+            )
+        )
+        ret.appendLine()
+
         err.lastHttpResponse?.let { resp ->
             if (resp.rcode != 200) {
                 // Only show the status if it's not 200

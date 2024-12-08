@@ -68,6 +68,7 @@
     <string name="download_wizard_progress_step_downloading">eSIM プロファイルをダウンロード中です</string>
     <string name="download_wizard_progress_step_finalizing">eSIM プロファイルをストレージに読み込み中です</string>
     <string name="download_wizard_diagnostics">エラー診断</string>
+    <string name="download_wizard_diagnostics_error_code">エラーコード: %s</string>
     <string name="download_wizard_diagnostics_last_http_status">最終の HTTP ステータス (サーバー): %d</string>
     <string name="download_wizard_diagnostics_last_http_response">最終の HTTP レスポンス (サーバー):</string>
     <string name="download_wizard_diagnostics_last_http_exception">最終の HTTP 例外:</string>

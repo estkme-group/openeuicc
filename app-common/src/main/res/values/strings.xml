@@ -86,6 +86,7 @@
     <string name="download_wizard_progress_step_downloading">Downloading eSIM profile</string>
     <string name="download_wizard_progress_step_finalizing">Loading eSIM profile into storage</string>
     <string name="download_wizard_diagnostics">Error diagnostics</string>
+    <string name="download_wizard_diagnostics_error_code">Error code: %s</string>
     <string name="download_wizard_diagnostics_last_http_status">Last HTTP status (from server): %d</string>
     <string name="download_wizard_diagnostics_last_http_response">Last HTTP response (from server):</string>
     <string name="download_wizard_diagnostics_last_http_exception">Last HTTP exception:</string>
