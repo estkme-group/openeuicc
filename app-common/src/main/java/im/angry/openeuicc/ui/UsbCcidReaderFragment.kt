@@ -120,7 +120,7 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
         try {
             requireContext().unregisterReceiver(usbPermissionReceiver)
         } catch (_: Exception) {
-
+            // ignore
         }
     }
 
@@ -129,7 +129,7 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
         try {
             requireContext().unregisterReceiver(usbPermissionReceiver)
         } catch (_: Exception) {
-
+            // ignore
         }
     }
 
@@ -155,8 +155,8 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
                 replace(
                     R.id.child_container,
                     appContainer.uiComponentFactory.createEuiccManagementFragment(
-                        EuiccChannelManager.USB_CHANNEL_ID,
-                        0
+                        slotId = EuiccChannelManager.USB_CHANNEL_ID,
+                        portId = 0
                     )
                 )
             }

@@ -110,7 +110,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             telephonyManager.simSlotMapping = mappings
             return
         } catch (_: Exception) {
-
+            // ignore
         }
 
         // Sometimes hardware supports one ordering but not the reverse

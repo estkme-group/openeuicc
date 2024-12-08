@@ -16,10 +16,9 @@ class PrivilegedMainActivity : MainActivity() {
             menu.findItem(R.id.slot_mapping).isVisible = false
         }
 
-        if (tm.supportsDSDS) {
-            val dsds = menu.findItem(R.id.dsds)
-            dsds.isVisible = true
-            dsds.isChecked = tm.dsdsEnabled
+        menu.findItem(R.id.dsds).apply {
+            isVisible = tm.supportsDSDS
+            isChecked = tm.dsdsEnabled
         }
 
         return true
