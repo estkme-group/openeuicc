@@ -1,6 +1,8 @@
 package im.angry.openeuicc.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Html
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,15 +32,16 @@ class CompatibilityCheckActivity: AppCompatActivity() {
         setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        compatibilityCheckList = requireViewById(R.id.recycler_view)
-        compatibilityCheckList.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        compatibilityCheckList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
-        compatibilityCheckList.adapter = adapter
+        compatibilityCheckList = requireViewById<RecyclerView>(R.id.recycler_view).also {
+            it.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            it.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+            it.adapter = adapter
+        }
 
         setupRootViewInsets(compatibilityCheckList)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onStart() {
         super.onStart()
         lifecycleScope.launch {
@@ -61,10 +65,10 @@ class CompatibilityCheckActivity: AppCompatActivity() {
 
         fun bindItem(item: CompatibilityCheck) {
             titleView.text = item.title
-            descView.text = item.description
+            descView.text = Html.fromHtml(item.description, Html.FROM_HTML_MODE_COMPACT)
 
             statusContainer.children.forEach {
-                it.visibility = View.GONE
+                it.isVisible = false
             }
 
             val viewId = when (item.state) {
@@ -73,7 +77,7 @@ class CompatibilityCheckActivity: AppCompatActivity() {
                 CompatibilityCheck.State.FAILURE_UNKNOWN -> R.id.compatibility_check_unknown
                 else -> R.id.compatibility_check_progress_bar
             }
-            root.requireViewById<View>(viewId).visibility = View.VISIBLE
+            root.requireViewById<View>(viewId).isVisible = true
         }
     }
 
