@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_euicc">在此设备上找不到 eUICC 芯片。\n在某些设备上，您可能需要先在此应用的菜单中启用双卡支持。</string>
+    <string name="dsds">双卡</string>
+    <string name="toast_dsds_switched">双卡支持状态已切换。请等待基带重新启动。</string>
+    <string name="footer_mep">此卡槽支持多个启用配置文件 (MEP)。要启用或禁用此功能，请使用\"卡槽映射\"工具。</string>
+    <string name="slot_mapping">卡槽映射</string>
+    <string name="slot_mapping_logical_slot">逻辑卡槽 %d:</string>
+    <string name="slot_mapping_port">卡槽 %1$d 端口 %2$d</string>
+    <string name="slot_mapping_help">您的手机有 %1$d 个逻辑 SIM 卡槽和 %2$d 个物理 SIM 卡槽。%3$s\n\n选择您希望每个逻辑卡槽对应的物理卡槽 和/或 \"端口\"。请注意，并非所有映射模式都受硬件支持。</string>
+    <string name="slot_mapping_help_mep">\n\n物理卡槽 %1$d 支持多个启用的配置文件 (MEP)。要使用此功能，请将其 %2$d 个虚拟\"端口\"分配给上面显示的不同逻辑卡槽。\n\n启用 MEP 后，\"端口\"会在 OpenEUICC 中显示为共享 eSIM 配置文件的独立的 eSIM 卡槽。</string>
+    <string name="slot_mapping_help_dsds">\n支持双卡模式，但已禁用。如果您的设备带有内置 eSIM 芯片，则默认情况下可能不会启用。更改上面的映射或启用双卡以访问您的 eSIM。</string>
+    <string name="slot_mapping_completed">您的新卡槽映射已设置完毕。请等待基带刷新卡槽。</string>
+    <string name="slot_mapping_failure">指定的映射可能无效或硬件不支持您指定的映射。</string>
+    <string name="lui_title">通过下载 eSIM 连接到移动网络</string>
+    <string name="lui_desc">您的设备支持 eSIM。要连接到移动网络，请下载运营商发布的 eSIM，或插入物理 SIM 卡。</string>
+    <string name="lui_skip">跳过</string>
+    <string name="lui_download">下载 eSIM</string>
+    <string name="telephony_manager">TelephonyManager (特权)</string>
+</resources>

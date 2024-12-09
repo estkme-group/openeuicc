@@ -1,0 +1,32 @@
+<resources>
+    <string name="compatibility_check">兼容性检查</string>
+    <string name="open_sim_toolkit">打开 SIM 卡应用程序</string>
+    <string name="compatibility_check_system_features">系统功能</string>
+    <string name="compatibility_check_system_features_desc">您的设备是否具有管理可插拔 eUICC 卡所需的所有功能。例如，基本的电话功能和 OMAPI 支持。</string>
+    <string name="compatibility_check_system_features_no_telephony">您的设备没有电话功能。</string>
+    <string name="compatibility_check_system_features_no_omapi">您的设备/系统未声明支持 OMAPI。这可能是由于缺少硬件支持，或者可能仅仅是由于缺少标志。请参阅以下两项检查以确定 OMAPI 是否确实受支持。</string>
+    <string name="compatibility_check_omapi_connectivity">OMAPI 连接</string>
+    <string name="compatibility_check_omapi_connectivity_desc">您的设备是否允许通过 OMAPI 访问 SIM 卡上的安全元件？</string>
+    <string name="compatibility_check_omapi_connectivity_fail">无法通过 OMAPI 检测到 SIM 卡的 Secure Element。如果您尚未在此设备中插入 SIM 卡，请尝试插入一张 SIM 卡并重试此检查。</string>
+    <string name="compatibility_check_omapi_connectivity_partial_success_sim_number">已成功检测到可访问 Secure Element 的卡槽，但仅限于以下 SIM 卡槽：<b>SIM%s</b>。</string>
+    <string name="compatibility_check_isdr_channel">ISD-R 通道访问</string>
+    <string name="compatibility_check_isdr_channel_desc">您的设备是否支持通过 OMAPI 打开 eSIM 的 ISD-R (管理) 通道？</string>
+    <string name="compatibility_check_isdr_channel_desc_unknown">无法确定是否支持通过 OMAPI 进行 ISD-R 访问。如果尚未插入，您可能需要插入 SIM 卡 (任何 SIM 卡都可以) 重试。</string>
+    <string name="compatibility_check_isdr_channel_desc_partial_fail">OMAPI 只能在以下 SIM 插槽上访问 ISD-R：<b>SIM%s</b>。</string>
+    <string name="compatibility_check_known_broken">不在已知的 BUG 名单中</string>
+    <string name="compatibility_check_known_broken_desc">确保您的设备不存在与可插拔 eSIM 相关的错误。</string>
+    <string name="compatibility_check_known_broken_fail">糟糕，您的设备在访问可插拔 eSIM 时存在错误。这并不表示完全无法使用，但我们不保证该应用在您设备上的行为。</string>
+    <string name="compatibility_check_usb">USB 读卡器支持</string>
+    <string name="compatibility_check_usb_desc">您的设备是否支持通过 USB 读卡器管理 eSIM？</string>
+    <string name="compatibility_check_usb_ok">您可以通过此设备上的标准 USB CCID 读取器管理 eSIM (即使您在这里有任何其他检查项失败)。请插入读卡器，然后打开此应用程序以这种方式管理 eSIM。</string>
+    <string name="compatibility_check_usb_fail">您的设备不支持 USB 读卡器。</string>
+    <string name="compatibility_check_verdict">结论 (USB 读卡器以外)</string>
+    <string name="compatibility_check_verdict_desc">根据之前的所有检查，您的设备与可插拔 eSIM 卡兼容的可能性有多大？</string>
+    <string name="compatibility_check_verdict_ok">您可以使用和管理插入此设备的可插拔 eSIM 卡。</string>
+    <string name="compatibility_check_verdict_known_broken">已知您的设备在访问可插拔 eSIM 卡时存在问题。\n%s</string>
+    <string name="compatibility_check_verdict_unknown_likely_ok">我们无法确定是否可以在您的设备上管理可插拔 eSIM 卡。不过，您的设备确实声明支持 OMAPI，因此它工作的可能性略高。\n%s</string>
+    <string name="compatibility_check_verdict_unknown_likely_fail">我们无法确定是否可以在您的设备上管理可插拔 eSIM 卡。由于您的设备未声明支持OMAPI，因此更有可能不支持在此设备上管理可插拔 eSIM。\n%s</string>
+    <string name="compatibility_check_verdict_unknown">我们无法确定是否可以在您的设备上管理可插拔 eSIM 卡。\n%s</string>
+    <string name="compatibility_check_verdict_fail_shared">然而，已经加载了eSIM配置文件的可插拔 eSIM 卡仍然可以工作; 即使无法在装置上直接管理可插拔 eSIM 卡中的配置文件，您仍然可以使用 USB 卡读卡器来管理配置文件。</string>
+    <string name="toast_ara_m_copied">ARA-M SHA-1 已拷贝到剪贴板</string>
+</resources>

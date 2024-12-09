@@ -66,7 +66,7 @@
     <string name="download_wizard_slot_type_removable">Removable</string>
     <string name="download_wizard_slot_type_internal">Internal</string>
     <string name="download_wizard_slot_type_internal_port">Internal, port %d</string>
-    <string name="download_wizard_slot_eid">eID:</string>
+    <string name="download_wizard_slot_eid" translatable="false">eID:</string>
     <string name="download_wizard_slot_active_profile">Active Profile:</string>
     <string name="download_wizard_slot_free_space">Free Space:</string>
     <string name="download_wizard_method_select">How would you like to download the eSIM profile?</string>
@@ -114,7 +114,7 @@
     <string name="euicc_info_activity_title">eUICC Info (%s)</string>
     <string name="euicc_info_access_mode">Access Mode</string>
     <string name="euicc_info_removable">Removable</string>
-    <string name="euicc_info_eid">EID</string>
+    <string name="euicc_info_eid" translatable="false">EID</string>
     <string name="euicc_info_firmware_version">eUICC OS Version</string>
     <string name="euicc_info_globalplatform_version">GlobalPlatform Version</string>
     <string name="euicc_info_sas_accreditation_number">SAS Accreditation Number</string>
@@ -157,7 +157,7 @@
     <string name="pref_developer_unfiltered_profile_list">Show unfiltered profile list</string>
     <string name="pref_developer_unfiltered_profile_list_desc">Include non-production profiles in the list</string>
     <string name="pref_developer_ignore_tls_certificate">Ignore SM-DP+ TLS certificate</string>
-    <string name="pref_developer_ignore_tls_certificate_desc">Ignore SM-DP+ TLS certificate, allow any RSP</string>
+    <string name="pref_developer_ignore_tls_certificate_desc">Accept any TLS certificate used by the RSP server</string>
     <string name="pref_info">Info</string>
     <string name="pref_info_app_version">App Version</string>
     <string name="pref_info_source_code">Source Code</string>

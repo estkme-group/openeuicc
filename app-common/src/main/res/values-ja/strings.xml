@@ -48,7 +48,6 @@
     <string name="download_wizard_slot_type_removable">リムーバブル</string>
     <string name="download_wizard_slot_type_internal">内部</string>
     <string name="download_wizard_slot_type_internal_port">内部 - ポート: %d</string>
-    <string name="download_wizard_slot_eid">eID:</string>
     <string name="download_wizard_slot_active_profile">有効なプロファイル:</string>
     <string name="download_wizard_slot_free_space">空き容量:</string>
     <string name="download_wizard_method_select">eSIM プロファイルをどの方法でダウンロードしますか？</string>
@@ -90,11 +89,10 @@
     <string name="euicc_info_activity_title">eUICC 情報 (%s)</string>
     <string name="euicc_info_access_mode">アクセスモード</string>
     <string name="euicc_info_removable">リムーバブル</string>
-    <string name="euicc_info_eid">EID</string>
     <string name="euicc_info_firmware_version">eUICC OS のバージョン</string>
     <string name="euicc_info_globalplatform_version">グローバルプラットフォームのバージョン</string>
     <string name="euicc_info_sas_accreditation_number">SAS 認定番号</string>
-    <string name="euicc_info_pp_version">保護されたプロファイルのバージョン</string>
+    <string name="euicc_info_pp_version">Protected Profileのバージョン</string>
     <string name="euicc_info_free_nvram">NVRAM の空き容量 (eSIM プロファイルストレージ)</string>
     <string name="euicc_info_gsma_prod">GSMA プロダクション証明書</string>
     <string name="euicc_info_gsma_test">GSMA テスト証明書</string>

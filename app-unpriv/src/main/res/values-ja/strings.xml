@@ -30,4 +30,5 @@
     <string name="compatibility_check_verdict_unknown_likely_fail">挿入された取り外し可能な eSIM がデバイス上で管理できるかどうかは判断できません。デバイスが OMAPI のサポートを宣言していないため、このデバイス上で取り外し可能な eSIM を管理することはサポートされていない可能性があります。\n%s</string>
     <string name="compatibility_check_verdict_unknown">挿入された取り外し可能な eSIM がデバイス上で管理できるかどうかを確認できません。\n%s</string>
     <string name="compatibility_check_verdict_fail_shared">ただし、eSIM プロファイルがすでに読み込まれている場合、有効化されたプロファイル自体は引き続き機能します。また、プロファイルが管理できない場合は、このデバイスで USB カードリーダーを介してプロファイルを管理できる可能性があります。</string>
+    <string name="toast_ara_m_copied">ARA-M SHA-1 をクリップボードにコピーしました</string>
 </resources>
