@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.DEFAULT_PKID_GSMA_RSP2_ROOT_CI1
@@ -50,10 +51,13 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
 
         logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
 
-        title = getString(
-            R.string.euicc_info_activity_title,
+        val channelTitle = if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+            getString(R.string.usb)
+        } else {
             getString(R.string.channel_name_format, logicalSlotId)
-        )
+        }
+
+        title = getString(R.string.euicc_info_activity_title, channelTitle)
 
         swipeRefresh.setOnRefreshListener { refresh() }
 
