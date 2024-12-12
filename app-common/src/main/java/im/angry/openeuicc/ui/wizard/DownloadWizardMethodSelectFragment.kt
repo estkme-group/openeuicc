@@ -1,5 +1,6 @@
 package im.angry.openeuicc.ui.wizard
 
+import android.app.AlertDialog
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -104,7 +105,16 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
 
     private fun processLpaString(s: String) {
         val components = s.split("$")
-        if (components.size < 3 || components[0] != "LPA:1") return
+        if (components.size < 3 || components[0] != "LPA:1") {
+            AlertDialog.Builder(requireContext()).apply {
+                setTitle(R.string.profile_download_incorrect_lpa_string)
+                setMessage(R.string.profile_download_incorrect_lpa_string_message)
+                setCancelable(true)
+                setNegativeButton(android.R.string.cancel, null)
+                show()
+            }
+            return
+        }
         state.smdp = components[1]
         state.matchingId = components[2]
         gotoNextFragment(DownloadWizardDetailsFragment())
