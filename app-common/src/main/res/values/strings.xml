@@ -122,11 +122,10 @@
     <string name="euicc_info_sas_accreditation_number">SAS Accreditation Number</string>
     <string name="euicc_info_pp_version">Protected Profile Version</string>
     <string name="euicc_info_free_nvram">Free NVRAM (eSIM profile storage)</string>
-    <string name="euicc_info_gsma_prod">GSMA Production Certificate</string>
-    <string name="euicc_info_gsma_test">GSMA Test Certificate</string>
-
-    <string name="supported">Supported</string>
-    <string name="unsupported">Unsupported</string>
+    <string name="euicc_info_ci_type">Certificate Issuer</string>
+    <string name="euicc_info_ci_gsma_live">GSMA Live CI</string>
+    <string name="euicc_info_ci_gsma_test">GSMA Test CI</string>
+    <string name="euicc_info_ci_unknown">Unknown eSIM CA</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>

@@ -19,13 +19,12 @@ import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.launch
-import net.typeblog.lpac_jni.impl.DEFAULT_PKID_GSMA_RSP2_ROOT_CI1
+import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
 
 class EuiccInfoActivity : BaseEuiccAccessActivity() {
     companion object {
         private val YES_NO = Pair(R.string.yes, R.string.no)
-        private val SUPPORTED_UNSUPPORTED = Pair(R.string.supported, R.string.unsupported)
     }
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
@@ -107,21 +106,17 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
             add(Pair(R.string.euicc_info_free_nvram, info?.freeNvram?.let(::formatFreeSpace)))
         }
         channel.lpa.euiccInfo2?.euiccCiPKIdListForSigning.orEmpty().let { signers ->
-            add(
-                Pair(
-                    R.string.euicc_info_gsma_prod,
-                    formatByBoolean(
-                        signers.contains(DEFAULT_PKID_GSMA_RSP2_ROOT_CI1),
-                        SUPPORTED_UNSUPPORTED
-                    )
-                )
-            )
-            add(
-                Pair(
-                    R.string.euicc_info_gsma_test,
-                    formatByBoolean(PKID_GSMA_TEST_CI.any(signers::contains), SUPPORTED_UNSUPPORTED)
-                )
-            )
+            // SGP.28 v1.0, eSIM CI Registration Criteria (Page 5 of 9, 2019-10-24)
+            // https://www.gsma.com/newsroom/wp-content/uploads/SGP.28-v1.0.pdf#page=5
+            // FS.27 v2.0, Security Guidelines for UICC Profiles (Page 25 of 27, 2024-01-30)
+            // https://www.gsma.com/solutions-and-impact/technologies/security/wp-content/uploads/2024/01/FS.27-Security-Guidelines-for-UICC-Credentials-v2.0-FINAL-23-July.pdf#page=25
+            val resId = when {
+                signers.isEmpty() -> R.string.unknown // the case is not mp, but it's is not common
+                PKID_GSMA_LIVE_CI.any(signers::contains) -> R.string.euicc_info_ci_gsma_live
+                PKID_GSMA_TEST_CI.any(signers::contains) -> R.string.euicc_info_ci_gsma_test
+                else -> R.string.euicc_info_ci_unknown
+            }
+            add(Pair(R.string.euicc_info_ci_type, getString(resId)))
         }
     }
 
