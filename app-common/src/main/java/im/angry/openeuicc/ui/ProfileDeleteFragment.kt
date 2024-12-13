@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
@@ -16,31 +17,47 @@ import kotlinx.coroutines.launch
 class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
     companion object {
         const val TAG = "ProfileDeleteFragment"
+        private const val FIELD_ICCID = "iccid"
+        private const val FIELD_NAME = "name"
 
         fun newInstance(slotId: Int, portId: Int, iccid: String, name: String): ProfileDeleteFragment {
             val instance = newInstanceEuicc(ProfileDeleteFragment::class.java, slotId, portId)
             instance.requireArguments().apply {
-                putString("iccid", iccid)
-                putString("name", name)
+                putString(FIELD_ICCID, iccid)
+                putString(FIELD_NAME, name)
             }
             return instance
         }
     }
 
+    private val iccid by lazy {
+        requireArguments().getString(FIELD_ICCID)!!
+    }
+
+    private val name by lazy {
+        requireArguments().getString(FIELD_NAME)!!
+    }
+
     private val editText by lazy {
         EditText(requireContext()).apply {
-            hint = Editable.Factory.getInstance().newEditable(
-                getString(R.string.profile_delete_confirm_input, requireArguments().getString("name")!!)
-            )
+            hint = Editable.Factory.getInstance()
+                .newEditable(getString(R.string.profile_delete_confirm_input, name))
         }
     }
+
     private val inputMatchesName: Boolean
-        get() = editText.text.toString() == requireArguments().getString("name")!!
+        get() = editText.text.toString() == name
+
+    private var toast: Toast? = null
+
     private var deleting = false
+
+    private val alertDialog: AlertDialog
+        get() = requireDialog() as AlertDialog
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme).apply {
-            setMessage(getString(R.string.profile_delete_confirm, requireArguments().getString("name")))
+            setMessage(getString(R.string.profile_delete_confirm, name))
             setView(editText)
             setPositiveButton(android.R.string.ok, null) // Set listener to null to prevent auto closing
             setNegativeButton(android.R.string.cancel, null)
@@ -48,9 +65,8 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
 
     override fun onResume() {
         super.onResume()
-        val alertDialog = dialog!! as AlertDialog
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            if (!deleting && inputMatchesName) delete()
+            if (!deleting) delete()
         }
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
             if (!deleting) dismiss()
@@ -58,8 +74,15 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
     }
 
     private fun delete() {
+        toast?.cancel()
+        if (!inputMatchesName) {
+            val resId = R.string.toast_profile_delete_confirm_text_mismatched
+            toast = Toast.makeText(requireContext(), resId, Toast.LENGTH_LONG).also {
+                it.show()
+            }
+            return
+        }
         deleting = true
-        val alertDialog = dialog!! as AlertDialog
         alertDialog.setCanceledOnTouchOutside(false)
         alertDialog.setCancelable(false)
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
@@ -68,12 +91,7 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
         requireParentFragment().lifecycleScope.launch {
             ensureEuiccChannelManager()
             euiccChannelManagerService.waitForForegroundTask()
-
-            euiccChannelManagerService.launchProfileDeleteTask(
-                slotId,
-                portId,
-                requireArguments().getString("iccid")!!
-            ).onStart {
+            euiccChannelManagerService.launchProfileDeleteTask(slotId, portId, iccid).onStart {
                 if (parentFragment is EuiccProfilesChangedListener) {
                     // Trigger a refresh in the parent fragment -- it should wait until
                     // any foreground task is completed before actually doing a refresh
