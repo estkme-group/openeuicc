@@ -151,6 +151,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         @Suppress("UNUSED_PARAMETER")
         fun onSelect(view: View) {
             if (curIdx < 0) return
+            checkBox.isChecked = true
             if (adapter.currentSelectedIdx == curIdx) return
             val lastIdx = adapter.currentSelectedIdx
             adapter.currentSelectedIdx = curIdx
