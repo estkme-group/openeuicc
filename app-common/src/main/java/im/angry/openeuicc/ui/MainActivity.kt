@@ -151,7 +151,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
         val newPages: MutableList<Page> = mutableListOf()
 
-        euiccChannelManager.flowEuiccPorts().onEach { (slotId, portId) ->
+        euiccChannelManager.flowInternalEuiccPorts().onEach { (slotId, portId) ->
             Log.d(TAG, "slot $slotId port $portId")
 
             euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->

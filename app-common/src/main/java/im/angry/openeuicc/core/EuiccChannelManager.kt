@@ -26,7 +26,16 @@ interface EuiccChannelManager {
      *
      * To obtain a temporary reference to a EuiccChannel, use `withEuiccChannel()`.
      */
-    fun flowEuiccPorts(): Flow<Pair<Int, Int>>
+    fun flowInternalEuiccPorts(): Flow<Pair<Int, Int>>
+
+    /**
+     * Same as flowInternalEuiccPorts(), except that this includes non-device internal eUICC chips
+     * as well. Namely, this includes the USB reader.
+     *
+     * Non-internal readers will only be included if they have been opened properly, i.e. with permissions
+     * granted by the user.
+     */
+    fun flowAllOpenEuiccPorts(): Flow<Pair<Int, Int>>
 
     /**
      * Scan all possible USB devices for CCID readers that may contain eUICC cards.

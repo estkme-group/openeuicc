@@ -18,7 +18,7 @@ val TelephonyManager.dsdsEnabled: Boolean
 fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: Boolean) {
     // Disable all eSIM profiles before performing a DSDS switch (only for internal eSIMs)
     runBlocking {
-        euiccManager.flowEuiccPorts().onEach { (slotId, portId) ->
+        euiccManager.flowInternalEuiccPorts().onEach { (slotId, portId) ->
             euiccManager.withEuiccChannel(slotId, portId) {
                 if (!it.port.card.isRemovable) {
                     it.lpa.disableActiveProfile(false)

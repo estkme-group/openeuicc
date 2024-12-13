@@ -13,7 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -208,7 +208,7 @@ open class DefaultEuiccChannelManager(
         }
     }
 
-    override fun flowEuiccPorts(): Flow<Pair<Int, Int>> = flow {
+    override fun flowInternalEuiccPorts(): Flow<Pair<Int, Int>> = flow {
         uiccCards.forEach { info ->
             info.ports.forEach { port ->
                 tryOpenEuiccChannel(port)?.also {
@@ -222,6 +222,13 @@ open class DefaultEuiccChannelManager(
             }
         }
     }.flowOn(Dispatchers.IO)
+
+    override fun flowAllOpenEuiccPorts(): Flow<Pair<Int, Int>> =
+        merge(flowInternalEuiccPorts(), flow {
+            if (tryOpenUsbEuiccChannel().second) {
+                emit(Pair(EuiccChannelManager.USB_CHANNEL_ID, 0))
+            }
+        })
 
     override suspend fun tryOpenUsbEuiccChannel(): Pair<UsbDevice?, Boolean> =
         withContext(Dispatchers.IO) {
