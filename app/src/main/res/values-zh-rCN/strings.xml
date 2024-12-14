@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc">在此设备上找不到 eUICC 芯片。\n在某些设备上，您可能需要先在此应用的菜单中启用双卡支持。</string>
+    <string name="no_euicc_priv">在此设备上找不到 eUICC 芯片。\n在某些设备上，您可能需要先在此应用的菜单中启用双卡支持。</string>
     <string name="dsds">双卡</string>
     <string name="toast_dsds_switched">双卡支持状态已切换。请等待基带重新启动。</string>
     <string name="footer_mep">此卡槽支持多个启用配置文件 (MEP)。要启用或禁用此功能，请使用\"卡槽映射\"工具。</string>

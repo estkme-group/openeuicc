@@ -23,4 +23,8 @@ class PrivilegedAppContainer(context: Context) : DefaultAppContainer(context) {
     override val euiccChannelFactory by lazy {
         PrivilegedEuiccChannelFactory(context)
     }
+
+    override val customizableTextProvider by lazy {
+        PrivilegedCustomizableTextProvider(context)
+    }
 }

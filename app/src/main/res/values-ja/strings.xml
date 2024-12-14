@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc">このデバイスで eUICC が見つかりません。\nデバイスによってはアプリのメニューからデュアル SIM を有効化する必要があります。</string>
+    <string name="no_euicc_priv">このデバイスで eUICC が見つかりません。\nデバイスによってはアプリのメニューからデュアル SIM を有効化する必要があります。</string>
     <string name="telephony_manager">TelephonyManager (特権)</string>
     <string name="dsds">デュアル SIM</string>
     <string name="toast_dsds_switched">DSDS の状態が切り替わりました。モデムが再起動するまでお待ちください。</string>
