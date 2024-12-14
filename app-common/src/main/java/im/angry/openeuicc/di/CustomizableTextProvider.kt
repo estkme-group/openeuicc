@@ -8,6 +8,11 @@ interface CustomizableTextProvider {
     val noEuiccExplanation: String
 
     /**
+     * Shown when we timed out switching between profiles.
+     */
+    val profileSwitchingTimeoutMessage: String
+
+    /**
      * Format the name of a logical slot; internal only -- not intended for
      * other channels such as USB.
      */

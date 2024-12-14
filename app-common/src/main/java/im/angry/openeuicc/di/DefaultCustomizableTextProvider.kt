@@ -7,6 +7,9 @@ open class DefaultCustomizableTextProvider(private val context: Context) : Custo
     override val noEuiccExplanation: String
         get() = context.getString(R.string.no_euicc)
 
+    override val profileSwitchingTimeoutMessage: String
+        get() = context.getString(R.string.enable_disable_timeout)
+
     override fun formatInternalChannelName(logicalSlotId: Int): String =
         context.getString(R.string.channel_name_format, logicalSlotId)
 }

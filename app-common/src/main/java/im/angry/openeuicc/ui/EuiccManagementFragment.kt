@@ -261,7 +261,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                         invalid = true
                         // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
                         AlertDialog.Builder(requireContext()).apply {
-                            setMessage(R.string.enable_disable_timeout)
+                            setMessage(appContainer.customizableTextProvider.profileSwitchingTimeoutMessage)
                             setPositiveButton(android.R.string.ok) { dialog, _ ->
                                 dialog.dismiss()
                                 requireActivity().finish()
