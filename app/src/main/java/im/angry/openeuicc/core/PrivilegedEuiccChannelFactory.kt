@@ -30,6 +30,7 @@ class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFacto
                 return EuiccChannelImpl(
                     context.getString(R.string.telephony_manager),
                     port,
+                    intrinsicChannelName = null,
                     TelephonyManagerApduInterface(
                         port,
                         tm,

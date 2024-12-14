@@ -31,6 +31,8 @@ class EuiccChannelWrapper(orig: EuiccChannel) : EuiccChannel {
     override val lpa: LocalProfileAssistant by lpaDelegate
     override val valid: Boolean
         get() = channel.valid
+    override val intrinsicChannelName: String?
+        get() = channel.intrinsicChannelName
 
     override fun close() = channel.close()
 

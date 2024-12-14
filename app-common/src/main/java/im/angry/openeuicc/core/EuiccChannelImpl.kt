@@ -10,6 +10,7 @@ import net.typeblog.lpac_jni.impl.LocalProfileAssistantImpl
 class EuiccChannelImpl(
     override val type: String,
     override val port: UiccPortInfoCompat,
+    override val intrinsicChannelName: String?,
     apduInterface: ApduInterface,
     verboseLoggingFlow: Flow<Boolean>,
     ignoreTLSCertificateFlow: Flow<Boolean>

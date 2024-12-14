@@ -37,6 +37,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
             return EuiccChannelImpl(
                 context.getString(R.string.omapi),
                 port,
+                intrinsicChannelName = null,
                 OmapiApduInterface(
                     seService!!,
                     port,
@@ -67,6 +68,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
         return EuiccChannelImpl(
             context.getString(R.string.usb),
             FakeUiccPortInfoCompat(FakeUiccCardInfoCompat(EuiccChannelManager.USB_CHANNEL_ID)),
+            intrinsicChannelName = usbDevice.productName,
             UsbApduInterface(
                 conn,
                 bulkIn,
