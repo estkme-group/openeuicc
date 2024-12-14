@@ -72,6 +72,7 @@
     <string name="download_wizard_method_select">How would you like to download the eSIM profile?</string>
     <string name="download_wizard_method_qr_code">Scan a QR code with camera</string>
     <string name="download_wizard_method_gallery">Load a QR code from gallery</string>
+    <string name="download_wizard_method_clipboard">Load from Clipboard</string>
     <string name="download_wizard_method_manual">Enter manually</string>
     <string name="download_wizard_details">Input or confirm details for downloading your eSIM:</string>
     <string name="download_wizard_progress">Downloading your eSIM…</string>

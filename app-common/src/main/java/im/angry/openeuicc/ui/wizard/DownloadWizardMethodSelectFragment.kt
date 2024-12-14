@@ -1,6 +1,7 @@
 package im.angry.openeuicc.ui.wizard
 
 import android.app.AlertDialog
+import android.content.ClipboardManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -68,6 +69,9 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
         DownloadMethod(R.drawable.ic_gallery_black, R.string.download_wizard_method_gallery) {
             gallerySelectorLauncher.launch("image/*")
         },
+        DownloadMethod(R.drawable.ic_scan_black, R.string.download_wizard_method_clipboard) {
+            handleLoadFromClipboard()
+        },
         DownloadMethod(R.drawable.ic_edit, R.string.download_wizard_method_manual) {
             gotoNextFragment(DownloadWizardDetailsFragment())
         }
@@ -101,6 +105,12 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
             )
         )
         return view
+    }
+
+    private fun handleLoadFromClipboard() {
+        val clipboard = requireContext().getSystemService(ClipboardManager::class.java)
+        val text = clipboard.primaryClip?.getItemAt(0)?.text ?: return
+        processLpaString(text.toString())
     }
 
     private fun processLpaString(s: String) {
