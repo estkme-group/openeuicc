@@ -1,12 +1,14 @@
 package im.angry.openeuicc.util
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -83,17 +85,31 @@ fun <T : ActivityResultCaller> T.setupLogSaving(
         registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
             if (uri == null) return@registerForActivityResult
 
-            val contentResolver = when (this@setupLogSaving) {
-                is Context -> contentResolver
-                is Fragment -> requireContext().contentResolver
+            val context = when (this@setupLogSaving) {
+                is Context -> this@setupLogSaving
+                is Fragment -> requireContext()
                 else -> throw IllegalArgumentException("Must be either Context or Fragment!")
             }
 
-            contentResolver.openFileDescriptor(uri, "w")?.use {
+            context.contentResolver.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { os ->
                     os.write(getLogText().encodeToByteArray())
                 }
             }
+
+            AlertDialog.Builder(context).apply {
+                setMessage(R.string.logs_saved_message)
+                setNegativeButton(R.string.no) { _, _ -> }
+                setPositiveButton(R.string.yes) { _, _ ->
+                    val intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                    }
+
+                    context.startActivity(Intent.createChooser(intent, null))
+                }
+            }.show()
         }
 
     return {

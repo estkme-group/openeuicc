@@ -94,6 +94,8 @@
     <string name="download_wizard_diagnostics_save">Save</string>
     <string name="download_wizard_diagnostics_file_template">Diagnostics at %s</string>
 
+    <string name="logs_saved_message">Logs have been saved to the selected path. Would you like to share the log through another app?</string>
+
     <string name="profile_rename_new_name">New nickname</string>
 
     <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
