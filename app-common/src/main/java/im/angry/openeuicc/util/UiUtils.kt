@@ -1,17 +1,21 @@
 package im.angry.openeuicc.util
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultCaller
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import im.angry.openeuicc.common.R
+import java.io.FileOutputStream
 
 // Source: <https://stackoverflow.com/questions/12478520/how-to-set-dialogfragments-width-and-height>
 /**
@@ -68,5 +72,31 @@ fun setupRootViewInsets(view: ViewGroup) {
         v.updatePadding(bars.left, v.paddingTop, bars.right, bars.bottom)
 
         WindowInsetsCompat.CONSUMED
+    }
+}
+
+fun <T : ActivityResultCaller> T.setupLogSaving(
+    getLogFileName: () -> String,
+    getLogText: () -> String
+): () -> Unit {
+    val launchSaveIntent =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
+            if (uri == null) return@registerForActivityResult
+
+            val contentResolver = when (this@setupLogSaving) {
+                is Context -> contentResolver
+                is Fragment -> requireContext().contentResolver
+                else -> throw IllegalArgumentException("Must be either Context or Fragment!")
+            }
+
+            contentResolver.openFileDescriptor(uri, "w")?.use {
+                FileOutputStream(it.fileDescriptor).use { os ->
+                    os.write(getLogText().encodeToByteArray())
+                }
+            }
+        }
+
+    return {
+        launchSaveIntent.launch(getLogFileName())
     }
 }

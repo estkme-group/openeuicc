@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,7 +16,6 @@ import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.FileOutputStream
 import java.util.Date
 
 class LogsActivity : AppCompatActivity() {
@@ -27,15 +25,15 @@ class LogsActivity : AppCompatActivity() {
     private lateinit var logStr: String
 
     private val saveLogs =
-        registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
-            if (uri == null) return@registerForActivityResult
-            if (!this::logStr.isInitialized) return@registerForActivityResult
-            contentResolver.openFileDescriptor(uri, "w")?.use {
-                FileOutputStream(it.fileDescriptor).use { os ->
-                    os.write(logStr.encodeToByteArray())
-                }
-            }
-        }
+        setupLogSaving(
+            getLogFileName = {
+                getString(
+                    R.string.logs_filename_template,
+                    SimpleDateFormat.getDateTimeInstance().format(Date())
+                )
+            },
+            getLogText = { logStr }
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -76,9 +74,7 @@ class LogsActivity : AppCompatActivity() {
             true
         }
         R.id.save -> {
-            saveLogs.launch(getString(R.string.logs_filename_template,
-                SimpleDateFormat.getDateTimeInstance().format(Date())
-            ))
+            saveLogs()
             true
         }
         else -> super.onOptionsItemSelected(item)
