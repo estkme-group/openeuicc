@@ -43,7 +43,6 @@
     <string name="download_wizard_back">戻る</string>
     <string name="download_wizard_next">次へ</string>
     <string name="download_wizard_slot_select">ダウンロードする eSIM を選択または確認:</string>
-    <string name="download_wizard_slot_title">論理スロット %d</string>
     <string name="download_wizard_slot_type">タイプ:</string>
     <string name="download_wizard_slot_type_removable">リムーバブル</string>
     <string name="download_wizard_slot_type_internal">内部</string>

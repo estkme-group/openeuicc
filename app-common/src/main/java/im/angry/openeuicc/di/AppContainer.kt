@@ -15,4 +15,5 @@ interface AppContainer {
     val preferenceRepository: PreferenceRepository
     val uiComponentFactory: UiComponentFactory
     val euiccChannelFactory: EuiccChannelFactory
+    val customizableTextProvider: CustomizableTextProvider
 }

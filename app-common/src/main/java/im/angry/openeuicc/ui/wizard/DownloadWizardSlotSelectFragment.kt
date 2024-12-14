@@ -179,7 +179,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             title.text = if (item.logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
                 root.context.getString(R.string.usb)
             } else {
-                root.context.getString(R.string.download_wizard_slot_title, item.logicalSlotId)
+                appContainer.customizableTextProvider.formatInternalChannelName(item.logicalSlotId)
             }
             eID.text = item.eID
             activeProfile.text = item.enabledProfileName ?: root.context.getString(R.string.unknown)

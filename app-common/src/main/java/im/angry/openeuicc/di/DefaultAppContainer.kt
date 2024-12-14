@@ -38,4 +38,8 @@ open class DefaultAppContainer(context: Context) : AppContainer {
     override val euiccChannelFactory by lazy {
         DefaultEuiccChannelFactory(context)
     }
+
+    override val customizableTextProvider by lazy {
+        DefaultCustomizableTextProvider(context)
+    }
 }

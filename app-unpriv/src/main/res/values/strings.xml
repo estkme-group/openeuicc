@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">EasyEUICC</string>
-    <string name="channel_name_format" translatable="false">SIM %d</string>
+    <string name="channel_name_format_unpriv" translatable="false">SIM %d</string>
     <string name="compatibility_check">Compatibility Check</string>
     <string name="open_sim_toolkit">Open SIM Toolkit</string>
 

@@ -81,7 +81,6 @@
     <string name="download_wizard_back">返回</string>
     <string name="download_wizard_next">下一步</string>
     <string name="download_wizard_slot_select">请选择或确认下载目标 eSIM 卡槽:</string>
-    <string name="download_wizard_slot_title">逻辑卡槽 %d</string>
     <string name="download_wizard_slot_type">类型:</string>
     <string name="download_wizard_slot_type_removable">可插拔</string>
     <string name="download_wizard_slot_type_internal">内置</string>

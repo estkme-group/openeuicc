@@ -6,4 +6,8 @@ class UnprivilegedAppContainer(context: Context) : DefaultAppContainer(context) 
     override val uiComponentFactory by lazy {
         UnprivilegedUiComponentFactory()
     }
+
+    override val customizableTextProvider by lazy {
+        UnprivilegedCustomizableTextProvider(context)
+    }
 }
