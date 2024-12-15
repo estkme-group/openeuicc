@@ -55,6 +55,7 @@
 
     <string name="profile_download_low_nvram_title">This download may fail</string>
     <string name="profile_download_low_nvram_message">This download may fail due to low remaining capacity.</string>
+    <string name="profile_download_no_lpa_string">No LPA string found in clipboard</string>
     <string name="profile_download_incorrect_lpa_string">Incorrect LPA String</string>
     <string name="profile_download_incorrect_lpa_string_message">The LPA string could not be parsed</string>
 
