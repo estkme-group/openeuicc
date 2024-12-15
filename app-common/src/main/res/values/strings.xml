@@ -57,7 +57,7 @@
     <string name="profile_download_low_nvram_message">This download may fail due to low remaining capacity.</string>
     <string name="profile_download_no_lpa_string">No LPA string found in clipboard</string>
     <string name="profile_download_incorrect_lpa_string">Incorrect LPA String</string>
-    <string name="profile_download_incorrect_lpa_string_message">The LPA string could not be parsed</string>
+    <string name="profile_download_incorrect_lpa_string_message">Could not parse QR code or clipboard content as an LPA string for downloading eSIMs.</string>
 
     <string name="download_wizard">Download Wizard</string>
     <string name="download_wizard_back">Back</string>
