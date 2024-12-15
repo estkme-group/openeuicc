@@ -33,9 +33,6 @@
     <string name="toast_iccid_copied">ICCID copied to clipboard</string>
     <string name="toast_eid_copied">EID copied to clipboard</string>
 
-    <string name="slot_select">Select Slot</string>
-    <string name="slot_select_select">Select</string>
-
     <string name="usb_permission">Grant USB permission</string>
     <string name="usb_permission_needed">Permission is needed to access the USB smart card reader.</string>
     <string name="usb_failed">Cannot connect to eSIM via a USB smart card reader.</string>

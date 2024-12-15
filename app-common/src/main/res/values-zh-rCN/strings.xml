@@ -19,8 +19,6 @@
     <string name="toast_profile_enable_failed">无法切换到新的 eSIM 配置文件。</string>
     <string name="toast_profile_name_too_long">昵称不能超过 64 个字符</string>
     <string name="toast_iccid_copied">已复制 ICCID 到剪贴板</string>
-    <string name="slot_select">选择卡槽</string>
-    <string name="slot_select_select">选择</string>
     <string name="usb_permission">授予 USB 权限</string>
     <string name="usb_permission_needed">需要获得访问 USB 智能卡读卡器的权限。</string>
     <string name="usb_failed">无法通过 USB 智能卡读卡器连接到 eSIM。</string>

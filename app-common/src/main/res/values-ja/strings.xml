@@ -18,8 +18,6 @@
     <string name="toast_profile_enable_failed">新しい eSIM プロファイルに切り替えることができません。</string>
     <string name="toast_profile_name_too_long">ニックネームは 64 文字以内にしてください</string>
     <string name="toast_iccid_copied">ICCID をクリップボードにコピーしました</string>
-    <string name="slot_select">スロットを選択</string>
-    <string name="slot_select_select">選択</string>
     <string name="usb_permission">USB の権限を許可</string>
     <string name="usb_permission_needed">USB スマートカードリーダーにアクセスするには許可が必要です。</string>
     <string name="usb_failed">USB スマートカードリーダー経由で eSIM に接続できません。</string>
