@@ -69,7 +69,7 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
         DownloadMethod(R.drawable.ic_gallery_black, R.string.download_wizard_method_gallery) {
             gallerySelectorLauncher.launch("image/*")
         },
-        DownloadMethod(R.drawable.ic_scan_black, R.string.download_wizard_method_clipboard) {
+        DownloadMethod(R.drawable.ic_paste_go, R.string.download_wizard_method_clipboard) {
             handleLoadFromClipboard()
         },
         DownloadMethod(R.drawable.ic_edit, R.string.download_wizard_method_manual) {
