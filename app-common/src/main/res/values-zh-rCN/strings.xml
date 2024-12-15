@@ -126,8 +126,8 @@
     <string name="no">否</string>
     <string name="developer_options_steps">还有 %d 步成为开发者</string>
     <string name="developer_options_enabled">你现在是开发者了！</string>
-    <string name="pref_language">语言</string>
-    <string name="pref_language_desc">选择 App 语言</string>
+    <string name="pref_advanced_language">语言</string>
+    <string name="pref_advanced_language_desc">选择 App 语言</string>
     <string name="pref_developer">开发者选项</string>
     <string name="pref_developer_unfiltered_profile_list">显示未经过滤的配置文件列表</string>
     <string name="pref_developer_unfiltered_profile_list_desc">在配置文件列表中包括非生产环境的配置文件</string>

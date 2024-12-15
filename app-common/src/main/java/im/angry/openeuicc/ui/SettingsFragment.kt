@@ -45,7 +45,7 @@ open class SettingsFragment: PreferenceFragmentCompat() {
             setOnPreferenceClickListener(::onAppVersionClicked)
         }
 
-        findPreference<Preference>("pref_language")?.apply {
+        findPreference<Preference>("pref_advanced_language")?.apply {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@apply
             isVisible = true
             intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {

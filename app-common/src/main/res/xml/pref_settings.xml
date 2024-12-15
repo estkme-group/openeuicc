@@ -40,9 +40,9 @@
         <Preference
             app:iconSpaceReserved="false"
             app:isPreferenceVisible="false"
-            app:key="pref_language"
-            app:summary="@string/pref_language_desc"
-            app:title="@string/pref_language" />
+            app:key="pref_advanced_language"
+            app:summary="@string/pref_advanced_language_desc"
+            app:title="@string/pref_advanced_language" />
 
         <Preference
             app:key="pref_advanced_logs"
