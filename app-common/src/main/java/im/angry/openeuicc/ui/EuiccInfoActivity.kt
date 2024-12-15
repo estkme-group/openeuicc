@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
 
-class EuiccInfoActivity : BaseEuiccAccessActivity() {
+class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     companion object {
         private val YES_NO = Pair(R.string.yes, R.string.no)
     }
@@ -64,7 +64,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity() {
         val channelTitle = if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
             getString(R.string.usb)
         } else {
-            getString(R.string.channel_name_format, logicalSlotId)
+            appContainer.customizableTextProvider.formatInternalChannelName(logicalSlotId)
         }
 
         title = getString(R.string.euicc_info_activity_title, channelTitle)

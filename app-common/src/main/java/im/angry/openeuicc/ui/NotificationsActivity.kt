@@ -62,7 +62,7 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         val channelTitle = if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
             getString(R.string.usb)
         } else {
-            getString(R.string.channel_name_format, logicalSlotId)
+            appContainer.customizableTextProvider.formatInternalChannelName(logicalSlotId)
         }
 
         title = getString(R.string.profile_notifications_detailed_format, channelTitle)
