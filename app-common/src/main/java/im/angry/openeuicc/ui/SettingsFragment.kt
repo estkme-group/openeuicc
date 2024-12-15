@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
-import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
@@ -14,7 +13,6 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -60,25 +58,25 @@ open class SettingsFragment: PreferenceFragmentCompat() {
         }
 
         findPreference<CheckBoxPreference>("pref_notifications_download")
-            ?.bindBooleanFlow(preferenceRepository.notificationDownloadFlow, PreferenceKeys.NOTIFICATION_DOWNLOAD)
+            ?.bindBooleanFlow(preferenceRepository.notificationDownloadFlow)
 
         findPreference<CheckBoxPreference>("pref_notifications_delete")
-            ?.bindBooleanFlow(preferenceRepository.notificationDeleteFlow, PreferenceKeys.NOTIFICATION_DELETE)
+            ?.bindBooleanFlow(preferenceRepository.notificationDeleteFlow)
 
         findPreference<CheckBoxPreference>("pref_notifications_switch")
-            ?.bindBooleanFlow(preferenceRepository.notificationSwitchFlow, PreferenceKeys.NOTIFICATION_SWITCH)
+            ?.bindBooleanFlow(preferenceRepository.notificationSwitchFlow)
 
         findPreference<CheckBoxPreference>("pref_advanced_disable_safeguard_removable_esim")
-            ?.bindBooleanFlow(preferenceRepository.disableSafeguardFlow, PreferenceKeys.DISABLE_SAFEGUARD_REMOVABLE_ESIM)
+            ?.bindBooleanFlow(preferenceRepository.disableSafeguardFlow)
 
         findPreference<CheckBoxPreference>("pref_advanced_verbose_logging")
-            ?.bindBooleanFlow(preferenceRepository.verboseLoggingFlow, PreferenceKeys.VERBOSE_LOGGING)
+            ?.bindBooleanFlow(preferenceRepository.verboseLoggingFlow)
 
         findPreference<CheckBoxPreference>("pref_developer_unfiltered_profile_list")
-            ?.bindBooleanFlow(preferenceRepository.unfilteredProfileListFlow, PreferenceKeys.UNFILTERED_PROFILE_LIST)
+            ?.bindBooleanFlow(preferenceRepository.unfilteredProfileListFlow)
 
         findPreference<CheckBoxPreference>("pref_ignore_tls_certificate")
-            ?.bindBooleanFlow(preferenceRepository.ignoreTLSCertificateFlow, PreferenceKeys.IGNORE_TLS_CERTIFICATE)
+            ?.bindBooleanFlow(preferenceRepository.ignoreTLSCertificateFlow)
     }
 
     override fun onStart() {
@@ -99,10 +97,7 @@ open class SettingsFragment: PreferenceFragmentCompat() {
 
         if (numClicks == 7) {
             lifecycleScope.launch {
-                preferenceRepository.updatePreference(
-                    PreferenceKeys.DEVELOPER_OPTIONS_ENABLED,
-                    true
-                )
+                preferenceRepository.developerOptionsEnabledFlow.updatePreference(true)
 
                 lastToast?.cancel()
                 Toast.makeText(
@@ -124,14 +119,14 @@ open class SettingsFragment: PreferenceFragmentCompat() {
         return true
     }
 
-    private fun CheckBoxPreference.bindBooleanFlow(flow: Flow<Boolean>, key: Preferences.Key<Boolean>) {
+    private fun CheckBoxPreference.bindBooleanFlow(flow: PreferenceFlowWrapper<Boolean>) {
         lifecycleScope.launch {
             flow.collect { isChecked = it }
         }
 
         setOnPreferenceChangeListener { _, newValue ->
             runBlocking {
-                preferenceRepository.updatePreference(key, newValue as Boolean)
+                flow.updatePreference(newValue as Boolean)
             }
             true
         }

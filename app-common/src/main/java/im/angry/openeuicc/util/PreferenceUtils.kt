@@ -19,7 +19,7 @@ val Context.preferenceRepository: PreferenceRepository
 val Fragment.preferenceRepository: PreferenceRepository
     get() = requireContext().preferenceRepository
 
-object PreferenceKeys {
+internal object PreferenceKeys {
     // ---- Profile Notifications ----
     val NOTIFICATION_DOWNLOAD = booleanPreferencesKey("notification_download")
     val NOTIFICATION_DELETE = booleanPreferencesKey("notification_delete")
@@ -51,9 +51,22 @@ class PreferenceRepository(private val context: Context) {
     val unfilteredProfileListFlow = bindFlow(PreferenceKeys.UNFILTERED_PROFILE_LIST, false)
     val ignoreTLSCertificateFlow = bindFlow(PreferenceKeys.IGNORE_TLS_CERTIFICATE, false)
 
-    private fun <T> bindFlow(key: Preferences.Key<T>, defaultValue: T): Flow<T> =
-        context.dataStore.data.map { it[key] ?: defaultValue }
+    private fun <T> bindFlow(key: Preferences.Key<T>, defaultValue: T): PreferenceFlowWrapper<T> =
+        PreferenceFlowWrapper(context, key, defaultValue)
+}
 
-    suspend fun <T> updatePreference(key: Preferences.Key<T>, value: T) =
+class PreferenceFlowWrapper<T> private constructor(
+    private val context: Context,
+    private val key: Preferences.Key<T>,
+    inner: Flow<T>
+) : Flow<T> by inner {
+    internal constructor(context: Context, key: Preferences.Key<T>, defaultValue: T) : this(
+        context,
+        key,
+        context.dataStore.data.map { it[key] ?: defaultValue }
+    )
+
+    suspend fun updatePreference(value: T) {
         context.dataStore.edit { it[key] = value }
+    }
 }
