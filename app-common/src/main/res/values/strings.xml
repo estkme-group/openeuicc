@@ -31,6 +31,7 @@
     <string name="toast_profile_name_too_long">Nickname cannot be longer than 64 characters</string>
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>
     <string name="toast_iccid_copied">ICCID copied to clipboard</string>
+    <string name="toast_eid_copied">EID copied to clipboard</string>
 
     <string name="slot_select">Select Slot</string>
     <string name="slot_select_select">Select</string>
