@@ -414,15 +414,11 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             getString(R.string.task_profile_rename_failure),
             R.drawable.ic_task_rename
         ) {
-            val res = euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+            euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
                 channel.lpa.setNickname(
                     iccid,
                     name
                 )
-            }
-
-            if (!res) {
-                throw RuntimeException("Profile not renamed")
             }
         }
 

@@ -205,16 +205,16 @@ Java_net_typeblog_lpac_1jni_LpacJni_es10cDisableProfile(JNIEnv *env, jobject thi
 
 JNIEXPORT jint JNICALL
 Java_net_typeblog_lpac_1jni_LpacJni_es10cSetNickname(JNIEnv *env, jobject thiz, jlong handle,
-                                                     jstring iccid, jstring nick) {
+                                                     jstring iccid, jbyteArray nick) {
     struct euicc_ctx *ctx = (struct euicc_ctx *) handle;
     const char *_iccid = NULL;
-    const char *_nick = NULL;
+    jbyte *_nick = NULL;
     int ret;
 
     _iccid = (*env)->GetStringUTFChars(env, iccid, NULL);
-    _nick = (*env)->GetStringUTFChars(env, nick, NULL);
-    ret = es10c_set_nickname(ctx, _iccid, _nick);
-    (*env)->ReleaseStringUTFChars(env, nick, _nick);
+    _nick = (*env)->GetByteArrayElements(env, nick, NULL);
+    ret = es10c_set_nickname(ctx, _iccid, (const char *) _nick);
+    (*env)->ReleaseByteArrayElements(env, nick, _nick, JNI_ABORT);
     (*env)->ReleaseStringUTFChars(env, iccid, _iccid);
     return ret;
 }

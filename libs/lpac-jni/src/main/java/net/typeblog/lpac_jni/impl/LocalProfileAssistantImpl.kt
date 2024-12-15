@@ -239,8 +239,23 @@ class LocalProfileAssistantImpl(
         } == 0
 
     @Synchronized
-    override fun setNickname(iccid: String, nickname: String): Boolean =
-        LpacJni.es10cSetNickname(contextHandle, iccid, nickname) == 0
+    override fun setNickname(iccid: String, nickname: String) {
+        val encoded = try {
+            Charsets.UTF_8.encode(nickname).array()
+        } catch (e: CharacterCodingException) {
+            throw LocalProfileAssistant.ProfileNameIsInvalidUTF8Exception()
+        }
+
+        if (encoded.size >= 64) {
+            throw LocalProfileAssistant.ProfileNameTooLongException()
+        }
+
+        val encodedNullTerminated = encoded + byteArrayOf(0)
+
+        if (LpacJni.es10cSetNickname(contextHandle, iccid, encodedNullTerminated) != 0) {
+            throw LocalProfileAssistant.ProfileRenameException()
+        }
+    }
 
     override fun euiccMemoryReset() {
         LpacJni.es10cEuiccMemoryReset(contextHandle)

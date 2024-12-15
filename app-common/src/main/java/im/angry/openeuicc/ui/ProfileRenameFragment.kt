@@ -14,6 +14,7 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.launch
+import net.typeblog.lpac_jni.LocalProfileAssistant
 
 class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragmentMarker {
     companion object {
@@ -95,21 +96,49 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
         lifecycleScope.launch {
             ensureEuiccChannelManager()
             euiccChannelManagerService.waitForForegroundTask()
-            euiccChannelManagerService.launchProfileRenameTask(
+            val res = euiccChannelManagerService.launchProfileRenameTask(
                 slotId,
                 portId,
                 requireArguments().getString("iccid")!!,
                 name
             ).waitDone()
 
-            if (parentFragment is EuiccProfilesChangedListener) {
-                (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
-            }
+            when (res) {
+                is LocalProfileAssistant.ProfileNameTooLongException -> {
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.profile_rename_too_long,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
 
-            try {
-                dismiss()
-            } catch (e: IllegalStateException) {
-                // Ignored
+                is LocalProfileAssistant.ProfileNameIsInvalidUTF8Exception -> {
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.profile_rename_encoding_error,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                is Throwable -> {
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.profile_rename_failure,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                else -> {
+                    if (parentFragment is EuiccProfilesChangedListener) {
+                        (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
+                    }
+
+                    try {
+                        dismiss()
+                    } catch (e: IllegalStateException) {
+                        // Ignored
+                    }
+                }
             }
         }
     }
