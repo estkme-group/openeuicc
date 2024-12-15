@@ -57,13 +57,15 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         super.beforeNext()
 
         if (adapter.selected.freeSpace < LOW_NVRAM_THRESHOLD) {
+            val activity = requireActivity()
+
             AlertDialog.Builder(requireContext()).apply {
                 setTitle(R.string.profile_download_low_nvram_title)
                 setMessage(R.string.profile_download_low_nvram_message)
                 setCancelable(true)
                 setPositiveButton(android.R.string.ok, null)
                 setNegativeButton(android.R.string.cancel) { _, _ ->
-                    requireActivity().finish()
+                    activity.finish()
                 }
                 show()
             }
