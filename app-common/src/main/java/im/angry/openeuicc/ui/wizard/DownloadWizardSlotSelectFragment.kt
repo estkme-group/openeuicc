@@ -62,7 +62,9 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
                 setMessage(R.string.profile_download_low_nvram_message)
                 setCancelable(true)
                 setPositiveButton(android.R.string.ok, null)
-                setNegativeButton(android.R.string.cancel, null)
+                setNegativeButton(android.R.string.cancel) { _, _ ->
+                    requireActivity().finish()
+                }
                 show()
             }
         }
