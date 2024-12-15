@@ -3,6 +3,7 @@ package im.angry.openeuicc.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.preference.Preference
@@ -35,7 +36,8 @@ class UnprivilegedSettingsFragment : SettingsFragment() {
             setOnPreferenceClickListener {
                 requireContext().getSystemService(ClipboardManager::class.java)!!
                     .setPrimaryClip(ClipData.newPlainText("ara-m", summary))
-                Toast.makeText(requireContext(), R.string.toast_ara_m_copied, Toast.LENGTH_SHORT)
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) Toast
+                    .makeText(requireContext(), R.string.toast_ara_m_copied, Toast.LENGTH_SHORT)
                     .show()
                 true
             }

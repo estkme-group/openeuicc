@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
@@ -348,7 +349,8 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             iccid.setOnLongClickListener {
                 requireContext().getSystemService(ClipboardManager::class.java)!!
                     .setPrimaryClip(ClipData.newPlainText("iccid", iccid.text))
-                Toast.makeText(requireContext(), R.string.toast_iccid_copied, Toast.LENGTH_SHORT)
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) Toast
+                    .makeText(requireContext(), R.string.toast_iccid_copied, Toast.LENGTH_SHORT)
                     .show()
                 true
             }
