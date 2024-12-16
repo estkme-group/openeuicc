@@ -28,7 +28,6 @@
     <string name="switch_did_not_refresh">The operation was successful, but your phone\'s modem refused to refresh. You might need to toggle airplane mode or reboot in order to use the new profile.</string>
 
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
-    <string name="toast_profile_name_too_long">Nickname cannot be longer than 64 characters</string>
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>
     <string name="toast_iccid_copied">ICCID copied to clipboard</string>
     <string name="toast_eid_copied">EID copied to clipboard</string>

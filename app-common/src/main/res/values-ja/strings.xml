@@ -16,7 +16,6 @@
     <string name="enable_disable_timeout">eSIM チップがプロファイルの切り替えの待機中にタイムアウトしました。これはデバイスのモデムファームウェアのバグの可能性があります。機内モードに切り替えるかアプリを再起動、デバイスを再起動してください。</string>
     <string name="switch_did_not_refresh">操作は成功しましたが、デバイスのモデムが更新を拒否しました。新しいプロファイルを使用するには機内モードに切り替えるか、再起動する必要があります。</string>
     <string name="toast_profile_enable_failed">新しい eSIM プロファイルに切り替えることができません。</string>
-    <string name="toast_profile_name_too_long">ニックネームは 64 文字以内にしてください</string>
     <string name="toast_iccid_copied">ICCID をクリップボードにコピーしました</string>
     <string name="usb_permission">USB の権限を許可</string>
     <string name="usb_permission_needed">USB スマートカードリーダーにアクセスするには許可が必要です。</string>

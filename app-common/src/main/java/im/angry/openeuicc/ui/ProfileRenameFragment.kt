@@ -94,12 +94,6 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
     }
 
     private fun rename() {
-        val name = profileRenameNewName.editText!!.text.toString().trim()
-        if (name.length >= 64) {
-            Toast.makeText(context, R.string.toast_profile_name_too_long, Toast.LENGTH_LONG).show()
-            return
-        }
-
         renaming = true
         progress.isIndeterminate = true
         progress.visibility = View.VISIBLE
@@ -111,7 +105,7 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
                 slotId,
                 portId,
                 requireArguments().getString("iccid")!!,
-                name
+                profileRenameNewName.editText!!.text.toString().trim()
             ).waitDone()
 
             when (res) {
