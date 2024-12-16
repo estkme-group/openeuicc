@@ -82,6 +82,17 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
         }
     }
 
+    private fun showErrorAndCancel(errorStrRes: Int) {
+        Toast.makeText(
+            requireContext(),
+            errorStrRes,
+            Toast.LENGTH_LONG
+        ).show()
+
+        renaming = false
+        progress.visibility = View.GONE
+    }
+
     private fun rename() {
         val name = profileRenameNewName.editText!!.text.toString().trim()
         if (name.length >= 64) {
@@ -105,27 +116,15 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
 
             when (res) {
                 is LocalProfileAssistant.ProfileNameTooLongException -> {
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.profile_rename_too_long,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showErrorAndCancel(R.string.profile_rename_too_long)
                 }
 
                 is LocalProfileAssistant.ProfileNameIsInvalidUTF8Exception -> {
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.profile_rename_encoding_error,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showErrorAndCancel(R.string.profile_rename_encoding_error)
                 }
 
                 is Throwable -> {
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.profile_rename_failure,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showErrorAndCancel(R.string.profile_rename_failure)
                 }
 
                 else -> {
