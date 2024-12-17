@@ -43,7 +43,8 @@
             android:id="@+id/profile_download_code"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/profile_download_code">
+            android:hint="@string/profile_download_code"
+            app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:maxLines="1"
@@ -57,7 +58,8 @@
             android:id="@+id/profile_download_confirmation_code"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/profile_download_confirmation_code">
+            android:hint="@string/profile_download_confirmation_code"
+            app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:maxLines="1"
