@@ -476,8 +476,9 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                     throw RuntimeException("Could not switch profile")
                 }
 
-                if (!refreshed) {
+                if (!refreshed && slotId != EuiccChannelManager.USB_CHANNEL_ID) {
                     // We may have switched the profile, but we could not refresh. Tell the caller about this
+                    // but only if we are talking to a modem and not a USB reader
                     throw SwitchingProfilesRefreshException()
                 }
 
