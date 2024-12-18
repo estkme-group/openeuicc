@@ -22,13 +22,15 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
     private lateinit var confirmationCode: TextInputLayout
     private lateinit var imei: TextInputLayout
 
-    override fun beforeNext() {
+    private fun saveState() {
         state.smdp = smdp.editText!!.text.toString().trim()
         // Treat empty inputs as null -- this is important for the download step
         state.matchingId = matchingId.editText!!.text.toString().trim().ifBlank { null }
         state.confirmationCode = confirmationCode.editText!!.text.toString().trim().ifBlank { null }
         state.imei = imei.editText!!.text.toString().ifBlank { null }
     }
+
+    override fun beforeNext() = saveState()
 
     override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment =
         DownloadWizardProgressFragment()
@@ -59,6 +61,11 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
         confirmationCode.editText!!.setText(state.confirmationCode)
         imei.editText!!.setText(state.imei)
         updateInputCompleteness()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveState()
     }
 
     private fun updateInputCompleteness() {
