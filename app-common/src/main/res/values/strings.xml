@@ -54,9 +54,9 @@
 
     <string name="profile_download_low_nvram_title">This download may fail</string>
     <string name="profile_download_low_nvram_message">This download may fail due to low remaining capacity.</string>
-    <string name="profile_download_no_lpa_string">No LPA string found in clipboard</string>
-    <string name="profile_download_incorrect_lpa_string">Incorrect LPA String</string>
-    <string name="profile_download_incorrect_lpa_string_message">Could not parse QR code or clipboard content as an LPA string for downloading eSIMs.</string>
+    <string name="profile_download_no_lpa_string">No LPA code found in clipboard</string>
+    <string name="profile_download_incorrect_lpa_string">Unable to parse</string>
+    <string name="profile_download_incorrect_lpa_string_message">Could not parse QR code or clipboard content as a LPA code.</string>
 
     <string name="download_wizard">Download Wizard</string>
     <string name="download_wizard_back">Back</string>
@@ -97,7 +97,7 @@
 
     <string name="profile_rename_new_name">New nickname</string>
     <string name="profile_rename_encoding_error">Failed to encode nickname as UTF-8</string>
-    <string name="profile_rename_too_long">Nickname is too long</string>
+    <string name="profile_rename_too_long">Nickname is longer than 64 characters</string>
     <string name="profile_rename_failure">Unknown failure when renaming profile</string>
 
     <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
@@ -126,10 +126,10 @@
     <string name="euicc_info_sas_accreditation_number">SAS Accreditation Number</string>
     <string name="euicc_info_pp_version">Protected Profile Version</string>
     <string name="euicc_info_free_nvram">Free NVRAM (eSIM profile storage)</string>
-    <string name="euicc_info_ci_type">Certificate Issuer</string>
+    <string name="euicc_info_ci_type">Certificate Issuer (CI)</string>
     <string name="euicc_info_ci_gsma_live">GSMA Live CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA Test CI</string>
-    <string name="euicc_info_ci_unknown">Unknown eSIM CA</string>
+    <string name="euicc_info_ci_unknown">Unknown eSIM CI</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
