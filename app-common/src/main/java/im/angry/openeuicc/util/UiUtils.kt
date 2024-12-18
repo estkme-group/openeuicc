@@ -1,5 +1,6 @@
 package im.angry.openeuicc.util
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
@@ -81,6 +82,8 @@ fun <T : ActivityResultCaller> T.setupLogSaving(
     getLogFileName: () -> String,
     getLogText: () -> String
 ): () -> Unit {
+    var lastFileName = "untitled"
+
     val launchSaveIntent =
         registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
             if (uri == null) return@registerForActivityResult
@@ -101,10 +104,12 @@ fun <T : ActivityResultCaller> T.setupLogSaving(
                 setMessage(R.string.logs_saved_message)
                 setNegativeButton(R.string.no) { _, _ -> }
                 setPositiveButton(R.string.yes) { _, _ ->
-                    val intent = Intent().apply {
-                        action = Intent.ACTION_SEND
+                    val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
+                        clipData = ClipData.newUri(context.contentResolver, lastFileName, uri)
+                        putExtra(Intent.EXTRA_TITLE, lastFileName)
                         putExtra(Intent.EXTRA_STREAM, uri)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
 
                     context.startActivity(Intent.createChooser(intent, null))
@@ -113,6 +118,7 @@ fun <T : ActivityResultCaller> T.setupLogSaving(
         }
 
     return {
-        launchSaveIntent.launch(getLogFileName())
+        lastFileName = getLogFileName()
+        launchSaveIntent.launch(lastFileName)
     }
 }
