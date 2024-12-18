@@ -1,6 +1,7 @@
 package im.angry.openeuicc.ui
 
 import android.icu.text.SimpleDateFormat
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -32,8 +33,18 @@ class LogsActivity : AppCompatActivity() {
                     SimpleDateFormat.getDateTimeInstance().format(Date())
                 )
             },
-            getLogText = { logStr }
+            getLogText = ::buildLogText
         )
+
+    private fun buildLogText() = buildString {
+        appendLine("Manufacturer: ${Build.MANUFACTURER}")
+        appendLine("Brand: ${Build.BRAND}")
+        appendLine("Model: ${Build.MODEL}")
+        appendLine("SDK Version: ${Build.VERSION.SDK_INT}")
+        appendLine("App Version: $selfAppVersion")
+        appendLine("-".repeat(10))
+        appendLine(logStr)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
