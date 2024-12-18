@@ -111,7 +111,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
                     } catch (e: Exception) {
                         ""
                     },
-                    channel.lpa.profiles.find { it.state == LocalProfileInfo.State.Enabled }?.displayName,
+                    channel.lpa.profiles.enabled?.displayName,
                     channel.intrinsicChannelName,
                 )
             }

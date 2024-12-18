@@ -186,13 +186,10 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             )
         }
 
-        try {
-            return@withEuiccChannelManager euiccChannelManager.withEuiccChannel(
-                slotId,
-                port
-            ) { channel ->
+        return@withEuiccChannelManager try {
+            euiccChannelManager.withEuiccChannel(slotId, port) { channel ->
                 val filteredProfiles =
-                    if (runBlocking { preferenceRepository.unfilteredProfileListFlow.first() })
+                    if (preferenceRepository.unfilteredProfileListFlow.first())
                         channel.lpa.profiles
                     else
                         channel.lpa.profiles.operational
@@ -224,7 +221,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 )
             }
         } catch (e: EuiccChannelManager.EuiccChannelNotFoundException) {
-            return@withEuiccChannelManager GetEuiccProfileInfoListResult(
+            GetEuiccProfileInfoListResult(
                 RESULT_FIRST_USER,
                 arrayOf(),
                 true
@@ -246,11 +243,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         // Check that the profile has been disabled on all slots
         val enabledAnywhere = ports.any { port ->
             euiccChannelManager.withEuiccChannel(slotId, port) { channel ->
-                val profile = channel.lpa.profiles.find {
-                    it.iccid == iccid
-                } ?: return@withEuiccChannel false
-
-                profile.state == LocalProfileInfo.State.Enabled
+                channel.lpa.profiles.enabled?.iccid == iccid
             }
         }
 
@@ -354,8 +347,8 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 // iccid == null means disabling
                 val foundIccid =
                     euiccChannelManager.withEuiccChannel(foundSlotId, foundPortId) { channel ->
-                        channel.lpa.profiles.find { it.state == LocalProfileInfo.State.Enabled }
-                    }?.iccid ?: return@withEuiccChannelManager RESULT_FIRST_USER
+                        channel.lpa.profiles.enabled?.iccid
+                    } ?: return@withEuiccChannelManager RESULT_FIRST_USER
                 Pair(foundIccid, false)
             } else {
                 Pair(iccid, true)

@@ -16,9 +16,10 @@ val LocalProfileInfo.isEnabled: Boolean
     get() = state == LocalProfileInfo.State.Enabled
 
 val List<LocalProfileInfo>.operational: List<LocalProfileInfo>
-    get() = filter {
-        it.profileClass == LocalProfileInfo.Clazz.Operational
-    }
+    get() = filter { it.profileClass == LocalProfileInfo.Clazz.Operational }
+
+val List<LocalProfileInfo>.enabled: LocalProfileInfo?
+    get() = find { it.isEnabled }
 
 val List<EuiccChannel>.hasMultipleChips: Boolean
     get() = distinctBy { it.slotId }.size > 1
@@ -39,7 +40,7 @@ fun LocalProfileAssistant.switchProfile(
  * See EuiccManager.waitForReconnect()
  */
 fun LocalProfileAssistant.disableActiveProfile(refresh: Boolean): Boolean =
-    profiles.find { it.isEnabled }?.let {
+    profiles.enabled?.let {
         Log.i(TAG, "Disabling active profile ${it.iccid}")
         disableProfile(it.iccid, refresh)
     } ?: true
@@ -52,7 +53,7 @@ fun LocalProfileAssistant.disableActiveProfile(refresh: Boolean): Boolean =
  * disable.
  */
 fun LocalProfileAssistant.disableActiveProfileKeepIccId(refresh: Boolean): String? =
-    profiles.find { it.isEnabled }?.let {
+    profiles.enabled?.let {
         Log.i(TAG, "Disabling active profile ${it.iccid}")
         if (disableProfile(it.iccid, refresh)) {
             it.iccid
