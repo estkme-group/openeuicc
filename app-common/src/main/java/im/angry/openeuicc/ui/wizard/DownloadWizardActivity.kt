@@ -2,6 +2,7 @@ package im.angry.openeuicc.ui.wizard
 
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
@@ -84,6 +85,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
                         or WindowInsetsCompat.Type.displayCutout()
+                        or WindowInsetsCompat.Type.ime()
             )
             v.updatePadding(bars.left, 0, bars.right, bars.bottom)
             val newParams = navigation.layoutParams
@@ -132,6 +134,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     }
 
     private fun onPrevPressed() {
+        hideIme()
+
         if (currentFragment?.hasPrev == true) {
             val prevFrag = currentFragment?.createPrevFragment()
             if (prevFrag == null) {
@@ -143,6 +147,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     }
 
     private fun onNextPressed() {
+        hideIme()
+
         if (currentFragment?.hasNext == true) {
             currentFragment?.beforeNext()
             val nextFrag = currentFragment?.createNextFragment()
@@ -189,6 +195,13 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             } else {
                 View.GONE
             }
+        }
+    }
+
+    private fun hideIme() {
+        currentFocus?.let {
+            val imm = getSystemService(InputMethodManager::class.java)
+            imm.hideSoftInputFromWindow(it.windowToken, 0)
         }
     }
 
