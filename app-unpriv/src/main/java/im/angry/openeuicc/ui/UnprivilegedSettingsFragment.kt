@@ -31,7 +31,7 @@ class UnprivilegedSettingsFragment : SettingsFragment() {
         addPreferencesFromResource(R.xml.pref_unprivileged_settings)
         mergePreferenceOverlay("pref_info_overlay", "pref_info")
 
-        findPreference<Preference>("pref_info_ara_m")?.apply {
+        requirePreference<Preference>("pref_info_ara_m").apply {
             summary = firstSigner.encodeHex()
             setOnPreferenceClickListener {
                 requireContext().getSystemService(ClipboardManager::class.java)!!

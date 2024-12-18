@@ -29,7 +29,7 @@ open class SettingsFragment: PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.pref_settings, rootKey)
 
-        developerPref = findPreference("pref_developer")!!
+        developerPref = requirePreference("pref_developer")
 
         // Show / hide developer preference based on whether it is enabled
         lifecycleScope.launch {
@@ -38,14 +38,14 @@ open class SettingsFragment: PreferenceFragmentCompat() {
                 .collect()
         }
 
-        findPreference<Preference>("pref_info_app_version")?.apply {
+        requirePreference<Preference>("pref_info_app_version").apply {
             summary = requireContext().selfAppVersion
 
             // Enable developer options when this is clicked for 7 times
             setOnPreferenceClickListener(::onAppVersionClicked)
         }
 
-        findPreference<Preference>("pref_advanced_language")?.apply {
+        requirePreference<Preference>("pref_advanced_language").apply {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@apply
             isVisible = true
             intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {
@@ -53,31 +53,34 @@ open class SettingsFragment: PreferenceFragmentCompat() {
             }
         }
 
-        findPreference<Preference>("pref_advanced_logs")?.apply {
+        requirePreference<Preference>("pref_advanced_logs").apply {
             intent = Intent(requireContext(), LogsActivity::class.java)
         }
 
-        findPreference<CheckBoxPreference>("pref_notifications_download")
-            ?.bindBooleanFlow(preferenceRepository.notificationDownloadFlow)
+        requirePreference<CheckBoxPreference>("pref_notifications_download")
+            .bindBooleanFlow(preferenceRepository.notificationDownloadFlow)
 
-        findPreference<CheckBoxPreference>("pref_notifications_delete")
-            ?.bindBooleanFlow(preferenceRepository.notificationDeleteFlow)
+        requirePreference<CheckBoxPreference>("pref_notifications_delete")
+            .bindBooleanFlow(preferenceRepository.notificationDeleteFlow)
 
-        findPreference<CheckBoxPreference>("pref_notifications_switch")
-            ?.bindBooleanFlow(preferenceRepository.notificationSwitchFlow)
+        requirePreference<CheckBoxPreference>("pref_notifications_switch")
+            .bindBooleanFlow(preferenceRepository.notificationSwitchFlow)
 
-        findPreference<CheckBoxPreference>("pref_advanced_disable_safeguard_removable_esim")
-            ?.bindBooleanFlow(preferenceRepository.disableSafeguardFlow)
+        requirePreference<CheckBoxPreference>("pref_advanced_disable_safeguard_removable_esim")
+            .bindBooleanFlow(preferenceRepository.disableSafeguardFlow)
 
-        findPreference<CheckBoxPreference>("pref_advanced_verbose_logging")
-            ?.bindBooleanFlow(preferenceRepository.verboseLoggingFlow)
+        requirePreference<CheckBoxPreference>("pref_advanced_verbose_logging")
+            .bindBooleanFlow(preferenceRepository.verboseLoggingFlow)
 
-        findPreference<CheckBoxPreference>("pref_developer_unfiltered_profile_list")
-            ?.bindBooleanFlow(preferenceRepository.unfilteredProfileListFlow)
+        requirePreference<CheckBoxPreference>("pref_developer_unfiltered_profile_list")
+            .bindBooleanFlow(preferenceRepository.unfilteredProfileListFlow)
 
-        findPreference<CheckBoxPreference>("pref_ignore_tls_certificate")
-            ?.bindBooleanFlow(preferenceRepository.ignoreTLSCertificateFlow)
+        requirePreference<CheckBoxPreference>("pref_developer_ignore_tls_certificate")
+            .bindBooleanFlow(preferenceRepository.ignoreTLSCertificateFlow)
     }
+
+    protected fun <T : Preference> requirePreference(key: CharSequence) =
+        findPreference<T>(key)!!
 
     override fun onStart() {
         super.onStart()
@@ -133,8 +136,8 @@ open class SettingsFragment: PreferenceFragmentCompat() {
     }
 
     protected fun mergePreferenceOverlay(overlayKey: String, targetKey: String) {
-        val overlayCat = findPreference<PreferenceCategory>(overlayKey)!!
-        val targetCat = findPreference<PreferenceCategory>(targetKey)!!
+        val overlayCat = requirePreference<PreferenceCategory>(overlayKey)
+        val targetCat = requirePreference<PreferenceCategory>(targetKey)
 
         val prefs = buildList {
             for (i in 0..<overlayCat.preferenceCount) {
