@@ -61,6 +61,7 @@
     <string name="download_wizard">Download Wizard</string>
     <string name="download_wizard_back">Back</string>
     <string name="download_wizard_next">Next</string>
+    <string name="download_wizard_slot_removed">Selected SIM has been removed</string>
     <string name="download_wizard_slot_select">Select or confirm the eSIM you would like to download to:</string>
     <string name="download_wizard_slot_type">Type:</string>
     <string name="download_wizard_slot_type_removable">Removable</string>

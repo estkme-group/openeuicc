@@ -5,15 +5,21 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
 class DownloadWizardActivity: BaseEuiccAccessActivity() {
@@ -149,13 +155,37 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     private fun onNextPressed() {
         hideIme()
 
-        if (currentFragment?.hasNext == true) {
-            currentFragment?.beforeNext()
-            val nextFrag = currentFragment?.createNextFragment()
-            if (nextFrag == null) {
-                finish()
-            } else {
-                showFragment(nextFrag, R.anim.slide_in_right, R.anim.slide_out_left)
+        progressBar.visibility = View.VISIBLE
+        progressBar.isIndeterminate = true
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            if (state.selectedLogicalSlot >= 0) {
+                try {
+                    // This is run on IO by default
+                    euiccChannelManager.withEuiccChannel(state.selectedLogicalSlot) { channel ->
+                        // Be _very_ sure that the channel we got is valid
+                        if (!channel.valid) throw EuiccChannelManager.EuiccChannelNotFoundException()
+                    }
+                } catch (e: EuiccChannelManager.EuiccChannelNotFoundException) {
+                    Toast.makeText(
+                        this@DownloadWizardActivity,
+                        R.string.download_wizard_slot_removed,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    finish()
+                }
+            }
+
+            progressBar.visibility = View.GONE
+
+            if (currentFragment?.hasNext == true) {
+                currentFragment?.beforeNext()
+                val nextFrag = currentFragment?.createNextFragment()
+                if (nextFrag == null) {
+                    finish()
+                } else {
+                    showFragment(nextFrag, R.anim.slide_in_right, R.anim.slide_out_left)
+                }
             }
         }
     }
