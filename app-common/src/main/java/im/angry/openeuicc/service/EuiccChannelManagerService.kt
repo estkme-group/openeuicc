@@ -448,7 +448,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         portId: Int,
         iccid: String,
         enable: Boolean, // Enable or disable the profile indicated in iccid
-        reconnectTimeoutMillis: Long = 0 // 0 = do not wait for reconnect, useful for USB readers
+        reconnectTimeoutMillis: Long = 0 // 0 = do not wait for reconnect
     ): ForegroundTaskSubscriberFlow =
         launchForegroundTask(
             getString(R.string.task_profile_switch),

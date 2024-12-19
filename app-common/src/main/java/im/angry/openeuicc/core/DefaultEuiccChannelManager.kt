@@ -184,20 +184,30 @@ open class DefaultEuiccChannelManager(
     }
 
     override suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long) {
-        if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) return
-
-        // If there is already a valid channel, we close it proactively
-        // Sometimes the current channel can linger on for a bit even after it should have become invalid
-        channelCache.find { it.slotId == physicalSlotId && it.portId == portId }?.apply {
-            if (valid) close()
+        if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+            usbChannel?.close()
+            usbChannel = null
+        } else {
+            // If there is already a valid channel, we close it proactively
+            // Sometimes the current channel can linger on for a bit even after it should have become invalid
+            channelCache.find { it.slotId == physicalSlotId && it.portId == portId }?.apply {
+                if (valid) close()
+            }
         }
 
         withTimeout(timeoutMillis) {
             while (true) {
                 try {
-                    // tryOpenEuiccChannel() will automatically dispose of invalid channels
-                    // and recreate when needed
-                    val channel = findEuiccChannelByPort(physicalSlotId, portId)!!
+                    val channel = if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+                        // tryOpenUsbEuiccChannel() will always try to reopen the channel, even if
+                        // a USB channel already exists
+                        tryOpenUsbEuiccChannel()
+                        usbChannel!!
+                    } else {
+                        // tryOpenEuiccChannel() will automatically dispose of invalid channels
+                        // and recreate when needed
+                        findEuiccChannelByPort(physicalSlotId, portId)!!
+                    }
                     check(channel.valid) { "Invalid channel" }
                     break
                 } catch (e: Exception) {

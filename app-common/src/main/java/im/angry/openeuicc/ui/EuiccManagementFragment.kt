@@ -228,11 +228,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                 portId,
                 iccid,
                 enable,
-                reconnectTimeoutMillis = if (isUsb) {
-                    0
-                } else {
-                    30 * 1000
-                }
+                reconnectTimeoutMillis = 30 * 1000
             ).waitDone()
 
             when (err) {
