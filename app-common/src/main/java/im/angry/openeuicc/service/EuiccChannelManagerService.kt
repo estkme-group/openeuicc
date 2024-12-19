@@ -362,9 +362,6 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         )
     }
 
-    val isForegroundTaskRunning: Boolean
-        get() = foregroundTaskState.value != ForegroundTaskState.Idle
-
     suspend fun waitForForegroundTask() {
         foregroundTaskState.takeWhile { it != ForegroundTaskState.Idle }
             .collect()
