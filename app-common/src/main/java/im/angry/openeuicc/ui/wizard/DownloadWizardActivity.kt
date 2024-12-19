@@ -155,6 +155,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     private fun onNextPressed() {
         hideIme()
 
+        nextButton.isEnabled = false
         progressBar.visibility = View.VISIBLE
         progressBar.isIndeterminate = true
 
@@ -177,6 +178,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             }
 
             progressBar.visibility = View.GONE
+            nextButton.isEnabled = true
 
             if (currentFragment?.hasNext == true) {
                 currentFragment?.beforeNext()
