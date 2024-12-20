@@ -62,6 +62,7 @@ internal object LpacJni {
     external fun notificationsFree(head: Long)
     // EuiccInfo2
     external fun euiccInfo2Free(info: Long)
+    external fun euiccInfo2GetSGP22Version(info: Long): String
     external fun euiccInfo2GetProfileVersion(info: Long): String
     external fun euiccInfo2GetEuiccFirmwareVersion(info: Long): String
     external fun euiccInfo2GetGlobalPlatformVersion(info: Long): String

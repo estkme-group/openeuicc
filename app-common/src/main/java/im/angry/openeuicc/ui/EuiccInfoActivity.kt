@@ -114,6 +114,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             )
         )
         channel.lpa.euiccInfo2.let { info ->
+            add(Item(R.string.euicc_info_sgp22_version, info?.sgp22Version))
             add(Item(R.string.euicc_info_firmware_version, info?.euiccFirmwareVersion))
             add(Item(R.string.euicc_info_globalplatform_version, info?.globalPlatformVersion))
             add(Item(R.string.euicc_info_pp_version, info?.ppVersion))

@@ -122,6 +122,7 @@
     <string name="euicc_info_access_mode">Access Mode</string>
     <string name="euicc_info_removable">Removable</string>
     <string name="euicc_info_eid" translatable="false">EID</string>
+    <string name="euicc_info_sgp22_version">SGP.22 Version</string>
     <string name="euicc_info_firmware_version">eUICC OS Version</string>
     <string name="euicc_info_globalplatform_version">GlobalPlatform Version</string>
     <string name="euicc_info_sas_accreditation_number">SAS Accreditation Number</string>

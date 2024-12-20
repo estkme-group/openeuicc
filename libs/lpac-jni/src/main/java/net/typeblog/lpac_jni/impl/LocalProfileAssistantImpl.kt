@@ -171,6 +171,7 @@ class LocalProfileAssistantImpl(
             }
 
             val ret = EuiccInfo2(
+                LpacJni.euiccInfo2GetSGP22Version(cInfo),
                 LpacJni.euiccInfo2GetProfileVersion(cInfo),
                 LpacJni.euiccInfo2GetEuiccFirmwareVersion(cInfo),
                 LpacJni.euiccInfo2GetGlobalPlatformVersion(cInfo),

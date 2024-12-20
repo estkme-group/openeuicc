@@ -2,6 +2,7 @@ package net.typeblog.lpac_jni
 
 /* Corresponds to EuiccInfo2 in SGP.22 */
 data class EuiccInfo2(
+    val sgp22Version: String,
     val profileVersion: String,
     val euiccFirmwareVersion: String,
     val globalPlatformVersion: String,
