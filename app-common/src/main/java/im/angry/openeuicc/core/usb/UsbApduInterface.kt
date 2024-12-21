@@ -3,6 +3,7 @@ package im.angry.openeuicc.core.usb
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbEndpoint
 import android.util.Log
+import im.angry.openeuicc.core.ApduInterfaceAtrProvider
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.Flow
 import net.typeblog.lpac_jni.ApduInterface
@@ -12,7 +13,7 @@ class UsbApduInterface(
     private val bulkIn: UsbEndpoint,
     private val bulkOut: UsbEndpoint,
     private val verboseLoggingFlow: Flow<Boolean>
-): ApduInterface {
+) : ApduInterface, ApduInterfaceAtrProvider {
     companion object {
         private const val TAG = "UsbApduInterface"
     }
@@ -21,6 +22,8 @@ class UsbApduInterface(
     private lateinit var transceiver: UsbCcidTransceiver
 
     private var channelId = -1
+
+    override var atr: ByteArray? = null
 
     override fun connect() {
         ccidDescription = UsbCcidDescription.fromRawDescriptors(conn.rawDescriptors)!!
@@ -100,11 +103,6 @@ class UsbApduInterface(
 
     override val valid: Boolean
         get() = channelId != -1
-
-    private var atr: ByteArray? = null
-
-    override fun readATR() =
-        atr?.clone() ?: throw IllegalStateException("atr unavailable")
 
     private fun isSuccessResponse(resp: ByteArray): Boolean =
         resp.size >= 2 && resp[resp.size - 2] == 0x90.toByte() && resp[resp.size - 1] == 0x00.toByte()

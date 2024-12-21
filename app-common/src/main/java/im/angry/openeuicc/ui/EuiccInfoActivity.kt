@@ -23,7 +23,6 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
@@ -138,11 +137,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         add(
             Item(
                 R.string.euicc_info_atr,
-                try {
-                    channel.lpa.readATR().encodeHex()
-                } catch (e: Exception) {
-                    getString(R.string.euicc_info_atr_unavailable)
-                },
+                channel.atr?.encodeHex() ?: getString(R.string.euicc_info_atr_unavailable),
                 copiedToastResId = R.string.toast_atr_copied,
             )
         )

@@ -188,8 +188,6 @@ class LocalProfileAssistantImpl(
             return ret
         }
 
-    override fun readATR() = apduInterface.readATR()
-
     @Synchronized
     override fun enableProfile(iccid: String, refresh: Boolean): Boolean =
         LpacJni.es10cEnableProfile(contextHandle, iccid, refresh) == 0

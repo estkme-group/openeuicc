@@ -30,8 +30,6 @@ class LocalProfileAssistantWrapper(orig: LocalProfileAssistant) :
     override val euiccInfo2: EuiccInfo2?
         get() = lpa.euiccInfo2
 
-    override fun readATR() = lpa.readATR()
-
     override fun setEs10xMss(mss: Byte) = lpa.setEs10xMss(mss)
 
     override fun enableProfile(iccid: String, refresh: Boolean): Boolean =
