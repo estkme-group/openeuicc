@@ -32,7 +32,9 @@ class UsbApduInterface(
         transceiver = UsbCcidTransceiver(conn, bulkIn, bulkOut, ccidDescription, verboseLoggingFlow)
 
         try {
-            transceiver.iccPowerOn()
+            // 6.1.1.1 PC_to_RDR_IccPowerOn (Page 20 of 40)
+            // https://www.usb.org/sites/default/files/DWG_Smart-Card_USB-ICC_ICCD_rev10.pdf
+            atr = transceiver.iccPowerOn().data
         } catch (e: Exception) {
             e.printStackTrace()
             throw e
@@ -98,6 +100,11 @@ class UsbApduInterface(
 
     override val valid: Boolean
         get() = channelId != -1
+
+    private var atr: ByteArray? = null
+
+    override fun readATR() =
+        atr?.clone() ?: throw IllegalStateException("atr unavailable")
 
     private fun isSuccessResponse(resp: ByteArray): Boolean =
         resp.size >= 2 && resp[resp.size - 2] == 0x90.toByte() && resp[resp.size - 1] == 0x00.toByte()

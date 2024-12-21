@@ -31,6 +31,7 @@
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>
     <string name="toast_iccid_copied">ICCID copied to clipboard</string>
     <string name="toast_eid_copied">EID copied to clipboard</string>
+    <string name="toast_atr_copied">ATR copied to clipboard</string>
 
     <string name="usb_permission">Grant USB permission</string>
     <string name="usb_permission_needed">Permission is needed to access the USB smart card reader.</string>
@@ -132,6 +133,8 @@
     <string name="euicc_info_ci_gsma_live">GSMA Live CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA Test CI</string>
     <string name="euicc_info_ci_unknown">Unknown eSIM CI</string>
+    <string name="euicc_info_atr">ATR (Answer To Reset)</string>
+    <string name="euicc_info_atr_unavailable">ATR unavailable</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>

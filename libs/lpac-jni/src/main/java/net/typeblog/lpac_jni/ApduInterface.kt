@@ -16,4 +16,9 @@ interface ApduInterface {
      * callers should further check with the LPA to fully determine the validity of a channel
      */
     val valid: Boolean
+
+    /**
+     * Read Answer To Reset
+     */
+    fun readATR(): ByteArray
 }

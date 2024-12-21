@@ -26,6 +26,9 @@ class OmapiApduInterface(
     override val valid: Boolean
         get() = service.isConnected && (this::session.isInitialized && !session.isClosed)
 
+    override fun readATR() =
+        session.atr?.clone() ?: throw IllegalStateException("atr unavailable")
+
     override fun connect() {
         session = service.getUiccReaderCompat(port.logicalSlotIndex + 1).openSession()
     }

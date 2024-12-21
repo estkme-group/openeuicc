@@ -25,6 +25,9 @@ class TelephonyManagerApduInterface(
         // just that transactions might return errors or nonsense
         get() = lastChannel != -1
 
+    override fun readATR() =
+        throw IllegalStateException("atr unavailable")
+
     override fun connect() {
         // Do nothing
     }

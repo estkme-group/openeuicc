@@ -23,6 +23,7 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
@@ -41,7 +42,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         @StringRes
         val titleResId: Int,
         val content: String?,
-        val copiedToastResId: Int? = null
+        val copiedToastResId: Int? = null,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -134,6 +135,17 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             }
             add(Item(R.string.euicc_info_ci_type, getString(resId)))
         }
+        add(
+            Item(
+                R.string.euicc_info_atr,
+                try {
+                    channel.lpa.readATR().encodeHex()
+                } catch (e: Exception) {
+                    getString(R.string.euicc_info_atr_unavailable)
+                },
+                copiedToastResId = R.string.toast_atr_copied,
+            )
+        )
     }
 
     private fun formatByBoolean(b: Boolean, res: Pair<Int, Int>): String =
