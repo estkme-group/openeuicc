@@ -54,6 +54,7 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        profileRenameNewName.editText!!.setText(requireArguments().getString("currentName"))
         toolbar.apply {
             setTitle(R.string.rename)
             setNavigationOnClickListener {
@@ -64,11 +65,6 @@ class ProfileRenameFragment : BaseMaterialDialogFragment(), EuiccChannelFragment
                 true
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        profileRenameNewName.editText!!.setText(requireArguments().getString("currentName"))
     }
 
     override fun onResume() {
