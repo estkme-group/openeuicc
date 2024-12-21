@@ -137,7 +137,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         add(
             Item(
                 R.string.euicc_info_atr,
-                channel.atr?.encodeHex() ?: getString(R.string.euicc_info_atr_unavailable),
+                channel.atr?.encodeHex() ?: getString(R.string.unavailable),
                 copiedToastResId = R.string.toast_atr_copied,
             )
         )

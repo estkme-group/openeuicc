@@ -3,6 +3,7 @@
     <string name="no_euicc">No removable eUICC card accessible by this app is detected on this device. Insert a compatible card or a USB reader.</string>
     <string name="no_profile">No profiles (yet) on this eSIM.</string>
     <string name="unknown">Unknown</string>
+    <string name="unavailable">Unavailable</string>
     <string name="help">Help</string>
     <string name="reload">Reload Slots</string>
 
@@ -133,8 +134,7 @@
     <string name="euicc_info_ci_gsma_live">GSMA Live CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA Test CI</string>
     <string name="euicc_info_ci_unknown">Unknown eSIM CI</string>
-    <string name="euicc_info_atr">ATR (Answer To Reset)</string>
-    <string name="euicc_info_atr_unavailable">ATR unavailable</string>
+    <string name="euicc_info_atr" translatable="false">Answer To Reset (ATR)</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
