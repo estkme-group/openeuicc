@@ -20,6 +20,7 @@
     <string name="toast_profile_delete_confirm_text_mismatched">输入的确认文本不匹配</string>
     <string name="toast_iccid_copied">已复制 ICCID 到剪贴板</string>
     <string name="toast_eid_copied">已复制 EID 到剪贴板</string>
+    <string name="toast_atr_copied">已复制 ATR 到剪贴板</string>
     <string name="usb_permission">授予 USB 权限</string>
     <string name="usb_permission_needed">需要获得访问 USB 智能卡读卡器的权限。</string>
     <string name="usb_failed">无法通过 USB 智能卡读卡器连接到 eSIM。</string>
@@ -86,6 +87,7 @@
     <string name="download_wizard">下载向导</string>
     <string name="download_wizard_back">返回</string>
     <string name="download_wizard_next">下一步</string>
+    <string name="download_wizard_slot_removed">您选择的 SIM 已被移除</string>
     <string name="download_wizard_slot_select">请选择或确认下载目标 eSIM 卡槽:</string>
     <string name="download_wizard_slot_type">类型:</string>
     <string name="download_wizard_slot_type_removable">可插拔</string>
@@ -120,6 +122,7 @@
     <string name="euicc_info_activity_title">eUICC 详情 (%s)</string>
     <string name="euicc_info_access_mode">访问方式</string>
     <string name="euicc_info_removable">可插拔</string>
+    <string name="euicc_info_sgp22_version">SGP.22 版本</string>
     <string name="euicc_info_firmware_version">eUICC OS 版本</string>
     <string name="euicc_info_globalplatform_version">GlobalPlatform 版本</string>
     <string name="euicc_info_sas_accreditation_number">SAS 认证号码</string>
@@ -140,4 +143,5 @@
     <string name="pref_developer_unfiltered_profile_list_desc">在配置文件列表中包括非生产环境的配置文件</string>
     <string name="pref_developer_ignore_tls_certificate">无视 SM-DP+ 的 TLS 证书</string>
     <string name="pref_developer_ignore_tls_certificate_desc">允许 RSP 服务器使用任意证书</string>
+    <string name="information_unavailable">无信息</string>
 </resources>

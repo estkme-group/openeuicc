@@ -3,6 +3,7 @@
     <string name="no_euicc">このアプリでアクセスできるリムーバブル eUICC カードがデバイス上で検出されていません。互換性のあるカード挿入または USB リーダーを接続してください。</string>
     <string name="no_profile">この eSIM にはプロファイルがありません。</string>
     <string name="unknown">不明</string>
+    <string name="information_unavailable">情報なし</string>
     <string name="help">ヘルプ</string>
     <string name="reload">スロットを再読み込み</string>
     <string name="channel_name_format">論理スロット %d</string>
@@ -19,6 +20,7 @@
     <string name="toast_profile_delete_confirm_text_mismatched">入力した確認用テキストは一致していません</string>
     <string name="toast_iccid_copied">ICCID をクリップボードにコピーしました</string>
     <string name="toast_eid_copied">EID をクリップボードにコピーしました</string>
+    <string name="toast_atr_copied">ATR をクリップボードにコピーしました</string>
     <string name="usb_permission">USB の権限を許可</string>
     <string name="usb_permission_needed">USB スマートカードリーダーにアクセスするには許可が必要です。</string>
     <string name="usb_failed">USB スマートカードリーダー経由で eSIM に接続できません。</string>
@@ -44,6 +46,7 @@
     <string name="download_wizard">ダウンロードウィザード</string>
     <string name="download_wizard_back">戻る</string>
     <string name="download_wizard_next">次へ</string>
+    <string name="download_wizard_slot_removed">選択された SIM が取り外されました</string>
     <string name="download_wizard_slot_select">ダウンロードする eSIM を選択または確認:</string>
     <string name="download_wizard_slot_type">タイプ:</string>
     <string name="download_wizard_slot_type_removable">リムーバブル</string>
@@ -95,6 +98,7 @@
     <string name="euicc_info_activity_title">eUICC 情報 (%s)</string>
     <string name="euicc_info_access_mode">アクセスモード</string>
     <string name="euicc_info_removable">リムーバブル</string>
+    <string name="euicc_info_sgp22_version">SGP.22 バージョン</string>
     <string name="euicc_info_firmware_version">eUICC OS のバージョン</string>
     <string name="euicc_info_globalplatform_version">グローバルプラットフォームのバージョン</string>
     <string name="euicc_info_sas_accreditation_number">SAS 認定番号</string>

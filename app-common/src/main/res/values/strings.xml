@@ -3,7 +3,7 @@
     <string name="no_euicc">No removable eUICC card accessible by this app is detected on this device. Insert a compatible card or a USB reader.</string>
     <string name="no_profile">No profiles (yet) on this eSIM.</string>
     <string name="unknown">Unknown</string>
-    <string name="unavailable">Unavailable</string>
+    <string name="information_unavailable">Information Unavailable</string>
     <string name="help">Help</string>
     <string name="reload">Reload Slots</string>
 
