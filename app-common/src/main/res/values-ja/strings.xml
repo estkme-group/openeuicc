@@ -144,4 +144,6 @@
     <string name="profile_class_testing">テスティング</string>
     <string name="profile_class_provisioning">準備中</string>
     <string name="profile_class_operational">動作中</string>
+    <string name="profile_download_required_confirmation_code">要確認コード</string>
+    <string name="profile_download_required_confirmation_code_message">スキャンされた QR コード、又はクリップボードからペーストされた LPA コードには、確認コードの必要が表示されています。</string>
 </resources>

@@ -144,4 +144,6 @@
     <string name="pref_developer_ignore_tls_certificate">无视 SM-DP+ 的 TLS 证书</string>
     <string name="pref_developer_ignore_tls_certificate_desc">允许 RSP 服务器使用任意证书</string>
     <string name="information_unavailable">无信息</string>
+    <string name="profile_download_required_confirmation_code">需要确认码</string>
+    <string name="profile_download_required_confirmation_code_message">您扫描的二维码或粘贴的 LPA 码需要一个额外的确认码</string>
 </resources>
