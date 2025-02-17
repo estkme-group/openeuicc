@@ -5,7 +5,11 @@ internal object LpacJni {
         System.loadLibrary("lpac-jni")
     }
 
-    external fun createContext(apduInterface: ApduInterface, httpInterface: HttpInterface): Long
+    external fun createContext(
+        isdrAid: ByteArray,
+        apduInterface: ApduInterface,
+        httpInterface: HttpInterface
+    ): Long
     external fun destroyContext(handle: Long)
 
     external fun euiccInit(handle: Long): Int

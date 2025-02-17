@@ -12,6 +12,7 @@ import net.typeblog.lpac_jni.LocalProfileNotification
 import net.typeblog.lpac_jni.ProfileDownloadCallback
 
 class LocalProfileAssistantImpl(
+    isdrAid: ByteArray,
     rawApduInterface: ApduInterface,
     rawHttpInterface: HttpInterface
 ): LocalProfileAssistant {
@@ -76,7 +77,7 @@ class LocalProfileAssistantImpl(
     private val httpInterface = HttpInterfaceWrapper(rawHttpInterface)
 
     private var finalized = false
-    private var contextHandle: Long = LpacJni.createContext(apduInterface, httpInterface)
+    private var contextHandle: Long = LpacJni.createContext(isdrAid, apduInterface, httpInterface)
 
     init {
         if (LpacJni.euiccInit(contextHandle) < 0) {
