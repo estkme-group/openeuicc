@@ -28,9 +28,9 @@ class LocalProfileAssistantImpl(
         var lastApduResponse: ByteArray? = null
         var lastApduException: Exception? = null
 
-        override fun transmit(tx: ByteArray): ByteArray =
+        override fun transmit(handle: Int, tx: ByteArray): ByteArray =
             try {
-                apduInterface.transmit(tx).also {
+                apduInterface.transmit(handle, tx).also {
                     lastApduException = null
                     lastApduResponse = it
                 }

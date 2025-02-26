@@ -1,6 +1,7 @@
 package im.angry.openeuicc.core
 
 import im.angry.openeuicc.util.*
+import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
 class EuiccChannelWrapper(orig: EuiccChannel) : EuiccChannel {
@@ -33,6 +34,8 @@ class EuiccChannelWrapper(orig: EuiccChannel) : EuiccChannel {
         get() = channel.valid
     override val intrinsicChannelName: String?
         get() = channel.intrinsicChannelName
+    override val apduInterface: ApduInterface
+        get() = channel.apduInterface
     override val atr: ByteArray?
         get() = channel.atr
 

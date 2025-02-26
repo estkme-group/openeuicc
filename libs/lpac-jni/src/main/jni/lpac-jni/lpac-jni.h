@@ -8,6 +8,7 @@ _Static_assert(sizeof(void *) <= sizeof(jlong),
                "jlong must be big enough to hold a platform raw pointer");
 
 struct lpac_jni_ctx {
+    jint logical_channel_id;
     jobject apdu_interface;
     jobject http_interface;
 };

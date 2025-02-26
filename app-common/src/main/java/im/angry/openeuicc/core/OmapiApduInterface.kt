@@ -7,7 +7,6 @@ import android.util.Log
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import net.typeblog.lpac_jni.ApduInterface
 
@@ -21,7 +20,12 @@ class OmapiApduInterface(
     }
 
     private lateinit var session: Session
-    private lateinit var lastChannel: Channel
+    private val channels = arrayOf<Channel?>(
+        null,
+        null,
+        null,
+        null,
+    )
 
     override val valid: Boolean
         get() = service.isConnected && (this::session.isInitialized && !session.isClosed)
@@ -38,24 +42,24 @@ class OmapiApduInterface(
     }
 
     override fun logicalChannelOpen(aid: ByteArray): Int {
-        check(!this::lastChannel.isInitialized) {
-            "Can only open one channel"
-        }
-        lastChannel = session.openLogicalChannel(aid)!!
-        return 1
+        val channel = session.openLogicalChannel(aid)
+        check(channel != null) { "Failed to open logical channel (${aid.encodeHex()})" }
+        val index = channels.indexOf(null)
+        check(index != -1) { "No free logical channel slots" }
+        synchronized(channels) { channels[index] = channel }
+        return index
     }
 
     override fun logicalChannelClose(handle: Int) {
-        check(handle == 1 && !this::lastChannel.isInitialized) {
-            "Unknown channel"
-        }
-        lastChannel.close()
+        val channel = channels.getOrNull(handle)
+        check(channel != null) { "Invalid logical channel handle $handle" }
+        if (channel.isOpen) channel.close()
+        synchronized(channels) { channels[handle] = null }
     }
 
-    override fun transmit(tx: ByteArray): ByteArray {
-        check(this::lastChannel.isInitialized) {
-            "Unknown channel"
-        }
+    override fun transmit(handle: Int, tx: ByteArray): ByteArray {
+        val channel = channels.getOrNull(handle)
+        check(channel != null) { "Invalid logical channel handle $handle" }
 
         if (runBlocking { verboseLoggingFlow.first() }) {
             Log.d(TAG, "OMAPI APDU: ${tx.encodeHex()}")
@@ -63,7 +67,7 @@ class OmapiApduInterface(
 
         try {
             for (i in 0..10) {
-                val res = lastChannel.transmit(tx)
+                val res = channel.transmit(tx)
                 if (runBlocking { verboseLoggingFlow.first() }) {
                     Log.d(TAG, "OMAPI APDU response: ${res.encodeHex()}")
                 }

@@ -1,6 +1,7 @@
 package im.angry.openeuicc.core
 
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.UiccPortInfoCompat
+import im.angry.openeuicc.util.decodeHex
 import kotlinx.coroutines.flow.Flow
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
@@ -11,7 +12,7 @@ class EuiccChannelImpl(
     override val type: String,
     override val port: UiccPortInfoCompat,
     override val intrinsicChannelName: String?,
-    private val apduInterface: ApduInterface,
+    override val apduInterface: ApduInterface,
     verboseLoggingFlow: Flow<Boolean>,
     ignoreTLSCertificateFlow: Flow<Boolean>
 ) : EuiccChannel {

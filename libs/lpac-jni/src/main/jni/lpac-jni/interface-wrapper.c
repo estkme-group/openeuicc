@@ -22,7 +22,7 @@ void interface_wrapper_init() {
                                                            "([B)I");
     method_apdu_logical_channel_close = (*env)->GetMethodID(env, apdu_class, "logicalChannelClose",
                                                             "(I)V");
-    method_apdu_transmit = (*env)->GetMethodID(env, apdu_class, "transmit", "([B)[B");
+    method_apdu_transmit = (*env)->GetMethodID(env, apdu_class, "transmit", "(I[B)[B");
 
     jclass http_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/HttpInterface");
     method_http_transmit = (*env)->GetMethodID(env, http_class, "transmit",
@@ -53,24 +53,30 @@ apdu_interface_logical_channel_open(struct euicc_ctx *ctx, const uint8_t *aid, u
     jint ret = (*env)->CallIntMethod(env, LPAC_JNI_CTX(ctx)->apdu_interface,
                                      method_apdu_logical_channel_open, jbarr);
     LPAC_JNI_EXCEPTION_RETURN;
+    LPAC_JNI_CTX(ctx)->logical_channel_id = ret;
     return ret;
 }
 
-static void apdu_interface_logical_channel_close(struct euicc_ctx *ctx, uint8_t channel) {
+static void apdu_interface_logical_channel_close(struct euicc_ctx *ctx,
+                                                 __attribute__((unused)) uint8_t channel) {
     LPAC_JNI_SETUP_ENV;
+    jint logical_channel_id = LPAC_JNI_CTX(ctx)->logical_channel_id;
     (*env)->CallVoidMethod(env, LPAC_JNI_CTX(ctx)->apdu_interface,
-                           method_apdu_logical_channel_close, channel);
+                           method_apdu_logical_channel_close, logical_channel_id);
     (*env)->ExceptionClear(env);
 }
 
 static int
 apdu_interface_transmit(struct euicc_ctx *ctx, uint8_t **rx, uint32_t *rx_len, const uint8_t *tx,
                         uint32_t tx_len) {
+    const int logic_channel = LPAC_JNI_CTX(ctx)->logical_channel_id;
     LPAC_JNI_SETUP_ENV;
     jbyteArray txArr = (*env)->NewByteArray(env, tx_len);
     (*env)->SetByteArrayRegion(env, txArr, 0, tx_len, (const jbyte *) tx);
-    jbyteArray ret = (jbyteArray) (*env)->CallObjectMethod(env, LPAC_JNI_CTX(ctx)->apdu_interface,
-                                                           method_apdu_transmit, txArr);
+    jbyteArray ret = (jbyteArray) (*env)->CallObjectMethod(
+            env, LPAC_JNI_CTX(ctx)->apdu_interface,
+            method_apdu_transmit, logic_channel, txArr
+    );
     LPAC_JNI_EXCEPTION_RETURN;
     *rx_len = (*env)->GetArrayLength(env, ret);
     *rx = calloc(*rx_len, sizeof(uint8_t));

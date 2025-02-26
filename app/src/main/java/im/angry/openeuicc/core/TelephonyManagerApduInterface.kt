@@ -18,12 +18,10 @@ class TelephonyManagerApduInterface(
         const val TAG = "TelephonyManagerApduInterface"
     }
 
-    private var lastChannel: Int = -1
-
     override val valid: Boolean
-        // TelephonyManager channels will never become truly "invalid",
-        // just that transactions might return errors or nonsense
-        get() = lastChannel != -1
+        get() = channels.isNotEmpty()
+
+    private var channels = mutableSetOf<Int>()
 
     override fun connect() {
         // Do nothing
@@ -31,52 +29,39 @@ class TelephonyManagerApduInterface(
 
     override fun disconnect() {
         // Do nothing
-        lastChannel = -1
     }
 
     override fun logicalChannelOpen(aid: ByteArray): Int {
-        check(lastChannel == -1) { "Already initialized" }
         val hex = aid.encodeHex()
         val channel = tm.iccOpenLogicalChannelByPortCompat(port.card.physicalSlotIndex, port.portIndex, hex, 0)
         if (channel.status != IccOpenLogicalChannelResponse.STATUS_NO_ERROR || channel.channel == IccOpenLogicalChannelResponse.INVALID_CHANNEL) {
-            throw IllegalArgumentException("Cannot open logical channel $hex via TelephonManager on slot ${port.card.physicalSlotIndex} port ${port.portIndex}")
+            throw IllegalArgumentException("Cannot open logical channel $hex via TelephonyManager on slot ${port.card.physicalSlotIndex} port ${port.portIndex}")
         }
-        lastChannel = channel.channel
-        return lastChannel
+        channels.add(channel.channel)
+        return channel.channel
     }
 
     override fun logicalChannelClose(handle: Int) {
-        check(handle == lastChannel) { "Invalid channel handle " }
+        check(channels.contains(handle)) {
+            "Invalid logical channel handle $handle"
+        }
         tm.iccCloseLogicalChannelByPortCompat(port.card.physicalSlotIndex, port.portIndex, handle)
-        lastChannel = -1
+        channels.remove(handle)
     }
 
-    override fun transmit(tx: ByteArray): ByteArray {
-        check(lastChannel != -1) { "Uninitialized" }
-
+    override fun transmit(handle: Int, tx: ByteArray): ByteArray {
+        check(channels.contains(handle)) {
+            "Invalid logical channel handle $handle"
+        }
         if (runBlocking { verboseLoggingFlow.first() }) {
             Log.d(TAG, "TelephonyManager APDU: ${tx.encodeHex()}")
         }
-
-        val cla = tx[0].toUByte().toInt()
-        val instruction = tx[1].toUByte().toInt()
-        val p1 = tx[2].toUByte().toInt()
-        val p2 = tx[3].toUByte().toInt()
-        val p3 = tx[4].toUByte().toInt()
-        val p4 = tx.drop(5).toByteArray().encodeHex()
-
-        return tm.iccTransmitApduLogicalChannelByPortCompat(port.card.physicalSlotIndex, port.portIndex, lastChannel,
-            cla,
-            instruction,
-            p1,
-            p2,
-            p3,
-            p4
-        ).also {
-            if (runBlocking { verboseLoggingFlow.first() }) {
-                Log.d(TAG, "TelephonyManager APDU response: $it")
-            }
-        }?.decodeHex() ?: byteArrayOf()
+        val result = tm.iccTransmitApduLogicalChannelByPortCompat(
+            port.card.physicalSlotIndex, port.portIndex, handle,
+            tx,
+        )
+        if (runBlocking { verboseLoggingFlow.first() })
+            Log.d(TAG, "TelephonyManager APDU response: $result")
+        return result?.decodeHex() ?: byteArrayOf()
     }
-
 }

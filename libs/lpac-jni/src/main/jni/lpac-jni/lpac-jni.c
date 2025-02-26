@@ -28,7 +28,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     string_constructor = (*env)->GetMethodID(env, string_class, "<init>",
                                              "([BLjava/lang/String;)V");
 
-    const char _unused[1];
+    const jchar _unused[1];
     empty_string = (*env)->NewString(env, _unused, 0);
     empty_string = (*env)->NewGlobalRef(env, empty_string);
 

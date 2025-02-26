@@ -111,15 +111,26 @@ fun TelephonyManager.iccCloseLogicalChannelByPortCompat(
     }
 
 fun TelephonyManager.iccTransmitApduLogicalChannelByPortCompat(
-    slotIndex: Int, portIndex: Int, channel: Int,
-    cla: Int, inst: Int, p1: Int, p2: Int, p3: Int, data: String?
-): String? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    slotIndex: Int,
+    portIndex: Int,
+    channel: Int,
+    tx: ByteArray
+): String? {
+    val cla = tx[0].toUByte().toInt()
+    val ins = tx[1].toUByte().toInt()
+    val p1 = tx[2].toUByte().toInt()
+    val p2 = tx[3].toUByte().toInt()
+    val p3 = tx[4].toUByte().toInt()
+    val p4 = tx.drop(5).toByteArray().encodeHex()
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         iccTransmitApduLogicalChannelByPort(
-            slotIndex, portIndex, channel, cla, inst, p1, p2, p3, data
+            slotIndex, portIndex, channel,
+            cla, ins, p1, p2, p3, p4
         )
     } else {
         iccTransmitApduLogicalChannelBySlot(
-            slotIndex, channel, cla, inst, p1, p2, p3, data
+            slotIndex, channel,
+            cla, ins, p1, p2, p3, p4
         )
     }
+}

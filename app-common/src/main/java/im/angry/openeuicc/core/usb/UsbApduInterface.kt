@@ -21,9 +21,12 @@ class UsbApduInterface(
     private lateinit var ccidDescription: UsbCcidDescription
     private lateinit var transceiver: UsbCcidTransceiver
 
-    private var channelId = -1
-
     override var atr: ByteArray? = null
+
+    override val valid: Boolean
+        get() = channels.isNotEmpty()
+
+    private var channels = mutableSetOf<Int>()
 
     override fun connect() {
         ccidDescription = UsbCcidDescription.fromRawDescriptors(conn.rawDescriptors)!!
@@ -46,11 +49,11 @@ class UsbApduInterface(
 
     override fun disconnect() {
         conn.close()
+
+        atr = null
     }
 
     override fun logicalChannelOpen(aid: ByteArray): Int {
-        check(channelId == -1) { "Logical channel already opened" }
-
         // OPEN LOGICAL CHANNEL
         val req = manageChannelCmd(true, 0)
 
@@ -66,7 +69,7 @@ class UsbApduInterface(
             return -1
         }
 
-        channelId = resp[0].toInt()
+        val channelId = resp[0].toInt()
         Log.d(TAG, "channelId = $channelId")
 
         // Then, select AID
@@ -78,31 +81,31 @@ class UsbApduInterface(
             return -1
         }
 
+        channels.add(channelId)
+
         return channelId
     }
 
     override fun logicalChannelClose(handle: Int) {
-        check(handle == channelId) { "Logical channel ID mismatch" }
-        check(channelId != -1) { "Logical channel is not opened" }
-
+        check(channels.contains(handle)) {
+            "Invalid logical channel handle $handle"
+        }
         // CLOSE LOGICAL CHANNEL
-        val req = manageChannelCmd(false, channelId.toByte())
-        val resp = transmitApduByChannel(req, channelId.toByte())
+        val req = manageChannelCmd(false, handle.toByte())
+        val resp = transmitApduByChannel(req, handle.toByte())
 
         if (!isSuccessResponse(resp)) {
             Log.d(TAG, "CLOSE LOGICAL CHANNEL failed: ${resp.encodeHex()}")
         }
-
-        channelId = -1
+        channels.remove(handle)
     }
 
-    override fun transmit(tx: ByteArray): ByteArray {
-        check(channelId != -1) { "Logical channel is not opened" }
-        return transmitApduByChannel(tx, channelId.toByte())
+    override fun transmit(handle: Int, tx: ByteArray): ByteArray {
+        check(channels.contains(handle)) {
+            "Invalid logical channel handle $handle"
+        }
+        return transmitApduByChannel(tx, handle.toByte())
     }
-
-    override val valid: Boolean
-        get() = channelId != -1
 
     private fun isSuccessResponse(resp: ByteArray): Boolean =
         resp.size >= 2 && resp[resp.size - 2] == 0x90.toByte() && resp[resp.size - 1] == 0x00.toByte()
