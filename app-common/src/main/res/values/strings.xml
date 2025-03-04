@@ -31,6 +31,7 @@
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>
     <string name="toast_iccid_copied">ICCID copied to clipboard</string>
+    <string name="toast_sn_copied">Serial Number copied to clipboard</string>
     <string name="toast_eid_copied">EID copied to clipboard</string>
     <string name="toast_atr_copied">ATR copied to clipboard</string>
 
@@ -125,6 +126,10 @@
     <string name="euicc_info_activity_title">eUICC Info (%s)</string>
     <string name="euicc_info_access_mode">Access Mode</string>
     <string name="euicc_info_removable">Removable</string>
+    <string name="euicc_info_sku">Product Name</string>
+    <string name="euicc_info_sn">Product Serial Number</string>
+    <string name="euicc_info_bl_ver">Product Bootloader Version</string>
+    <string name="euicc_info_fw_ver">Product Firmware Version</string>
     <string name="euicc_info_eid" translatable="false">EID</string>
     <string name="euicc_info_sgp22_version">SGP.22 Version</string>
     <string name="euicc_info_firmware_version">eUICC OS Version</string>

@@ -9,5 +9,6 @@
 /navEditor.xml
 /runConfigurations.xml
 /workspace.xml
+/AndroidProjectSystem.xml
 
 **/*.iml

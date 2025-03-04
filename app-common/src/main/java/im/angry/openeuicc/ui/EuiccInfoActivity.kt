@@ -23,6 +23,8 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
+import im.angry.openeuicc.vendored.getESTKmeInfo
+import im.angry.openeuicc.vendored.getSIMLinkVersion
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
@@ -100,24 +102,22 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
     private fun buildEuiccInfoItems(channel: EuiccChannel) = buildList {
         add(Item(R.string.euicc_info_access_mode, channel.type))
-        add(
-            Item(
-                R.string.euicc_info_removable,
-                formatByBoolean(channel.port.card.isRemovable, YES_NO)
-            )
-        )
-        add(
-            Item(
-                R.string.euicc_info_eid,
-                channel.lpa.eID,
-                copiedToastResId = R.string.toast_eid_copied
-            )
-        )
+        add(Item(R.string.euicc_info_removable, formatByBoolean(channel.port.card.isRemovable, YES_NO)))
+        add(Item(R.string.euicc_info_eid, channel.lpa.eID, copiedToastResId = R.string.toast_eid_copied))
+        getESTKmeInfo(channel.apduInterface)?.let {
+            add(Item(R.string.euicc_info_sku, it.skuName))
+            add(Item(R.string.euicc_info_sn, it.serialNumber, copiedToastResId = R.string.toast_sn_copied))
+            add(Item(R.string.euicc_info_bl_ver, it.bootloaderVersion))
+            add(Item(R.string.euicc_info_fw_ver, it.firmwareVersion))
+        }
+        getSIMLinkVersion(channel.lpa.eID, channel.lpa.euiccInfo2?.euiccFirmwareVersion)?.let {
+            add(Item(R.string.euicc_info_sku, "9eSIM $it"))
+        }
         channel.lpa.euiccInfo2.let { info ->
-            add(Item(R.string.euicc_info_sgp22_version, info?.sgp22Version))
-            add(Item(R.string.euicc_info_firmware_version, info?.euiccFirmwareVersion))
-            add(Item(R.string.euicc_info_globalplatform_version, info?.globalPlatformVersion))
-            add(Item(R.string.euicc_info_pp_version, info?.ppVersion))
+            add(Item(R.string.euicc_info_sgp22_version, info?.sgp22Version.toString()))
+            add(Item(R.string.euicc_info_firmware_version, info?.euiccFirmwareVersion.toString()))
+            add(Item(R.string.euicc_info_globalplatform_version, info?.globalPlatformVersion.toString()))
+            add(Item(R.string.euicc_info_pp_version, info?.ppVersion.toString()))
             add(Item(R.string.euicc_info_sas_accreditation_number, info?.sasAccreditationNumber))
             add(Item(R.string.euicc_info_free_nvram, info?.freeNvram?.let(::formatFreeSpace)))
         }
@@ -134,13 +134,8 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             }
             add(Item(R.string.euicc_info_ci_type, getString(resId)))
         }
-        add(
-            Item(
-                R.string.euicc_info_atr,
-                channel.atr?.encodeHex() ?: getString(R.string.information_unavailable),
-                copiedToastResId = R.string.toast_atr_copied,
-            )
-        )
+        val atr =  channel.atr?.encodeHex() ?: getString(R.string.information_unavailable)
+        add(Item(R.string.euicc_info_atr, atr, copiedToastResId = R.string.toast_atr_copied))
     }
 
     private fun formatByBoolean(b: Boolean, res: Pair<Int, Int>): String =
