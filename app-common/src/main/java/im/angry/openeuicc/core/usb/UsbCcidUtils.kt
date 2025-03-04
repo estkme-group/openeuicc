@@ -6,31 +6,22 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbEndpoint
 import android.hardware.usb.UsbInterface
 
-class UsbTransportException(msg: String) : Exception(msg)
+class UsbTransportException(message: String) : Exception(message)
 
-fun UsbInterface.getIoEndpoints(): Pair<UsbEndpoint?, UsbEndpoint?> {
-    var bulkIn: UsbEndpoint? = null
-    var bulkOut: UsbEndpoint? = null
-    for (i in 0 until endpointCount) {
-        val endpoint = getEndpoint(i)
-        if (endpoint.type != UsbConstants.USB_ENDPOINT_XFER_BULK) {
-            continue
-        }
-        if (endpoint.direction == UsbConstants.USB_DIR_IN) {
-            bulkIn = endpoint
-        } else if (endpoint.direction == UsbConstants.USB_DIR_OUT) {
-            bulkOut = endpoint
-        }
-    }
-    return Pair(bulkIn, bulkOut)
-}
+val UsbDevice.interfaces: Iterable<UsbInterface>
+    get() = (0 until interfaceCount).map(::getInterface)
 
-fun UsbDevice.getSmartCardInterface(): UsbInterface? {
-    for (i in 0 until interfaceCount) {
-        val anInterface = getInterface(i)
-        if (anInterface.interfaceClass == UsbConstants.USB_CLASS_CSCID) {
-            return anInterface
-        }
+val Iterable<UsbInterface>.smartCard: UsbInterface?
+    get() = find { it.interfaceClass == UsbConstants.USB_CLASS_CSCID }
+
+val UsbInterface.endpoints: Iterable<UsbEndpoint>
+    get() = (0 until endpointCount).map(::getEndpoint)
+
+val Iterable<UsbEndpoint>.bulkPair: Pair<UsbEndpoint?, UsbEndpoint?>
+    get() {
+        val endpoints = filter { it.type == UsbConstants.USB_ENDPOINT_XFER_BULK }
+        return Pair(
+            endpoints.find { it.direction == UsbConstants.USB_DIR_IN },
+            endpoints.find { it.direction == UsbConstants.USB_DIR_OUT },
+        )
     }
-    return null
-}

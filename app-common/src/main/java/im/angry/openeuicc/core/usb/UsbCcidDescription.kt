@@ -20,12 +20,12 @@ data class UsbCcidDescription(
 
         private const val FEATURE_EXCHANGE_LEVEL_TPDU = 0x10000
         private const val FEATURE_EXCHANGE_LEVEL_SHORT_APDU = 0x20000
-        private const val FEATURE_EXCHAGE_LEVEL_EXTENDED_APDU = 0x40000
+        private const val FEATURE_EXCHANGE_LEVEL_EXTENDED_APDU = 0x40000
 
         // bVoltageSupport Masks
-        private const val VOLTAGE_5V: Byte = 1
-        private const val VOLTAGE_3V: Byte = 2
-        private const val VOLTAGE_1_8V: Byte = 4
+        private const val VOLTAGE_5V0: Byte = 1
+        private const val VOLTAGE_3V0: Byte = 2
+        private const val VOLTAGE_1V8: Byte = 4
 
         private const val SLOT_OFFSET = 4
         private const val FEATURES_OFFSET = 40
@@ -71,31 +71,24 @@ data class UsbCcidDescription(
     }
 
     enum class Voltage(powerOnValue: Int, mask: Int) {
-        AUTO(0, 0), _5V(1, VOLTAGE_5V.toInt()), _3V(2, VOLTAGE_3V.toInt()), _1_8V(
-            3,
-            VOLTAGE_1_8V.toInt()
-        );
+        // @formatter:off
+        AUTO(0, 0),
+        V50(1, VOLTAGE_5V0.toInt()),
+        V30(2, VOLTAGE_3V0.toInt()),
+        V18(3, VOLTAGE_1V8.toInt());
+        // @formatter:on
 
         val mask = powerOnValue.toByte()
         val powerOnValue = mask.toByte()
     }
 
-    private fun hasFeature(feature: Int): Boolean =
-        (dwFeatures and feature) != 0
+    private fun hasFeature(feature: Int) = (dwFeatures and feature) != 0
 
-    val voltages: Array<Voltage>
-        get() =
-            if (hasFeature(FEATURE_AUTOMATIC_VOLTAGE)) {
-                arrayOf(Voltage.AUTO)
-            } else {
-                Voltage.values().mapNotNull {
-                    if ((it.mask.toInt() and bVoltageSupport.toInt()) != 0) {
-                        it
-                    } else {
-                        null
-                    }
-                }.toTypedArray()
-            }
+    val voltages: List<Voltage>
+        get() {
+            if (hasFeature(FEATURE_AUTOMATIC_VOLTAGE)) return listOf(Voltage.AUTO)
+            return Voltage.entries.filter { (it.mask.toInt() and bVoltageSupport.toInt()) != 0 }
+        }
 
     val hasAutomaticPps: Boolean
         get() = hasFeature(FEATURE_AUTOMATIC_PPS)

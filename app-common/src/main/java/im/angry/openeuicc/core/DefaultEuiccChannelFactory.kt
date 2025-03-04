@@ -8,7 +8,8 @@ import android.se.omapi.SEService
 import android.util.Log
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.usb.UsbApduInterface
-import im.angry.openeuicc.core.usb.getIoEndpoints
+import im.angry.openeuicc.core.usb.bulkPair
+import im.angry.openeuicc.core.usb.endpoints
 import im.angry.openeuicc.util.*
 import java.lang.IllegalArgumentException
 
@@ -61,7 +62,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
     }
 
     override fun tryOpenUsbEuiccChannel(usbDevice: UsbDevice, usbInterface: UsbInterface): EuiccChannel? {
-        val (bulkIn, bulkOut) = usbInterface.getIoEndpoints()
+        val (bulkIn, bulkOut) = usbInterface.endpoints.bulkPair
         if (bulkIn == null || bulkOut == null) return null
         val conn = usbManager.openDevice(usbDevice) ?: return null
         if (!conn.claimInterface(usbInterface, true)) return null

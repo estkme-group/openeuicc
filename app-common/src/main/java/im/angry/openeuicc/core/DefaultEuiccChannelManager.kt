@@ -5,7 +5,8 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.telephony.SubscriptionManager
 import android.util.Log
-import im.angry.openeuicc.core.usb.getSmartCardInterface
+import im.angry.openeuicc.core.usb.smartCard
+import im.angry.openeuicc.core.usb.interfaces
 import im.angry.openeuicc.di.AppContainer
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -244,7 +245,7 @@ open class DefaultEuiccChannelManager(
         withContext(Dispatchers.IO) {
             usbManager.deviceList.values.forEach { device ->
                 Log.i(TAG, "Scanning USB device ${device.deviceId}:${device.vendorId}")
-                val iface = device.getSmartCardInterface() ?: return@forEach
+                val iface = device.interfaces.smartCard ?: return@forEach
                 // If we don't have permission, tell UI code that we found a candidate device, but we
                 // need permission to be able to do anything with it
                 if (!usbManager.hasPermission(device)) return@withContext Pair(device, false)
