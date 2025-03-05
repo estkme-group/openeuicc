@@ -9,6 +9,7 @@
 
     <!-- Toast -->
     <string name="toast_ara_m_copied">ARA-M SHA-1 copied to clipboard</string>
+    <string name="toast_prompt_to_enable_sim_toolkit">Please ENABLE your \"%s\" application</string>
 
     <!-- Compatibility Check Descriptions -->
     <string name="compatibility_check_system_features">System Features</string>
