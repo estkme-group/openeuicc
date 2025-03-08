@@ -124,7 +124,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         // but that _is_ the desired behavior.
         val uri = intent.data
         if (uri?.scheme == "lpa") {
-            val parsed = ActivationCode.parse(uri.schemeSpecificPart)
+            val parsed = LPAString.parse(uri.schemeSpecificPart)
             state.smdp = parsed.address
             state.matchingId = parsed.matchingId
             state.confirmationCodeRequired = parsed.confirmationCodeRequired
@@ -135,7 +135,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     override fun onProvideAssistContent(outContent: AssistContent?) {
         super.onProvideAssistContent(outContent)
         outContent?.webUri = try {
-            val activationCode = ActivationCode(
+            val activationCode = LPAString(
                 state.smdp,
                 state.matchingId,
                 null,

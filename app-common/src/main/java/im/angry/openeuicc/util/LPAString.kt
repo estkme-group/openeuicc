@@ -1,18 +1,18 @@
 package im.angry.openeuicc.util
 
-data class ActivationCode(
+data class LPAString(
     val address: String,
     val matchingId: String?,
     val oid: String?,
     val confirmationCodeRequired: Boolean,
 ) {
     companion object {
-        fun parse(input: String): ActivationCode {
+        fun parse(input: String): LPAString {
             val components = input.removePrefix("LPA:").split('$')
             if (components.size < 2 || components[0] != "1") {
                 throw IllegalArgumentException("Invalid activation code format")
             }
-            return ActivationCode(
+            return LPAString(
                 address = components[1].trim(),
                 matchingId = components.getOrNull(2)?.trim()?.ifBlank { null },
                 oid = components.getOrNull(3)?.trim()?.ifBlank { null },

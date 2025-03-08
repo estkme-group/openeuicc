@@ -126,7 +126,7 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
 
     private fun processLpaString(input: String) {
         try {
-            val parsed = ActivationCode.parse(input)
+            val parsed = LPAString.parse(input)
             state.smdp = parsed.address
             state.matchingId = parsed.matchingId
             state.confirmationCodeRequired = parsed.confirmationCodeRequired
