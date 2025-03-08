@@ -23,8 +23,6 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
-import im.angry.openeuicc.vendored.getESTKmeInfo
-import im.angry.openeuicc.vendored.getSIMLinkVersion
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
@@ -104,14 +102,11 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         add(Item(R.string.euicc_info_access_mode, channel.type))
         add(Item(R.string.euicc_info_removable, formatByBoolean(channel.port.card.isRemovable, YES_NO)))
         add(Item(R.string.euicc_info_eid, channel.lpa.eID, copiedToastResId = R.string.toast_eid_copied))
-        getESTKmeInfo(channel.apduInterface)?.let {
-            add(Item(R.string.euicc_info_sku, it.skuName))
-            add(Item(R.string.euicc_info_sn, it.serialNumber, copiedToastResId = R.string.toast_sn_copied))
-            add(Item(R.string.euicc_info_bl_ver, it.bootloaderVersion))
-            add(Item(R.string.euicc_info_fw_ver, it.firmwareVersion))
-        }
-        getSIMLinkVersion(channel.lpa.eID, channel.lpa.euiccInfo2?.euiccFirmwareVersion)?.let {
-            add(Item(R.string.euicc_info_sku, "9eSIM $it"))
+        channel.tryParseEuiccVendorInfo()?.let { vendorInfo ->
+            vendorInfo.skuName?.let { add(Item(R.string.euicc_info_sku, it)) }
+            vendorInfo.serialNumber?.let { add(Item(R.string.euicc_info_sn, it)) }
+            vendorInfo.firmwareVersion?.let { add(Item(R.string.euicc_info_fw_ver, it)) }
+            vendorInfo.bootloaderVersion?.let { add(Item(R.string.euicc_info_bl_ver, it)) }
         }
         channel.lpa.euiccInfo2.let { info ->
             add(Item(R.string.euicc_info_sgp22_version, info?.sgp22Version.toString()))
