@@ -21,7 +21,6 @@ import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
 class DownloadWizardActivity: BaseEuiccAccessActivity() {
@@ -123,7 +122,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         // but that _is_ the desired behavior.
         val uri = intent.data
         if (uri?.scheme == "lpa") {
-            val parsed = ActivationCode.fromString(uri.schemeSpecificPart)
+            val parsed = ActivationCode.parse(uri.schemeSpecificPart)
             state.smdp = parsed.address
             state.matchingId = parsed.matchingId
             state.skipMethodSelect = true

@@ -2,12 +2,12 @@ package im.angry.openeuicc.util
 
 data class ActivationCode(
     val address: String,
-    val matchingId: String? = null,
-    val oid: String? = null,
-    val confirmationCodeRequired: Boolean = false,
+    val matchingId: String?,
+    val oid: String?,
+    val confirmationCodeRequired: Boolean,
 ) {
     companion object {
-        fun fromString(input: String): ActivationCode {
+        fun parse(input: String): ActivationCode {
             val components = input.removePrefix("LPA:").split('$')
             if (components.size < 2 || components[0] != "1") {
                 throw IllegalArgumentException("Invalid activation code format")
