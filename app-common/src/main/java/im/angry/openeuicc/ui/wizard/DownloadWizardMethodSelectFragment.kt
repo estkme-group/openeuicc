@@ -44,17 +44,14 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
 
             lifecycleScope.launch(Dispatchers.IO) {
                 runCatching {
-                    requireContext().contentResolver.openInputStream(result)?.let { input ->
-                        val bmp = BitmapFactory.decodeStream(input)
-                        input.close()
-
-                        decodeQrFromBitmap(bmp)?.let {
-                            withContext(Dispatchers.Main) {
-                                processLpaString(it)
+                    requireContext().contentResolver.openInputStream(result)?.use { input ->
+                        BitmapFactory.decodeStream(input).use { bmp ->
+                            decodeQrFromBitmap(bmp)?.let {
+                                withContext(Dispatchers.Main) {
+                                    processLpaString(it)
+                                }
                             }
                         }
-
-                        bmp.recycle()
                     }
                 }
             }

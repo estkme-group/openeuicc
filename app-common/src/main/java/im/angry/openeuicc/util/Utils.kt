@@ -86,6 +86,13 @@ suspend fun connectSEService(context: Context): SEService = suspendCoroutine { c
     }
 }
 
+inline fun <T> Bitmap.use(f: (Bitmap) -> T): T =
+    try {
+        f(this)
+    } finally {
+        recycle()
+    }
+
 fun decodeQrFromBitmap(bmp: Bitmap): String? =
      runCatching {
         val pixels = IntArray(bmp.width * bmp.height)
