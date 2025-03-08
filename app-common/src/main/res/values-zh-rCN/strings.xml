@@ -37,6 +37,11 @@
     <string name="profile_download_server">服务器 (RSP / SM-DP+)</string>
     <string name="profile_download_code">激活码</string>
     <string name="profile_download_confirmation_code">确认码 (可选)</string>
+    <string name="toast_sn_copied">已复制序列号到剪贴板</string>
+    <string name="euicc_info_sku">产品名称</string>
+    <string name="euicc_info_sn">产品序列号</string>
+    <string name="euicc_info_bl_ver">产品 Bootloader 版本</string>
+    <string name="euicc_info_fw_ver">产品固件版本</string>
     <string name="profile_download_confirmation_code_required">确认码 (必需)</string>
     <string name="profile_download_imei">IMEI (可选)</string>
     <string name="profile_download_low_nvram_title">剩余空间不足</string>

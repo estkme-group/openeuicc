@@ -31,7 +31,7 @@
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>
     <string name="toast_iccid_copied">ICCID copied to clipboard</string>
-    <string name="toast_sn_copied">Serial Number copied to clipboard</string>
+    <string name="toast_sn_copied">Serial number copied to clipboard</string>
     <string name="toast_eid_copied">EID copied to clipboard</string>
     <string name="toast_atr_copied">ATR copied to clipboard</string>
 
