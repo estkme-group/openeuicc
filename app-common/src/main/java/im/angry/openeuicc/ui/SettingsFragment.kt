@@ -122,7 +122,7 @@ open class SettingsFragment: PreferenceFragmentCompat() {
         return true
     }
 
-    private fun CheckBoxPreference.bindBooleanFlow(flow: PreferenceFlowWrapper<Boolean>) {
+    protected fun CheckBoxPreference.bindBooleanFlow(flow: PreferenceFlowWrapper<Boolean>) {
         lifecycleScope.launch {
             flow.collect { isChecked = it }
         }

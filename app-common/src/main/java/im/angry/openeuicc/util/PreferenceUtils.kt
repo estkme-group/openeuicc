@@ -35,7 +35,7 @@ internal object PreferenceKeys {
     val IGNORE_TLS_CERTIFICATE = booleanPreferencesKey("ignore_tls_certificate")
 }
 
-class PreferenceRepository(private val context: Context) {
+open class PreferenceRepository(private val context: Context) {
     // Expose flows so that we can also handle default values
     // ---- Profile Notifications ----
     val notificationDownloadFlow = bindFlow(PreferenceKeys.NOTIFICATION_DOWNLOAD, true)
@@ -51,7 +51,7 @@ class PreferenceRepository(private val context: Context) {
     val unfilteredProfileListFlow = bindFlow(PreferenceKeys.UNFILTERED_PROFILE_LIST, false)
     val ignoreTLSCertificateFlow = bindFlow(PreferenceKeys.IGNORE_TLS_CERTIFICATE, false)
 
-    private fun <T> bindFlow(key: Preferences.Key<T>, defaultValue: T): PreferenceFlowWrapper<T> =
+    protected fun <T> bindFlow(key: Preferences.Key<T>, defaultValue: T): PreferenceFlowWrapper<T> =
         PreferenceFlowWrapper(context, key, defaultValue)
 }
 

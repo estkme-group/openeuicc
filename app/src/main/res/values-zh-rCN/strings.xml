@@ -17,4 +17,6 @@
     <string name="lui_skip">跳过</string>
     <string name="lui_download">下载 eSIM</string>
     <string name="telephony_manager">TelephonyManager (特权)</string>
+    <string name="pref_developer_telephony_manager_removable">全局使用 TelephonyManager</string>
+    <string name="pref_developer_telephony_manager_removable_desc">在默认情况下，可移除 eUICC 将仅使用 OMAPI。这与非特权模式 (EasyEUICC) 一致。在某些设备上 OMAPI 可能存在问题 -- 选择此选项以强制使用 TelephonyManager。</string>
 </resources>

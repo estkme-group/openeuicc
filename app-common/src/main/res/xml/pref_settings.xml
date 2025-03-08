@@ -52,7 +52,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
+    <im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory
         app:key="pref_developer"
         app:title="@string/pref_developer"
         app:iconSpaceReserved="false">
@@ -69,7 +69,7 @@
             app:summary="@string/pref_developer_ignore_tls_certificate_desc"
             app:title="@string/pref_developer_ignore_tls_certificate" />
 
-    </PreferenceCategory>
+    </im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory>
 
     <PreferenceCategory
         app:key="pref_info"

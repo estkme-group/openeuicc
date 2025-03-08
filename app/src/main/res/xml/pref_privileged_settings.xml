@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        app:isPreferenceVisible="false"
+        app:key="pref_developer_overlay">
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
+            app:key="pref_developer_tmapi_removable"
+            app:summary="@string/pref_developer_telephony_manager_removable_desc"
+            app:title="@string/pref_developer_telephony_manager_removable" />
+    </PreferenceCategory>
+</PreferenceScreen>

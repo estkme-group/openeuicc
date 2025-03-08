@@ -22,4 +22,8 @@
     <string name="lui_desc">Your device supports eSIMs. To connect to mobile network, download your eSIM issued by a carrier, or insert a physical SIM.</string>
     <string name="lui_skip">Skip</string>
     <string name="lui_download">Download eSIM</string>
+
+    <!-- Preference -->
+    <string name="pref_developer_telephony_manager_removable">Use TelephonyManager everywhere</string>
+    <string name="pref_developer_telephony_manager_removable_desc">By default, only OMAPI is attempted for removable eUICCs to match what is done in unprivileged mode (i.e. EasyEUICC). This may not work well on some devices. Select this option to force the use of TelephonyManager even for removable eUICCs.</string>
 </resources>
