@@ -30,7 +30,20 @@
         <activity
             android:exported="true"
             android:name="im.angry.openeuicc.ui.wizard.DownloadWizardActivity"
-            android:label="@string/download_wizard" />
+            android:label="@string/download_wizard">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Accepts URIs that begin with "lpa:" -->
+                <!-- for example: "LPA:1$..." -->
+                <!-- refs: https://www.iana.org/assignments/uri-schemes/prov/lpa -->
+                <data android:scheme="lpa"/>
+                <data android:sspPrefix="1$"/>
+            </intent-filter>
+        </activity>
 
         <activity-alias
             android:exported="true"

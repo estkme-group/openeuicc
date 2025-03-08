@@ -35,6 +35,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         var downloadStarted: Boolean,
         var downloadTaskID: Long,
         var downloadError: LocalProfileAssistant.ProfileDownloadException?,
+        var skipMethodSelect: Boolean,
     )
 
     private lateinit var state: DownloadWizardState
@@ -63,16 +64,19 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         })
 
         state = DownloadWizardState(
-            null,
-            intent.getIntExtra("selectedLogicalSlot", 0),
-            "",
-            null,
-            null,
-            null,
-            false,
-            -1,
-            null
+            currentStepFragmentClassName = null,
+            selectedLogicalSlot = intent.getIntExtra("selectedLogicalSlot", 0),
+            smdp = "",
+            matchingId = null,
+            confirmationCode = null,
+            imei = null,
+            downloadStarted = false,
+            downloadTaskID = -1,
+            downloadError = null,
+            skipMethodSelect = false
         )
+
+        handleDeepLink()
 
         progressBar = requireViewById(R.id.progress)
         nextButton = requireViewById(R.id.download_wizard_next)
@@ -110,6 +114,19 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             )
             v.updatePadding(bars.left, bars.top, bars.right, 0)
             WindowInsetsCompat.CONSUMED
+        }
+    }
+
+    private fun handleDeepLink() {
+        // If we get an LPA string from deep-link intents, extract from there.
+        // Note that `onRestoreInstanceState` could override this with user input,
+        // but that _is_ the desired behavior.
+        val uri = intent.data
+        if (uri?.scheme == "lpa") {
+            val parsed = ActivationCode.fromString(uri.schemeSpecificPart)
+            state.smdp = parsed.address
+            state.matchingId = parsed.matchingId
+            state.skipMethodSelect = true
         }
     }
 

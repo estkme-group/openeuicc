@@ -49,7 +49,11 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         get() = true
 
     override fun createNextFragment(): DownloadWizardActivity.DownloadWizardStepFragment =
-        DownloadWizardMethodSelectFragment()
+        if (state.skipMethodSelect) {
+            DownloadWizardDetailsFragment()
+        } else {
+            DownloadWizardMethodSelectFragment()
+        }
 
     override fun createPrevFragment(): DownloadWizardActivity.DownloadWizardStepFragment? = null
 
