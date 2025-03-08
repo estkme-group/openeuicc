@@ -20,13 +20,10 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
         private const val FIELD_ICCID = "iccid"
         private const val FIELD_NAME = "name"
 
-        fun newInstance(slotId: Int, portId: Int, iccid: String, name: String): ProfileDeleteFragment {
-            val instance = newInstanceEuicc(ProfileDeleteFragment::class.java, slotId, portId)
-            instance.requireArguments().apply {
+        fun newInstance(slotId: Int, portId: Int, iccid: String, name: String) =
+            newInstanceEuicc(ProfileDeleteFragment::class.java, slotId, portId) {
                 putString(FIELD_ICCID, iccid)
                 putString(FIELD_NAME, name)
-            }
-            return instance
         }
     }
 
@@ -91,19 +88,12 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
         requireParentFragment().lifecycleScope.launch {
             ensureEuiccChannelManager()
             euiccChannelManagerService.waitForForegroundTask()
-            euiccChannelManagerService.launchProfileDeleteTask(slotId, portId, iccid).onStart {
-                if (parentFragment is EuiccProfilesChangedListener) {
-                    // Trigger a refresh in the parent fragment -- it should wait until
-                    // any foreground task is completed before actually doing a refresh
-                    (parentFragment as EuiccProfilesChangedListener).onEuiccProfilesChanged()
+            euiccChannelManagerService.launchProfileDeleteTask(slotId, portId, iccid)
+                .onStart {
+                    parentFragment?.notifyEuiccProfilesChanged()
+                    runCatching(::dismiss)
                 }
-
-                try {
-                    dismiss()
-                } catch (e: IllegalStateException) {
-                    // Ignored
-                }
-            }.waitDone()
+                .waitDone()
         }
     }
 }
