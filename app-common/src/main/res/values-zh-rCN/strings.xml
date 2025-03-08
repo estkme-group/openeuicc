@@ -39,7 +39,7 @@
     <string name="profile_download_confirmation_code">确认码 (可选)</string>
     <string name="profile_download_confirmation_code_required">确认码 (必需)</string>
     <string name="profile_download_imei">IMEI (可选)</string>
-    <string name="profile_download_low_nvram_title">本次下载可能会失败</string>
+    <string name="profile_download_low_nvram_title">剩余空间不足</string>
     <string name="profile_download_low_nvram_message">当前芯片的剩余空间不足，可能导致配置下载失败。\n是否继续下载？</string>
     <string name="logs_saved_message">日志已保存到指定路径。需要通过其他 App 分享吗？</string>
     <string name="profile_rename_new_name">新昵称</string>
