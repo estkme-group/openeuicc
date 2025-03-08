@@ -2,33 +2,36 @@
 <resources>
     <string name="compatibility_check">互換性のチェック</string>
     <string name="open_sim_toolkit">SIM ツールキットを開く</string>
+    <!-- Settings -->
+    <!-- Toast -->
+    <string name="toast_ara_m_copied">ARA-M SHA-1 をクリップボードにコピーしました</string>
+    <string name="toast_prompt_to_enable_sim_toolkit">「%s」アプリを有効化してください</string>
     <!-- Compatibility Check Descriptions -->
     <string name="compatibility_check_system_features">システムの機能</string>
     <string name="compatibility_check_system_features_desc">デバイスにリムーバブル eUICC カードの管理に必要なすべての機能が備わっているかどうか。例えば基本的な電話機能や OMAPI のサポートなど。</string>
     <string name="compatibility_check_system_features_no_telephony">使用しているデバイスには電話機能がありません。</string>
     <string name="compatibility_check_system_features_no_omapi">使用しているデバイスまたはシステムには OMAPI のサポートを宣言していません。これは、ハードウェアからのサポートが不足していることが原因の可能性があります。または、フラグが不足していることが原因の可能性もあります。OMAPI が実際にサポートされているかどうかを判断するには次の 2 つのチェック項目を参照してください。</string>
     <string name="compatibility_check_omapi_connectivity">OMAPI の接続</string>
-    <string name="compatibility_check_omapi_connectivity_desc">使用しているデバイスは、OMAPI 経由で SIM カード上のセキュアエレメントへのアクセスを許可していますか？</string>
+    <string name="compatibility_check_omapi_connectivity_desc">使用しているデバイスは、OMAPI 経由で SIM カード上のセキュアエレメントへのアクセスを許可しているか否や。</string>
     <string name="compatibility_check_omapi_connectivity_fail">OMAPI 経由で SIM カードのセキュアエレメントリーダーを検出できません。このデバイスに SIM を挿入していない場合は、SIM を挿入後にこのチェックを再試行してください。</string>
-    <string name="compatibility_check_omapi_connectivity_partial_success_sim_number">セキュアエレメントアクセスが正常に検出されましたが、次の SIM スロットでのみ有効です: <b>SIM%s</b>.</string>
+    <string name="compatibility_check_omapi_connectivity_partial_success_sim_number">セキュアエレメントのアクセスが正常に検出されましたが、次の SIM スロットでのみ有効です: &lt;b&gt;SIM%s&lt;/b&gt;</string>
     <string name="compatibility_check_isdr_channel">ISD-R チャネルアクセス</string>
-    <string name="compatibility_check_isdr_channel_desc">使用しているデバイスは、OMAPI 経由で eSIM への ISD-R (管理) チャネルを開くことをサポートしていますか？</string>
+    <string name="compatibility_check_isdr_channel_desc">使用しているデバイスは、OMAPI 経由で eSIM への ISD-R (管理) チャネルを開くことをサポートしているか否や。</string>
     <string name="compatibility_check_isdr_channel_desc_unknown">OMAPI 経由での ISD-R アクセスがサポートされているかどうかを確認できません。まだ SIM カードが挿入されていない場合は、挿入した状態で再試行してください (どの SIM カードでも構いません)。</string>
-    <string name="compatibility_check_isdr_channel_desc_partial_fail">ISD-R への OMAPI アクセスは、次のスロットでのみ可能です: <b>SIM%s</b>.</string>
-    <string name="compatibility_check_known_broken">既知の破損リストに掲載されていない</string>
+    <string name="compatibility_check_isdr_channel_desc_partial_fail">ISD-R への OMAPI アクセスは、次のスロットでのみ可能です: &lt;b&gt;SIM%s&lt;/b&gt;</string>
+    <string name="compatibility_check_known_broken">既知の破損リストの記載されていない</string>
     <string name="compatibility_check_known_broken_desc">取り外し可能な eSIM に関連するバグがデバイスに存在しないかを確認します。</string>
-    <string name="compatibility_check_known_broken_fail">おっと…使用しているデバイスには、取り外し可能な eSIM へのアクセス時にバグが存在します。これは必ずしも全く機能しないことを意味するわけではありませんが、注意して進める必要があります。</string>
+    <string name="compatibility_check_known_broken_fail">おっと...使用しているデバイスには、取り外し可能な eSIM へのアクセス時にバグが存在します。これは必ずしも全く機能しないことを意味するわけではありませんが、注意して進める必要があります。</string>
     <string name="compatibility_check_usb">USB カードリーダーのサポート</string>
-    <string name="compatibility_check_usb_desc">使用しているデバイスは、USB カードリーダー経由の eSIM の管理をサポートしていますか？</string>
+    <string name="compatibility_check_usb_desc">使用しているデバイスは、USB カードリーダー経由の eSIM の管理をサポートしているか否や。</string>
     <string name="compatibility_check_usb_ok">このデバイスの標準 USB CCID リーダーを介して eSIM を管理できます (ここで他のチェック項目に失敗した場合でも)。カードリーダーを挿入し、このアプリを開いてこの方法で eSIM を管理できます。</string>
     <string name="compatibility_check_usb_fail">使用しているデバイスは USB ホストとしての機能をサポートしていません。</string>
     <string name="compatibility_check_verdict">判定 (USB 以外)</string>
-    <string name="compatibility_check_verdict_desc">これまでのすべてのチェック項目に基づいて、デバイスに挿入された取り外し可能な eSIM の管理と互換性がある可能性はどのくらいありますか？</string>
+    <string name="compatibility_check_verdict_desc">これまでのすべてのチェック項目に基づいて、デバイスに挿入された取り外し可能な eSIM の管理と互換性がある可能性はどの程度かについて</string>
     <string name="compatibility_check_verdict_ok">このデバイスに挿入された取り外し可能な eSIM の使用および管理が使用できる可能性があります。</string>
     <string name="compatibility_check_verdict_known_broken">挿入された取り外し可能な eSIM にアクセスするとデバイスにバグが発生することが知られています。\n%s</string>
     <string name="compatibility_check_verdict_unknown_likely_ok">挿入された取り外し可能な eSIM が使用しているデバイスで管理できるかはわかりません。ただし、このデバイスは OMAPI のサポートを宣言しているため、動作する可能性はわずかに高くなります。\n%s</string>
     <string name="compatibility_check_verdict_unknown_likely_fail">挿入された取り外し可能な eSIM がデバイス上で管理できるかどうかは判断できません。デバイスが OMAPI のサポートを宣言していないため、このデバイス上で取り外し可能な eSIM を管理することはサポートされていない可能性があります。\n%s</string>
     <string name="compatibility_check_verdict_unknown">挿入された取り外し可能な eSIM がデバイス上で管理できるかどうかを確認できません。\n%s</string>
     <string name="compatibility_check_verdict_fail_shared">ただし、eSIM プロファイルがすでに読み込まれている場合、有効化されたプロファイル自体は引き続き機能します。また、プロファイルが管理できない場合は、このデバイスで USB カードリーダーを介してプロファイルを管理できる可能性があります。</string>
-    <string name="toast_ara_m_copied">ARA-M SHA-1 をクリップボードにコピーしました</string>
 </resources>
