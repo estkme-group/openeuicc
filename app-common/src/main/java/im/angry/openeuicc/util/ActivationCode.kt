@@ -20,4 +20,15 @@ data class ActivationCode(
             )
         }
     }
+
+    override fun toString(): String {
+        val parts = arrayOf(
+            "1",
+            address,
+            matchingId ?: "",
+            oid ?: "",
+            if (confirmationCodeRequired) "1" else ""
+        )
+        return parts.joinToString("$").trimEnd('$')
+    }
 }

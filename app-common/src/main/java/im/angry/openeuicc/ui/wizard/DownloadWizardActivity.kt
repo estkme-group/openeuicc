@@ -1,5 +1,6 @@
 package im.angry.openeuicc.ui.wizard
 
+import android.app.assist.AssistContent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -8,6 +9,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -108,6 +110,21 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             )
             v.updatePadding(bars.left, bars.top, bars.right, 0)
             WindowInsetsCompat.CONSUMED
+        }
+    }
+
+    override fun onProvideAssistContent(outContent: AssistContent?) {
+        super.onProvideAssistContent(outContent)
+        outContent?.webUri = try {
+            val activationCode = ActivationCode(
+                state.smdp,
+                state.matchingId,
+                null,
+                state.confirmationCode != null,
+            )
+            "LPA:$activationCode".toUri()
+        } catch (_: Exception) {
+            null
         }
     }
 
