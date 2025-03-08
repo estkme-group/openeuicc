@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Toast
 import im.angry.easyeuicc.R
 import im.angry.openeuicc.util.SIMToolkit
@@ -26,21 +27,27 @@ class UnprivilegedEuiccManagementFragment : EuiccManagementFragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_sim_toolkit, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
         menu.findItem(R.id.open_sim_toolkit).apply {
-            val slot = stk[slotId] ?: return@apply
-            isVisible = slot.intent != null
-            setOnMenuItemClickListener {
-                val intent = slot.intent ?: return@setOnMenuItemClickListener false
-                if (intent.action == Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
-                    val packageName = intent.data!!.schemeSpecificPart
-                    val label = requireContext().packageManager.getApplicationLabel(packageName)
-                    val message = requireContext().getString(R.string.toast_prompt_to_enable_sim_toolkit, label)
-                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                }
-                startActivity(intent)
-                true
-            }
+            intent = stk[slotId]?.intent
+            isVisible = intent != null
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.open_sim_toolkit -> {
+            SIMToolkit.getDisabledPackageName(item.intent)?.also { packageName ->
+                val label = requireContext().packageManager.getApplicationLabel(packageName)
+                val message = getString(R.string.toast_prompt_to_enable_sim_toolkit, label)
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            }
+            super.onOptionsItemSelected(item) // handling intent
+        }
+
+        else -> super.onOptionsItemSelected(item)
     }
 }
 

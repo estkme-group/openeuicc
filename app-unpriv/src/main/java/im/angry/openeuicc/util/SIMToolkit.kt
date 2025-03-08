@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
-import android.widget.Toast
 import androidx.annotation.ArrayRes
 import im.angry.easyeuicc.R
 import im.angry.openeuicc.core.EuiccChannelManager
@@ -32,9 +31,10 @@ class SIMToolkit(private val context: Context) {
     data class Slot(private val packageManager: PackageManager, private val components: Set<ComponentName>) {
         private val packageNames: Iterable<String>
             get() = components.map(ComponentName::getPackageName).toSet()
+                .filter(packageManager::isInstalledApp)
 
         private val launchIntent: Intent?
-            get() = packageNames.firstNotNullOfOrNull(packageManager::getLaunchIntent)
+            get() = packageNames.firstNotNullOfOrNull(packageManager::getLaunchIntentForPackage)
 
         private val activities: Iterable<ComponentName>
             get() = packageNames.flatMap(packageManager::getActivities)
@@ -50,22 +50,22 @@ class SIMToolkit(private val context: Context) {
         }
 
         private fun getDisabledPackageIntent(): Intent? {
-            val disabledPackageName = packageNames.find {
-                try {
-                    isDisabledState(packageManager.getApplicationEnabledSetting(it))
-                } catch (_: IllegalArgumentException) {
-                    false
-                }
-            }
-            if (disabledPackageName == null) return null
-            return Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", disabledPackageName, null)
-            )
+            val disabledPackageName = packageNames
+                .find { isDisabledState(packageManager.getApplicationEnabledSetting(it)) }
+                ?: return null
+            val uri = Uri.fromParts("package", disabledPackageName, null)
+            return Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri)
         }
 
         val intent: Intent?
             get() = getActivityIntent() ?: getDisabledPackageIntent()
+    }
+
+    companion object {
+        fun getDisabledPackageName(intent: Intent?): String? {
+            if (intent?.action != Settings.ACTION_APPLICATION_DETAILS_SETTINGS) return null
+            return intent.data?.schemeSpecificPart
+        }
     }
 }
 
@@ -75,15 +75,12 @@ private fun isDisabledState(state: Int) = when (state) {
     else -> false
 }
 
-private fun PackageManager.getLaunchIntent(packageName: String) = try {
-    getLaunchIntentForPackage(packageName)
+private fun PackageManager.isInstalledApp(packageName: String) = try {
+    getPackageInfo(packageName, 0)
+    true
 } catch (_: PackageManager.NameNotFoundException) {
-    null
+    false
 }
 
-private fun PackageManager.getActivities(packageName: String) = try {
-    getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
-        .activities?.toList() ?: emptyList()
-} catch (_: PackageManager.NameNotFoundException) {
-    emptyList()
-}
+private fun PackageManager.getActivities(packageName: String) =
+    getPackageInfo(packageName, PackageManager.GET_ACTIVITIES).activities?.toList() ?: emptyList()
