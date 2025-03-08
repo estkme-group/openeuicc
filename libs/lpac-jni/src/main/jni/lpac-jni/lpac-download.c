@@ -126,7 +126,10 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     syslog(LOG_INFO, "es10b_load_bound_profile_package %d, reason %d", ret, es10b_load_bound_profile_package_result.errorReason);
     if (ret < 0) {
         ret = - (int) es10b_load_bound_profile_package_result.errorReason;
+        goto out;
     }
+
+    euicc_http_cleanup(ctx);
 
     out:
     // We expect Java side to call cancelSessions after any error -- thus, `euicc_http_cleanup` is done there
