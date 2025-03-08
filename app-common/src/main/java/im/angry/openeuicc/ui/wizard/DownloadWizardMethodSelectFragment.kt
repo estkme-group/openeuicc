@@ -42,18 +42,16 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
         registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
             if (result == null) return@registerForActivityResult
 
-            lifecycleScope.launch(Dispatchers.IO) {
-                runCatching {
-                    requireContext().contentResolver.openInputStream(result)?.use { input ->
-                        BitmapFactory.decodeStream(input).use { bmp ->
-                            decodeQrFromBitmap(bmp)?.let {
-                                withContext(Dispatchers.Main) {
-                                    processLpaString(it)
-                                }
-                            }
+            lifecycleScope.launch {
+                val decoded = withContext(Dispatchers.IO) {
+                    runCatching {
+                        requireContext().contentResolver.openInputStream(result)?.use { input ->
+                            BitmapFactory.decodeStream(input).use(::decodeQrFromBitmap)
                         }
                     }
                 }
+
+                decoded.getOrNull()?.let { processLpaString(it) }
             }
         }
 
