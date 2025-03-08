@@ -5,6 +5,7 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
 import im.angry.openeuicc.common.R
@@ -55,6 +56,9 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
         smdp.editText!!.addTextChangedListener {
             updateInputCompleteness()
         }
+        confirmationCode.editText!!.addTextChangedListener {
+            updateInputCompleteness()
+        }
         return view
     }
 
@@ -65,6 +69,15 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
         confirmationCode.editText!!.setText(state.confirmationCode)
         imei.editText!!.setText(state.imei)
         updateInputCompleteness()
+
+        if (state.confirmationCodeRequired) {
+            confirmationCode.editText!!.requestFocus()
+            confirmationCode.editText!!.hint =
+                getString(R.string.profile_download_confirmation_code_required)
+        } else {
+            confirmationCode.editText!!.hint =
+                getString(R.string.profile_download_confirmation_code)
+        }
     }
 
     override fun onPause() {
@@ -74,6 +87,9 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
 
     private fun updateInputCompleteness() {
         inputComplete = Patterns.DOMAIN_NAME.matcher(smdp.editText!!.text).matches()
+        if (state.confirmationCodeRequired) {
+            inputComplete = inputComplete && confirmationCode.editText!!.text.isNotEmpty()
+        }
         refreshButtons()
     }
 }

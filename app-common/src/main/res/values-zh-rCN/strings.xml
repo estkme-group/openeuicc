@@ -37,6 +37,7 @@
     <string name="profile_download_server">服务器 (RSP / SM-DP+)</string>
     <string name="profile_download_code">激活码</string>
     <string name="profile_download_confirmation_code">确认码 (可选)</string>
+    <string name="profile_download_confirmation_code_required">确认码 (必需)</string>
     <string name="profile_download_imei">IMEI (可选)</string>
     <string name="profile_download_low_nvram_title">本次下载可能会失败</string>
     <string name="profile_download_low_nvram_message">当前芯片的剩余空间不足，可能导致配置下载失败。\n是否继续下载？</string>
@@ -144,6 +145,4 @@
     <string name="pref_developer_ignore_tls_certificate">无视 SM-DP+ 的 TLS 证书</string>
     <string name="pref_developer_ignore_tls_certificate_desc">允许 RSP 服务器使用任意证书</string>
     <string name="information_unavailable">无信息</string>
-    <string name="profile_download_required_confirmation_code">需要确认码</string>
-    <string name="profile_download_required_confirmation_code_message">您扫描的二维码或粘贴的 LPA 码需要一个额外的确认码</string>
 </resources>

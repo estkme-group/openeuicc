@@ -129,15 +129,7 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
             val parsed = ActivationCode.parse(input)
             state.smdp = parsed.address
             state.matchingId = parsed.matchingId
-            if (parsed.confirmationCodeRequired) {
-                AlertDialog.Builder(requireContext()).apply {
-                    setTitle(R.string.profile_download_required_confirmation_code)
-                    setMessage(R.string.profile_download_required_confirmation_code_message)
-                    setCancelable(true)
-                    setPositiveButton(android.R.string.ok, null)
-                    show()
-                }
-            }
+            state.confirmationCodeRequired = parsed.confirmationCodeRequired
             gotoNextFragment(DownloadWizardDetailsFragment())
         } catch (e: IllegalArgumentException) {
             AlertDialog.Builder(requireContext()).apply {
@@ -150,14 +142,19 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
         }
     }
 
-    private class DownloadMethodViewHolder(private val root: View) : ViewHolder(root) {
+    private inner class DownloadMethodViewHolder(private val root: View) : ViewHolder(root) {
         private val icon = root.requireViewById<ImageView>(R.id.download_method_icon)
         private val title = root.requireViewById<TextView>(R.id.download_method_title)
 
         fun bind(item: DownloadMethod) {
             icon.setImageResource(item.iconRes)
             title.setText(item.titleRes)
-            root.setOnClickListener { item.onClick() }
+            root.setOnClickListener {
+                // If the user elected to use another download method, reset the confirmation code flag
+                // too
+                state.confirmationCodeRequired = false
+                item.onClick()
+            }
         }
     }
 

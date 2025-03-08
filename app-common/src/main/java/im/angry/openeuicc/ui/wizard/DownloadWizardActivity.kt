@@ -35,6 +35,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         var downloadTaskID: Long,
         var downloadError: LocalProfileAssistant.ProfileDownloadException?,
         var skipMethodSelect: Boolean,
+        var confirmationCodeRequired: Boolean,
     )
 
     private lateinit var state: DownloadWizardState
@@ -72,7 +73,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             downloadStarted = false,
             downloadTaskID = -1,
             downloadError = null,
-            skipMethodSelect = false
+            skipMethodSelect = false,
+            confirmationCodeRequired = false,
         )
 
         handleDeepLink()
@@ -125,6 +127,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             val parsed = ActivationCode.parse(uri.schemeSpecificPart)
             state.smdp = parsed.address
             state.matchingId = parsed.matchingId
+            state.confirmationCodeRequired = parsed.confirmationCodeRequired
             state.skipMethodSelect = true
         }
     }
@@ -154,6 +157,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         outState.putString("imei", state.imei)
         outState.putBoolean("downloadStarted", state.downloadStarted)
         outState.putLong("downloadTaskID", state.downloadTaskID)
+        outState.putBoolean("confirmationCodeRequired", state.confirmationCodeRequired)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -170,6 +174,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         state.downloadStarted =
             savedInstanceState.getBoolean("downloadStarted", state.downloadStarted)
         state.downloadTaskID = savedInstanceState.getLong("downloadTaskID", state.downloadTaskID)
+        state.confirmationCode = savedInstanceState.getString("confirmationCode", state.confirmationCode)
+        state.confirmationCodeRequired = savedInstanceState.getBoolean("confirmationCodeRequired", state.confirmationCodeRequired)
     }
 
     private fun onPrevPressed() {

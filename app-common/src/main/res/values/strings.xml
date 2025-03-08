@@ -53,13 +53,12 @@
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>
     <string name="profile_download_code">Activation Code</string>
     <string name="profile_download_confirmation_code">Confirmation Code (Optional)</string>
+    <string name="profile_download_confirmation_code_required">Confirmation Code (Required)</string>
     <string name="profile_download_imei">IMEI (Optional)</string>
 
     <string name="profile_download_low_nvram_title">This download may fail</string>
     <string name="profile_download_low_nvram_message">This download may fail due to low remaining capacity.</string>
     <string name="profile_download_no_lpa_string">No LPA code found in clipboard</string>
-    <string name="profile_download_required_confirmation_code">Confirmation Code Required</string>
-    <string name="profile_download_required_confirmation_code_message">Please provide a confirmation code as required by the scanned QR code or LPA code from clipboard.</string>
     <string name="profile_download_incorrect_lpa_string">Unable to parse</string>
     <string name="profile_download_incorrect_lpa_string_message">Could not parse QR code or clipboard content as a LPA code.</string>
 
