@@ -6,7 +6,7 @@ import androidx.preference.Preference
 import im.angry.openeuicc.R
 import im.angry.openeuicc.util.*
 
-class PrivilegedSettingsFragment : SettingsFragment() {
+class PrivilegedSettingsFragment : SettingsFragment(), PrivilegedEuiccContextMarker {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         addPreferencesFromResource(R.xml.pref_privileged_settings)
@@ -21,7 +21,7 @@ class PrivilegedSettingsFragment : SettingsFragment() {
         requirePreference<Preference>("pref_advanced_language").isVisible = false
 
         // Force use TelephonyManager API
-        requirePreference<CheckBoxPreference>("pref_developer_tmapi_removable")
-            .bindBooleanFlow((preferenceRepository as PrivilegedPreferenceRepository).removableTelephonyManagerFlow)
+        requirePreference<CheckBoxPreference>("pref_developer_removable_telephony_manager")
+            .bindBooleanFlow(preferenceRepository.removableTelephonyManagerFlow)
     }
 }

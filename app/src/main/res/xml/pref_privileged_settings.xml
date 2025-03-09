@@ -5,7 +5,7 @@
         app:key="pref_developer_overlay">
         <CheckBoxPreference
             app:iconSpaceReserved="false"
-            app:key="pref_developer_tmapi_removable"
+            app:key="pref_developer_removable_telephony_manager"
             app:summary="@string/pref_developer_telephony_manager_removable_desc"
             app:title="@string/pref_developer_telephony_manager_removable" />
     </PreferenceCategory>
