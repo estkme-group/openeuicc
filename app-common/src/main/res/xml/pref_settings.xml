@@ -71,7 +71,6 @@
 
         <CheckBoxPreference
             app:iconSpaceReserved="false"
-            app:isPreferenceVisible="false"
             app:key="pref_developer_euicc_memory_reset"
             app:summary="@string/pref_developer_euicc_memory_reset_desc"
             app:title="@string/pref_developer_euicc_memory_reset" />
