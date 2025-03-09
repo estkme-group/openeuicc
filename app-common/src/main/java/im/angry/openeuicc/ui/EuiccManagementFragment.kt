@@ -38,8 +38,10 @@ import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
@@ -55,6 +57,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     private lateinit var fab: FloatingActionButton
     private lateinit var profileList: RecyclerView
     private var logicalSlotId: Int = -1
+    private lateinit var eid: String
 
     private val adapter = EuiccProfileAdapter()
 
@@ -131,30 +134,41 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         inflater.inflate(R.menu.fragment_euicc, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean =
-        when (item.itemId) {
-            R.id.show_notifications -> {
-                if (logicalSlotId != -1) {
-                    Intent(requireContext(), NotificationsActivity::class.java).apply {
-                        putExtra("logicalSlotId", logicalSlotId)
-                        startActivity(this)
-                    }
-                }
-                true
-            }
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.show_notifications).isVisible =
+            logicalSlotId != -1
+        menu.findItem(R.id.euicc_info).isVisible =
+            logicalSlotId != -1
+        menu.findItem(R.id.euicc_memory_reset).isVisible =
+            runBlocking { preferenceRepository.euiccMemoryResetFlow.first() }
+    }
 
-            R.id.euicc_info -> {
-                if (logicalSlotId != -1) {
-                    Intent(requireContext(), EuiccInfoActivity::class.java).apply {
-                        putExtra("logicalSlotId", logicalSlotId)
-                        startActivity(this)
-                    }
-                }
-                true
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.show_notifications -> {
+            Intent(requireContext(), NotificationsActivity::class.java).apply {
+                putExtra("logicalSlotId", logicalSlotId)
+                startActivity(this)
             }
-
-            else -> super.onOptionsItemSelected(item)
+            true
         }
+
+        R.id.euicc_info -> {
+            Intent(requireContext(), EuiccInfoActivity::class.java).apply {
+                putExtra("logicalSlotId", logicalSlotId)
+                startActivity(this)
+            }
+            true
+        }
+
+        R.id.euicc_memory_reset -> {
+            EuiccMemoryResetFragment.newInstance(slotId, portId, eid)
+                .show(childFragmentManager, EuiccMemoryResetFragment.TAG)
+            true
+        }
+
+        else -> super.onOptionsItemSelected(item)
+    }
 
     protected open suspend fun onCreateFooterViews(
         parent: ViewGroup,
@@ -192,6 +206,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
         val profiles = withEuiccChannel { channel ->
             logicalSlotId = channel.logicalSlotId
+            eid = channel.lpa.eID
             euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
             if (unfilteredProfileListFlow.value)
                 channel.lpa.profiles

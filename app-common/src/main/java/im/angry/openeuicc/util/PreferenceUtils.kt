@@ -33,6 +33,7 @@ internal object PreferenceKeys {
     val DEVELOPER_OPTIONS_ENABLED = booleanPreferencesKey("developer_options_enabled")
     val UNFILTERED_PROFILE_LIST = booleanPreferencesKey("unfiltered_profile_list")
     val IGNORE_TLS_CERTIFICATE = booleanPreferencesKey("ignore_tls_certificate")
+    val EUICC_MEMORY_RESET = booleanPreferencesKey("euicc_memory_reset")
 }
 
 open class PreferenceRepository(private val context: Context) {
@@ -50,6 +51,7 @@ open class PreferenceRepository(private val context: Context) {
     val developerOptionsEnabledFlow = bindFlow(PreferenceKeys.DEVELOPER_OPTIONS_ENABLED, false)
     val unfilteredProfileListFlow = bindFlow(PreferenceKeys.UNFILTERED_PROFILE_LIST, false)
     val ignoreTLSCertificateFlow = bindFlow(PreferenceKeys.IGNORE_TLS_CERTIFICATE, false)
+    val euiccMemoryResetFlow = bindFlow(PreferenceKeys.EUICC_MEMORY_RESET, false)
 
     protected fun <T> bindFlow(key: Preferences.Key<T>, defaultValue: T): PreferenceFlowWrapper<T> =
         PreferenceFlowWrapper(context, key, defaultValue)

@@ -30,6 +30,8 @@
 
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>
+    <string name="toast_euicc_memory_reset_confirm_text_mismatched">Confirmation string mismatch</string>
+    <string name="toast_euicc_memory_reset_finitshed">This chip has been erased</string>
     <string name="toast_iccid_copied">ICCID copied to clipboard</string>
     <string name="toast_sn_copied">Serial number copied to clipboard</string>
     <string name="toast_eid_copied">EID copied to clipboard</string>
@@ -48,6 +50,8 @@
     <string name="task_profile_delete_failure">Failed to delete eSIM profile</string>
     <string name="task_profile_switch">Switching eSIM profile</string>
     <string name="task_profile_switch_failure">Failed to switch eSIM profile</string>
+    <string name="task_euicc_memory_reset">Erasing eSIM chip</string>
+    <string name="task_euicc_memory_reset_failure">Failed to erase eSIM chip</string>
 
     <string name="profile_download">New eSIM</string>
     <string name="profile_download_server">Server (RSP / SM-DP+)</string>
@@ -142,6 +146,13 @@
     <string name="euicc_info_ci_unknown">Unknown eSIM CI</string>
     <string name="euicc_info_atr" translatable="false">Answer To Reset (ATR)</string>
 
+    <string name="euicc_memory_reset">Erase eUICC</string>
+    <string name="euicc_memory_reset_title">Erase eUICC</string>
+    <string name="euicc_memory_reset_message">Please confirm to delete all profiles on this chip and understand that this operation is irreversible.\n\nEID: %s\n\n%s</string>
+    <string name="euicc_memory_reset_hint_text">Type \'%s\' here to confirm</string>
+    <string name="euicc_memory_reset_confirm_text">I CONFIRM TO ERASE THE CHIP WHOSE EID ENDS WITH %s AND UNDERSTAND THAT THIS IS IRREVERSIBLE</string>
+    <string name="euicc_memory_reset_invoke_button">Erase</string>
+
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
@@ -174,6 +185,8 @@
     <string name="pref_developer_unfiltered_profile_list_desc">Include non-production profiles in the list</string>
     <string name="pref_developer_ignore_tls_certificate">Ignore SM-DP+ TLS certificate</string>
     <string name="pref_developer_ignore_tls_certificate_desc">Accept any TLS certificate used by the RSP server</string>
+    <string name="pref_developer_euicc_memory_reset">Allow erasing eUICC</string>
+    <string name="pref_developer_euicc_memory_reset_desc">This is a dangerous operation and hidden by default. As an alternative, you can delete all profiles manually.</string>
     <string name="pref_info">Info</string>
     <string name="pref_info_app_version">App Version</string>
     <string name="pref_info_source_code">Source Code</string>

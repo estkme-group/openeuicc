@@ -1,6 +1,7 @@
 package im.angry.openeuicc.ui
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -77,6 +78,11 @@ open class SettingsFragment: PreferenceFragmentCompat() {
 
         requirePreference<CheckBoxPreference>("pref_developer_ignore_tls_certificate")
             .bindBooleanFlow(preferenceRepository.ignoreTLSCertificateFlow)
+
+        requirePreference<CheckBoxPreference>("pref_developer_euicc_memory_reset").apply {
+            isVisible = context.packageManager.hasSystemFeature(PackageManager.FEATURE_USB_HOST)
+            bindBooleanFlow(preferenceRepository.euiccMemoryResetFlow)
+        }
     }
 
     protected fun <T : Preference> requirePreference(key: CharSequence) =

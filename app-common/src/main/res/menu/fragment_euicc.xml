@@ -10,4 +10,9 @@
         android:id="@+id/euicc_info"
         android:title="@string/euicc_info"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/euicc_memory_reset"
+        android:title="@string/euicc_memory_reset"
+        app:showAsAction="never" />
 </menu>

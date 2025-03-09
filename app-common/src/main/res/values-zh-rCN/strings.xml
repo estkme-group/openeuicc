@@ -150,4 +150,16 @@
     <string name="pref_developer_ignore_tls_certificate">无视 SM-DP+ 的 TLS 证书</string>
     <string name="pref_developer_ignore_tls_certificate_desc">允许 RSP 服务器使用任意证书</string>
     <string name="information_unavailable">无信息</string>
+    <string name="toast_euicc_memory_reset_confirm_text_mismatched">输入的确认文本不匹配</string>
+    <string name="toast_euicc_memory_reset_finitshed">此芯片已被擦除</string>
+    <string name="task_euicc_memory_reset">正在擦除 eSIM 芯片</string>
+    <string name="task_euicc_memory_reset_failure">eSIM 芯片擦除失败</string>
+    <string name="euicc_memory_reset">擦除 eSIM 芯片</string>
+    <string name="euicc_memory_reset_title">擦除 eSIM 芯片</string>
+    <string name="euicc_memory_reset_message">请确认删除此芯片上的所有配置文件，并了解此操作不可逆。\n\nEID: %s\n\n%s</string>
+    <string name="euicc_memory_reset_hint_text">请在此处输入「%s」以确认</string>
+    <string name="euicc_memory_reset_confirm_text">我确认擦除 EID 以 %s 结尾的芯片，并了解此操作不可逆</string>
+    <string name="euicc_memory_reset_invoke_button">擦除</string>
+    <string name="pref_developer_euicc_memory_reset">允许擦除 eUICC</string>
+    <string name="pref_developer_euicc_memory_reset_desc">此操作是默认隐藏的危险操作。作为替代方案，您可以手动删除所有配置文件。</string>
 </resources>

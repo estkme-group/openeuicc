@@ -150,4 +150,16 @@
     <string name="pref_info">情報</string>
     <string name="pref_info_app_version">アプリバージョン</string>
     <string name="pref_info_source_code">ソースコード</string>
+    <string name="toast_euicc_memory_reset_confirm_text_mismatched">確認文字列が一致しません</string>
+    <string name="toast_euicc_memory_reset_finitshed">このチップは消去されました</string>
+    <string name="task_euicc_memory_reset">eSIM チップを消去しています</string>
+    <string name="task_euicc_memory_reset_failure">eSIM チップの消去は失敗しました</string>
+    <string name="euicc_memory_reset">eSIM を消去する</string>
+    <string name="euicc_memory_reset_title">eSIM を消去する</string>
+    <string name="euicc_memory_reset_message">このチップ内のすべてのプロファイルを削除することをご確認してください。この操作は元に戻せないことをご理解してください。\n\nEID: %s\n\n%s</string>
+    <string name="euicc_memory_reset_hint_text">確認のため、ここに「%s」を入力してください</string>
+    <string name="euicc_memory_reset_confirm_text">EID が %s で終わるチップを消去することに同意します。これは元に戻せないことを理解しています。</string>
+    <string name="euicc_memory_reset_invoke_button">消去する</string>
+    <string name="pref_developer_euicc_memory_reset">eUICC の消去を可能にする</string>
+    <string name="pref_developer_euicc_memory_reset_desc">この操作は、デフォルトでは非表示になっている危険な操作です。代わりに、すべての構成ファイルを手動で削除することもできます。</string>
 </resources>
