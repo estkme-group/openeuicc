@@ -156,7 +156,7 @@
     <string name="task_euicc_memory_reset_failure">eSIM 芯片擦除失败</string>
     <string name="euicc_memory_reset">擦除 eSIM 芯片</string>
     <string name="euicc_memory_reset_title">擦除 eSIM 芯片</string>
-    <string name="euicc_memory_reset_message">请确认删除此芯片上的所有配置文件，并了解此操作不可逆。\n\nEID: %s\n\n%s</string>
+    <string name="euicc_memory_reset_message">请确认删除此芯片上的所有配置文件，并了解此操作不可逆。\n\nEID: %1$s\n\n%2$s</string>
     <string name="euicc_memory_reset_hint_text">请在此处输入「%s」以确认</string>
     <string name="euicc_memory_reset_confirm_text">我确认擦除 EID 以 %s 结尾的芯片，并了解此操作不可逆</string>
     <string name="euicc_memory_reset_invoke_button">擦除</string>

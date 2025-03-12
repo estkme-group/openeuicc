@@ -156,7 +156,7 @@
     <string name="task_euicc_memory_reset_failure">eSIM チップの消去は失敗しました</string>
     <string name="euicc_memory_reset">eSIM を消去する</string>
     <string name="euicc_memory_reset_title">eSIM を消去する</string>
-    <string name="euicc_memory_reset_message">このチップ内のすべてのプロファイルを削除することをご確認してください。この操作は元に戻せないことをご理解してください。\n\nEID: %s\n\n%s</string>
+    <string name="euicc_memory_reset_message">このチップ内のすべてのプロファイルを削除することをご確認してください。この操作は元に戻せないことをご理解してください。\n\nEID: %1$s\n\n%2$s</string>
     <string name="euicc_memory_reset_hint_text">確認のため、ここに「%s」を入力してください</string>
     <string name="euicc_memory_reset_confirm_text">EID が %s で終わるチップを消去することに同意します。これは元に戻せないことを理解しています。</string>
     <string name="euicc_memory_reset_invoke_button">消去する</string>
