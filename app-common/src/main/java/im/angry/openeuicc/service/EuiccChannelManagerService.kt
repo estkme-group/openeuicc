@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
+import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
@@ -90,6 +91,12 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         appContainer.euiccChannelManagerFactory.createEuiccChannelManager(this)
     }
     val euiccChannelManager: EuiccChannelManager by euiccChannelManagerDelegate
+
+    val wakeLock: PowerManager.WakeLock by lazy {
+        (getSystemService(POWER_SERVICE) as PowerManager).run {
+            newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this::class.simpleName)
+        }
+    }
 
     /**
      * The state of a "foreground" task (named so due to the need to startForeground())
@@ -275,6 +282,8 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
 
             updateForegroundNotification(title, iconRes)
 
+            wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/)
+
             try {
                 withContext(Dispatchers.IO + NonCancellable) { // Any LPA-related task must always complete
                     this@EuiccChannelManagerService.task()
@@ -290,6 +299,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                     postForegroundTaskFailureNotification(failureTitle)
                 }
             } finally {
+                wakeLock.release()
                 if (isActive) {
                     stopSelf()
                 }
