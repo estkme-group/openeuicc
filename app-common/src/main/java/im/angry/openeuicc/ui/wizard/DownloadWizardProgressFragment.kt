@@ -59,6 +59,9 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
 
     private val adapter = ProgressItemAdapter()
 
+    // We don't want to turn off the screen during a download
+    override val keepScreenOn = true
+
     private var isDone = false
 
     override val hasNext: Boolean

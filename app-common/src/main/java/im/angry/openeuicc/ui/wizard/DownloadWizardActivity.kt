@@ -3,6 +3,7 @@ package im.angry.openeuicc.ui.wizard
 import android.app.assist.AssistContent
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ProgressBar
@@ -251,6 +252,14 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         supportFragmentManager.beginTransaction().setCustomAnimations(enterAnim, exitAnim)
             .replace(R.id.step_fragment_container, nextFrag)
             .commit()
+
+        // Sync screen on state
+        if (nextFrag.keepScreenOn) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+
         refreshButtons()
     }
 
@@ -279,6 +288,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     abstract class DownloadWizardStepFragment : Fragment(), OpenEuiccContextMarker {
         protected val state: DownloadWizardState
             get() = (requireActivity() as DownloadWizardActivity).state
+
+        open val keepScreenOn = false
 
         abstract val hasNext: Boolean
         abstract val hasPrev: Boolean
