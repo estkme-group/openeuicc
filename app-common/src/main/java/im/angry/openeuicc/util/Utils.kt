@@ -54,6 +54,9 @@ interface OpenEuiccContextMarker {
     val appContainer: AppContainer
         get() = openEuiccApplication.appContainer
 
+    val preferenceRepository: PreferenceRepository
+        get() = appContainer.preferenceRepository
+
     val telephonyManager: TelephonyManager
         get() = appContainer.telephonyManager
 }

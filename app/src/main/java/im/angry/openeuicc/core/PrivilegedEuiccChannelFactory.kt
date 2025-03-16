@@ -10,9 +10,8 @@ import java.lang.IllegalArgumentException
 
 class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFactory(context),
     PrivilegedEuiccContextMarker {
-    private val tm by lazy {
-        (context.applicationContext as OpenEuiccApplication).appContainer.telephonyManager
-    }
+    override val openEuiccMarkerContext: Context
+        get() = context
 
     @Suppress("NAME_SHADOWING")
     override suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat): EuiccChannel? {
@@ -35,7 +34,7 @@ class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFacto
                     intrinsicChannelName = null,
                     TelephonyManagerApduInterface(
                         port,
-                        tm,
+                        telephonyManager,
                         context.preferenceRepository.verboseLoggingFlow
                     ),
                     context.preferenceRepository.verboseLoggingFlow,
