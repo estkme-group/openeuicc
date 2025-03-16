@@ -92,7 +92,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
     }
     val euiccChannelManager: EuiccChannelManager by euiccChannelManagerDelegate
 
-    val wakeLock: PowerManager.WakeLock by lazy {
+    private val wakeLock: PowerManager.WakeLock by lazy {
         (getSystemService(POWER_SERVICE) as PowerManager).run {
             newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this::class.simpleName)
         }
