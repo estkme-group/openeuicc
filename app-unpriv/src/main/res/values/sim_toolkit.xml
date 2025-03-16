@@ -5,12 +5,14 @@
         <item>com.android.stk/.StkMainHide</item>
         <item>com.android.stk/.StkListActivity</item>
         <item>com.android.stk/.StkLauncherListActivity</item>
+        <item>com.android.stk/.StkSelectionActivity</item>
     </string-array>
     <string-array name="sim_toolkit_slot_1">
         <item>com.android.stk/.StkMain1</item>
         <item>com.android.stk/.PrimaryStkMain</item>
         <item>com.android.stk/.StkLauncherActivity</item>
         <item>com.android.stk/.StkLauncherActivity_Chn</item>
+        <item>com.android.stk/.StkLauncherActivity1</item>
         <item>com.android.stk/.StkLauncherActivityI</item>
         <item>com.android.stk/.OppoStkLauncherActivity1</item>
         <item>com.android.stk/.OplusStkLauncherActivity1</item>
