@@ -59,6 +59,12 @@
 
         <CheckBoxPreference
             app:iconSpaceReserved="false"
+            app:key="pref_developer_refresh_after_switch"
+            app:summary="@string/pref_developer_refresh_after_switch_desc"
+            app:title="@string/pref_developer_refresh_after_switch" />
+
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
             app:key="pref_developer_unfiltered_profile_list"
             app:summary="@string/pref_developer_unfiltered_profile_list_desc"
             app:title="@string/pref_developer_unfiltered_profile_list" />

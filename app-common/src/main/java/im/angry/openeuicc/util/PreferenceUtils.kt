@@ -31,6 +31,7 @@ internal object PreferenceKeys {
 
     // ---- Developer Options ----
     val DEVELOPER_OPTIONS_ENABLED = booleanPreferencesKey("developer_options_enabled")
+    val REFRESH_AFTER_SWITCH = booleanPreferencesKey("refresh_after_switch")
     val UNFILTERED_PROFILE_LIST = booleanPreferencesKey("unfiltered_profile_list")
     val IGNORE_TLS_CERTIFICATE = booleanPreferencesKey("ignore_tls_certificate")
     val EUICC_MEMORY_RESET = booleanPreferencesKey("euicc_memory_reset")
@@ -48,6 +49,7 @@ open class PreferenceRepository(private val context: Context) {
     val verboseLoggingFlow = bindFlow(PreferenceKeys.VERBOSE_LOGGING, false)
 
     // ---- Developer Options ----
+    val refreshAfterSwitchFlow = bindFlow(PreferenceKeys.REFRESH_AFTER_SWITCH, true)
     val developerOptionsEnabledFlow = bindFlow(PreferenceKeys.DEVELOPER_OPTIONS_ENABLED, false)
     val unfilteredProfileListFlow = bindFlow(PreferenceKeys.UNFILTERED_PROFILE_LIST, false)
     val ignoreTLSCertificateFlow = bindFlow(PreferenceKeys.IGNORE_TLS_CERTIFICATE, false)
@@ -60,13 +62,10 @@ open class PreferenceRepository(private val context: Context) {
 class PreferenceFlowWrapper<T> private constructor(
     private val context: Context,
     private val key: Preferences.Key<T>,
-    inner: Flow<T>
+    inner: Flow<T>,
 ) : Flow<T> by inner {
-    internal constructor(context: Context, key: Preferences.Key<T>, defaultValue: T) : this(
-        context,
-        key,
-        context.dataStore.data.map { it[key] ?: defaultValue }
-    )
+    internal constructor(context: Context, key: Preferences.Key<T>, defaultValue: T) :
+            this(context, key, context.dataStore.data.map { it[key] ?: defaultValue })
 
     suspend fun updatePreference(value: T) {
         context.dataStore.edit { it[key] = value }

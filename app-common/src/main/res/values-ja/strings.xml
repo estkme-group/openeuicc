@@ -143,6 +143,7 @@
     <string name="pref_advanced_logs">ログ</string>
     <string name="pref_advanced_logs_desc">アプリの最新デバッグログを表示します</string>
     <string name="pref_developer">開発者オプション</string>
+    <string name="pref_developer_refresh_after_switch_desc">プロファイルを切り替えた後にモデムに更新コマンドを送信するかどうか。クラッシュが発生する場合は、これを無効にしてみてください。</string>
     <string name="pref_developer_unfiltered_profile_list">フィルタリングされていないプロファイル一覧を表示</string>
     <string name="pref_developer_unfiltered_profile_list_desc">非運用のプロファイルも含めます</string>
     <string name="pref_developer_ignore_tls_certificate">SM-DP+ TLS 証明書を無視する</string>
@@ -162,4 +163,5 @@
     <string name="euicc_memory_reset_invoke_button">消去する</string>
     <string name="pref_developer_euicc_memory_reset">eUICC の消去を可能にする</string>
     <string name="pref_developer_euicc_memory_reset_desc">この操作は、デフォルトでは非表示になっている危険な操作です。代わりに、すべての構成ファイルを手動で削除することもできます。</string>
+    <string name="pref_developer_refresh_after_switch">モデムに更新コマンドを送信</string>
 </resources>

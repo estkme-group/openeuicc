@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -456,30 +457,34 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         iccid: String,
         enable: Boolean, // Enable or disable the profile indicated in iccid
         reconnectTimeoutMillis: Long = 0 // 0 = do not wait for reconnect
-    ): ForegroundTaskSubscriberFlow =
+    ) =
         launchForegroundTask(
             getString(R.string.task_profile_switch),
             getString(R.string.task_profile_switch_failure),
             R.drawable.ic_task_switch
         ) {
             euiccChannelManager.beginTrackedOperation(slotId, portId) {
-                val (res, refreshed) = euiccChannelManager.withEuiccChannel(
-                    slotId,
-                    portId
-                ) { channel ->
-                    if (!channel.lpa.switchProfile(iccid, enable, refresh = true)) {
-                        // Sometimes, we *can* enable or disable the profile, but we cannot
-                        // send the refresh command to the modem because the profile somehow
-                        // makes the modem "busy". In this case, we can still switch by setting
-                        // refresh to false, but then the switch cannot take effect until the
-                        // user resets the modem manually by toggling airplane mode or rebooting.
-                        Pair(channel.lpa.switchProfile(iccid, enable, refresh = false), false)
-                    } else {
-                        Pair(true, true)
+                val (response, refreshed) =
+                    euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+                        val refresh = preferenceRepository.refreshAfterSwitchFlow.first()
+                        val response = channel.lpa.switchProfile(iccid, enable, refresh)
+                        if (response || !refresh) {
+                            Pair(response, refresh)
+                        } else {
+                            // refresh failed, but refresh was requested
+                            // Sometimes, we *can* enable or disable the profile, but we cannot
+                            // send the refresh command to the modem because the profile somehow
+                            // makes the modem "busy". In this case, we can still switch by setting
+                            // refresh to false, but then the switch cannot take effect until the
+                            // user resets the modem manually by toggling airplane mode or rebooting.
+                            Pair(
+                                channel.lpa.switchProfile(iccid, enable, refresh = false),
+                                false
+                            )
+                        }
                     }
-                }
 
-                if (!res) {
+                if (!response) {
                     throw RuntimeException("Could not switch profile")
                 }
 

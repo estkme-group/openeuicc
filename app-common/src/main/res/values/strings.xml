@@ -181,6 +181,8 @@
     <string name="pref_advanced_logs">Logs</string>
     <string name="pref_advanced_logs_desc">View recent debug logs of the application</string>
     <string name="pref_developer">Developer Options</string>
+    <string name="pref_developer_refresh_after_switch">Send refresh command to modem</string>
+    <string name="pref_developer_refresh_after_switch_desc">Whether to send a refresh command to the modem after switching profiles. Try disabling this if you see crashes.</string>
     <string name="pref_developer_unfiltered_profile_list">Show unfiltered profile list</string>
     <string name="pref_developer_unfiltered_profile_list_desc">Include non-production profiles in the list</string>
     <string name="pref_developer_ignore_tls_certificate">Ignore SM-DP+ TLS certificate</string>

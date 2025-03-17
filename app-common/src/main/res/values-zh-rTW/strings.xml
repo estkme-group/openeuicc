@@ -145,6 +145,7 @@
     <string name="pref_advanced_language">語言</string>
     <string name="pref_advanced_language_desc">選擇 App 語言</string>
     <string name="pref_developer">開發人員選項</string>
+    <string name="pref_developer_refresh_after_switch_desc">切換設定檔後是否向基帶發送刷新命令。如果發現崩潰，請嘗試停用此功能。</string>
     <string name="pref_developer_unfiltered_profile_list">顯示未經過濾的設定檔列表</string>
     <string name="pref_developer_unfiltered_profile_list_desc">在設定檔列表中包括非生產環境的設定檔</string>
     <string name="pref_developer_ignore_tls_certificate">忽略 SM-DP+ 的 TLS 證書</string>
@@ -162,4 +163,5 @@
     <string name="euicc_memory_reset_invoke_button">擦除</string>
     <string name="pref_developer_euicc_memory_reset">允許擦除 eUICC</string>
     <string name="pref_developer_euicc_memory_reset_desc">此操作是預設隱藏的危險操作。作為替代方案，您可以手動刪除所有設定檔。</string>
+    <string name="pref_developer_refresh_after_switch">向基帶發送刷新命令</string>
 </resources>
