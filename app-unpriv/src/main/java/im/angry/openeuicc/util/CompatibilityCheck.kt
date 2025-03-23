@@ -128,10 +128,6 @@ internal class OmapiConnCheck(private val context: Context): CompatibilityCheck(
 }
 
 internal class IsdrChannelAccessCheck(private val context: Context): CompatibilityCheck(context) {
-    companion object {
-        val ISDR_AID = "A0000005591010FFFFFFFF8900000100".decodeHex()
-    }
-
     override val title: String
         get() = context.getString(R.string.compatibility_check_isdr_channel)
     override val defaultDescription: String
@@ -147,7 +143,10 @@ internal class IsdrChannelAccessCheck(private val context: Context): Compatibili
 
         val (validSlotIds, result) = readers.map {
             try {
-                it.openSession().openLogicalChannel(ISDR_AID)?.close()
+                // Note: we ONLY check the default ISD-R AID, because this test is for the _device_,
+                // NOT the eUICC. We don't care what AID a potential eUICC might use, all we need to
+                // check is we can open _some_ AID.
+                it.openSession().openLogicalChannel(EUICC_DEFAULT_ISDR_AID.decodeHex())?.close()
                 Pair(it.slotIndex, State.SUCCESS)
             } catch (_: SecurityException) {
                 // Ignore; this is expected when everything works
