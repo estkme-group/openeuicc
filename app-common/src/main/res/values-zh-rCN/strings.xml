@@ -65,6 +65,7 @@
     <string name="profile_notification_delete">删除</string>
     <string name="logs_save">保存日志</string>
     <string name="logs_filename_template">%s 的日志</string>
+    <string name="isdr_aid_list_saved">自定义 ISD-R AID 列表已保存</string>
     <string name="pref_settings">设置</string>
     <string name="pref_notifications">通知</string>
     <string name="pref_notifications_desc">操作 eSIM 配置文件会向运营商发送通知。根据需要在此处微调此行为。</string>
@@ -81,6 +82,7 @@
     <string name="pref_advanced_verbose_logging_desc">详细日志中包含敏感信息，开启此功能后请仅与你信任的人共享你的日志。</string>
     <string name="pref_advanced_logs">日志</string>
     <string name="pref_advanced_logs_desc">查看应用程序的最新调试日志</string>
+    <string name="pref_developer_isdr_aid_list_desc">某些品牌的可移除 eUICC 可能会使用自己的非标准 ISD-R AID，导致第三方应用无法访问。此 App 可以尝试使用此列表中添加的非标准 AID，但不能保证它们一定有效。</string>
     <string name="pref_info">信息</string>
     <string name="pref_info_app_version">App 版本</string>
     <string name="pref_info_source_code">源码</string>
@@ -164,4 +166,7 @@
     <string name="pref_developer_euicc_memory_reset">允许擦除 eUICC</string>
     <string name="pref_developer_euicc_memory_reset_desc">此操作是默认隐藏的危险操作。作为替代方案，您可以手动删除所有配置文件。</string>
     <string name="pref_developer_refresh_after_switch">向基带发送刷新命令</string>
+    <string name="pref_developer_isdr_aid_list">自定义 ISD-R AID 列表</string>
+    <string name="reset">重置</string>
+    <string name="isdr_aid_list">ISD-R AID 列表</string>
 </resources>

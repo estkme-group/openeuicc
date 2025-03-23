@@ -81,6 +81,12 @@
             app:summary="@string/pref_developer_euicc_memory_reset_desc"
             app:title="@string/pref_developer_euicc_memory_reset" />
 
+        <Preference
+            app:iconSpaceReserved="false"
+            app:key="pref_developer_isdr_aid_list"
+            app:title="@string/pref_developer_isdr_aid_list"
+            app:summary="@string/pref_developer_isdr_aid_list_desc" />
+
     </im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory>
 
     <PreferenceCategory

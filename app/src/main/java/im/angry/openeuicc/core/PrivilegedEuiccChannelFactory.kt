@@ -14,12 +14,15 @@ class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFacto
         get() = context
 
     @Suppress("NAME_SHADOWING")
-    override suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat): EuiccChannel? {
+    override suspend fun tryOpenEuiccChannel(
+        port: UiccPortInfoCompat,
+        isdrAid: ByteArray
+    ): EuiccChannel? {
         val port = port as RealUiccPortInfoCompat
         if (port.card.isRemovable) {
             // Attempt unprivileged (OMAPI) before TelephonyManager
             // but still try TelephonyManager in case OMAPI is broken
-            super.tryOpenEuiccChannel(port)?.let { return it }
+            super.tryOpenEuiccChannel(port, isdrAid)?.let { return it }
         }
 
         if (port.card.isEuicc || preferenceRepository.removableTelephonyManagerFlow.first()) {
@@ -37,6 +40,7 @@ class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFacto
                         telephonyManager,
                         context.preferenceRepository.verboseLoggingFlow
                     ),
+                    isdrAid,
                     context.preferenceRepository.verboseLoggingFlow,
                     context.preferenceRepository.ignoreTLSCertificateFlow,
                 )
@@ -49,6 +53,6 @@ class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFacto
             }
         }
 
-        return super.tryOpenEuiccChannel(port)
+        return super.tryOpenEuiccChannel(port, isdrAid)
     }
 }

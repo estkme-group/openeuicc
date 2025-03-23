@@ -7,9 +7,13 @@ import im.angry.openeuicc.util.*
 // This class is here instead of inside DI because it contains a bit more logic than just
 // "dumb" dependency injection.
 interface EuiccChannelFactory {
-    suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat): EuiccChannel?
+    suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat, isdrAid: ByteArray): EuiccChannel?
 
-    fun tryOpenUsbEuiccChannel(usbDevice: UsbDevice, usbInterface: UsbInterface): EuiccChannel?
+    fun tryOpenUsbEuiccChannel(
+        usbDevice: UsbDevice,
+        usbInterface: UsbInterface,
+        isdrAid: ByteArray
+    ): EuiccChannel?
 
     /**
      * Release all resources used by this EuiccChannelFactory

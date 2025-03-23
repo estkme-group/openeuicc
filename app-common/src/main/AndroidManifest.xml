@@ -29,6 +29,10 @@
             android:label="@string/pref_advanced_logs" />
 
         <activity
+            android:name="im.angry.openeuicc.ui.IsdrAidListActivity"
+            android:label="@string/isdr_aid_list" />
+
+        <activity
             android:exported="true"
             android:name="im.angry.openeuicc.ui.wizard.DownloadWizardActivity"
             android:label="@string/download_wizard">

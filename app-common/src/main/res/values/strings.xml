@@ -162,6 +162,11 @@
     <string name="developer_options_steps">You are %d steps away from being a developer.</string>
     <string name="developer_options_enabled">You are now a developer!</string>
 
+    <string name="reset">Reset</string>
+
+    <string name="isdr_aid_list">ISD-R AID List</string>
+    <string name="isdr_aid_list_saved">Saved custom ISD-R AID list.</string>
+
     <string name="pref_settings">Settings</string>
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_desc">eSIM profile operations send notifications to the carrier. Fine-tune this behavior as needed here.</string>
@@ -189,6 +194,8 @@
     <string name="pref_developer_ignore_tls_certificate_desc">Accept any TLS certificate used by the RSP server</string>
     <string name="pref_developer_euicc_memory_reset">Allow erasing eUICC</string>
     <string name="pref_developer_euicc_memory_reset_desc">This is a dangerous operation and hidden by default. As an alternative, you can delete all profiles manually.</string>
+    <string name="pref_developer_isdr_aid_list">Customize ISD-R AID list</string>
+    <string name="pref_developer_isdr_aid_list_desc">Some brands of removable eUICCs may use their own non-standard ISD-R AID, rendering them inaccessible to third-party apps. We can attempt to use non-standard AIDs added in this list, but there is no guarantee that they will work.</string>
     <string name="pref_info">Info</string>
     <string name="pref_info_app_version">App Version</string>
     <string name="pref_info_source_code">Source Code</string>

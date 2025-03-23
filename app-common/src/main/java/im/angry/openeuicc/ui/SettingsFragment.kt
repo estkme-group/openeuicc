@@ -83,6 +83,10 @@ open class SettingsFragment: PreferenceFragmentCompat() {
 
         requirePreference<CheckBoxPreference>("pref_developer_euicc_memory_reset")
             .bindBooleanFlow(preferenceRepository.euiccMemoryResetFlow)
+
+        requirePreference<Preference>("pref_developer_isdr_aid_list").apply {
+            intent = Intent(requireContext(), IsdrAidListActivity::class.java)
+        }
     }
 
     protected fun <T : Preference> requirePreference(key: CharSequence) =

@@ -1,7 +1,7 @@
 package im.angry.openeuicc.util
 
 fun String.decodeHex(): ByteArray {
-    check(length % 2 == 0) { "Must have an even length" }
+    require(length % 2 == 0) { "Must have an even length" }
 
     val decodedLength = length / 2
     val out = ByteArray(decodedLength)
@@ -28,6 +28,22 @@ fun formatFreeSpace(size: Int): String =
     } else {
         "$size B"
     }
+
+/**
+ * Decode a list of potential ISDR AIDs, one per line. Lines starting with '#' are ignored.
+ * If none is found, at least EUICC_DEFAULT_ISDR_AID is returned
+ */
+fun parseIsdrAidList(s: String): List<ByteArray> =
+    s.split('\n').map(String::trim).filter { !it.startsWith('#') }
+        .map(String::trim)
+        .mapNotNull {
+            try {
+                it.decodeHex()
+            } catch (_: IllegalArgumentException) {
+                null
+            }
+        }
+        .ifEmpty { listOf(EUICC_DEFAULT_ISDR_AID.decodeHex()) }
 
 fun String.prettyPrintJson(): String {
     val ret = StringBuilder()

@@ -13,21 +13,17 @@ class EuiccChannelImpl(
     override val port: UiccPortInfoCompat,
     override val intrinsicChannelName: String?,
     override val apduInterface: ApduInterface,
+    isdrAid: ByteArray,
     verboseLoggingFlow: Flow<Boolean>,
     ignoreTLSCertificateFlow: Flow<Boolean>
 ) : EuiccChannel {
-    companion object {
-        // TODO: This needs to go somewhere else.
-        val ISDR_AID = "A0000005591010FFFFFFFF8900000100".decodeHex()
-    }
-
     override val slotId = port.card.physicalSlotIndex
     override val logicalSlotId = port.logicalSlotIndex
     override val portId = port.portIndex
 
     override val lpa: LocalProfileAssistant =
         LocalProfileAssistantImpl(
-            ISDR_AID,
+            isdrAid,
             apduInterface,
             HttpInterfaceImpl(verboseLoggingFlow, ignoreTLSCertificateFlow)
         )

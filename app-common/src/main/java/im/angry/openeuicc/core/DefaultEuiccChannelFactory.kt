@@ -26,14 +26,23 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
         }
     }
 
-    override suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat): EuiccChannel? {
+    override suspend fun tryOpenEuiccChannel(
+        port: UiccPortInfoCompat,
+        isdrAid: ByteArray
+    ): EuiccChannel? {
         if (port.portIndex != 0) {
-            Log.w(DefaultEuiccChannelManager.TAG, "OMAPI channel attempted on non-zero portId, this may or may not work.")
+            Log.w(
+                DefaultEuiccChannelManager.TAG,
+                "OMAPI channel attempted on non-zero portId, this may or may not work."
+            )
         }
 
         ensureSEService()
 
-        Log.i(DefaultEuiccChannelManager.TAG, "Trying OMAPI for physical slot ${port.card.physicalSlotIndex}")
+        Log.i(
+            DefaultEuiccChannelManager.TAG,
+            "Trying OMAPI for physical slot ${port.card.physicalSlotIndex}"
+        )
         try {
             return EuiccChannelImpl(
                 context.getString(R.string.omapi),
@@ -44,6 +53,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
                     port,
                     context.preferenceRepository.verboseLoggingFlow
                 ),
+                isdrAid,
                 context.preferenceRepository.verboseLoggingFlow,
                 context.preferenceRepository.ignoreTLSCertificateFlow,
             ).also {
@@ -61,7 +71,11 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
         return null
     }
 
-    override fun tryOpenUsbEuiccChannel(usbDevice: UsbDevice, usbInterface: UsbInterface): EuiccChannel? {
+    override fun tryOpenUsbEuiccChannel(
+        usbDevice: UsbDevice,
+        usbInterface: UsbInterface,
+        isdrAid: ByteArray
+    ): EuiccChannel? {
         val (bulkIn, bulkOut) = usbInterface.endpoints.bulkPair
         if (bulkIn == null || bulkOut == null) return null
         val conn = usbManager.openDevice(usbDevice) ?: return null
@@ -76,6 +90,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
                 bulkOut,
                 context.preferenceRepository.verboseLoggingFlow
             ),
+            isdrAid,
             context.preferenceRepository.verboseLoggingFlow,
             context.preferenceRepository.ignoreTLSCertificateFlow,
         )
