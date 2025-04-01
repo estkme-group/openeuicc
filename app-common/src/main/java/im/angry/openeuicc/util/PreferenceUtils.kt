@@ -45,11 +45,22 @@ const val EUICC_DEFAULT_ISDR_AID = "A0000005591010FFFFFFFF8900000100"
 internal object PreferenceConstants {
     val DEFAULT_AID_LIST = """
         # One AID per line. Comment lines start with #.
+        # Refs: <https://euicc-manual.osmocom.org/docs/lpa/applet-id-oem/>
+
         # eUICC standard
         $EUICC_DEFAULT_ISDR_AID
-        
-        # 5ber
+
+        # eSTK.me
+        A06573746B6D65FFFFFFFF4953442D52
+
+        # eSIM.me
+        A0000005591010000000008900000300
+
+        # 5ber.eSIM
         A0000005591010FFFFFFFF8900050500
+
+        # Xesim
+        A0000005591010FFFFFFFF8900000177
     """.trimIndent()
 }
 
@@ -97,13 +108,12 @@ class PreferenceFlowWrapper<T> private constructor(
         defaultValue: T,
         encoder: (T) -> T,
         decoder: (T) -> T
-    ) :
-            this(
-                context,
-                key,
-                context.dataStore.data.map { it[key]?.let(decoder) ?: defaultValue },
-                encoder
-            )
+    ) : this(
+        context,
+        key,
+        context.dataStore.data.map { it[key]?.let(decoder) ?: defaultValue },
+        encoder
+    )
 
     suspend fun updatePreference(value: T) {
         context.dataStore.edit { it[key] = encoder(value) }

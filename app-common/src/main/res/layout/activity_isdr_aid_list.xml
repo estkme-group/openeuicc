@@ -11,6 +11,7 @@
         android:id="@+id/isdr_aid_list_editor"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:fontFamily="monospace"
         android:importantForAutofill="no"
         android:inputType="textMultiLine"
         android:gravity="top|start"
