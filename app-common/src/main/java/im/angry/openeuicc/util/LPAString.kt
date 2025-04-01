@@ -8,15 +8,15 @@ data class LPAString(
 ) {
     companion object {
         fun parse(input: String): LPAString {
-            val components = input.removePrefix("LPA:").split('$')
-            if (components.size < 2 || components[0] != "1") {
-                throw IllegalArgumentException("Invalid activation code format")
-            }
+            var token = input
+            if (token.startsWith("LPA:", ignoreCase = true)) token = token.drop(4)
+            val components = token.split('$').map { it.trim().ifBlank { null } }
+            require(components.getOrNull(0) == "1") { "Invalid AC_Format" }
             return LPAString(
-                address = components[1].trim(),
-                matchingId = components.getOrNull(2)?.trim()?.ifBlank { null },
-                oid = components.getOrNull(3)?.trim()?.ifBlank { null },
-                confirmationCodeRequired = components.getOrNull(4)?.trim() == "1"
+                requireNotNull(components.getOrNull(1)) { "SM-DP+ is required" },
+                components.getOrNull(2),
+                components.getOrNull(3),
+                components.getOrNull(4) == "1"
             )
         }
     }
