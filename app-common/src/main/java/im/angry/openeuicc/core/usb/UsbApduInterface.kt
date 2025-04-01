@@ -45,6 +45,15 @@ class UsbApduInterface(
             e.printStackTrace()
             throw e
         }
+
+        // Send Terminal Capabilities
+        // Specs: ETSI TS 102 221 v15.0.0 - 11.1.19 TERMINAL CAPABILITY
+        val terminalCapabilities = buildCmd(
+            0x80.toByte(), 0xaa.toByte(), 0x00, 0x00,
+            "A9088100820101830107".decodeHex(),
+            le = null,
+        )
+        transmitApduByChannel(terminalCapabilities, 0,)
     }
 
     override fun disconnect() {
