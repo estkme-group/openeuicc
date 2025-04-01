@@ -60,11 +60,11 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
                 Log.i(DefaultEuiccChannelManager.TAG, "Is OMAPI channel, setting MSS to 60")
                 it.lpa.setEs10xMss(60)
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             // Failed
             Log.w(
                 DefaultEuiccChannelManager.TAG,
-                "OMAPI APDU interface unavailable for physical slot ${port.card.physicalSlotIndex}."
+                "OMAPI APDU interface unavailable for physical slot ${port.card.physicalSlotIndex} with ISD-R AID: ${isdrAid.encodeHex()}."
             )
         }
 
@@ -80,20 +80,29 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
         if (bulkIn == null || bulkOut == null) return null
         val conn = usbManager.openDevice(usbDevice) ?: return null
         if (!conn.claimInterface(usbInterface, true)) return null
-        return EuiccChannelImpl(
-            context.getString(R.string.usb),
-            FakeUiccPortInfoCompat(FakeUiccCardInfoCompat(EuiccChannelManager.USB_CHANNEL_ID)),
-            intrinsicChannelName = usbDevice.productName,
-            UsbApduInterface(
-                conn,
-                bulkIn,
-                bulkOut,
-                context.preferenceRepository.verboseLoggingFlow
-            ),
-            isdrAid,
-            context.preferenceRepository.verboseLoggingFlow,
-            context.preferenceRepository.ignoreTLSCertificateFlow,
-        )
+        try {
+            return EuiccChannelImpl(
+                context.getString(R.string.usb),
+                FakeUiccPortInfoCompat(FakeUiccCardInfoCompat(EuiccChannelManager.USB_CHANNEL_ID)),
+                intrinsicChannelName = usbDevice.productName,
+                UsbApduInterface(
+                    conn,
+                    bulkIn,
+                    bulkOut,
+                    context.preferenceRepository.verboseLoggingFlow
+                ),
+                isdrAid,
+                context.preferenceRepository.verboseLoggingFlow,
+                context.preferenceRepository.ignoreTLSCertificateFlow,
+            )
+        } catch (_: IllegalArgumentException) {
+            // Failed
+            Log.w(
+                DefaultEuiccChannelManager.TAG,
+                "USB APDU interface unavailable for ISD-R AID: ${isdrAid.encodeHex()}."
+            )
+        }
+        return null
     }
 
     override fun cleanup() {

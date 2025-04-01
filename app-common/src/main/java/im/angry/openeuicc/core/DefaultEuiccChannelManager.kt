@@ -277,11 +277,7 @@ open class DefaultEuiccChannelManager(
                 )
                 try {
                     val channel = tryOpenChannelFirstValidAid {
-                        euiccChannelFactory.tryOpenUsbEuiccChannel(
-                            device,
-                            iface,
-                            it
-                        )
+                        euiccChannelFactory.tryOpenUsbEuiccChannel(device, iface, it)
                     }
                     if (channel != null && channel.lpa.valid) {
                         usbChannel = channel

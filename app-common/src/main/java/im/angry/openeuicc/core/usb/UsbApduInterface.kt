@@ -53,7 +53,7 @@ class UsbApduInterface(
             "A9088100820101830107".decodeHex(),
             le = null,
         )
-        transmitApduByChannel(terminalCapabilities, 0,)
+        transmitApduByChannel(terminalCapabilities, 0)
     }
 
     override fun disconnect() {

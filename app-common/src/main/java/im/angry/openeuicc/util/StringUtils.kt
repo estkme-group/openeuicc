@@ -34,15 +34,12 @@ fun formatFreeSpace(size: Int): String =
  * If none is found, at least EUICC_DEFAULT_ISDR_AID is returned
  */
 fun parseIsdrAidList(s: String): List<ByteArray> =
-    s.split('\n').map(String::trim).filter { !it.startsWith('#') }
+    s.split('\n')
         .map(String::trim)
-        .mapNotNull {
-            try {
-                it.decodeHex()
-            } catch (_: IllegalArgumentException) {
-                null
-            }
-        }
+        .filter { !it.startsWith('#') }
+        .map(String::trim)
+        .filter(String::isNotEmpty)
+        .mapNotNull { runCatching(it::decodeHex).getOrNull() }
         .ifEmpty { listOf(EUICC_DEFAULT_ISDR_AID.decodeHex()) }
 
 fun String.prettyPrintJson(): String {
