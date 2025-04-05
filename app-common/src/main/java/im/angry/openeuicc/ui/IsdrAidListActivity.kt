@@ -62,6 +62,11 @@ class IsdrAidListActivity : AppCompatActivity() {
                 true
             }
 
+            android.R.id.home -> {
+                finish()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
 }
