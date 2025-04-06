@@ -1,24 +1,16 @@
 package im.angry.openeuicc.core
 
 import android.content.Context
-import android.hardware.usb.UsbDevice
-import android.hardware.usb.UsbInterface
-import android.hardware.usb.UsbManager
 import android.se.omapi.SEService
 import android.util.Log
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.usb.UsbApduInterface
-import im.angry.openeuicc.core.usb.bulkPair
-import im.angry.openeuicc.core.usb.endpoints
+import im.angry.openeuicc.core.usb.UsbCcidContext
 import im.angry.openeuicc.util.*
 import java.lang.IllegalArgumentException
 
 open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccChannelFactory {
     private var seService: SEService? = null
-
-    private val usbManager by lazy {
-        context.getSystemService(Context.USB_SERVICE) as UsbManager
-    }
 
     private suspend fun ensureSEService() {
         if (seService == null || !seService!!.isConnected) {
@@ -72,24 +64,16 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
     }
 
     override fun tryOpenUsbEuiccChannel(
-        usbDevice: UsbDevice,
-        usbInterface: UsbInterface,
+        ccidCtx: UsbCcidContext,
         isdrAid: ByteArray
     ): EuiccChannel? {
-        val (bulkIn, bulkOut) = usbInterface.endpoints.bulkPair
-        if (bulkIn == null || bulkOut == null) return null
-        val conn = usbManager.openDevice(usbDevice) ?: return null
-        if (!conn.claimInterface(usbInterface, true)) return null
         try {
             return EuiccChannelImpl(
                 context.getString(R.string.usb),
                 FakeUiccPortInfoCompat(FakeUiccCardInfoCompat(EuiccChannelManager.USB_CHANNEL_ID)),
-                intrinsicChannelName = usbDevice.productName,
+                intrinsicChannelName = ccidCtx.productName,
                 UsbApduInterface(
-                    conn,
-                    bulkIn,
-                    bulkOut,
-                    context.preferenceRepository.verboseLoggingFlow
+                    ccidCtx
                 ),
                 isdrAid,
                 context.preferenceRepository.verboseLoggingFlow,

@@ -1,27 +1,19 @@
 package im.angry.openeuicc.core.usb
 
-import android.hardware.usb.UsbDeviceConnection
-import android.hardware.usb.UsbEndpoint
 import android.util.Log
 import im.angry.openeuicc.core.ApduInterfaceAtrProvider
 import im.angry.openeuicc.util.*
-import kotlinx.coroutines.flow.Flow
 import net.typeblog.lpac_jni.ApduInterface
 
 class UsbApduInterface(
-    private val conn: UsbDeviceConnection,
-    private val bulkIn: UsbEndpoint,
-    private val bulkOut: UsbEndpoint,
-    private val verboseLoggingFlow: Flow<Boolean>
+    private val ccidCtx: UsbCcidContext
 ) : ApduInterface, ApduInterfaceAtrProvider {
     companion object {
         private const val TAG = "UsbApduInterface"
     }
 
-    private lateinit var ccidDescription: UsbCcidDescription
-    private lateinit var transceiver: UsbCcidTransceiver
-
-    override var atr: ByteArray? = null
+    override val atr: ByteArray?
+        get() = ccidCtx.atr
 
     override val valid: Boolean
         get() = channels.isNotEmpty()
@@ -29,22 +21,7 @@ class UsbApduInterface(
     private var channels = mutableSetOf<Int>()
 
     override fun connect() {
-        ccidDescription = UsbCcidDescription.fromRawDescriptors(conn.rawDescriptors)!!
-
-        if (!ccidDescription.hasT0Protocol) {
-            throw IllegalArgumentException("Unsupported card reader; T=0 support is required")
-        }
-
-        transceiver = UsbCcidTransceiver(conn, bulkIn, bulkOut, ccidDescription, verboseLoggingFlow)
-
-        try {
-            // 6.1.1.1 PC_to_RDR_IccPowerOn (Page 20 of 40)
-            // https://www.usb.org/sites/default/files/DWG_Smart-Card_USB-ICC_ICCD_rev10.pdf
-            atr = transceiver.iccPowerOn().data
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
-        }
+        ccidCtx.connect()
 
         // Send Terminal Capabilities
         // Specs: ETSI TS 102 221 v15.0.0 - 11.1.19 TERMINAL CAPABILITY
@@ -56,11 +33,7 @@ class UsbApduInterface(
         transmitApduByChannel(terminalCapabilities, 0)
     }
 
-    override fun disconnect() {
-        conn.close()
-
-        atr = null
-    }
+    override fun disconnect() = ccidCtx.disconnect()
 
     override fun logicalChannelOpen(aid: ByteArray): Int {
         // OPEN LOGICAL CHANNEL
@@ -149,7 +122,7 @@ class UsbApduInterface(
         // OR the channel mask into the CLA byte
         realTx[0] = ((realTx[0].toInt() and 0xFC) or channel.toInt()).toByte()
 
-        var resp = transceiver.sendXfrBlock(realTx).data!!
+        var resp = ccidCtx.transceiver.sendXfrBlock(realTx).data!!
 
         if (resp.size < 2) throw RuntimeException("APDU response smaller than 2 (sw1 + sw2)!")
 
@@ -160,7 +133,7 @@ class UsbApduInterface(
             // 0x6C = wrong le
             // so we fix the le field here
             realTx[realTx.size - 1] = resp[resp.size - 1]
-            resp = transceiver.sendXfrBlock(realTx).data!!
+            resp = ccidCtx.transceiver.sendXfrBlock(realTx).data!!
         } else if (sw1 == 0x61) {
             // 0x61 = X bytes available
             // continue reading by GET RESPONSE
@@ -170,7 +143,7 @@ class UsbApduInterface(
                     realTx[0], 0xC0.toByte(), 0x00, 0x00, sw2.toByte()
                 )
 
-                val tmp = transceiver.sendXfrBlock(getResponseCmd).data!!
+                val tmp = ccidCtx.transceiver.sendXfrBlock(getResponseCmd).data!!
 
                 resp = resp.sliceArray(0 until (resp.size - 2)) + tmp
 

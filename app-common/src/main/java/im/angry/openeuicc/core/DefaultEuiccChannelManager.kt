@@ -5,6 +5,7 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.telephony.SubscriptionManager
 import android.util.Log
+import im.angry.openeuicc.core.usb.UsbCcidContext
 import im.angry.openeuicc.core.usb.smartCard
 import im.angry.openeuicc.core.usb.interfaces
 import im.angry.openeuicc.di.AppContainer
@@ -275,11 +276,15 @@ open class DefaultEuiccChannelManager(
                     TAG,
                     "Found CCID interface on ${device.deviceId}:${device.vendorId}, and has permission; trying to open channel"
                 )
+
+                val ccidCtx = UsbCcidContext.createFromUsbDevice(context, device, iface) ?: return@forEach
+
                 try {
                     val channel = tryOpenChannelFirstValidAid {
-                        euiccChannelFactory.tryOpenUsbEuiccChannel(device, iface, it)
+                        euiccChannelFactory.tryOpenUsbEuiccChannel(ccidCtx, it)
                     }
                     if (channel != null && channel.lpa.valid) {
+                        ccidCtx.allowDisconnect = true
                         usbChannel = channel
                         return@withContext Pair(device, true)
                     }
@@ -287,6 +292,10 @@ open class DefaultEuiccChannelManager(
                     // Ignored -- skip forward
                     e.printStackTrace()
                 }
+
+                ccidCtx.allowDisconnect = true
+                ccidCtx.disconnect()
+
                 Log.i(
                     TAG,
                     "No valid eUICC channel found on USB device ${device.deviceId}:${device.vendorId}"
