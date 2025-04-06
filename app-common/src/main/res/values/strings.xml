@@ -134,6 +134,7 @@
     <string name="euicc_info_bl_ver">Product Bootloader Version</string>
     <string name="euicc_info_fw_ver">Product Firmware Version</string>
     <string name="euicc_info_eid" translatable="false">EID</string>
+    <string name="euicc_info_isdr_aid" translatable="false">ISD-R AID</string>
     <string name="euicc_info_sgp22_version">SGP.22 Version</string>
     <string name="euicc_info_firmware_version">eUICC OS Version</string>
     <string name="euicc_info_globalplatform_version">GlobalPlatform Version</string>

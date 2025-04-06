@@ -34,5 +34,10 @@ interface EuiccChannel {
      */
     val apduInterface: ApduInterface
 
+    /**
+     * The AID of the ISD-R channel currently in use
+     */
+    val isdrAid: ByteArray
+
     fun close()
 }

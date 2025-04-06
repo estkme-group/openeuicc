@@ -13,7 +13,7 @@ class EuiccChannelImpl(
     override val port: UiccPortInfoCompat,
     override val intrinsicChannelName: String?,
     override val apduInterface: ApduInterface,
-    isdrAid: ByteArray,
+    override val isdrAid: ByteArray,
     verboseLoggingFlow: Flow<Boolean>,
     ignoreTLSCertificateFlow: Flow<Boolean>
 ) : EuiccChannel {
