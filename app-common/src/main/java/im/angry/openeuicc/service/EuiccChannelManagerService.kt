@@ -12,7 +12,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -517,8 +516,12 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
             getString(R.string.task_euicc_memory_reset_failure),
             R.drawable.ic_euicc_memory_reset
         ) {
-            euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
-                channel.lpa.euiccMemoryReset()
+            euiccChannelManager.beginTrackedOperation(slotId, portId) {
+                euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+                    channel.lpa.euiccMemoryReset()
+                }
+
+                preferenceRepository.notificationDeleteFlow.first()
             }
         }
 }
