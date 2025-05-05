@@ -2,18 +2,22 @@
 
 A fully free and open-source Local Profile Assistant implementation for Android devices.
 
-There are two variants of this project:
+There are two variants of this project, OpenEUICC and EasyEUICC:
 
-- OpenEUICC: The full-fledged privileged variant.
-  - Due to its privilege requirement, OpenEUICC must be placed inside `/system/priv-app` and be signed with the platform certificate.
-  - The preferred way to including OpenEUICC in a system image is to [build it along with AOSP](#building-aosp).
-  - __Note__: When privileged, OpenEUICC supports any eUICC chip that implements the SGP.22 standard, internal or external. However, there is __no guarantee__ that external (removable) eSIMs actually follow the standard. Please __DO NOT__ submit bug reports for non-functioning removable eSIMs. They are __NOT__ officially supported unless they also support / are supported by EasyEUICC, the unprivileged variant.
-- EasyEUICC: Unprivileged version that can run as a user app.
-  - This version supports two modes of operation:
-    1. Inserted, removable eSIMs: Due to obvious security requirements, EasyEUICC is only able to access eSIM chips whose [ARF/ARA](https://source.android.com/docs/core/connect/uicc#arf) contains the hash of EasyEUICC's signing certificate.
-    2. USB CCID Card Readers: Only `T=0` readers that use the standard [USB CCID protocol](https://en.wikipedia.org/wiki/CCID_(protocol)) are supported. In this mode, EasyEUICC can access any eSIM chip loaded in the card reader regardless of their ARF/ARA, as long as they implement the [SGP.22 standard](https://www.gsma.com/solutions-and-impact/technologies/esim/wp-content/uploads/2021/07/SGP.22-v2.3.pdf).
-  - Prebuilt release-mode EasyEUICC apks can be downloaded [here](https://gitea.angry.im/PeterCxy/OpenEUICC/releases)
-  - For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC when inserted, include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`
+|                               |                    OpenEUICC                    |     EasyEUICC     |
+|:------------------------------|:-----------------------------------------------:|:-----------------:|
+| Privileged                    |         Must be installed as system app         |        No         |
+| Internal eSIM                 |                    Supported                    |    Unsupported    |
+| External (Removable) eSIM     |                    Supported                    |     Supported     |
+| USB Readers                   |                       Yes                       |        Yes        |
+| Requires allowlisting by eSIM |                       No                        | Yes -- except USB |
+| System Integration            | Partial (carrier partner API unimplemented yet) |        No         |
+
+Some side notes:
+1. When privileged, OpenEUICC supports any eUICC chip that implements the SGP.22 standard, internal or external. However, there is __no guarantee__ that external (removable) eSIMs actually follow the standard. Please __DO NOT__ submit bug reports for non-functioning removable eSIMs. They are __NOT__ officially supported unless they also support / are supported by EasyEUICC, the unprivileged variant.
+2. Both variants support accessing eUICC chips through USB CCID readers, regardless of whether the chip contains the correct ARA-M hash to allow for unprivileged access. However, only `T=0` readers that use the standard [USB CCID protocol](https://en.wikipedia.org/wiki/CCID_(protocol)) are supported.
+3. Prebuilt release-mode EasyEUICC apks can be downloaded [here](https://gitea.angry.im/PeterCxy/OpenEUICC/releases). For OpenEUICC, no official release is currently provided and only debug mode APKs can be found in the CI page.
+4. For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC when inserted, include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`.
 
 __This project is Free Software licensed under GNU GPL v3, WITHOUT the "or later" clause.__ Any modification and derivative work __MUST__ be released under the SAME license, which means, at the very least, that the source code __MUST__ be available upon request.
 
