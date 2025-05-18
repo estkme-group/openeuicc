@@ -9,7 +9,7 @@ There are two variants of this project, OpenEUICC and EasyEUICC:
 | Privileged                    |         Must be installed as system app         |        No         |
 | Internal eSIM                 |                    Supported                    |    Unsupported    |
 | External (Removable) eSIM     |                    Supported                    |     Supported     |
-| USB Readers                   |                       Yes                       |        Yes        |
+| USB Readers                   |                    Supported                    |     Supported     |
 | Requires allowlisting by eSIM |                       No                        | Yes -- except USB |
 | System Integration            | Partial (carrier partner API unimplemented yet) |        No         |
 
