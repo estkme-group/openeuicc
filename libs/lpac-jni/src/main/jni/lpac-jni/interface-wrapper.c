@@ -80,7 +80,7 @@ apdu_interface_transmit(struct euicc_ctx *ctx, uint8_t **rx, uint32_t *rx_len, c
     LPAC_JNI_EXCEPTION_RETURN;
     *rx_len = (*env)->GetArrayLength(env, ret);
     *rx = calloc(*rx_len, sizeof(uint8_t));
-    (*env)->GetByteArrayRegion(env, ret, 0, *rx_len, *rx);
+    (*env)->GetByteArrayRegion(env, ret, 0, *rx_len, (jbyte *) *rx);
     (*env)->DeleteLocalRef(env, txArr);
     (*env)->DeleteLocalRef(env, ret);
     return 0;
@@ -113,7 +113,7 @@ http_interface_transmit(struct euicc_ctx *ctx, const char *url, uint32_t *rcode,
     jbyteArray rxArr = (jbyteArray) (*env)->GetObjectField(env, ret, field_resp_data);
     *rx_len = (*env)->GetArrayLength(env, rxArr);
     *rx = calloc(*rx_len, sizeof(uint8_t));
-    (*env)->GetByteArrayRegion(env, rxArr, 0, *rx_len, *rx);
+    (*env)->GetByteArrayRegion(env, rxArr, 0, *rx_len, (jbyte *) *rx);
     (*env)->DeleteLocalRef(env, txArr);
     (*env)->DeleteLocalRef(env, rxArr);
     (*env)->DeleteLocalRef(env, headersArr);
