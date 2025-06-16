@@ -27,6 +27,13 @@ import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
 
+// https://euicc-manual.osmocom.org/docs/pki/eum/accredited.json
+// ref: <https://regex101.com/r/5FFz8u>
+private val RE_SAS = Regex(
+    """^[A-Z]{2}-[A-Z]{2}(?:-UP)?-\d{4}T?(?:-\d+)?T?$""",
+    setOf(RegexOption.IGNORE_CASE),
+)
+
 class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     companion object {
         private val YES_NO = Pair(R.string.yes, R.string.no)
@@ -109,13 +116,14 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             vendorInfo.firmwareVersion?.let { add(Item(R.string.euicc_info_fw_ver, it)) }
             vendorInfo.bootloaderVersion?.let { add(Item(R.string.euicc_info_bl_ver, it)) }
         }
-        channel.lpa.euiccInfo2.let { info ->
-            add(Item(R.string.euicc_info_sgp22_version, info?.sgp22Version.toString()))
-            add(Item(R.string.euicc_info_firmware_version, info?.euiccFirmwareVersion.toString()))
-            add(Item(R.string.euicc_info_globalplatform_version, info?.globalPlatformVersion.toString()))
-            add(Item(R.string.euicc_info_pp_version, info?.ppVersion.toString()))
-            add(Item(R.string.euicc_info_sas_accreditation_number, info?.sasAccreditationNumber))
-            add(Item(R.string.euicc_info_free_nvram, info?.freeNvram?.let(::formatFreeSpace)))
+        channel.lpa.euiccInfo2?.let { info ->
+            add(Item(R.string.euicc_info_sgp22_version, info.sgp22Version.toString()))
+            add(Item(R.string.euicc_info_firmware_version, info.euiccFirmwareVersion.toString()))
+            add(Item(R.string.euicc_info_globalplatform_version, info.globalPlatformVersion.toString()))
+            add(Item(R.string.euicc_info_pp_version, info.ppVersion.toString()))
+            info.sasAccreditationNumber.trim().takeIf(RE_SAS::matches)
+                ?.let { add(Item(R.string.euicc_info_sas_accreditation_number, it.uppercase())) }
+            add(Item(R.string.euicc_info_free_nvram, info.freeNvram.let(::formatFreeSpace)))
         }
         channel.lpa.euiccInfo2?.euiccCiPKIdListForSigning.orEmpty().let { signers ->
             // SGP.28 v1.0, eSIM CI Registration Criteria (Page 5 of 9, 2019-10-24)
@@ -130,18 +138,13 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             }
             add(Item(R.string.euicc_info_ci_type, getString(resId)))
         }
-        val atr =  channel.atr?.encodeHex() ?: getString(R.string.information_unavailable)
+        val atr = channel.atr?.encodeHex() ?: getString(R.string.information_unavailable)
         add(Item(R.string.euicc_info_atr, atr, copiedToastResId = R.string.toast_atr_copied))
     }
 
+    @Suppress("SameParameterValue")
     private fun formatByBoolean(b: Boolean, res: Pair<Int, Int>): String =
-        getString(
-            if (b) {
-                res.first
-            } else {
-                res.second
-            }
-        )
+        getString(if (b) res.first else res.second)
 
     inner class EuiccInfoViewHolder(root: View) : ViewHolder(root) {
         private val title: TextView = root.requireViewById(R.id.euicc_info_title)
