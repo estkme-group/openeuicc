@@ -19,6 +19,7 @@
     <string name="profile_class_provisioning">Provisioning</string>
     <string name="profile_class_operational">Operational</string>
     <string name="iccid" translatable="false">ICCID:</string>
+    <string name="profile_sequence_number_format" translatable="false">#%d</string>
 
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
