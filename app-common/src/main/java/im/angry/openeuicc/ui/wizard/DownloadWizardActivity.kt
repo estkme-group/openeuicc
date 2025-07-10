@@ -123,8 +123,8 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         // If we get an LPA string from deep-link intents, extract from there.
         // Note that `onRestoreInstanceState` could override this with user input,
         // but that _is_ the desired behavior.
-        val uri = intent.data
-        if (uri?.scheme == "lpa") {
+        val uri = intent.data ?: return
+        if (uri.scheme.contentEquals("lpa", ignoreCase = true)) {
             val parsed = LPAString.parse(uri.schemeSpecificPart)
             state.smdp = parsed.address
             state.matchingId = parsed.matchingId

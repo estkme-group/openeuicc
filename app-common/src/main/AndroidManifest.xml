@@ -45,8 +45,9 @@
                 <!-- Accepts URIs that begin with "lpa:" -->
                 <!-- for example: "LPA:1$..." -->
                 <!-- refs: https://www.iana.org/assignments/uri-schemes/prov/lpa -->
-                <data android:scheme="lpa"/>
-                <data android:sspPrefix="1$"/>
+                <data android:scheme="lpa" />
+                <data android:scheme="LPA" tools:ignore="AppLinkUrlError" />
+                <data android:sspPrefix="1$" />
             </intent-filter>
         </activity>
 
