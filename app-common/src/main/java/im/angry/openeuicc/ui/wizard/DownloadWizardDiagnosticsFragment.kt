@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.*
+import org.json.JSONObject
 import java.util.Date
 
 class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
@@ -86,9 +87,10 @@ class DownloadWizardDiagnosticsFragment : DownloadWizardActivity.DownloadWizardS
             ret.appendLine()
 
             val str = resp.data.decodeToString(throwOnInvalidSequence = false)
+
             ret.appendLine(
                 if (str.startsWith('{')) {
-                    str.prettyPrintJson()
+                    JSONObject(str).toString(2)
                 } else {
                     str
                 }
