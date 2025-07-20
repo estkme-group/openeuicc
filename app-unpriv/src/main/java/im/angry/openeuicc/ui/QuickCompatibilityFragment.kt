@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.icu.text.ListFormatter
 import android.os.Build
 import android.os.Bundle
+import android.se.omapi.Reader
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +18,6 @@ import im.angry.openeuicc.util.EUICC_DEFAULT_ISDR_AID
 import im.angry.openeuicc.util.UnprivilegedEuiccContextMarker
 import im.angry.openeuicc.util.connectSEService
 import im.angry.openeuicc.util.decodeHex
-import im.angry.openeuicc.util.isSIM
-import im.angry.openeuicc.util.slotIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -66,22 +65,26 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
     }
 
     private fun onContinueToApp() {
-        runBlocking {
-            preferenceRepository.skipQuickAvailabilityFlow
-                .updatePreference(true)
-        }
         requireActivity().finish()
     }
 
     private fun onCompatibilityUpdate(result: CompatibilityResult) {
         conclusion.text = formatConclusion(result)
-        if (result.compatibility != Compatibility.COMPATIBLE) return
-        resultSlots.isVisible = true
-        resultSlots.text = getString(
-            R.string.quick_compatibility_result_slots,
-            ListFormatter.getInstance().format(result.slots)
-        )
-        resultNotes.isVisible = true
+        if (result.compatibility == Compatibility.COMPATIBLE) {
+            runBlocking {
+                preferenceRepository.skipQuickAvailabilityFlow
+                    .updatePreference(true)
+            }
+            resultSlots.isVisible = true
+            resultSlots.text = getString(
+                R.string.quick_compatibility_result_slots,
+                ListFormatter.getInstance().format(result.slots)
+            )
+            resultNotes.isVisible = true
+        } else {
+            resultNotes.isVisible = true
+            resultNotes.text = getString(R.string.quick_compatibility_result_notes_incompatible)
+        }
     }
 
     private suspend fun getCompatibilityCheckResult(): CompatibilityResult {
@@ -133,3 +136,9 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         appendLine("VERSION.SDK_INT: ${Build.VERSION.SDK_INT}")
     }
 }
+
+val Reader.isSIM: Boolean
+    get() = name.startsWith("SIM")
+
+val Reader.slotIndex: Int
+    get() = (name.replace("SIM", "").toIntOrNull() ?: 1)
