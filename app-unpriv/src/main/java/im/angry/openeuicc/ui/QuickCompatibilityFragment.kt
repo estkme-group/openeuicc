@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -48,6 +49,10 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         requireView().requireViewById(R.id.quick_availability_result_notes)
     }
 
+    private val skipCheckBox: CheckBox by lazy {
+        requireView().requireViewById(R.id.quick_availability_skip)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,6 +62,15 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
             .text = formatDeviceInformation()
         requireViewById<Button>(R.id.quick_availability_button_continue)
             .setOnClickListener { onContinueToApp() }
+        // Can't use the lazy field yet
+        requireViewById<CheckBox>(R.id.quick_availability_skip).setOnCheckedChangeListener { compoundButton, b ->
+            if (compoundButton.isVisible) {
+                runBlocking {
+                    preferenceRepository.skipQuickAvailabilityFlow
+                        .updatePreference(b)
+                }
+            }
+        }
     }
 
     override fun onStart() {
@@ -75,6 +89,7 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
     private fun onCompatibilityUpdate(result: CompatibilityResult) {
         conclusion.text = formatConclusion(result)
         if (result.compatibility == Compatibility.COMPATIBLE) {
+            // Don't show the message again, ever, if the result is compatible
             runBlocking {
                 preferenceRepository.skipQuickAvailabilityFlow
                     .updatePreference(true)
@@ -88,6 +103,7 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         } else {
             resultNotes.isVisible = true
             resultNotes.text = getString(R.string.quick_compatibility_result_notes_incompatible)
+            skipCheckBox.isVisible = true
         }
     }
 

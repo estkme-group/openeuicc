@@ -38,6 +38,13 @@
         android:text="@string/quick_compatibility_result_notes"
         android:visibility="gone" />
 
+    <CheckBox
+        android:id="@+id/quick_availability_skip"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/quick_compatibility_skip" />
+
     <Button
         android:id="@+id/quick_availability_button_continue"
         android:layout_width="match_parent"
