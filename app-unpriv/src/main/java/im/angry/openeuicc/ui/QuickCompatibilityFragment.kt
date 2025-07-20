@@ -18,8 +18,10 @@ import im.angry.openeuicc.util.EUICC_DEFAULT_ISDR_AID
 import im.angry.openeuicc.util.UnprivilegedEuiccContextMarker
 import im.angry.openeuicc.util.connectSEService
 import im.angry.openeuicc.util.decodeHex
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMarker {
     companion object {
@@ -60,7 +62,9 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
     override fun onStart() {
         super.onStart()
         lifecycleScope.launch {
-            onCompatibilityUpdate(getCompatibilityCheckResult())
+            onCompatibilityUpdate(withContext(Dispatchers.IO) {
+                getCompatibilityCheckResult()
+            })
         }
     }
 
