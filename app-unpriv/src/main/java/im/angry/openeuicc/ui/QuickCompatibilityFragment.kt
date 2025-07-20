@@ -38,19 +38,19 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
     }
 
     private val conclusion: TextView by lazy {
-        requireView().requireViewById(R.id.quick_availability_conclusion)
+        requireView().requireViewById(R.id.quick_compatibility_conclusion)
     }
 
     private val resultSlots: TextView by lazy {
-        requireView().requireViewById(R.id.quick_availability_result_slots)
+        requireView().requireViewById(R.id.quick_compatibility_result_slots)
     }
 
     private val resultNotes: TextView by lazy {
-        requireView().requireViewById(R.id.quick_availability_result_notes)
+        requireView().requireViewById(R.id.quick_compatibility_result_notes)
     }
 
     private val skipCheckBox: CheckBox by lazy {
-        requireView().requireViewById(R.id.quick_availability_skip)
+        requireView().requireViewById(R.id.quick_compatibility_skip)
     }
 
     override fun onCreateView(
@@ -58,15 +58,15 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_quick_compatibility, container, false).apply {
-        requireViewById<TextView>(R.id.quick_availability_device_information)
+        requireViewById<TextView>(R.id.quick_compatibility_device_information)
             .text = formatDeviceInformation()
-        requireViewById<Button>(R.id.quick_availability_button_continue)
+        requireViewById<Button>(R.id.quick_compatibility_button_continue)
             .setOnClickListener { onContinueToApp() }
         // Can't use the lazy field yet
-        requireViewById<CheckBox>(R.id.quick_availability_skip).setOnCheckedChangeListener { compoundButton, b ->
+        requireViewById<CheckBox>(R.id.quick_compatibility_skip).setOnCheckedChangeListener { compoundButton, b ->
             if (compoundButton.isVisible) {
                 runBlocking {
-                    preferenceRepository.skipQuickAvailabilityFlow
+                    preferenceRepository.skipQuickCompatibilityFlow
                         .updatePreference(b)
                 }
             }
@@ -91,7 +91,7 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         if (result.compatibility == Compatibility.COMPATIBLE) {
             // Don't show the message again, ever, if the result is compatible
             runBlocking {
-                preferenceRepository.skipQuickAvailabilityFlow
+                preferenceRepository.skipQuickCompatibilityFlow
                     .updatePreference(true)
             }
             resultSlots.isVisible = true

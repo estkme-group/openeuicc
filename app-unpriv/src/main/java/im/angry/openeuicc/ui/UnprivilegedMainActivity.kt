@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 class UnprivilegedMainActivity : MainActivity(), UnprivilegedEuiccContextMarker {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (runBlocking { !preferenceRepository.skipQuickAvailabilityFlow.first() }) {
+        if (runBlocking { !preferenceRepository.skipQuickCompatibilityFlow.first() }) {
             startActivity(Intent(this, QuickCompatibilityActivity::class.java))
         }
     }

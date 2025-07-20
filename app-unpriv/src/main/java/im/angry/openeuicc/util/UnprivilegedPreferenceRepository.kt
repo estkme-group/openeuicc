@@ -5,10 +5,10 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 
 internal object UnprivilegedPreferenceKeys {
     // ---- Miscellaneous ----
-    val SKIP_QUICK_AVAILABILITY = booleanPreferencesKey("skip_quick_availability")
+    val SKIP_QUICK_COMPATIBILITY = booleanPreferencesKey("skip_quick_compatibility")
 }
 
 class UnprivilegedPreferenceRepository(context: Context) : PreferenceRepository(context) {
     // ---- Miscellaneous ----
-    val skipQuickAvailabilityFlow = bindFlow(UnprivilegedPreferenceKeys.SKIP_QUICK_AVAILABILITY, false)
+    val skipQuickCompatibilityFlow = bindFlow(UnprivilegedPreferenceKeys.SKIP_QUICK_COMPATIBILITY, false)
 }
