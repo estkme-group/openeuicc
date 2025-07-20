@@ -2,4 +2,14 @@
     <string name="compatibility_check">兼容性检查</string>
     <string name="open_sim_toolkit">打开 SIM 卡应用程序</string>
     <string name="toast_ara_m_copied">ARA-M SHA-1 已拷贝到剪贴板</string>
+    <string name="toast_prompt_to_enable_sim_toolkit">请启用您的“％s”应用程序</string>
+    <string name="quick_compatibility">简易兼容性检测</string>
+    <string name="quick_compatibility_compatible">您的手机可以管理兼容 %s 的卡片</string>
+    <string name="quick_compatibility_not_compatible">您的手机与 %s 不兼容</string>
+    <string name="quick_compatibility_not_compatible_but_usb">您的手机与 %s 不完全兼容，但可以使用 USB 读卡器获得几乎全部功能</string>
+    <string name="quick_compatibility_result_slots">可读取的 SIM 卡槽: %s</string>
+    <string name="quick_compatibility_result_notes">注意：以上结果仅供参考。即使某些卡槽没有被列举出来，插卡后也可能可用。</string>
+    <string name="quick_compatibility_result_notes_incompatible">注意：如果您目前没有插卡，请插任意 SIM 卡后重试兼容性检测。</string>
+    <string name="quick_compatibility_button_continue">继续</string>
+    <string name="quick_compatibility_skip">不再显示此消息</string>
 </resources>
