@@ -11,6 +11,16 @@
     <string name="toast_ara_m_copied">ARA-M SHA-1 copied to clipboard</string>
     <string name="toast_prompt_to_enable_sim_toolkit">Please ENABLE your \"%s\" application</string>
 
+    <!-- Quick Compatibility -->
+    <string name="quick_compatibility">Quick Compatibility Check</string>
+    <string name="quick_compatibility_compatible">Your smartphone can manage %s-compatible cards</string>
+    <string name="quick_compatibility_not_compatible">Your smartphone is not compatible with %s</string>
+    <string name="quick_compatibility_not_compatible_but_usb">Your smartphone is not fully compatible with %s. However, you can still use a USB smart card reader for near-full functionality.</string>
+    <string name="quick_compatibility_result_slots">SIM card slots accessible: %s</string>
+    <string name="quick_compatibility_result_notes">Note: these results are for reference only. Even if a SIM slot is not listed above, it <i>may</i> be compatible as well once a SIM card is inserted.</string>
+    <string name="quick_compatibility_hidden">Do not show this message again.</string>
+    <string name="quick_compatibility_button_continue">Continue</string>
+
     <!-- Compatibility Check Descriptions -->
     <string name="compatibility_check_system_features">System Features</string>
     <string name="compatibility_check_system_features_desc">Whether your device has all the required features for managing removable eUICC cards. For example, basic telephony and OMAPI support.</string>

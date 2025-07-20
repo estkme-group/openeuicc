@@ -33,10 +33,10 @@ suspend fun List<CompatibilityCheck>.executeAll(callback: () -> Unit) = withCont
     }
 }
 
-private val Reader.isSIM: Boolean
+val Reader.isSIM: Boolean
     get() = name.startsWith("SIM")
 
-private val Reader.slotIndex: Int
+val Reader.slotIndex: Int
     get() = (name.replace("SIM", "").toIntOrNull() ?: 1)
 
 abstract class CompatibilityCheck(context: Context) {
@@ -173,7 +173,7 @@ internal class IsdrChannelAccessCheck(private val context: Context): Compatibili
             }
         }
 
-        if (result != State.SUCCESS && validSlotIds.size > 0) {
+        if (result != State.SUCCESS && validSlotIds.isNotEmpty()) {
             if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_EUICC)) {
                 failureDescription = context.getString(
                     R.string.compatibility_check_isdr_channel_desc_partial_fail,
