@@ -10,9 +10,11 @@
     <string name="quick_compatibility_compatible">お使いのスマートフォンは %s 対応 SIM カードを管理できます</string>
     <string name="quick_compatibility_not_compatible">お使いのスマートフォンは %s と互換性がありません</string>
     <string name="quick_compatibility_not_compatible_but_usb">お使いのスマートフォンは %s と完全な互換性がありません。ただし、USBスマートカードリーダーを使用する場合、ほぼすべての機能を利用できます。</string>
-    <string name="quick_compatibility_result_slots">アクセス可能な SIM カードスロット: %s</string>
+    <string name="quick_compatibility_result_slots">アクセス可能なスロット: %s</string>
+    <string name="quick_compatibility_result_slots_isdr">ISD-R アクセス: %s</string>
     <string name="quick_compatibility_result_notes">注: これらの結果は参考用です。以上に記載されていない SIM スロットでも、SIM カードを挿入すれば利用できる可能性があります。</string>
     <string name="quick_compatibility_result_notes_incompatible">注：現在 SIM カードが挿入されていない場合は、SIM カードを挿入してから再度互換性チェックをお試しください。どの SIM カードでも構いません。</string>
     <string name="quick_compatibility_button_continue">つづく</string>
     <string name="quick_compatibility_skip">このメッセージを再度表示しない</string>
+    <string name="quick_compatibility_unknown">不明</string>
 </resources>

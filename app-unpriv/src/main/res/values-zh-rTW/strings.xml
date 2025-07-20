@@ -7,9 +7,11 @@
     <string name="quick_compatibility_compatible">您的手機可以管理相容 %s 的卡片</string>
     <string name="quick_compatibility_not_compatible">您的手機與 %s 不相容</string>
     <string name="quick_compatibility_not_compatible_but_usb">您的手機與 %s 不完全相容，但可以使用 USB 讀卡機獲得幾乎全部功能</string>
-    <string name="quick_compatibility_result_slots">可讀取的 SIM 卡槽: %s</string>
+    <string name="quick_compatibility_result_slots">可讀取的卡槽: %s</string>
+    <string name="quick_compatibility_result_slots_isdr">ISD-R 訪問: %s</string>
     <string name="quick_compatibility_result_notes">注意：以上結果僅供參考。即使某些卡槽沒有被列舉出來，插卡後也可能可用。</string>
     <string name="quick_compatibility_result_notes_incompatible">注意：如果您目前沒有插卡，請插任何 SIM 卡後重試相容性檢測。</string>
     <string name="quick_compatibility_button_continue">繼續</string>
     <string name="quick_compatibility_skip">不再顯示此訊息</string>
+    <string name="quick_compatibility_unknown">未知</string>
 </resources>
