@@ -19,33 +19,4 @@
     <string name="quick_compatibility_result_slots">SIM card slots accessible: %s</string>
     <string name="quick_compatibility_result_notes">Note: these results are for reference only. Even if a SIM slot is not listed above, it <i>may</i> be compatible as well once a SIM card is inserted.</string>
     <string name="quick_compatibility_button_continue">Continue</string>
-
-    <!-- Compatibility Check Descriptions -->
-    <string name="compatibility_check_system_features">System Features</string>
-    <string name="compatibility_check_system_features_desc">Whether your device has all the required features for managing removable eUICC cards. For example, basic telephony and OMAPI support.</string>
-    <string name="compatibility_check_system_features_no_telephony">Your device has no telephony features.</string>
-    <string name="compatibility_check_system_features_no_omapi">Your device / system does not declare support for OMAPI. This could be due to missing support from hardware, or it could be simply due to a missing flag. See the following two checks to determine whether OMAPI is actually supported or not.</string>
-    <string name="compatibility_check_omapi_connectivity">OMAPI Connectivity</string>
-    <string name="compatibility_check_omapi_connectivity_desc">Does your device allow access to Secure Elements on SIM cards via OMAPI?</string>
-    <string name="compatibility_check_omapi_connectivity_fail">Unable to detect Secure Element readers for SIM cards via OMAPI. If you have not inserted a SIM in this device, try inserting one and retry this check.</string>
-    <string name="compatibility_check_omapi_connectivity_partial_success_sim_number">Successfully detected Secure Element access, but only for the following SIM slots: &lt;b&gt;SIM%s&lt;/b&gt;.</string>
-    <string name="compatibility_check_isdr_channel">ISD-R Channel Access</string>
-    <string name="compatibility_check_isdr_channel_desc">Does your device support opening an ISD-R (management) channel to eSIMs via OMAPI?</string>
-    <string name="compatibility_check_isdr_channel_desc_unknown">Cannot determine whether ISD-R access through OMAPI is supported. You might want to retry with SIM cards inserted (any SIM card will do) if not already.</string>
-    <string name="compatibility_check_isdr_channel_desc_partial_fail">OMAPI access to ISD-R is only possible on the following SIM slots: &lt;b&gt;SIM%s&lt;/b&gt;.</string>
-    <string name="compatibility_check_known_broken">Not on the Known Broken List</string>
-    <string name="compatibility_check_known_broken_desc">Making sure your device is not known to have bugs associated with removable eSIMs.</string>
-    <string name="compatibility_check_known_broken_fail">Oops, your device is known to have bugs when accessing removable eSIMs. This does not necessarily mean that it will not work at all, but you will have to proceed with caution.</string>
-    <string name="compatibility_check_usb">USB Card Reader Support</string>
-    <string name="compatibility_check_usb_desc">Does your device support managing eSIMs via USB card readers?</string>
-    <string name="compatibility_check_usb_ok">You can manage eSIMs through standard USB CCID readers on this device (even if you had any other check items fail here). Insert the card reader and then open this app to manage eSIMs in this way.</string>
-    <string name="compatibility_check_usb_fail">Your device does not support acting as a USB host.</string>
-    <string name="compatibility_check_verdict">Verdict (non-USB)</string>
-    <string name="compatibility_check_verdict_desc">Based on all previous checks, how likely is your device to be compatible with managing inserted removable eSIMs?</string>
-    <string name="compatibility_check_verdict_ok">You can likely use and manage removable eSIMs inserted into this device.</string>
-    <string name="compatibility_check_verdict_known_broken">Your device is known to be buggy when accessing inserted removable eSIMs.\n%s</string>
-    <string name="compatibility_check_verdict_unknown_likely_ok">We cannot determine whether inserted removable eSIMs can be managed on your device. Your device does declare support for OMAPI, though, so it is slightly more likely that it will work.\n%s</string>
-    <string name="compatibility_check_verdict_unknown_likely_fail">We cannot determine whether inserted removable eSIMs can be managed on your device. Since your device does not declare support for OMAPI, it is more likely that managing removable eSIMs on this device is unsupported.\n%s</string>
-    <string name="compatibility_check_verdict_unknown">We cannot determine whether inserted removable eSIMs can be managed on your device.\n%s</string>
-    <string name="compatibility_check_verdict_fail_shared">However, a removable eSIM that has already been loaded with an eSIM profile will still work; you can also most likely use a USB card reader plugged into this device to manage profiles, even if you cannot manage one inserted into your device.</string>
 </resources>

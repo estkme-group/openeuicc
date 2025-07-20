@@ -28,11 +28,6 @@
             android:exported="false"
             android:label="@string/quick_compatibility" />
 
-        <activity
-            android:name="im.angry.openeuicc.ui.CompatibilityCheckActivity"
-            android:exported="false"
-            android:label="@string/compatibility_check" />
-
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
             android:enabled="false"

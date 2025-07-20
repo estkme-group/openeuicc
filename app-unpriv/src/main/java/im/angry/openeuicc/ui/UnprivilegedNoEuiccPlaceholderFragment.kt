@@ -21,7 +21,7 @@ class UnprivilegedNoEuiccPlaceholderFragment : Fragment() {
         )
 
         view.findViewById<View>(R.id.compatibility_check).setOnClickListener {
-            startActivity(Intent(requireContext(), CompatibilityCheckActivity::class.java))
+            startActivity(Intent(requireContext(), QuickCompatibilityActivity::class.java))
         }
 
         return view
