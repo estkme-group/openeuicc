@@ -17,6 +17,6 @@ open class UnprivilegedUiComponentFactory : DefaultUiComponentFactory() {
     override fun createSettingsFragment(): Fragment =
         UnprivilegedSettingsFragment()
 
-    open fun createQuickAvailabilityFragment(): Fragment =
+    open fun createQuickCompatibilityFragment(): Fragment =
         QuickCompatibilityFragment()
 }

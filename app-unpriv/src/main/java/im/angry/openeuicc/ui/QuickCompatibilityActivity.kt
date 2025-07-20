@@ -1,6 +1,5 @@
 package im.angry.openeuicc.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -14,12 +13,12 @@ class QuickCompatibilityActivity : AppCompatActivity(), OpenEuiccContextMarker {
         enableEdgeToEdge()
         setContentView(R.layout.activity_quick_compatibility)
 
-        val quickAvailabilityFragment =
+        val quickCompatibilityFragment =
             (appContainer.uiComponentFactory as UnprivilegedUiComponentFactory)
-                .createQuickAvailabilityFragment()
+                .createQuickCompatibilityFragment()
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.quick_availability_container, quickAvailabilityFragment)
+            .replace(R.id.quick_compatibility_container, quickCompatibilityFragment)
             .commit()
     }
 }
