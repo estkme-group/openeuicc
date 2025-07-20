@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -48,10 +47,6 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         requireView().requireViewById(R.id.quick_availability_result_notes)
     }
 
-    private val hidden: CheckBox by lazy {
-        requireView().requireViewById(R.id.quick_availability_hidden)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,7 +68,7 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
     private fun onContinueToApp() {
         runBlocking {
             preferenceRepository.skipQuickAvailabilityFlow
-                .updatePreference(hidden.isChecked)
+                .updatePreference(true)
         }
         requireActivity().finish()
     }

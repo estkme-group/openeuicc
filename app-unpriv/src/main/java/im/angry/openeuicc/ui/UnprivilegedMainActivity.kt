@@ -26,7 +26,7 @@ class UnprivilegedMainActivity : MainActivity(), UnprivilegedEuiccContextMarker 
     override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             R.id.compatibility_check -> {
-                startActivity(Intent(this, CompatibilityCheckActivity::class.java))
+                startActivity(Intent(this, QuickCompatibilityActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
