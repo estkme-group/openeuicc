@@ -33,7 +33,8 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
 
         data class CompatibilityResult(
             val compatibility: Compatibility,
-            val slots: List<String> = emptyList()
+            val slotsOmapi: List<String> = emptyList(),
+            val slotsIsdr: List<String> = emptyList()
         )
     }
 
@@ -43,6 +44,10 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
 
     private val resultSlots: TextView by lazy {
         requireView().requireViewById(R.id.quick_compatibility_result_slots)
+    }
+
+    private val resultSlotsIsdr: TextView by lazy {
+        requireView().requireViewById(R.id.quick_compatibility_result_slots_isdr)
     }
 
     private val resultNotes: TextView by lazy {
@@ -97,8 +102,17 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
             resultSlots.isVisible = true
             resultSlots.text = getString(
                 R.string.quick_compatibility_result_slots,
-                ListFormatter.getInstance().format(result.slots)
+                ListFormatter.getInstance().format(result.slotsOmapi)
             )
+            resultSlotsIsdr.isVisible = true
+            resultSlotsIsdr.text = if (result.slotsIsdr.isEmpty()) {
+                getString(R.string.quick_compatibility_unknown)
+            } else {
+                getString(
+                    R.string.quick_compatibility_result_slots_isdr,
+                    ListFormatter.getInstance().format(result.slotsIsdr)
+                )
+            }
             resultNotes.isVisible = true
         } else {
             resultNotes.isVisible = true
@@ -112,6 +126,7 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         if (!service.isConnected) {
             return CompatibilityResult(Compatibility.NOT_COMPATIBLE)
         }
+        val omapiSlots = service.readers.filter { it.isSIM }.map { it.slotIndex }
         val slots = service.readers.filter { it.isSIM }.mapNotNull { reader ->
             try {
                 // Note: we ONLY check the default ISD-R AID, because this test is for the _device_,
@@ -128,10 +143,10 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
                 null
             }
         }
-        if (slots.isEmpty()) {
+        if (omapiSlots.isEmpty()) {
             return CompatibilityResult(Compatibility.NOT_COMPATIBLE)
         }
-        return CompatibilityResult(Compatibility.COMPATIBLE, slots = slots.map { "SIM$it" })
+        return CompatibilityResult(Compatibility.COMPATIBLE, slotsOmapi = omapiSlots.map { "SIM$it" }, slotsIsdr = slots.map { "SIM$it" })
     }
 
     open fun formatConclusion(result: CompatibilityResult): String {

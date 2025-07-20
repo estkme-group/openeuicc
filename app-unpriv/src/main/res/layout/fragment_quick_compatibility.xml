@@ -32,6 +32,13 @@
         android:visibility="gone" />
 
     <TextView
+        android:id="@+id/quick_compatibility_result_slots_isdr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/quick_compatibility_result_notes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
