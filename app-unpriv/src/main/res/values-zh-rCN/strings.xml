@@ -2,7 +2,7 @@
     <string name="compatibility_check">兼容性检查</string>
     <string name="open_sim_toolkit">打开 SIM 卡应用程序</string>
     <string name="toast_ara_m_copied">ARA-M SHA-1 已拷贝到剪贴板</string>
-    <string name="toast_prompt_to_enable_sim_toolkit">请启用您的“％s”应用程序</string>
+    <string name="toast_prompt_to_enable_sim_toolkit">请启用您的“%s”应用程序</string>
     <string name="quick_compatibility">简易兼容性检测</string>
     <string name="quick_compatibility_compatible">您的手机可以管理兼容 %s 的卡片</string>
     <string name="quick_compatibility_not_compatible">您的手机与 %s 不兼容</string>
