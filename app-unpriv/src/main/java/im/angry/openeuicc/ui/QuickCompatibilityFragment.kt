@@ -105,14 +105,15 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
                 ListFormatter.getInstance().format(result.slotsOmapi)
             )
             resultSlotsIsdr.isVisible = true
-            resultSlotsIsdr.text = if (result.slotsIsdr.isEmpty()) {
-                getString(R.string.quick_compatibility_unknown)
-            } else {
+            resultSlotsIsdr.text =
                 getString(
                     R.string.quick_compatibility_result_slots_isdr,
-                    ListFormatter.getInstance().format(result.slotsIsdr)
+                    if (result.slotsIsdr.isEmpty()) {
+                        getString(R.string.quick_compatibility_unknown)
+                    } else {
+                        ListFormatter.getInstance().format(result.slotsIsdr)
+                    }
                 )
-            }
             resultNotes.isVisible = true
         } else {
             resultNotes.isVisible = true
@@ -146,7 +147,10 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         if (omapiSlots.isEmpty()) {
             return CompatibilityResult(Compatibility.NOT_COMPATIBLE)
         }
-        return CompatibilityResult(Compatibility.COMPATIBLE, slotsOmapi = omapiSlots.map { "SIM$it" }, slotsIsdr = slots.map { "SIM$it" })
+        return CompatibilityResult(
+            Compatibility.COMPATIBLE,
+            slotsOmapi = omapiSlots.map { "SIM$it" },
+            slotsIsdr = slots.map { "SIM$it" })
     }
 
     open fun formatConclusion(result: CompatibilityResult): String {
