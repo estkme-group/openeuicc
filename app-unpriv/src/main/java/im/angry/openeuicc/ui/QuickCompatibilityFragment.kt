@@ -127,8 +127,9 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         if (!service.isConnected) {
             return CompatibilityResult(Compatibility.NOT_COMPATIBLE)
         }
-        val omapiSlots = service.readers.filter { it.isSIM }.map { it.slotIndex }
-        val slots = service.readers.filter { it.isSIM }.mapNotNull { reader ->
+        val readers = service.readers.filter(Reader::isSIM)
+        val omapiSlots = readers.mapNotNull(Reader::slotIndex)
+        val slots = readers.mapNotNull { reader ->
             try {
                 // Note: we ONLY check the default ISD-R AID, because this test is for the _device_,
                 // NOT the eUICC. We don't care what AID a potential eUICC might use, all we need to
@@ -147,10 +148,12 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         if (omapiSlots.isEmpty()) {
             return CompatibilityResult(Compatibility.NOT_COMPATIBLE)
         }
+        val formatChannelName = appContainer.customizableTextProvider::formatInternalChannelName
         return CompatibilityResult(
             Compatibility.COMPATIBLE,
-            slotsOmapi = omapiSlots.map { "SIM$it" },
-            slotsIsdr = slots.map { "SIM$it" })
+            slotsOmapi = omapiSlots.map(formatChannelName),
+            slotsIsdr = slots.map(formatChannelName),
+        )
     }
 
     open fun formatConclusion(result: CompatibilityResult): String {
@@ -176,8 +179,8 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
     }
 }
 
-val Reader.isSIM: Boolean
+private inline val Reader.isSIM: Boolean
     get() = name.startsWith("SIM")
 
-val Reader.slotIndex: Int
-    get() = (name.replace("SIM", "").toIntOrNull() ?: 1)
+private inline val Reader.slotIndex: Int
+    get() = (name.replace("SIM", "").toIntOrNull() ?: 1) - 1 // 0-based index
