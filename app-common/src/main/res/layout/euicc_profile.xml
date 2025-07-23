@@ -54,7 +54,7 @@
 
             <TextView
                 android:id="@+id/provider_label"
-                android:text="@string/provider"
+                android:text="@string/profile_provider"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -106,7 +106,7 @@
 
             <TextView
                 android:id="@+id/iccid_label"
-                android:text="@string/iccid"
+                android:text="@string/profile_iccid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"

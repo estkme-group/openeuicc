@@ -11,23 +11,24 @@
     <string name="usb" translatable="false">USB</string>
     <string name="omapi" translatable="false">OpenMobile API (OMAPI)</string>
 
-    <string name="enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
-    <string name="provider">Provider:</string>
+    <!-- Profile -->
+    <string name="profile_state_enabled">Enabled</string>
+    <string name="profile_state_disabled">Disabled</string>
+    <string name="profile_provider">Provider:</string>
     <string name="profile_class">Class:</string>
     <string name="profile_class_testing">Testing</string>
     <string name="profile_class_provisioning">Provisioning</string>
     <string name="profile_class_operational">Operational</string>
-    <string name="iccid" translatable="false">ICCID:</string>
+    <string name="profile_iccid" translatable="false">ICCID:</string>
     <string name="profile_sequence_number_format" translatable="false">#%d</string>
 
-    <string name="enable">Enable</string>
-    <string name="disable">Disable</string>
-    <string name="delete">Delete</string>
-    <string name="rename">Rename</string>
+    <string name="profile_enable">Enable</string>
+    <string name="profile_disable">Disable</string>
+    <string name="profile_delete">Delete</string>
+    <string name="profile_rename">Rename</string>
 
-    <string name="enable_disable_timeout">Timed out waiting for the eSIM chip to switch profiles. This may be a bug in your phone\'s modem firmware. Try toggling airplane mode, restarting the application, or rebooting the phone.</string>
-    <string name="switch_did_not_refresh">The operation was successful, but your phone\'s modem refused to refresh. You might need to toggle airplane mode or reboot in order to use the new profile.</string>
+    <string name="profile_switch_timeout">Timed out waiting for the eSIM chip to switch profiles. This may be a bug in your phone\'s modem firmware. Try toggling airplane mode, restarting the application, or rebooting the phone.</string>
+    <string name="profile_switch_did_not_refresh">The operation was successful, but your phone\'s modem refused to refresh. You might need to toggle airplane mode or reboot in order to use the new profile.</string>
 
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>

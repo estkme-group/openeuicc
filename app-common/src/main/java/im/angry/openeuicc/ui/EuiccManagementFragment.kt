@@ -253,7 +253,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     if (!isUsb) {
                         withContext(Dispatchers.Main) {
                             AlertDialog.Builder(requireContext()).apply {
-                                setMessage(R.string.switch_did_not_refresh)
+                                setMessage(R.string.profile_switch_did_not_refresh)
                                 setPositiveButton(android.R.string.ok) { dialog, _ ->
                                     dialog.dismiss()
                                     requireActivity().finish()
@@ -380,9 +380,9 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
             state.setText(
                 if (profile.isEnabled) {
-                    R.string.enabled
+                    R.string.profile_state_enabled
                 } else {
-                    R.string.disabled
+                    R.string.profile_state_disabled
                 }
             )
             provider.text = profile.providerName
