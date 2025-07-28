@@ -102,8 +102,8 @@ fun <T : ActivityResultCaller> T.setupLogSaving(
 
             AlertDialog.Builder(context).apply {
                 setMessage(R.string.logs_saved_message)
-                setNegativeButton(R.string.no) { _, _ -> }
-                setPositiveButton(R.string.yes) { _, _ ->
+                setNegativeButton(android.R.string.cancel) { _, _ -> }
+                setPositiveButton(android.R.string.ok) { _, _ ->
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
                         clipData = ClipData.newUri(context.contentResolver, lastFileName, uri)

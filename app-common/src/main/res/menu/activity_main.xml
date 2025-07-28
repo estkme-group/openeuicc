@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/reload"
-        android:title="@string/reload"
+        android:title="@string/profile_reload_slots"
         android:icon="@drawable/ic_refresh_black"
         app:showAsAction="ifRoom" />
 

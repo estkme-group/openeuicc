@@ -2,14 +2,15 @@
 <resources>
     <string name="no_euicc">No removable eUICC card accessible by this app is detected on this device. Insert a compatible card or a USB reader.</string>
     <string name="no_profile">No profiles (yet) on this eSIM.</string>
-    <string name="unknown">Unknown</string>
-    <string name="information_unavailable">Information Unavailable</string>
-    <string name="help">Help</string>
-    <string name="reload">Reload Slots</string>
+
+    <string name="notification_help">Help</string>
+
+    <string name="profile_reload_slots">Reload Slots</string>
+    <string name="profile_no_enabled_profile">Unknown</string>
 
     <string name="channel_name_format">Logical Slot %d</string>
-    <string name="usb" translatable="false">USB</string>
-    <string name="omapi" translatable="false">OpenMobile API (OMAPI)</string>
+    <string name="channel_type_usb" translatable="false">USB</string>
+    <string name="channel_type_omapi" translatable="false">OpenMobile API (OMAPI)</string>
 
     <!-- Profile -->
     <string name="profile_state_enabled">Enabled</string>
@@ -139,7 +140,7 @@
     <string name="euicc_info_isdr_aid" translatable="false">ISD-R AID</string>
     <string name="euicc_info_sgp22_version">SGP.22 Version</string>
     <string name="euicc_info_firmware_version">eUICC OS Version</string>
-    <string name="euicc_info_globalplatform_version">GlobalPlatform Version</string>
+    <string name="euicc_info_gp_version">GlobalPlatform Version</string>
     <string name="euicc_info_sas_accreditation_number">SAS Accreditation Number</string>
     <string name="euicc_info_pp_version">Protected Profile Version</string>
     <string name="euicc_info_free_nvram">Free NVRAM (eSIM profile storage)</string>
@@ -156,8 +157,11 @@
     <string name="euicc_memory_reset_confirm_text">I CONFIRM TO ERASE THE CHIP WHOSE EID ENDS WITH %s AND UNDERSTAND THAT THIS IS IRREVERSIBLE</string>
     <string name="euicc_memory_reset_invoke_button">Erase</string>
 
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
+    <!-- eUICC Info -->
+    <string name="euicc_info_yes">Yes</string>
+    <string name="euicc_info_no">No</string>
+    <string name="euicc_info_unknown">Unknown</string>
+    <string name="euicc_info_unavailable">Information Unavailable</string>
 
     <string name="logs_save">Save</string>
     <string name="logs_filename_template">Logs at %s</string>
@@ -165,10 +169,9 @@
     <string name="developer_options_steps">You are %d steps away from being a developer.</string>
     <string name="developer_options_enabled">You are now a developer!</string>
 
-    <string name="reset">Reset</string>
-
     <string name="isdr_aid_list">ISD-R AID List</string>
     <string name="isdr_aid_list_saved">Saved custom ISD-R AID list.</string>
+    <string name="isdr_aid_list_restore_defaults">Reset</string>
 
     <string name="pref_settings">Settings</string>
     <string name="pref_notifications">Notifications</string>

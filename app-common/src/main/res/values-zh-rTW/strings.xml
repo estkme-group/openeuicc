@@ -2,9 +2,9 @@
 <resources>
     <string name="no_euicc">在此裝置上未檢測到此應用程式可訪問的可插拔 eUICC 卡。請插入相容卡或 USB 晶片讀卡機。</string>
     <string name="no_profile">此 eSIM 上還沒有設定檔</string>
-    <string name="unknown">未知</string>
-    <string name="help">幫助</string>
-    <string name="reload">重新載入卡槽</string>
+    <string name="euicc_info_unknown">未知</string>
+    <string name="notification_help">幫助</string>
+    <string name="profile_reload_slots">重新載入卡槽</string>
     <string name="channel_name_format">虛擬卡槽 %d</string>
     <string name="profile_state_enabled">已啟用</string>
     <string name="profile_state_disabled">已停用</string>
@@ -132,7 +132,7 @@
     <string name="euicc_info_removable">可插拔</string>
     <string name="euicc_info_sgp22_version">SGP.22 版本</string>
     <string name="euicc_info_firmware_version">eUICC OS 版本</string>
-    <string name="euicc_info_globalplatform_version">GlobalPlatform 版本</string>
+    <string name="euicc_info_gp_version">GlobalPlatform 版本</string>
     <string name="euicc_info_sas_accreditation_number">SAS 認證號碼</string>
     <string name="euicc_info_pp_version">Protected Profile 版本</string>
     <string name="euicc_info_free_nvram">NVRAM 剩餘空間 (eSIM 儲存容量)</string>
@@ -140,8 +140,8 @@
     <string name="euicc_info_ci_gsma_live">GSMA 生產環境 CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA 測試 CI</string>
     <string name="euicc_info_ci_unknown">未知 eSIM CI</string>
-    <string name="yes">是</string>
-    <string name="no">否</string>
+    <string name="euicc_info_yes">是</string>
+    <string name="euicc_info_no">否</string>
     <string name="developer_options_steps">還有 %d 步成為開發者</string>
     <string name="developer_options_enabled">您現在是開發者了！</string>
     <string name="pref_advanced_language">語言</string>
@@ -152,7 +152,7 @@
     <string name="pref_developer_unfiltered_profile_list_desc">在設定檔列表中包括非生產環境的設定檔</string>
     <string name="pref_developer_ignore_tls_certificate">忽略 SM-DP+ 的 TLS 證書</string>
     <string name="pref_developer_ignore_tls_certificate_desc">允許 RSP 伺服器使用任意證書</string>
-    <string name="information_unavailable">無資訊</string>
+    <string name="euicc_info_unavailable">無資訊</string>
     <string name="toast_euicc_memory_reset_confirm_text_mismatched">輸入的確認文字不匹配</string>
     <string name="toast_euicc_memory_reset_finitshed">此晶片已被擦除</string>
     <string name="task_euicc_memory_reset">正在擦除 eSIM 晶片</string>
@@ -167,6 +167,6 @@
     <string name="pref_developer_euicc_memory_reset_desc">此操作是預設隱藏的危險操作。作為替代方案，您可以手動刪除所有設定檔。</string>
     <string name="pref_developer_refresh_after_switch">向基帶發送刷新命令</string>
     <string name="pref_developer_isdr_aid_list">自訂 ISD-R AID 列表</string>
-    <string name="reset">重置</string>
+    <string name="isdr_aid_list_restore_defaults">重置</string>
     <string name="isdr_aid_list">ISD-R AID 列表</string>
 </resources>

@@ -60,7 +60,7 @@ class NotificationsActivity: BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         // This is slightly different from the MainActivity logic
         // due to the length (we don't want to display the full USB product name)
         val channelTitle = if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
-            getString(R.string.usb)
+            getString(R.string.channel_type_usb)
         } else {
             appContainer.customizableTextProvider.formatInternalChannelName(logicalSlotId)
         }

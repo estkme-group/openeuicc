@@ -19,7 +19,6 @@ import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import net.typeblog.lpac_jni.LocalProfileInfo
 
 class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
     companion object {
@@ -187,12 +186,12 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             }
 
             title.text = if (item.logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
-                item.intrinsicChannelName ?: root.context.getString(R.string.usb)
+                item.intrinsicChannelName ?: root.context.getString(R.string.channel_type_usb)
             } else {
                 appContainer.customizableTextProvider.formatInternalChannelName(item.logicalSlotId)
             }
             eID.text = item.eID
-            activeProfile.text = item.enabledProfileName ?: root.context.getString(R.string.unknown)
+            activeProfile.text = item.enabledProfileName ?: root.context.getString(R.string.profile_no_enabled_profile)
             freeSpace.text = formatFreeSpace(item.freeSpace)
             checkBox.isChecked = adapter.currentSelectedIdx == idx
         }

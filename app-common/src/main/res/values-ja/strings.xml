@@ -2,10 +2,10 @@
 <resources>
     <string name="no_euicc">このアプリでアクセスできるリムーバブル eUICC カードがデバイス上で検出されていません。互換性のあるカード挿入または USB リーダーを接続してください。</string>
     <string name="no_profile">この eSIM にはプロファイルがありません。</string>
-    <string name="unknown">不明</string>
-    <string name="information_unavailable">情報がありません</string>
-    <string name="help">ヘルプ</string>
-    <string name="reload">スロットを再読み込み</string>
+    <string name="euicc_info_unknown">不明</string>
+    <string name="euicc_info_unavailable">情報がありません</string>
+    <string name="notification_help">ヘルプ</string>
+    <string name="profile_reload_slots">スロットを再読み込み</string>
     <string name="channel_name_format">論理スロット %d</string>
     <string name="profile_state_enabled">有効済み</string>
     <string name="profile_state_disabled">無効済み</string>
@@ -110,7 +110,7 @@
     <string name="euicc_info_fw_ver">製品ファームウェアバージョン</string>
     <string name="euicc_info_sgp22_version">SGP.22 バージョン</string>
     <string name="euicc_info_firmware_version">eUICC OS バージョン</string>
-    <string name="euicc_info_globalplatform_version">グローバルプラットフォームのバージョン</string>
+    <string name="euicc_info_gp_version">グローバルプラットフォームのバージョン</string>
     <string name="euicc_info_sas_accreditation_number">SAS 認定番号</string>
     <string name="euicc_info_pp_version">保護されたプロファイルのバージョン</string>
     <string name="euicc_info_free_nvram">NVRAM の空き容量 (eSIM プロファイルストレージ)</string>
@@ -118,8 +118,8 @@
     <string name="euicc_info_ci_gsma_live">GSMA ライブ CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA テスト CI</string>
     <string name="euicc_info_ci_unknown">不明な eSIM CI</string>
-    <string name="yes">はい</string>
-    <string name="no">いいえ</string>
+    <string name="euicc_info_yes">はい</string>
+    <string name="euicc_info_no">いいえ</string>
     <string name="logs_save">保存</string>
     <string name="logs_filename_template">%s のログ</string>
     <string name="developer_options_steps">開発者になるまであと %d ステップです。</string>
@@ -167,6 +167,6 @@
     <string name="pref_developer_euicc_memory_reset_desc">この操作は、デフォルトでは非表示になっている危険な操作です。代わりに、すべての構成ファイルを手動で削除することもできます。</string>
     <string name="pref_developer_refresh_after_switch">モデムに更新コマンドを送信</string>
     <string name="pref_developer_isdr_aid_list">ISD-R AID リストのカスタマイズ</string>
-    <string name="reset">リセット</string>
+    <string name="isdr_aid_list_restore_defaults">リセット</string>
     <string name="isdr_aid_list">ISD-R AID リスト</string>
 </resources>
