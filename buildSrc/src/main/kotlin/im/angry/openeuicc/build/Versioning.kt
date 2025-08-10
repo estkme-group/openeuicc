@@ -16,7 +16,7 @@ val Project.gitVersionCode: Int
                 standardOutput = stdout
             }
             stdout.toString("utf-8").trim('\n').toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             0
         }
 
@@ -29,7 +29,7 @@ val Project.gitVersionName: String
                 standardOutput = stdout
             }
             stdout.toString("utf-8").trim('\n')
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             "Unknown"
         }
 
@@ -38,7 +38,7 @@ class MyVersioningPlugin: Plugin<Project> {
         target.configure<BaseAppModuleExtension> {
             defaultConfig {
                 versionCode = target.gitVersionCode
-                versionName = target.gitVersionName
+                versionName = target.gitVersionName.removePrefix("unpriv-")
             }
 
             applicationVariants.all {
