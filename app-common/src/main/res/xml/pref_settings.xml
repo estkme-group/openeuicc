@@ -96,12 +96,14 @@
         <Preference
             app:iconSpaceReserved="false"
             app:title="@string/pref_info_app_version"
+            app:enableCopying="true"
             app:key="pref_info_app_version" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:title="@string/pref_info_source_code"
             app:summary="@string/pref_info_source_code_url"
+            app:enableCopying="true"
             app:key="pref_info_source_code">
             <intent
                 android:action="android.intent.action.VIEW"
