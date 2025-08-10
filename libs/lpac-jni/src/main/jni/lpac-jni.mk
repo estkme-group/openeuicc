@@ -1,4 +1,5 @@
 LOCAL_PATH := $(call my-dir)
+LOCAL_LDFLAGS += "-Wl,-z,max-page-size=16384"
 
 # function to find all *.c files under a directory
 define all-c-files-under
