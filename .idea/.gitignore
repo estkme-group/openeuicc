@@ -2,7 +2,7 @@
 /caches
 /libraries
 /assetWizardSettings.xml
-/deploymentTargetDropDown.xml
+/deploymentTarget*.xml
 /gradle.xml
 /misc.xml
 /modules.xml
