@@ -81,6 +81,14 @@
             app:summary="@string/pref_developer_euicc_memory_reset_desc"
             app:title="@string/pref_developer_euicc_memory_reset" />
 
+        <ListPreference
+            app:iconSpaceReserved="false"
+            app:key="pref_developer_es10x_mss"
+            app:summary="@string/pref_developer_es10x_mss_desc"
+            app:title="@string/pref_developer_es10x_mss"
+            app:entries="@array/pref_developer_es10x_entry_keys"
+            app:entryValues="@array/pref_developer_es10x_entry_values" />
+
         <Preference
             app:iconSpaceReserved="false"
             app:key="pref_developer_isdr_aid_list"

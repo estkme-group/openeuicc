@@ -42,6 +42,7 @@ class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFacto
                     isdrAid,
                     context.preferenceRepository.verboseLoggingFlow,
                     context.preferenceRepository.ignoreTLSCertificateFlow,
+                    context.preferenceRepository.es10xMssFlow,
                 )
             } catch (_: IllegalArgumentException) {
                 // Failed

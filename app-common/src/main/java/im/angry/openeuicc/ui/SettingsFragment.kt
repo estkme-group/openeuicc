@@ -8,6 +8,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
@@ -16,7 +17,6 @@ import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 open class SettingsFragment: PreferenceFragmentCompat() {
     private lateinit var developerPref: PreferenceCategory
@@ -84,6 +84,9 @@ open class SettingsFragment: PreferenceFragmentCompat() {
         requirePreference<CheckBoxPreference>("pref_developer_euicc_memory_reset")
             .bindBooleanFlow(preferenceRepository.euiccMemoryResetFlow)
 
+        requirePreference<ListPreference>("pref_developer_es10x_mss")
+            .bindIntFlow(preferenceRepository.es10xMssFlow, 63)
+
         requirePreference<Preference>("pref_developer_isdr_aid_list").apply {
             intent = Intent(requireContext(), IsdrAidListActivity::class.java)
         }
@@ -127,8 +130,21 @@ open class SettingsFragment: PreferenceFragmentCompat() {
         }
 
         setOnPreferenceChangeListener { _, newValue ->
-            runBlocking {
+            lifecycleScope.launch {
                 flow.updatePreference(newValue as Boolean)
+            }
+            true
+        }
+    }
+
+    private fun ListPreference.bindIntFlow(flow: PreferenceFlowWrapper<Int>, defaultValue: Int) {
+        lifecycleScope.launch {
+            flow.collect { value = it.toString() }
+        }
+
+        setOnPreferenceChangeListener { _, newValue ->
+            lifecycleScope.launch {
+                flow.updatePreference((newValue as String).toIntOrNull() ?: defaultValue)
             }
             true
         }

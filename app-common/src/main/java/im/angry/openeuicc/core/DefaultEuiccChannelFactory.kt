@@ -21,7 +21,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
     override suspend fun tryOpenEuiccChannel(
         port: UiccPortInfoCompat,
         isdrAid: ByteArray
-    ): EuiccChannel? {
+    ): EuiccChannel? = try {
         if (port.portIndex != 0) {
             Log.w(
                 DefaultEuiccChannelManager.TAG,
@@ -35,58 +35,52 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
             DefaultEuiccChannelManager.TAG,
             "Trying OMAPI for physical slot ${port.card.physicalSlotIndex}"
         )
-        try {
-            return EuiccChannelImpl(
-                context.getString(R.string.channel_type_omapi),
+        EuiccChannelImpl(
+            context.getString(R.string.channel_type_omapi),
+            port,
+            intrinsicChannelName = null,
+            OmapiApduInterface(
+                seService!!,
                 port,
-                intrinsicChannelName = null,
-                OmapiApduInterface(
-                    seService!!,
-                    port,
-                    context.preferenceRepository.verboseLoggingFlow
-                ),
-                isdrAid,
-                context.preferenceRepository.verboseLoggingFlow,
-                context.preferenceRepository.ignoreTLSCertificateFlow,
-            ).also {
-                Log.i(DefaultEuiccChannelManager.TAG, "Is OMAPI channel, setting MSS to 60")
-                it.lpa.setEs10xMss(60)
-            }
-        } catch (_: IllegalArgumentException) {
-            // Failed
-            Log.w(
-                DefaultEuiccChannelManager.TAG,
-                "OMAPI APDU interface unavailable for physical slot ${port.card.physicalSlotIndex} with ISD-R AID: ${isdrAid.encodeHex()}."
-            )
-        }
-
-        return null
+                context.preferenceRepository.verboseLoggingFlow
+            ),
+            isdrAid,
+            context.preferenceRepository.verboseLoggingFlow,
+            context.preferenceRepository.ignoreTLSCertificateFlow,
+            context.preferenceRepository.es10xMssFlow,
+        )
+    } catch (_: IllegalArgumentException) {
+        // Failed
+        Log.w(
+            DefaultEuiccChannelManager.TAG,
+            "OMAPI APDU interface unavailable for physical slot ${port.card.physicalSlotIndex} with ISD-R AID: ${isdrAid.encodeHex()}."
+        )
+        null
     }
 
     override fun tryOpenUsbEuiccChannel(
         ccidCtx: UsbCcidContext,
         isdrAid: ByteArray
-    ): EuiccChannel? {
-        try {
-            return EuiccChannelImpl(
-                context.getString(R.string.channel_type_usb),
-                FakeUiccPortInfoCompat(FakeUiccCardInfoCompat(EuiccChannelManager.USB_CHANNEL_ID)),
-                intrinsicChannelName = ccidCtx.productName,
-                UsbApduInterface(
-                    ccidCtx
-                ),
-                isdrAid,
-                context.preferenceRepository.verboseLoggingFlow,
-                context.preferenceRepository.ignoreTLSCertificateFlow,
-            )
-        } catch (_: IllegalArgumentException) {
-            // Failed
-            Log.w(
-                DefaultEuiccChannelManager.TAG,
-                "USB APDU interface unavailable for ISD-R AID: ${isdrAid.encodeHex()}."
-            )
-        }
-        return null
+    ): EuiccChannel? = try {
+        EuiccChannelImpl(
+            context.getString(R.string.channel_type_usb),
+            FakeUiccPortInfoCompat(FakeUiccCardInfoCompat(EuiccChannelManager.USB_CHANNEL_ID)),
+            intrinsicChannelName = ccidCtx.productName,
+            UsbApduInterface(
+                ccidCtx
+            ),
+            isdrAid,
+            context.preferenceRepository.verboseLoggingFlow,
+            context.preferenceRepository.ignoreTLSCertificateFlow,
+            context.preferenceRepository.es10xMssFlow,
+        )
+    } catch (_: IllegalArgumentException) {
+        // Failed
+        Log.w(
+            DefaultEuiccChannelManager.TAG,
+            "USB APDU interface unavailable for ISD-R AID: ${isdrAid.encodeHex()}."
+        )
+        null
     }
 
     override fun cleanup() {
