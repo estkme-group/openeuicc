@@ -77,6 +77,7 @@ tasks.register<MagiskModuleDirTask>("assembleDebugMagiskModuleDir") {
     moduleProp = modulePropsTemplate.let {
         it["description"] = "(debug build) ${it["description"]}"
         it["versionCode"] = "${(android.applicationVariants.find { it.name == "debug" }!!.outputs.first() as ApkVariantOutputImpl).versionCodeOverride}"
+        it["updateJson"] = "https://openeuicc.com/magisk/magisk-debug.json"
         it
     }
     dependsOn("assembleDebug")
