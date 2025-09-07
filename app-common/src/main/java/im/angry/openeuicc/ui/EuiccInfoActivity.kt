@@ -123,7 +123,13 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             add(Item(R.string.euicc_info_pp_version, info.ppVersion.toString()))
             info.sasAccreditationNumber.trim().takeIf(RE_SAS::matches)
                 ?.let { add(Item(R.string.euicc_info_sas_accreditation_number, it.uppercase())) }
-            add(Item(R.string.euicc_info_free_nvram, info.freeNvram.let(::formatFreeSpace)))
+
+            val nvramText = buildString {
+                append(formatFreeSpace(info.freeNvram))
+                append(' ')
+                append(getString(R.string.euicc_info_free_nvram_hint))
+            }
+            add(Item(R.string.euicc_info_free_nvram, nvramText))
         }
         channel.lpa.euiccInfo2?.euiccCiPKIdListForSigning.orEmpty().let { signers ->
             // SGP.28 v1.0, eSIM CI Registration Criteria (Page 5 of 9, 2019-10-24)
