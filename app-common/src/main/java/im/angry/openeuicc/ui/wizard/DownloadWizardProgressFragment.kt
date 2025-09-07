@@ -43,18 +43,36 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
 
     private data class ProgressItem(
         val titleRes: Int,
-        var state: ProgressState
+        var state: ProgressState,
+        var errorMessage: SimplifiedErrorMessages?,
     )
 
     private val progressItems = arrayOf(
-        ProgressItem(R.string.download_wizard_progress_step_preparing, ProgressState.NotStarted),
-        ProgressItem(R.string.download_wizard_progress_step_connecting, ProgressState.NotStarted),
+        ProgressItem(
+            R.string.download_wizard_progress_step_preparing,
+            ProgressState.NotStarted,
+            null
+        ),
+        ProgressItem(
+            R.string.download_wizard_progress_step_connecting,
+            ProgressState.NotStarted,
+            null
+        ),
         ProgressItem(
             R.string.download_wizard_progress_step_authenticating,
-            ProgressState.NotStarted
+            ProgressState.NotStarted,
+            null
         ),
-        ProgressItem(R.string.download_wizard_progress_step_downloading, ProgressState.NotStarted),
-        ProgressItem(R.string.download_wizard_progress_step_finalizing, ProgressState.NotStarted)
+        ProgressItem(
+            R.string.download_wizard_progress_step_downloading,
+            ProgressState.NotStarted,
+            null
+        ),
+        ProgressItem(
+            R.string.download_wizard_progress_step_finalizing,
+            ProgressState.NotStarted,
+            null
+        )
     )
 
     private val adapter = ProgressItemAdapter()
@@ -122,8 +140,13 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
                         // Change the state of the last InProgress item to success (or error)
                         progressItems.forEachIndexed { index, progressItem ->
                             if (progressItem.state == ProgressState.InProgress) {
-                                progressItem.state =
-                                    if (state.downloadError == null) ProgressState.Done else ProgressState.Error
+                                if (state.downloadError == null) {
+                                    progressItem.state = ProgressState.Done
+                                } else {
+                                    progressItem.state = ProgressState.Error
+                                    progressItem.errorMessage =
+                                        SimplifiedErrorMessages.fromDownloadError(state.downloadError!!)
+                                }
                             }
 
                             adapter.notifyItemChanged(index)
@@ -197,9 +220,15 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
         private val progressBar =
             root.requireViewById<ProgressBar>(R.id.download_progress_icon_progress)
         private val icon = root.requireViewById<ImageView>(R.id.download_progress_icon)
+        private val errorTitle =
+            root.requireViewById<TextView>(R.id.download_progress_item_error_title)
+        private val errorSuggestion =
+            root.requireViewById<TextView>(R.id.download_progress_item_error_suggestion)
 
         fun bind(item: ProgressItem) {
             title.text = getString(item.titleRes)
+            errorTitle.visibility = View.GONE
+            errorSuggestion.visibility = View.GONE
 
             when (item.state) {
                 ProgressState.NotStarted -> {
@@ -222,6 +251,16 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
                     progressBar.visibility = View.GONE
                     icon.setImageResource(R.drawable.ic_error_outline)
                     icon.visibility = View.VISIBLE
+
+                    if (item.errorMessage != null) {
+                        errorTitle.visibility = View.VISIBLE
+                        errorTitle.text = getString(item.errorMessage!!.titleResId)
+
+                        if (item.errorMessage!!.suggestResId != null) {
+                            errorSuggestion.visibility = View.VISIBLE
+                            errorSuggestion.text = getString(item.errorMessage!!.suggestResId!!)
+                        }
+                    }
                 }
             }
         }

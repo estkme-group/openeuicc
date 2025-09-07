@@ -104,6 +104,27 @@
     <string name="download_wizard_diagnostics_last_apdu_exception">Last APDU exception:</string>
     <string name="download_wizard_diagnostics_save">Save</string>
     <string name="download_wizard_diagnostics_file_template">Diagnostics at %s</string>
+    <string name="download_wizard_error_iccid_already">This eSIM profile is already present on your eSIM chip.</string>
+    <string name="download_wizard_error_insufficient_memory">Your eSIM chip does not have sufficient memory left to download the profile.</string>
+    <string name="download_wizard_error_unsupported_profile">This eSIM profile is unsupported by your eSIM chip.</string>
+    <string name="download_wizard_error_card_internal_error">An error occurred in your eSIM chip.</string>
+    <string name="download_wizard_error_eid_not_supported">The EID of your device or eSIM chip is unsupported by your carrier.</string>
+    <string name="download_wizard_error_eid_mismatch">This eSIM profile has been downloaded on another device.</string>
+    <string name="download_wizard_error_profile_unreleased">This eSIM profile has been revoked.</string>
+    <string name="download_wizard_error_matching_id_refused">The activation code is invalid.</string>
+    <string name="download_wizard_error_profile_retries_exceeded">The maximum number of download attempts for the eSIM profile has been exceeded.</string>
+    <string name="download_wizard_error_confirmation_code_missing">Confirmation code is required to download this profile.</string>
+    <string name="download_wizard_error_confirmation_code_refused">The confirmation code you entered is invalid.</string>
+    <string name="download_wizard_error_profile_expired">This eSIM profile has expired.</string>
+    <string name="download_wizard_error_confirmation_code_retries_exceeded">The maximum number of download attempts for the confirmation code has been exceeded.</string>
+    <string name="download_wizard_error_unknown_hostname">Unknown SM-DP+ address</string>
+    <string name="download_wizard_error_network_unreachable">Network is unreachable</string>
+    <string name="download_wizard_error_tls_certificate">TLS certificate error, this eSIM profile is not supported</string>
+    <string name="download_wizard_error_suggest_profile_installed">You are trying to reinstall an already downloaded eSIM profile</string>
+    <string name="download_wizard_error_suggest_insufficient_memory">Please delete some unused eSIM profiles and try again</string>
+    <string name="download_wizard_error_suggest_contact_carrier">Please contact your carrier for assistance.</string>
+    <string name="download_wizard_error_suggest_contact_reissue">Please contact your carrier to reissue this eSIM profile.</string>
+    <string name="download_wizard_error_suggest_network_unreachable">Please try again after connecting to a different network (e.g. switching between Wi-Fi and data).</string>
 
     <string name="logs_saved_message">Logs have been saved to the selected path. Would you like to share the log through another app?</string>
 
