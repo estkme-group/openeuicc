@@ -6,6 +6,7 @@
     <string name="euicc_info_unavailable">情報がありません</string>
     <string name="notification_help">ヘルプ</string>
     <string name="profile_reload_slots">スロットを再読み込み</string>
+    <string name="profile_no_enabled_profile">未知</string>
     <string name="channel_name_format">論理スロット %d</string>
     <string name="profile_state_enabled">有効済み</string>
     <string name="profile_state_disabled">無効済み</string>
@@ -83,6 +84,7 @@
     <string name="download_wizard_diagnostics_last_apdu_exception">最終の APDU 例外:</string>
     <string name="download_wizard_diagnostics_save">保存</string>
     <string name="download_wizard_diagnostics_file_template">「%s」での診断</string>
+    <string name="download_wizard_error_suggest_network_unreachable">別のネットワークに接続し（例：Wi-Fi とデータを切り替える）、もう一度お試しください。</string>
     <string name="logs_saved_message">ログは共有したパスに保存されました。別のアプリで共有しますか？</string>
     <string name="profile_rename_new_name">新しいニックネーム</string>
     <string name="profile_rename_encoding_error">ニックネームを UTF-8 にエンコードできませんでした</string>
@@ -114,6 +116,7 @@
     <string name="euicc_info_sas_accreditation_number">SAS 認定番号</string>
     <string name="euicc_info_pp_version">保護されたプロファイルのバージョン</string>
     <string name="euicc_info_free_nvram">NVRAM の空き容量 (eSIM プロファイルストレージ)</string>
+    <string name="euicc_info_free_nvram_hint">（目安）</string>
     <string name="euicc_info_ci_type">証明書発行者 (CI)</string>
     <string name="euicc_info_ci_gsma_live">GSMA ライブ CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA テスト CI</string>
@@ -150,6 +153,7 @@
     <string name="pref_developer_ignore_tls_certificate">SM-DP+ TLS 証明書を無視する</string>
     <string name="pref_developer_ignore_tls_certificate_desc">RSP サーバーで使用される TLS 証明書を受け入れます</string>
     <string name="pref_developer_isdr_aid_list_desc">一部のブランドの取り外し可能な eUICC では、独自の非標準 ISD-R AID が使用されている場合があり、サードパーティ アプリからアクセスできなくなります。アプリはこのリストに追加された非標準の AID の使用を試みる可能性がありますが、動作することは保証されません。</string>
+    <string name="pref_developer_es10x_mss_desc">グローバル ES10x MSS</string>
     <string name="pref_info">情報</string>
     <string name="pref_info_app_version">アプリバージョン</string>
     <string name="pref_info_source_code">ソースコード</string>
@@ -169,4 +173,24 @@
     <string name="pref_developer_isdr_aid_list">ISD-R AID リストのカスタマイズ</string>
     <string name="isdr_aid_list_restore_defaults">リセット</string>
     <string name="isdr_aid_list">ISD-R AID リスト</string>
+    <string name="download_wizard_error_iccid_already">この eSIM プロファイルはすでに eSIM チップに存在しています。</string>
+    <string name="download_wizard_error_insufficient_memory">eSIM チップには十分なメモリ容量が残っていません。</string>
+    <string name="download_wizard_error_unsupported_profile">この eSIM プロファイルは、ダウンロード先のeSIM チップではサポートされていません。</string>
+    <string name="download_wizard_error_card_internal_error">eSIMチップでエラーが発生しました。</string>
+    <string name="download_wizard_error_eid_not_supported">お使いのデバイスまたは eSIM チップの EID は、通信事業者によってサポートされていません。</string>
+    <string name="download_wizard_error_eid_mismatch">この eSIM プロファイルはすでに別のデバイスにダウンロードされています。</string>
+    <string name="download_wizard_error_profile_unreleased">この eSIM プロファイルはキャンセルされました。</string>
+    <string name="download_wizard_error_matching_id_refused">アクティベーションコードが無効です。</string>
+    <string name="download_wizard_error_profile_retries_exceeded">eSIM プロファイルのダウンロード試行回数の上限を超えました。</string>
+    <string name="download_wizard_error_confirmation_code_missing">このプロファイルをダウンロードするには確認コードが必要です。</string>
+    <string name="download_wizard_error_confirmation_code_refused">入力した確認コードは無効です。</string>
+    <string name="download_wizard_error_profile_expired">この eSIM プロファイルの有効期限が切れています。</string>
+    <string name="download_wizard_error_confirmation_code_retries_exceeded">確認コードのダウンロード試行回数の上限を超えました。</string>
+    <string name="download_wizard_error_unknown_hostname">不明なSM-DP+アドレス</string>
+    <string name="download_wizard_error_network_unreachable">ネットワークにアクセスできません</string>
+    <string name="download_wizard_error_tls_certificate">TLS証明書エラー。このeSIMプロファイルはサポートされていません</string>
+    <string name="download_wizard_error_suggest_profile_installed">すでにダウンロードしたeSIMプロファイルを再インストールしようとしています</string>
+    <string name="download_wizard_error_suggest_insufficient_memory">不要なeSIMプロファイルをいくつか削除して、もう一度お試しください</string>
+    <string name="download_wizard_error_suggest_contact_carrier">通信事業者にお問い合わせください。</string>
+    <string name="download_wizard_error_suggest_contact_reissue">この eSIM プロファイルを再発行するには、通信事業者にお問い合わせください。</string>
 </resources>

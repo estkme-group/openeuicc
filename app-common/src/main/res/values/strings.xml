@@ -222,7 +222,7 @@
     <string name="pref_developer_ignore_tls_certificate_desc">Accept any TLS certificate used by the RSP server</string>
     <string name="pref_developer_euicc_memory_reset">Allow erasing eUICC</string>
     <string name="pref_developer_euicc_memory_reset_desc">This is a dangerous operation and hidden by default. As an alternative, you can delete all profiles manually.</string>
-    <string name="pref_developer_es10x_mss">ES10x MSS</string>
+    <string name="pref_developer_es10x_mss" translatable="false">ES10x MSS</string>
     <string name="pref_developer_es10x_mss_desc">Global ES10x MSS</string>
     <string-array name="pref_developer_es10x_entry_keys">
         <item>High Speed</item>
