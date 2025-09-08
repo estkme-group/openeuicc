@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,37 +43,17 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
     }
 
     private data class ProgressItem(
-        val titleRes: Int,
-        var state: ProgressState,
-        var errorMessage: SimplifiedErrorMessages?,
+        @StringRes val titleRes: Int,
+        var state: ProgressState = ProgressState.NotStarted,
+        var errorMessage: SimplifiedErrorMessages? = null,
     )
 
     private val progressItems = arrayOf(
-        ProgressItem(
-            R.string.download_wizard_progress_step_preparing,
-            ProgressState.NotStarted,
-            null
-        ),
-        ProgressItem(
-            R.string.download_wizard_progress_step_connecting,
-            ProgressState.NotStarted,
-            null
-        ),
-        ProgressItem(
-            R.string.download_wizard_progress_step_authenticating,
-            ProgressState.NotStarted,
-            null
-        ),
-        ProgressItem(
-            R.string.download_wizard_progress_step_downloading,
-            ProgressState.NotStarted,
-            null
-        ),
-        ProgressItem(
-            R.string.download_wizard_progress_step_finalizing,
-            ProgressState.NotStarted,
-            null
-        )
+        ProgressItem(R.string.download_wizard_progress_step_preparing),
+        ProgressItem(R.string.download_wizard_progress_step_connecting),
+        ProgressItem(R.string.download_wizard_progress_step_authenticating),
+        ProgressItem(R.string.download_wizard_progress_step_downloading),
+        ProgressItem(R.string.download_wizard_progress_step_finalizing)
     )
 
     private val adapter = ProgressItemAdapter()
@@ -156,9 +137,8 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
                         refreshButtons()
                     }
 
-                    is EuiccChannelManagerService.ForegroundTaskState.InProgress -> {
+                    is EuiccChannelManagerService.ForegroundTaskState.InProgress ->
                         updateProgress(it.progress)
-                    }
 
                     else -> {}
                 }
@@ -252,14 +232,13 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
                     icon.setImageResource(R.drawable.ic_error_outline)
                     icon.visibility = View.VISIBLE
 
-                    if (item.errorMessage != null) {
+                    item.errorMessage?.titleResId?.let {
                         errorTitle.visibility = View.VISIBLE
-                        errorTitle.text = getString(item.errorMessage!!.titleResId)
-
-                        if (item.errorMessage!!.suggestResId != null) {
-                            errorSuggestion.visibility = View.VISIBLE
-                            errorSuggestion.text = getString(item.errorMessage!!.suggestResId!!)
-                        }
+                        errorTitle.text = getString(it)
+                    }
+                    item.errorMessage?.suggestResId?.let {
+                        errorSuggestion.visibility = View.VISIBLE
+                        errorSuggestion.text = getString(it)
                     }
                 }
             }
