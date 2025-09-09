@@ -272,6 +272,7 @@ class LocalProfileAssistantImpl(
         }
     }
 
+    @Synchronized
     override fun euiccMemoryReset() {
         LpacJni.es10cEuiccMemoryReset(contextHandle)
     }
