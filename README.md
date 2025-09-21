@@ -4,14 +4,18 @@ A fully free and open-source Local Profile Assistant implementation for Android 
 
 There are two variants of this project, OpenEUICC and EasyEUICC:
 
-|                               |                    OpenEUICC                    |     EasyEUICC     |
-|:------------------------------|:-----------------------------------------------:|:-----------------:|
-| Privileged                    |         Must be installed as system app         |        No         |
-| Internal eSIM                 |                    Supported                    |    Unsupported    |
-| External (Removable) eSIM     |                    Supported                    |     Supported     |
-| USB Readers                   |                    Supported                    |     Supported     |
-| Requires allowlisting by eSIM |                       No                        | Yes -- except USB |
-| System Integration            | Partial (carrier partner API unimplemented yet) |        No         |
+|                               |            OpenEUICC            |      EasyEUICC      |
+| :---------------------------- | :-----------------------------: | :-----------------: |
+| Privileged                    | Must be installed as system app |         No          |
+| Internal eSIM                 |            Supported            |     Unsupported     |
+| External eSIM [^1]            |            Supported            |      Supported      |
+| USB Readers                   |            Supported            |      Supported      |
+| Requires allowlisting by eSIM |               No                |  Yes -- except USB  |
+| System Integration            |          Partial [^2]           |         No          |
+| Minimum Android Version       |      Android 11 or higher       | Android 9 or higher |
+
+[^1]: Also known as "Removable eSIM"
+[^2]: Carrier Partner API unimplemented yet
 
 Some side notes:
 1. When privileged, OpenEUICC supports any eUICC chip that implements the SGP.22 standard, internal or external. However, there is __no guarantee__ that external (removable) eSIMs actually follow the standard. Please __DO NOT__ submit bug reports for non-functioning removable eSIMs. They are __NOT__ officially supported unless they also support / are supported by EasyEUICC, the unprivileged variant.
