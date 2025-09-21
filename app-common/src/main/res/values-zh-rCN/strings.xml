@@ -86,6 +86,10 @@
     <string name="pref_advanced_logs_desc">查看应用程序的最新调试日志</string>
     <string name="pref_developer_isdr_aid_list_desc">某些品牌的可移除 eUICC 可能会使用自己的非标准 ISD-R AID，导致第三方应用无法访问。此 App 可以尝试使用此列表中添加的非标准 AID，但不能保证它们一定有效。</string>
     <string name="pref_developer_es10x_mss_desc">全局 ES10x MSS</string>
+    <string-array name="pref_developer_es10x_entry_keys">
+        <item>最佳效率</item>
+        <item>最佳兼容性</item>
+    </string-array>
     <string name="pref_info">信息</string>
     <string name="pref_info_app_version">App 版本</string>
     <string name="pref_info_source_code">源码</string>

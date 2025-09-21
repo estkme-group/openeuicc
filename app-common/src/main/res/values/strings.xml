@@ -225,8 +225,8 @@
     <string name="pref_developer_es10x_mss" translatable="false">ES10x MSS</string>
     <string name="pref_developer_es10x_mss_desc">Global ES10x MSS</string>
     <string-array name="pref_developer_es10x_entry_keys">
-        <item>High Speed</item>
-        <item>Compatibility Mode</item>
+        <item>High Efficiency</item>
+        <item>Most Compatible</item>
     </string-array>
     <string-array name="pref_developer_es10x_entry_values" translatable="false">
         <item>255</item>
