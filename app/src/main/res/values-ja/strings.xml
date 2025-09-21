@@ -17,6 +17,7 @@
     <string name="lui_desc">使用しているデバイスは eSIM をサポートしています。モバイルネットワークに接続するには通信事業者が発行した eSIM をダウンロードするか、物理 SIM を挿入してください。</string>
     <string name="lui_skip">スキップ</string>
     <string name="lui_download">eSIM をダウンロード</string>
-    <string name="pref_developer_telephony_manager_removable">TelephonyManagerをどこでも使用</string>
-    <string name="pref_developer_telephony_manager_removable_desc">デフォルトでは、非特権モード (EasyEUICC) と一致するように、取り外し可能な eUICC に対して OMAPI のみが試行されます。これは、一部のデバイスではうまく機能しない可能性があります。このオプションを選択する場合、取り外し可能な eUICC でも TelephonyManager を使用することになります。</string>
+    <!-- Preference -->
+    <string name="pref_developer_telephony_manager_removable">TelephonyManager を常に使用可能にする</string>
+    <string name="pref_developer_telephony_manager_removable_desc">デフォルトでは、非特権モード (EasyEUICC など) での動作と一致させるためにリムーバブル eUICC に対しては OMAPI のみを試行します。ただし、一部デバイスでは正常に動作しない場合があります。このオプションを選択するとリムーバブル eUICC でも TelephonyManager の使用が強制されます。</string>
 </resources>

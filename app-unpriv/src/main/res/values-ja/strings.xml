@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="compatibility_check">互換性のチェック</string>
+    <string name="compatibility_check">互換性の確認</string>
     <string name="open_sim_toolkit">SIM ツールキットを開く</string>
     <!-- Settings -->
     <!-- Toast -->
     <string name="toast_ara_m_copied">ARA-M SHA-1 をクリップボードにコピーしました</string>
     <string name="toast_prompt_to_enable_sim_toolkit">「%s」アプリを有効化してください</string>
-    <string name="quick_compatibility">互換性のチェック</string>
-    <string name="quick_compatibility_compatible">お使いのスマートフォンは %s 対応 SIM カードを管理できます</string>
-    <string name="quick_compatibility_not_compatible">お使いのスマートフォンは %s と互換性がありません</string>
-    <string name="quick_compatibility_not_compatible_but_usb">お使いのスマートフォンは %s と完全な互換性がありません。ただし、USBスマートカードリーダーを使用する場合、ほぼすべての機能を利用できます。</string>
-    <string name="quick_compatibility_result_slots">アクセス可能なスロット: %s</string>
+    <!-- Quick Compatibility -->
+    <string name="quick_compatibility">クイックで互換性を確認</string>
+    <string name="quick_compatibility_compatible">このデバイスで「%s」の対応カードを管理できます</string>
+    <string name="quick_compatibility_not_compatible">使用しているデバイスは「%s」と互換性がありません</string>
+    <string name="quick_compatibility_not_compatible_but_usb">使用しているデバイスは「%s」と完全に互換性がありません。ただし、USB スマートカードリーダーを使用すればほぼすべての機能を利用できます。</string>
+    <string name="quick_compatibility_result_slots">アクセス可能スロット: %s</string>
     <string name="quick_compatibility_result_slots_isdr">ISD-R アクセス: %s</string>
-    <string name="quick_compatibility_result_notes">注: これらの結果は参考用です。以上に記載されていない SIM スロットでも、SIM カードを挿入すれば利用できる可能性があります。</string>
-    <string name="quick_compatibility_result_notes_incompatible">注：現在 SIM カードが挿入されていない場合は、SIM カードを挿入してから再度互換性チェックをお試しください。どの SIM カードでも構いません。</string>
-    <string name="quick_compatibility_button_continue">つづく</string>
+    <string name="quick_compatibility_result_notes">注意: これらの結果は参考値です。上記に記載されていない SIM スロットでも、<i>SIM カードを挿入</i>すれば互換性がある場合があります。</string>
+    <string name="quick_compatibility_result_notes_incompatible">注意: 現在 SIM カードが挿入されていない場合は、SIM カードを挿入してから再度互換性の確認をお試しください。どの SIM カードでも構いません。</string>
+    <string name="quick_compatibility_button_continue">続行</string>
     <string name="quick_compatibility_skip">このメッセージを再度表示しない</string>
     <string name="quick_compatibility_unknown">不明</string>
 </resources>
