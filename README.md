@@ -18,17 +18,30 @@ There are two variants of this project, OpenEUICC and EasyEUICC:
 [^2]: Carrier Partner API unimplemented yet
 
 Some side notes:
-1. When privileged, OpenEUICC supports any eUICC chip that implements the SGP.22 standard, internal or external. However, there is __no guarantee__ that external (removable) eSIMs actually follow the standard. Please __DO NOT__ submit bug reports for non-functioning removable eSIMs. They are __NOT__ officially supported unless they also support / are supported by EasyEUICC, the unprivileged variant.
-2. Both variants support accessing eUICC chips through USB CCID readers, regardless of whether the chip contains the correct ARA-M hash to allow for unprivileged access. However, only `T=0` readers that use the standard [USB CCID protocol](https://en.wikipedia.org/wiki/CCID_(protocol)) are supported.
-3. Prebuilt release-mode EasyEUICC apks can be downloaded [here](https://gitea.angry.im/PeterCxy/OpenEUICC/releases). For OpenEUICC, no official release is currently provided and only debug mode APKs and Magisk modules can be found in the [CI page](https://gitea.angry.im/PeterCxy/OpenEUICC/actions).
-4. For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC when inserted, include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`.
 
-__This project is Free Software licensed under GNU GPL v3, WITHOUT the "or later" clause.__ Any modification and derivative work __MUST__ be released under the SAME license, which means, at the very least, that the source code __MUST__ be available upon request.
+1. When privileged, OpenEUICC supports any eUICC chip that implements the [SGP.22] standard, internal or external.
+   However, there is **no guarantee** that external (removable) eSIMs actually follow the standard.
+   Please **DO NOT** submit bug reports for non-functioning removable eSIMs.
+   They are **NOT** officially supported unless they also support / are supported by EasyEUICC, the unprivileged variant.
+2. Both variants support accessing eUICC chips through USB CCID readers,
+   regardless of whether the chip contains the correct ARA-M hash to allow for unprivileged access.
+   However, only `T=0` readers that use the standard [USB CCID protocol][usb-ccid] are supported.
+3. Prebuilt release-mode EasyEUICC apks can be downloaded [here][releases].
+   For OpenEUICC, no official release is currently provided and only debug mode APKs and Magisk modules can be found in the [CI page][actions].
+4. For removable eSIM chip vendors: to have your chip supported by official builds of EasyEUICC when inserted,
+   include the ARA-M hash `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`.
 
-__If you are releasing a modification of this app, you are kindly asked to make changes to at least the app name and package name.__  
+[sgp.22]: https://www.gsma.com/solutions-and-impact/technologies/esim/gsma_resources/sgp-22-v2-2-2/ "SGP.22 v2.2.2"
+[usb-ccid]: https://en.wikipedia.org/wiki/CCID_%28protocol%29 "USB CCID Protocol"
+[releases]: https://gitea.angry.im/PeterCxy/OpenEUICC/releases "EasyEUICC Releases"
+[actions]: https://gitea.angry.im/PeterCxy/OpenEUICC/actions "OpenEUICC Actions"
 
-Building (Gradle)
-===
+**This project is Free Software licensed under GNU GPL v3, WITHOUT the "or later" clause.**
+Any modification and derivative work **MUST** be released under the SAME license, which means, at the very least, that the source code **MUST** be available upon request.
+
+**If you are releasing a modification of this app, you are kindly asked to make changes to at least the app name and package name.**
+
+# Building (Gradle)
 
 Make sure you have all submodules cloned and updated by running
 
@@ -61,8 +74,7 @@ For EasyEUICC:
 ./gradlew :app-unpriv:assembleRelease
 ```
 
-Building (AOSP)
-===
+# Building (AOSP)
 
 There are two ways to include OpenEUICC in your AOSP-based system image:
 
@@ -72,22 +84,22 @@ There are two ways to include OpenEUICC in your AOSP-based system image:
    - Compilation of this project is **only** tested against the latest AOSP release version. The app itself should be compatible with older AOSP versions, but the source may not compile against an older AOSP source tree.
 2. If compilation against AOSP source tree is not possible, consider [building with gradle](#building-gradle) and import the apk as a prebuilt.
    - No official `Android.bp` is provided for this case but it should be straightforward to write.
-   - You might want to include `privapp_whitelist_im.angry.openeuicc.xml` as well.
+   - You might want to include [`privapp_whitelist_im.angry.openeuicc.xml`] as well.
 
-FAQs
-===
+[`privapp_whitelist_im.angry.openeuicc.xml`]: privapp_whitelist_im.angry.openeuicc.xml "OpenEUICC Privapp Whitelist"
 
-- Q: Do you provide prebuilt binaries for OpenEUICC?
-- A: Debug-mode APKs and Magisk modules are available continuously as an artifact of the [Actions](https://gitea.angry.im/PeterCxy/OpenEUICC/actions) CI used by this project. However, these debug-mode APKs are **not** intended for inclusion inside system images, nor are they supported by the developer in any sense. If you are a custom ROM developer, either include the entire OpenEUICC repository in your AOSP source tree, or generate an APK using `gradle` and import that as a prebuilt system app. Note that you might want `privapp_whitelist_im.angry.openeuicc.xml` as well.
+# FAQs
 
-- Q: Can EasyEUICC manage my phone's internal eSIM?
-- A: No. For EasyEUICC to work, the eSIM chip MUST proactively grant access via its ARA-M field.
+- Q: Do you provide prebuilt binaries for OpenEUICC? \
+  A: Debug-mode APKs and Magisk modules are available continuously as an artifact of the [Actions] CI used by this project. However, these debug-mode APKs are **not** intended for inclusion inside system images, nor are they supported by the developer in any sense. If you are a custom ROM developer, either include the entire OpenEUICC repository in your AOSP source tree, or generate an APK using `gradle` and import that as a prebuilt system app. Note that you might want [`privapp_whitelist_im.angry.openeuicc.xml`] as well.
 
-- Q: Removable eSIMs? Are they a joke?
-- A: No, even though the name "removable embedded SIM" can sound like an oxymoron. In fact, there can be many advantages to these chips compared to fully embedded ones. For example, the ability to transfer eSIM profiles without carrier support or approval, or the ability to use eSIM on devices that do not and may never get the support, such as Wi-Fi hotspots.
+- Q: Can EasyEUICC manage my phone's internal eSIM? \
+  A: No. For EasyEUICC to work, the eSIM chip MUST proactively grant access via its ARA-M field.
 
-Copyright
-===
+- Q: Removable eSIMs? Are they a joke? \
+  A: No, even though the name "removable embedded SIM" can sound like an oxymoron. In fact, there can be many advantages to these chips compared to fully embedded ones. For example, the ability to transfer eSIM profiles without carrier support or approval, or the ability to use eSIM on devices that do not and may never get the support, such as Wi-Fi hotspots.
+
+# Copyright
 
 Everything except `libs/lpac-jni` and `art/`:
 
