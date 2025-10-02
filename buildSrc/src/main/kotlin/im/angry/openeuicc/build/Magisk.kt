@@ -68,7 +68,7 @@ abstract class MagiskModuleDirTask : DefaultTask() {
         }
         dir.file("customize.sh").asFile.writeText(moduleCustomizeScriptText.get())
         dir.file("uninstall.sh").asFile.writeText(moduleUninstallScriptText.get())
-        metaInfDir.file("updater-script").asFile.writeText("# MAGISK")
+        metaInfDir.file("updater-script").asFile.writeText("#MAGISK\n")
         dir.file("module.prop").asFile.writeText(moduleProp.get().map { (k, v) -> "$k=$v" }.joinToString("\n"))
     }
 }
