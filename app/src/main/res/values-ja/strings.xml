@@ -9,7 +9,7 @@
     <string name="slot_mapping_logical_slot">論理スロット %d:</string>
     <string name="slot_mapping_port">スロット %1$d ポート %2$d</string>
     <string name="slot_mapping_help">使用しているデバイスは、%1$d 個の論理 SIM スロットと %2$d 個の物理 SIM スロットがあります。%3$s\n\n各論理スロットに対応する物理スロットまたはポートを選択してください。すべてのマッピングモードがハードウェアでサポートされているわけではないことにご注意ください。</string>
-    <string name="slot_mapping_help_mep">\n\n物理スロット %1$d は、複数の有効なプロファイル (MEP) をサポートしています。この機能を使用するには、%2$d の仮想ポートを上記の異なる論理スロットに割り当てます。\n\nMEP を有効化すると、ポートは共有プロファイルの一覧を除いて OpenEUICC の個別の eSIM スロットのように動作します。</string>
+    <string name="slot_mapping_help_mep">\n\n物理スロット %1$d は、複数の有効なプロファイル (MEP) をサポートしています。この機能を使用するには、%2$d の仮想ポートを上記の異なる論理スロットに割り当てます。\n\nMEP を有効化すると、ポートは共有プロファイルのリストを除いて OpenEUICC の個別の eSIM スロットのように動作します。</string>
     <string name="slot_mapping_help_dsds">\nデュアル SIM モードはサポートされていますが、無効化されています。デバイスに内部 eSIM チップが搭載されている場合は、デフォルトで有効化されていない可能性があります。上記のマッピングを変更するか、デュアル SIM を有効化して eSIM にアクセスしてください。</string>
     <string name="slot_mapping_completed">新しいスロットマッピングが設定されました。モデムがスロットを更新するまでお待ちください。</string>
     <string name="slot_mapping_failure">指定されたマッピングが無効化されているか、ハードウェアがサポートをしていない可能性があります。</string>

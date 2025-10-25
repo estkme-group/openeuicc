@@ -166,33 +166,33 @@
     <string name="pref_notifications">通知</string>
     <string name="pref_notifications_desc">eSIM のプロファイル操作により、通信事業者に通知が送信されます。必要に応じてこの動作を微調整できます。</string>
     <string name="pref_notifications_download">ダウンロード</string>
-    <string name="pref_notifications_download_desc">プロファイルを<i>ダウンロード中</i>の通知を送信します</string>
+    <string name="pref_notifications_download_desc">プロファイルを<i>ダウンロード中</i>の通知を送信します。</string>
     <string name="pref_notifications_delete">削除</string>
-    <string name="pref_notifications_delete_desc">プロファイルを<i>削除中</i>の通知を送信します</string>
+    <string name="pref_notifications_delete_desc">プロファイルを<i>削除中</i>の通知を送信します。</string>
     <string name="pref_notifications_switch">切り替え中</string>
-    <string name="pref_notifications_switch_desc">プロファイルを<i>切り替え中</i>の通知を送信します\nこのタイプの通知は信頼できないことに注意してください。</string>
+    <string name="pref_notifications_switch_desc">プロファイルを<i>切り替え中</i>の通知を送信します。\nこのタイプの通知は信頼できないことに注意してください。</string>
     <string name="pref_advanced">高度な設定</string>
     <string name="pref_advanced_disable_safeguard_removable_esim">プロファイルの無効化と削除を許可</string>
     <string name="pref_advanced_disable_safeguard_removable_esim_desc">デフォルトでは、このアプリでデバイスに挿入されたリムーバブル eSIM の有効なプロファイルを無効化することを防いでいます。なぜなのかというと<i>時々</i>アクセスができなくなるからです。\nこのチェックボックスを ON にすることで、この保護機能を<i>解除</i>します。</string>
     <string name="pref_advanced_verbose_logging">詳細ログ</string>
     <string name="pref_advanced_verbose_logging_desc">詳細ログを有効化します。これには個人的な情報が含まれている可能性があります。この機能を ON にした後は、信頼できるユーザーとのみログを共有してください。</string>
     <string name="pref_advanced_language">言語</string>
-    <string name="pref_advanced_language_desc">アプリの言語</string>
+    <string name="pref_advanced_language_desc">アプリの言語を設定します。</string>
     <string name="pref_advanced_logs">ログ</string>
-    <string name="pref_advanced_logs_desc">アプリの最新デバッグログを表示します</string>
+    <string name="pref_advanced_logs_desc">アプリの最新デバッグログを表示します。</string>
     <string name="pref_developer">開発者オプション</string>
     <string name="pref_developer_refresh_after_switch">モデムに更新コマンドを送信</string>
     <string name="pref_developer_refresh_after_switch_desc">プロファイルを切り替えた後にモデムに更新コマンドを送信するかどうかを設定します。クラッシュが発生する場合は、この機能を無効化してください。</string>
-    <string name="pref_developer_unfiltered_profile_list">フィルタリングされていないプロファイル一覧を表示</string>
-    <string name="pref_developer_unfiltered_profile_list_desc">非運用のプロファイルも含めます</string>
+    <string name="pref_developer_unfiltered_profile_list">未フィルタリングのプロファイルリストを表示</string>
+    <string name="pref_developer_unfiltered_profile_list_desc">非運用のプロファイルも含めるようにします。</string>
     <string name="pref_developer_ignore_tls_certificate">SM-DP+ TLS 証明書を無視する</string>
-    <string name="pref_developer_ignore_tls_certificate_desc">RSP サーバーで使用される TLS 証明書を受け入れます</string>
+    <string name="pref_developer_ignore_tls_certificate_desc">RSP サーバーで使用される TLS 証明書を受け入れます。</string>
     <string name="pref_developer_euicc_memory_reset">eUICC の消去を許可</string>
     <string name="pref_developer_euicc_memory_reset_desc">これは危険な操作であり、デフォルトでは非表示になっています。代わりとしてすべてのプロファイルを手動で削除することもできます。</string>
-    <string name="pref_developer_es10x_mss_desc">グローバル ES10x MSS</string>
+    <string name="pref_developer_es10x_mss_desc">グローバル ES10x MSS を設定します。</string>
     <string-array name="pref_developer_es10x_entry_keys">
-        <item>高速</item>
-        <item>互換モード</item>
+        <item>高効率</item>
+        <item>高い互換性</item>
     </string-array>
     <string name="pref_developer_isdr_aid_list">ISD-R AID リストをカスタマイズ</string>
     <string name="pref_developer_isdr_aid_list_desc">一部ブランドのリムーバブル eUICC は独自の非標準な ISD-R AID を使用しているため、サードパーティー製アプリからアクセスできない場合があります。このリストに追加された非標準な AID の使用を試みますが、動作の保証はできません。</string>
