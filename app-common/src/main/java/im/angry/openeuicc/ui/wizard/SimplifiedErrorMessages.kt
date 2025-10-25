@@ -43,6 +43,10 @@ enum class SimplifiedErrorMessages(
         R.string.download_wizard_error_profile_unreleased,
         R.string.download_wizard_error_suggest_contact_reissue
     ),
+    UnavailableProfile(
+        R.string.download_wizard_error_profile_unavailable,
+        R.string.download_wizard_error_suggest_contact_carrier
+    ),
     MatchingIDRefused(
         R.string.download_wizard_error_matching_id_refused,
         R.string.download_wizard_error_suggest_contact_carrier
@@ -82,21 +86,39 @@ enum class SimplifiedErrorMessages(
 
     companion object {
         private val httpErrors = buildMap {
+            // @formatter:off
+            // Stage: InitiateAuthentication
+            put("8.8.1" to "3.8", UnknownHost) // Invalid SM-DP+ Address.
+            put("8.8.2" to "3.1", UnsupportedProfile) // None of the proposed Public Key Identifiers is supported by the SM-DP+.
+            put("8.8.3" to "3.1", UnsupportedProfile) // The SVN indicated by the eUICC is not supported by the SM-DP+.
+            put("8.8.4" to "3.7", UnsupportedProfile) // The SM-DP+ has no CERT.DPAuth.ECDSA signed by one of the GSMA CI Public Key supported by the eUICC.
+
             // Stage: AuthenticateClient
-            put("8.1" to "4.8", InsufficientMemory)
-            put("8.1.1" to "2.1", EIDNotSupported)
-            put("8.1.1" to "3.8", EIDMismatch)
-            put("8.2" to "1.2", UnreleasedProfile)
-            put("8.2.6" to "3.8", MatchingIDRefused)
-            put("8.8.5" to "6.4", ProfileRetriesExceeded)
+            put("8.1" to "4.8", InsufficientMemory) // eUICC does not have sufficient space for this Profile.
+            put("8.1.1" to "2.1", EIDNotSupported) // eUICC does not support the EID.
+            put("8.1.1" to "3.8", EIDMismatch) // EID doesn't match the expected value.
+            put("8.1.2" to "6.1", UnsupportedProfile) // EUM Certificate is invalid.
+            put("8.1.2" to "6.3", UnsupportedProfile) // EUM Certificate has expired.
+            put("8.1.3" to "6.1", UnsupportedProfile) // eUICC Certificate is invalid.
+            put("8.1.3" to "6.3", UnsupportedProfile) // eUICC Certificate has expired.
+            put("8.2" to "1.2", UnreleasedProfile) // Profile has not yet been released.
+            put("8.2.5" to "4.3", UnavailableProfile) // No eligible Profile for this eUICC/Device.
+            put("8.2.6" to "3.8", MatchingIDRefused) // MatchingID (AC_Token or EventID) is refused.
+            put("8.8" to "4.2", EIDNotSupported) // eUICC is not supported by the SM-DP+.
+            put("8.8.5" to "6.4", ProfileRetriesExceeded) // The maximum number of retries for the Profile download order has been exceeded.
+            put("8.10.1" to "3.9", UnsupportedProfile) // The RSP session identified by the TransactionID is unknown.
+            put("8.11.1" to "3.9", UnsupportedProfile) // Unknown CI Public Key.
 
             // Stage: GetBoundProfilePackage
-            put("8.2.7" to "2.2", ConfirmationCodeMissing)
-            put("8.2.7" to "3.8", ConfirmationCodeRefused)
-            put("8.2.7" to "6.4", ConfirmationCodeRetriesExceeded)
+            put("8.2" to "3.7", UnavailableProfile) // BPP is not available for a new binding.
+            put("8.2.7" to "2.2", ConfirmationCodeMissing) // Confirmation Code is missing.
+            put("8.2.7" to "3.8", ConfirmationCodeRefused) // Confirmation Code is refused.
+            put("8.2.7" to "6.4", ConfirmationCodeRetriesExceeded) // The maximum number of retries for the Confirmation Code has been exceeded.
 
             // Stage: AuthenticateClient, GetBoundProfilePackage
-            put("8.8.5" to "4.10", ProfileExpired)
+            put("8.1" to "6.1", UnsupportedProfile) // eUICC Signature is invalid.
+            put("8.8.5" to "4.10", ProfileExpired) // The Download order has expired.
+            // @formatter:on
         }
 
         fun fromDownloadError(exc: LocalProfileAssistant.ProfileDownloadException) = when {
