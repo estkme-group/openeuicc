@@ -118,9 +118,6 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
         channel.lpa.euiccInfo2?.let { info ->
             add(Item(R.string.euicc_info_sgp22_version, info.sgp22Version.toString()))
-            add(Item(R.string.euicc_info_firmware_version, info.euiccFirmwareVersion.toString()))
-            add(Item(R.string.euicc_info_gp_version, info.globalPlatformVersion.toString()))
-            add(Item(R.string.euicc_info_pp_version, info.ppVersion.toString()))
             info.sasAccreditationNumber.trim().takeIf(RE_SAS::matches)
                 ?.let { add(Item(R.string.euicc_info_sas_accreditation_number, it.uppercase())) }
 

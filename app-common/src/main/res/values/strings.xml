@@ -161,10 +161,7 @@
     <string name="euicc_info_eid" translatable="false">EID</string>
     <string name="euicc_info_isdr_aid" translatable="false">ISD-R AID</string>
     <string name="euicc_info_sgp22_version">SGP.22 Version</string>
-    <string name="euicc_info_firmware_version">eUICC OS Version</string>
-    <string name="euicc_info_gp_version">GlobalPlatform Version</string>
     <string name="euicc_info_sas_accreditation_number">SAS Accreditation Number</string>
-    <string name="euicc_info_pp_version">Protected Profile Version</string>
     <string name="euicc_info_free_nvram">Free NVRAM (eSIM profile storage)</string>
     <string name="euicc_info_free_nvram_hint">(for reference only)</string>
     <string name="euicc_info_ci_type">Certificate Issuer (CI)</string>

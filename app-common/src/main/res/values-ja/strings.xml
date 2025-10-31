@@ -134,10 +134,7 @@
     <string name="euicc_info_bl_ver">製品ブートローダーバージョン</string>
     <string name="euicc_info_fw_ver">製品ファームウェアバージョン</string>
     <string name="euicc_info_sgp22_version">SGP.22 バージョン</string>
-    <string name="euicc_info_firmware_version">eUICC OS バージョン</string>
-    <string name="euicc_info_gp_version">グローバルプラットフォームのバージョン</string>
     <string name="euicc_info_sas_accreditation_number">SAS 認定番号</string>
-    <string name="euicc_info_pp_version">保護されたプロファイルのバージョン</string>
     <string name="euicc_info_free_nvram">NVRAM の空き容量 (eSIM プロファイルストレージ)</string>
     <string name="euicc_info_free_nvram_hint">(参照用)</string>
     <string name="euicc_info_ci_type">証明書発行者 (CI)</string>

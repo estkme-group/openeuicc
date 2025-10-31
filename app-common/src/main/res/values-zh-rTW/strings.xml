@@ -134,10 +134,7 @@
     <string name="euicc_info_access_mode">存取方式</string>
     <string name="euicc_info_removable">可插拔</string>
     <string name="euicc_info_sgp22_version">SGP.22 版本</string>
-    <string name="euicc_info_firmware_version">eUICC OS 版本</string>
-    <string name="euicc_info_gp_version">GlobalPlatform 版本</string>
     <string name="euicc_info_sas_accreditation_number">SAS 認證號碼</string>
-    <string name="euicc_info_pp_version">Protected Profile 版本</string>
     <string name="euicc_info_free_nvram">NVRAM 剩餘空間 (eSIM 儲存容量)</string>
     <string name="euicc_info_free_nvram_hint">（僅供參考）</string>
     <string name="euicc_info_ci_type">證書簽發者 (CI)</string>
