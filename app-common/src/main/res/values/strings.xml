@@ -134,7 +134,7 @@
     <string name="profile_rename_too_long">Nickname is longer than 64 characters</string>
     <string name="profile_rename_failure">Unknown failure when renaming profile</string>
 
-    <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.</string>
+    <string name="profile_delete_confirm">Are you sure you want to delete the profile %s? This operation is irreversible.\n\nDepending on your carrier\'s requirements, you may need to contact your carrier or visit their store to recover your deleted eSIM.</string>
     <string name="profile_delete_confirm_input">Type \'%s\' here to confirm deletion</string>
 
     <string name="profile_notifications">Notifications</string>

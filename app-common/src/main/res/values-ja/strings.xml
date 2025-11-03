@@ -113,7 +113,7 @@
     <string name="profile_rename_encoding_error">ニックネームを UTF-8 にエンコードできませんでした</string>
     <string name="profile_rename_too_long">ニックネームが 64 文字を超えています</string>
     <string name="profile_rename_failure">プロファイルの名前変更時に不明なエラーが発生しました</string>
-    <string name="profile_delete_confirm">%s のプロファイルを削除してもよろしいですか？この操作は元に戻せません。</string>
+    <string name="profile_delete_confirm">「%s」のプロファイルを削除してもよろしいですか？この操作は元に戻せません。\n\n携帯通信会社の要件によっては、削除した eSIM を復元するために通信事業者に問い合わせるか、携帯通信会社のショップに訪れることが必要になる場合があります。</string>
     <string name="profile_delete_confirm_input">削除を確認するには「%s」を入力してください</string>
     <string name="profile_notifications">通知</string>
     <string name="profile_notifications_detailed_format">通知 (%s)</string>

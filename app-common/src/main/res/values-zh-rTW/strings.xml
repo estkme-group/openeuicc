@@ -53,7 +53,7 @@
     <string name="profile_rename_encoding_error">無法將名稱編碼為 UTF-8</string>
     <string name="profile_rename_too_long">名稱超過 64 字元</string>
     <string name="profile_rename_failure">重新命名設定檔時發生了未知錯誤</string>
-    <string name="profile_delete_confirm">您確定要刪除 %s 嗎？此動作無法還原。</string>
+    <string name="profile_delete_confirm">您確定要刪除 %s 嗎？此動作無法還原。\n\n取決於電信業者要求，您可能需要聯絡電信業者或到門市辦理，才能恢復已刪除的 eSIM。</string>
     <string name="profile_delete_confirm_input">請輸入\'%s\'以確認刪除</string>
     <string name="profile_notifications">通知列表</string>
     <string name="profile_notifications_detailed_format">通知列表 (%s)</string>

@@ -53,7 +53,7 @@
     <string name="profile_rename_encoding_error">无法将昵称编码为 UTF-8</string>
     <string name="profile_rename_too_long">昵称长于 64 字符</string>
     <string name="profile_rename_failure">重命名配置文件时发生了未知错误</string>
-    <string name="profile_delete_confirm">您确定要删除 %s 吗？此操作是不可逆的。</string>
+    <string name="profile_delete_confirm">您确定要删除 %s 吗？此操作是不可逆的。\n\n取决于运营商要求，您可能联系运营商或前往其营业厅，才能恢复已删除的 eSIM。</string>
     <string name="profile_delete_confirm_input">请输入\'%s\'以确认删除</string>
     <string name="profile_notifications">通知列表</string>
     <string name="profile_notifications_detailed_format">通知列表 (%s)</string>
