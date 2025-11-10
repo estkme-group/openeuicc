@@ -109,7 +109,10 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         add(Item(R.string.euicc_info_access_mode, channel.type))
         add(Item(R.string.euicc_info_removable, formatByBoolean(channel.port.card.isRemovable, YES_NO)))
         add(Item(R.string.euicc_info_eid, channel.lpa.eID, copiedToastResId = R.string.toast_eid_copied))
-        add(Item(R.string.euicc_info_isdr_aid, channel.isdrAid.encodeHex()))
+        if (!channel.isdrAid.contentEquals(EUICC_DEFAULT_ISDR_AID.decodeHex())) {
+            // Only show if it's not the default ISD-R AID
+            add(Item(R.string.euicc_info_isdr_aid, channel.isdrAid.encodeHex()))
+        }
         channel.tryParseEuiccVendorInfo()?.let { vendorInfo ->
             vendorInfo.skuName?.let { add(Item(R.string.euicc_info_sku, it)) }
             vendorInfo.serialNumber?.let { add(Item(R.string.euicc_info_sn, it, copiedToastResId = R.string.toast_sn_copied)) }
