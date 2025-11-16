@@ -117,7 +117,6 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             vendorInfo.skuName?.let { add(Item(R.string.euicc_info_sku, it)) }
             vendorInfo.serialNumber?.let { add(Item(R.string.euicc_info_sn, it, copiedToastResId = R.string.toast_sn_copied)) }
             vendorInfo.firmwareVersion?.let { add(Item(R.string.euicc_info_fw_ver, it)) }
-            vendorInfo.bootloaderVersion?.let { add(Item(R.string.euicc_info_bl_ver, it)) }
         }
         channel.lpa.euiccInfo2?.let { info ->
             add(Item(R.string.euicc_info_sgp22_version, info.sgp22Version.toString()))

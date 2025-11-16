@@ -8,7 +8,6 @@ import net.typeblog.lpac_jni.Version
 data class EuiccVendorInfo(
     val skuName: String? = null,
     val serialNumber: String? = null,
-    val bootloaderVersion: String? = null,
     val firmwareVersion: String? = null,
 )
 
@@ -57,8 +56,11 @@ private class ESTKme : EuiccVendor {
                 EuiccVendorInfo(
                     skuName = invoke(0x03),
                     serialNumber = invoke(0x00),
-                    bootloaderVersion = invoke(0x01),
-                    firmwareVersion = invoke(0x02),
+                    firmwareVersion = run {
+                        val bl = invoke(0x01) // bootloader version
+                        val fw = invoke(0x02) // firmware version
+                        if (bl == null || fw == null) null else "$bl-$fw"
+                    },
                 )
             }
         } catch (e: Exception) {

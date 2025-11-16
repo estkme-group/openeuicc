@@ -41,7 +41,6 @@
     <string name="toast_sn_copied">已複製序號到剪貼簿</string>
     <string name="euicc_info_sku">產品名稱</string>
     <string name="euicc_info_sn">產品序號</string>
-    <string name="euicc_info_bl_ver">產品開機引導版本</string>
     <string name="euicc_info_fw_ver">產品韌體版本</string>
     <string name="profile_download_confirmation_code_required">確認碼 (必需)</string>
     <string name="profile_download_imei">IMEI (可選)</string>

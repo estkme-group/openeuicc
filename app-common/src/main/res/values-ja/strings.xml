@@ -131,7 +131,6 @@
     <string name="euicc_info_removable">リムーバブル</string>
     <string name="euicc_info_sku">製品名</string>
     <string name="euicc_info_sn">製品シリアル番号</string>
-    <string name="euicc_info_bl_ver">製品ブートローダーバージョン</string>
     <string name="euicc_info_fw_ver">製品ファームウェアバージョン</string>
     <string name="euicc_info_sgp22_version">SGP.22 バージョン</string>
     <string name="euicc_info_sas_accreditation_number">SAS 認定番号</string>

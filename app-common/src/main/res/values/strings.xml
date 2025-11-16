@@ -156,7 +156,6 @@
     <string name="euicc_info_removable">Removable</string>
     <string name="euicc_info_sku">Product Name</string>
     <string name="euicc_info_sn">Product Serial Number</string>
-    <string name="euicc_info_bl_ver">Product Bootloader Version</string>
     <string name="euicc_info_fw_ver">Product Firmware Version</string>
     <string name="euicc_info_eid" translatable="false">EID</string>
     <string name="euicc_info_isdr_aid" translatable="false">ISD-R AID</string>
