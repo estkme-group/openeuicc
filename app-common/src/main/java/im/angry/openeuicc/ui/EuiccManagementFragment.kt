@@ -223,11 +223,8 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     }
 
     private suspend fun showSwitchFailureText() = withContext(Dispatchers.Main) {
-        Toast.makeText(
-            context,
-            R.string.toast_profile_enable_failed,
-            Toast.LENGTH_LONG
-        ).show()
+        val resId = R.string.toast_profile_enable_failed
+        Toast.makeText(context, resId, Toast.LENGTH_LONG).show()
     }
 
     private fun enableOrDisableProfile(iccid: String, enable: Boolean) {
@@ -238,13 +235,12 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             ensureEuiccChannelManager()
             euiccChannelManagerService.waitForForegroundTask()
 
-            val err = euiccChannelManagerService.launchProfileSwitchTask(
-                slotId,
-                portId,
-                iccid,
-                enable,
-                reconnectTimeoutMillis = 30 * 1000
-            ).waitDone()
+            val err = euiccChannelManagerService
+                .launchProfileSwitchTask(
+                    slotId, portId, iccid, enable,
+                    reconnectTimeoutMillis = 30 * 1000
+                )
+                .waitDone()
 
             when (err) {
                 null -> {}
@@ -296,17 +292,15 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
     protected open fun populatePopupWithProfileActions(popup: PopupMenu, profile: LocalProfileInfo) {
         popup.inflate(R.menu.profile_options)
-        if (profile.isEnabled) {
-            popup.menu.findItem(R.id.enable).isVisible = false
-            popup.menu.findItem(R.id.delete).isVisible = false
+        if (!profile.isEnabled) return
+        popup.menu.findItem(R.id.enable).isVisible = false
+        popup.menu.findItem(R.id.delete).isVisible = false
 
-            // We hide the disable option by default to avoid "bricking" some cards that won't get
-            // recognized again by the phone's modem. However we don't have that worry if we are
-            // accessing it through a USB card reader, or when the user explicitly opted in
-            if (isUsb || disableSafeguardFlow.value) {
-                popup.menu.findItem(R.id.disable).isVisible = true
-            }
-        }
+        // We hide the disable option by default to avoid "bricking" some cards that won't get
+        // recognized again by the phone's modem. However we don't have that worry if we are
+        // accessing it through a USB card reader, or when the user explicitly opted in
+        if (!isUsb && !disableSafeguardFlow.value) return
+        popup.menu.findItem(R.id.disable).isVisible = true
     }
 
     sealed class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
@@ -373,6 +367,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         }
 
         private lateinit var profile: LocalProfileInfo
+        private var canEnable: Boolean = false
 
         fun setProfile(profile: LocalProfileInfo) {
             this.profile = profile
@@ -406,6 +401,13 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             )
         }
 
+        fun setEnabledProfile(enabledProfile: LocalProfileInfo?) {
+            // cannot cross profile class enable profile
+            // e.g: testing -> operational or operational -> testing
+            canEnable = enabledProfile == null ||
+                    enabledProfile.profileClass == profile.profileClass
+        }
+
         private fun showOptionsMenu() {
             // Prevent users from doing multiple things at once
             if (invalid || swipeRefresh.isRefreshing) return
@@ -420,7 +422,13 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         private fun onMenuItemClicked(item: MenuItem): Boolean =
             when (item.itemId) {
                 R.id.enable -> {
-                    enableOrDisableProfile(profile.iccid, true)
+                    if (canEnable) {
+                        enableOrDisableProfile(profile.iccid, true)
+                    } else {
+                        val resId = R.string.toast_profile_enable_cross_class
+                        Toast.makeText(requireContext(), resId, Toast.LENGTH_LONG)
+                            .show()
+                    }
                     true
                 }
                 R.id.disable -> {
@@ -471,6 +479,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             when (holder) {
                 is ProfileViewHolder -> {
                     holder.setProfile(profiles[position])
+                    holder.setEnabledProfile(profiles.enabled)
                     holder.setProfileSequenceNumber(position + 1)
                 }
                 is FooterViewHolder -> {
