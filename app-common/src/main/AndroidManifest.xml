@@ -36,6 +36,12 @@
             android:exported="true"
             android:name="im.angry.openeuicc.ui.wizard.DownloadWizardActivity"
             android:label="@string/download_wizard">
+
+            <intent-filter>
+                <action android:name="im.angry.openeuicc.action.DOWNLOAD_WIZARD_ACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
