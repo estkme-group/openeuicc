@@ -52,26 +52,49 @@ open class DefaultEuiccChannelManager(
         get() = (0..<tm.activeModemCountCompat).map { FakeUiccCardInfoCompat(it) }
 
     private suspend inline fun tryOpenChannelWithKnownAids(openFn: (ByteArray, EuiccChannel.SecureElementId) -> EuiccChannel?): List<EuiccChannel> {
-        val isdrAidList =
+        var isdrAidList =
             parseIsdrAidList(appContainer.preferenceRepository.isdrAidListFlow.first())
+        val ret = mutableListOf<EuiccChannel>()
+        var hasReset = false
         var seId = 0
 
-        return isdrAidList.mapNotNull {
-            Log.i(
-                TAG,
-                "Opening channel, trying ISDR AID ${it.encodeHex()}, this will be seId $seId"
-            )
+        outer@ while (true) {
+            for (aid in isdrAidList) {
+                val channel =
+                    openFn(aid, EuiccChannel.SecureElementId.createFromInt(seId))?.let { channel ->
+                        if (channel.valid) {
+                            seId += 1
+                            channel
+                        } else {
+                            channel.close()
+                            null
+                        }
+                    }
 
-            openFn(it, EuiccChannel.SecureElementId.createFromInt(seId))?.let { channel ->
-                if (channel.valid) {
-                    seId += 1
-                    channel
-                } else {
-                    channel.close()
-                    null
+                if (!hasReset) {
+                    val newAidList = channel?.queryVendorAidListTransformation(isdrAidList)
+                    if (newAidList != null) {
+                        // Reset the for loop since we needed to replace the AID list due to vendor-specific code
+                        Log.i(TAG, "AID list replaced, resetting open attempt")
+                        isdrAidList = newAidList
+                        seId = 0
+                        ret.clear()
+                        channel.close()
+                        hasReset = true // Don't let anything reset again
+                        continue@outer
+                    }
+                }
+
+                if (channel != null) {
+                    ret.add(channel)
                 }
             }
+
+            // If we get here we should exit, since the inner loop completed without resetting
+            break
         }
+
+        return ret
     }
 
     private suspend fun tryOpenEuiccChannel(
