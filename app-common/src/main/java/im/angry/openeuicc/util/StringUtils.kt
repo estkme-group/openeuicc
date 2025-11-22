@@ -31,13 +31,23 @@ fun formatFreeSpace(size: Int): String =
 
 /**
  * Decode a list of potential ISDR AIDs, one per line. Lines starting with '#' are ignored.
- * If none is found, at least EUICC_DEFAULT_ISDR_AID is returned
+ * If none is found, at least EUICC_DEFAULT_ISDR_AID is returned.
+ * If EUICC_DEFAULT_ISDR_AID is not contained in the list, it is always appended as the last
+ * element.
  */
-fun parseIsdrAidList(s: String): List<ByteArray> =
-    s.split('\n')
+fun parseIsdrAidList(s: String): List<ByteArray> {
+    val ret = s.split('\n')
+        .asSequence()
         .map(String::trim)
         .filter { !it.startsWith('#') }
         .map(String::trim)
         .filter(String::isNotEmpty)
         .mapNotNull { runCatching(it::decodeHex).getOrNull() }
-        .ifEmpty { listOf(EUICC_DEFAULT_ISDR_AID.decodeHex()) }
+        .toList()
+
+    return if (!ret.any { it.contentEquals(EUICC_DEFAULT_ISDR_AID.decodeHex()) }) {
+        ret + EUICC_DEFAULT_ISDR_AID.decodeHex()
+    } else {
+        ret
+    }
+}

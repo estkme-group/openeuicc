@@ -50,6 +50,7 @@ internal object PreferenceConstants {
         # Refs: <https://euicc-manual.osmocom.org/docs/lpa/applet-id-oem/>
 
         # eUICC standard
+        # Even if this AID is deleted here, it will still be attempted as the last resort.
         $EUICC_DEFAULT_ISDR_AID
 
         # eSIM.me
