@@ -126,15 +126,10 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     }
 
     private fun ensureNotificationPermissions() {
-        val needsNotificationPerms = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
-        val notificationPermsGranted =
-            needsNotificationPerms && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        if (needsNotificationPerms && !notificationPermsGranted) {
-            requestPermissions(
-                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                PERMISSION_REQUEST_CODE
-            )
-        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        val permissions = arrayOf(android.Manifest.permission.POST_NOTIFICATIONS)
+        if (permissions.all { checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }) return
+        requestPermissions(permissions, PERMISSION_REQUEST_CODE)
     }
 
     private suspend fun init(fromUsbEvent: Boolean = false) {
@@ -209,7 +204,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             viewPager.currentItem = 0
         }
 
-        if (pages.size > 0) {
+        if (pages.isNotEmpty()) {
             ensureNotificationPermissions()
         }
 
