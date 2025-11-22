@@ -41,7 +41,6 @@
     <string name="toast_sn_copied">已复制序列号到剪贴板</string>
     <string name="euicc_info_sku">产品名称</string>
     <string name="euicc_info_sn">产品序列号</string>
-    <string name="euicc_info_bl_ver">产品 Bootloader 版本</string>
     <string name="euicc_info_fw_ver">产品固件版本</string>
     <string name="profile_download_confirmation_code_required">确认码 (必需)</string>
     <string name="profile_download_imei">IMEI (可选)</string>
@@ -53,7 +52,7 @@
     <string name="profile_rename_encoding_error">无法将昵称编码为 UTF-8</string>
     <string name="profile_rename_too_long">昵称长于 64 字符</string>
     <string name="profile_rename_failure">重命名配置文件时发生了未知错误</string>
-    <string name="profile_delete_confirm">您确定要删除 %s 吗？此操作是不可逆的。</string>
+    <string name="profile_delete_confirm">您确定要删除 %s 吗？此操作是不可逆的。\n\n取决于运营商要求，您可能需要联系运营商或前往其营业厅，才能恢复已删除的 eSIM。</string>
     <string name="profile_delete_confirm_input">请输入\'%s\'以确认删除</string>
     <string name="profile_notifications">通知列表</string>
     <string name="profile_notifications_detailed_format">通知列表 (%s)</string>
@@ -138,12 +137,9 @@
     <string name="euicc_info_access_mode">访问方式</string>
     <string name="euicc_info_removable">可插拔</string>
     <string name="euicc_info_sgp22_version">SGP.22 版本</string>
-    <string name="euicc_info_firmware_version">eUICC OS 版本</string>
-    <string name="euicc_info_gp_version">GlobalPlatform 版本</string>
     <string name="euicc_info_sas_accreditation_number">SAS 认证号码</string>
-    <string name="euicc_info_pp_version">Protected Profile 版本</string>
     <string name="euicc_info_free_nvram">NVRAM 剩余空间 (eSIM 存储容量)</string>
-    <string name="euicc_info_free_nvram_hint">（仅供参考）</string>
+    <string name="euicc_info_free_nvram_hint">(仅供参考)</string>
     <string name="euicc_info_ci_type">证书签发者 (CI)</string>
     <string name="euicc_info_ci_gsma_live">GSMA 生产环境 CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA 测试 CI</string>

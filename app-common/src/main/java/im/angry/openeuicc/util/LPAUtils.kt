@@ -16,7 +16,7 @@ val LocalProfileInfo.isEnabled: Boolean
     get() = state == LocalProfileInfo.State.Enabled
 
 val List<LocalProfileInfo>.operational: List<LocalProfileInfo>
-    get() = filter { it.profileClass == LocalProfileInfo.Clazz.Operational }
+    get() = filter { it.profileClass == LocalProfileInfo.Clazz.Operational || it.isEnabled }
 
 val List<LocalProfileInfo>.enabled: LocalProfileInfo?
     get() = find { it.isEnabled }

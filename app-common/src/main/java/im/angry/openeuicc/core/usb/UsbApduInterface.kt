@@ -53,6 +53,7 @@ class UsbApduInterface(
 
         val channelId = resp[0].toInt()
         Log.d(TAG, "channelId = $channelId")
+        channels.add(channelId)
 
         // Then, select AID
         val selectAid = selectByDfCmd(aid, channelId.toByte())
@@ -60,10 +61,10 @@ class UsbApduInterface(
 
         if (!isSuccessResponse(selectAidResp)) {
             Log.d(TAG, "Select DF failed : ${selectAidResp.encodeHex()}")
+            logicalChannelClose(channelId)
+            Log.d(TAG, "Closed logical channel $channelId due to select DF failure")
             return -1
         }
-
-        channels.add(channelId)
 
         return channelId
     }

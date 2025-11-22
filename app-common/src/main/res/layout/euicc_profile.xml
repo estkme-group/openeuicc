@@ -42,12 +42,13 @@
 
             <TextView
                 android:id="@+id/state"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:textSize="14sp"
                 android:textStyle="italic"
                 android:singleLine="true"
+                android:includeFontPadding="true"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/name"
                 app:layout_constraintBottom_toTopOf="@+id/provider_label"/>
