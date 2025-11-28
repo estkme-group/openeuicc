@@ -16,8 +16,15 @@ private val EUICC_VENDORS: Array<EuiccVendor> = arrayOf(ESTKme(), SIMLink())
 fun EuiccChannel.tryParseEuiccVendorInfo(): EuiccVendorInfo? =
     EUICC_VENDORS.firstNotNullOfOrNull { it.tryParseEuiccVendorInfo(this) }
 
-fun EuiccChannel.queryVendorAidListTransformation(aidList: List<ByteArray>): List<ByteArray>? =
+fun EuiccChannel.queryVendorAidListTransformation(aidList: List<ByteArray>): Pair<List<ByteArray>, VendorAidDecider>? =
     EUICC_VENDORS.firstNotNullOfOrNull { it.transformAidListIfNeeded(this, aidList) }
+
+fun interface VendorAidDecider {
+    /**
+     * Given a list of already opened AIDs, should we still attempt to open the next?
+     */
+    fun shouldOpenMore(openedAids: List<ByteArray>, nextAid: ByteArray): Boolean
+}
 
 interface EuiccVendor {
     fun tryParseEuiccVendorInfo(channel: EuiccChannel): EuiccVendorInfo?
@@ -32,11 +39,14 @@ interface EuiccVendor {
      * value, the channel will be closed and the process that attempts to open all channels will
      * be restarted from the beginning. The method will not be called again for the same chip,
      * but it should still ensure idempotency when called with an already-transformed input.
+     *
+     * The second return value of this method is used to decide when we should stop attempting more
+     * AIDs from the list.
      */
     fun transformAidListIfNeeded(
         referenceChannel: EuiccChannel,
         aidList: List<ByteArray>
-    ): List<ByteArray>? = null
+    ): Pair<List<ByteArray>, VendorAidDecider>? = null
 }
 
 class ESTKme : EuiccVendor {
@@ -78,7 +88,7 @@ class ESTKme : EuiccVendor {
     override fun transformAidListIfNeeded(
         referenceChannel: EuiccChannel,
         aidList: List<ByteArray>
-    ): List<ByteArray>? {
+    ): Pair<List<ByteArray>, VendorAidDecider>? {
         try {
             referenceChannel.apduInterface.withLogicalChannel(PRODUCT_AID) {}
         } catch (_: Exception) {
@@ -96,7 +106,11 @@ class ESTKme : EuiccVendor {
         return if (expected == aidList) {
             null
         } else {
-            expected
+            Pair(expected, VendorAidDecider { openedAids, nextAid ->
+                // Don't open any more channels if we have reached the GSMA default AID and at least 1
+                // eSTK AID has been opened (note that above we re-sorted them to the top of the list)
+                !(openedAids.isNotEmpty() && nextAid.contentEquals(EUICC_DEFAULT_ISDR_AID.decodeHex()))
+            })
         }
     }
 }

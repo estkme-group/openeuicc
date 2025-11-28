@@ -55,11 +55,17 @@ open class DefaultEuiccChannelManager(
         var isdrAidList =
             parseIsdrAidList(appContainer.preferenceRepository.isdrAidListFlow.first())
         val ret = mutableListOf<EuiccChannel>()
+        val openedAids = mutableListOf<ByteArray>()
         var hasReset = false
+        var vendorDecider: VendorAidDecider? = null
         var seId = 0
 
         outer@ while (true) {
             for (aid in isdrAidList) {
+                if (vendorDecider != null && !vendorDecider.shouldOpenMore(openedAids, aid)) {
+                    break@outer
+                }
+
                 val channel =
                     openFn(aid, EuiccChannel.SecureElementId.createFromInt(seId))?.let { channel ->
                         if (channel.valid) {
@@ -72,13 +78,15 @@ open class DefaultEuiccChannelManager(
                     }
 
                 if (!hasReset) {
-                    val newAidList = channel?.queryVendorAidListTransformation(isdrAidList)
-                    if (newAidList != null) {
+                    val res = channel?.queryVendorAidListTransformation(isdrAidList)
+                    if (res != null) {
                         // Reset the for loop since we needed to replace the AID list due to vendor-specific code
                         Log.i(TAG, "AID list replaced, resetting open attempt")
-                        isdrAidList = newAidList
+                        isdrAidList = res.first
+                        vendorDecider = res.second
                         seId = 0
                         ret.clear()
+                        openedAids.clear()
                         channel.close()
                         hasReset = true // Don't let anything reset again
                         continue@outer
@@ -87,6 +95,7 @@ open class DefaultEuiccChannelManager(
 
                 if (channel != null) {
                     ret.add(channel)
+                    openedAids.add(aid)
                 }
             }
 
