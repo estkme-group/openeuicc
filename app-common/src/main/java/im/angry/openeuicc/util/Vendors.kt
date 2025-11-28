@@ -16,7 +16,7 @@ private val EUICC_VENDORS: Array<EuiccVendor> = arrayOf(ESTKme(), SIMLink())
 fun EuiccChannel.tryParseEuiccVendorInfo(): EuiccVendorInfo? =
     EUICC_VENDORS.firstNotNullOfOrNull { it.tryParseEuiccVendorInfo(this) }
 
-fun EuiccChannel.queryVendorAidListTransformation(aidList: List<ByteArray>): List<ByteArray>? =
+fun EuiccChannel.queryVendorAidListTransformation(aidList: List<ByteArray>): Pair<List<ByteArray>, Int>? =
     EUICC_VENDORS.firstNotNullOfOrNull { it.transformAidListIfNeeded(this, aidList) }
 
 interface EuiccVendor {
@@ -32,11 +32,14 @@ interface EuiccVendor {
      * value, the channel will be closed and the process that attempts to open all channels will
      * be restarted from the beginning. The method will not be called again for the same chip,
      * but it should still ensure idempotency when called with an already-transformed input.
+     *
+     * The second return value of this method is the maximum number of simultaneous channels
+     * supported by this chip.
      */
     fun transformAidListIfNeeded(
         referenceChannel: EuiccChannel,
         aidList: List<ByteArray>
-    ): List<ByteArray>? = null
+    ): Pair<List<ByteArray>, Int>? = null
 }
 
 class ESTKme : EuiccVendor {
@@ -78,7 +81,7 @@ class ESTKme : EuiccVendor {
     override fun transformAidListIfNeeded(
         referenceChannel: EuiccChannel,
         aidList: List<ByteArray>
-    ): List<ByteArray>? {
+    ): Pair<List<ByteArray>, Int>? {
         try {
             referenceChannel.apduInterface.withLogicalChannel(PRODUCT_AID) {}
         } catch (_: Exception) {
@@ -96,7 +99,7 @@ class ESTKme : EuiccVendor {
         return if (expected == aidList) {
             null
         } else {
-            expected
+            Pair(expected, 2)
         }
     }
 }

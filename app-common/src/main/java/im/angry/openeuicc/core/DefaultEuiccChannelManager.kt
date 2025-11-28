@@ -56,6 +56,7 @@ open class DefaultEuiccChannelManager(
             parseIsdrAidList(appContainer.preferenceRepository.isdrAidListFlow.first())
         val ret = mutableListOf<EuiccChannel>()
         var hasReset = false
+        var maxChannels = 1 // Only ever open 1 channel unless vendor specifies otherwise
         var seId = 0
 
         outer@ while (true) {
@@ -72,11 +73,12 @@ open class DefaultEuiccChannelManager(
                     }
 
                 if (!hasReset) {
-                    val newAidList = channel?.queryVendorAidListTransformation(isdrAidList)
-                    if (newAidList != null) {
+                    val res = channel?.queryVendorAidListTransformation(isdrAidList)
+                    if (res != null) {
                         // Reset the for loop since we needed to replace the AID list due to vendor-specific code
                         Log.i(TAG, "AID list replaced, resetting open attempt")
-                        isdrAidList = newAidList
+                        isdrAidList = res.first
+                        maxChannels = res.second
                         seId = 0
                         ret.clear()
                         channel.close()
@@ -87,6 +89,10 @@ open class DefaultEuiccChannelManager(
 
                 if (channel != null) {
                     ret.add(channel)
+                }
+
+                if (ret.size >= maxChannels) {
+                    break
                 }
             }
 
