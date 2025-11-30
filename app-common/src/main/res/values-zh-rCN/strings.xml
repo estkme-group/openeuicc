@@ -35,7 +35,7 @@
     <string name="task_profile_delete_failure">无法删除 eSIM 配置文件</string>
     <string name="task_profile_switch">正在切换 eSIM 配置文件</string>
     <string name="task_profile_switch_failure">无法切换 eSIM 配置文件</string>
-    <string name="profile_download">添加新 eSIM</string>
+    <string name="profile_download">下载新 eSIM</string>
     <string name="profile_download_server">服务器 (RSP / SM-DP+)</string>
     <string name="profile_download_code">激活码</string>
     <string name="profile_download_confirmation_code">确认码 (可选)</string>

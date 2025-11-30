@@ -4,6 +4,8 @@
     <string name="channel_name_format_unpriv_se" translatable="false">SIM %d, SE %d</string>
     <string name="compatibility_check">Compatibility Check</string>
     <string name="open_sim_toolkit">Open SIM Toolkit</string>
+    <string name="shortcut_sim_toolkit">SIM Toolkit</string>
+    <string name="shortcut_sim_toolkit_with_slot">SIM Toolkit #%d</string>
 
     <!-- Settings -->
     <string name="pref_developer_ara_m" translatable="false">ARA-M SHA-1</string>

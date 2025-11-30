@@ -16,6 +16,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import androidx.activity.enableEdgeToEdge
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -24,6 +27,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannelManager
+import im.angry.openeuicc.ui.wizard.DownloadWizardActivity
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -216,6 +220,8 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             ensureNotificationPermissions()
         }
 
+        ShortcutManagerCompat.setDynamicShortcuts(this, buildShortcuts().take(4))
+
         refreshing = false
     }
 
@@ -233,5 +239,16 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
             init(fromUsbEvent) // will set refreshing = false
         }
+    }
+
+    protected open fun buildShortcuts(): List<ShortcutInfoCompat> {
+        val downloadShortcut = ShortcutInfoCompat.Builder(this, "download")
+            .setShortLabel(getString(R.string.profile_download))
+            .setIcon(IconCompat.createWithResource(this, R.drawable.ic_task_sim_card_download))
+            .setIntent(Intent(this, DownloadWizardActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+            })
+            .build()
+        return listOf(downloadShortcut)
     }
 }
