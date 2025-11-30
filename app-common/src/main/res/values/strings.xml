@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc">No removable eUICC card accessible by this app is detected on this device. Insert a compatible card or a USB reader.</string>
+    <string name="no_euicc">No removable eSIM card accessible by this app is detected on this device. Insert a compatible card or a USB reader.</string>
     <string name="no_profile">No profiles (yet) on this eSIM.</string>
 
     <string name="notification_help">Help</string>
@@ -152,8 +152,8 @@
     <string name="profile_notification_process">Process</string>
     <string name="profile_notification_delete">Delete</string>
 
-    <string name="euicc_info">eUICC Info</string>
-    <string name="euicc_info_activity_title">eUICC Info (%s)</string>
+    <string name="euicc_info">eSIM Info</string>
+    <string name="euicc_info_activity_title">eSIM Info (%s)</string>
     <string name="euicc_info_access_mode">Access Mode</string>
     <string name="euicc_info_removable">Removable</string>
     <string name="euicc_info_sku">Product Name</string>
@@ -171,14 +171,14 @@
     <string name="euicc_info_ci_unknown">Unknown eSIM CI</string>
     <string name="euicc_info_atr" translatable="false">Answer To Reset (ATR)</string>
 
-    <string name="euicc_memory_reset">Erase eUICC</string>
-    <string name="euicc_memory_reset_title">Erase eUICC</string>
+    <string name="euicc_memory_reset">Erase eSIM</string>
+    <string name="euicc_memory_reset_title">Erase eSIM</string>
     <string name="euicc_memory_reset_message">Please confirm to delete all profiles on this chip and understand that this operation is irreversible.\n\nEID: %1$s\n\n%2$s</string>
     <string name="euicc_memory_reset_hint_text">Type \'%s\' here to confirm</string>
     <string name="euicc_memory_reset_confirm_text">I CONFIRM TO ERASE THE CHIP WHOSE EID ENDS WITH %s AND UNDERSTAND THAT THIS IS IRREVERSIBLE</string>
     <string name="euicc_memory_reset_invoke_button">Erase</string>
 
-    <!-- eUICC Info -->
+    <!-- eSIM Info -->
     <string name="euicc_info_yes">Yes</string>
     <string name="euicc_info_no">No</string>
     <string name="euicc_info_unknown">Unknown</string>
@@ -219,7 +219,7 @@
     <string name="pref_developer_unfiltered_profile_list_desc">Include non-production profiles in the list</string>
     <string name="pref_developer_ignore_tls_certificate">Ignore SM-DP+ TLS certificate</string>
     <string name="pref_developer_ignore_tls_certificate_desc">Accept any TLS certificate used by the RSP server</string>
-    <string name="pref_developer_euicc_memory_reset">Allow erasing eUICC</string>
+    <string name="pref_developer_euicc_memory_reset">Allow erasing eSIM</string>
     <string name="pref_developer_euicc_memory_reset_desc">This is a dangerous operation and hidden by default. As an alternative, you can delete all profiles manually.</string>
     <string name="pref_developer_es10x_mss" translatable="false">ES10x MSS</string>
     <string name="pref_developer_es10x_mss_desc">Global ES10x MSS</string>
@@ -232,7 +232,7 @@
         <item>63</item>
     </string-array>
     <string name="pref_developer_isdr_aid_list">Customize ISD-R AID list</string>
-    <string name="pref_developer_isdr_aid_list_desc">Some brands of removable eUICCs may use their own non-standard ISD-R AID, rendering them inaccessible to third-party apps. We can attempt to use non-standard AIDs added in this list, but there is no guarantee that they will work.</string>
+    <string name="pref_developer_isdr_aid_list_desc">Some brands of removable eSIMs may use their own non-standard ISD-R AID, rendering them inaccessible to third-party apps. We can attempt to use non-standard AIDs added in this list, but there is no guarantee that they will work.</string>
     <string name="pref_info">Info</string>
     <string name="pref_info_app_version">App Version</string>
     <string name="pref_info_source_code">Source Code</string>

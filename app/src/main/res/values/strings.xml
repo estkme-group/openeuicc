@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">OpenEUICC</string>
-    <string name="no_euicc_priv">No eUICC found on this device.\nOn some devices, you may need to enable dual SIM first in the menu of this app.</string>
+    <string name="no_euicc_priv">No eSIM found on this device.\nOn some devices, you may need to enable dual SIM first in the menu of this app.</string>
     <string name="channel_type_telephony_manager">TelephonyManager (Privileged)</string>
 
     <string name="dsds">Dual SIM</string>
@@ -25,5 +25,5 @@
 
     <!-- Preference -->
     <string name="pref_developer_telephony_manager_removable">Use TelephonyManager everywhere</string>
-    <string name="pref_developer_telephony_manager_removable_desc">By default, only OMAPI is attempted for removable eUICCs to match what is done in unprivileged mode (i.e. EasyEUICC). This may not work well on some devices. Select this option to force the use of TelephonyManager even for removable eUICCs.</string>
+    <string name="pref_developer_telephony_manager_removable_desc">By default, only OMAPI is attempted for removable eSIMs to match what is done in unprivileged mode (i.e. EasyEUICC). This may not work well on some devices. Select this option to force the use of TelephonyManager even for removable eSIMs.</string>
 </resources>

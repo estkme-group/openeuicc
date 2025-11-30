@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc_priv">在此裝置上找不到 eUICC 晶片。\n在某些裝置上，您可能需要先在此應用的選單中啟用雙卡支援。</string>
+    <string name="no_euicc_priv">在此裝置上找不到 eSIM 晶片。\n在某些裝置上，您可能需要先在此應用的選單中啟用雙卡支援。</string>
     <string name="dsds">雙卡</string>
     <string name="toast_dsds_switched">雙卡支援狀態已切換。請等待基頻處理器重新啟動。</string>
     <string name="footer_mep">此卡槽支援啟用多個設定檔 (MEP)。要啟用或停用此功能，請使用\"卡槽映射\"工具。</string>
@@ -18,5 +18,5 @@
     <string name="lui_download">下載 eSIM</string>
     <string name="channel_type_telephony_manager">TelephonyManager (特權)</string>
     <string name="pref_developer_telephony_manager_removable">全域使用 TelephonyManager</string>
-    <string name="pref_developer_telephony_manager_removable_desc">在預設情況下，可移除 eUICC 將僅使用 OMAPI。這與非特權模式 (EasyEUICC) 一致。在某些裝置上 OMAPI 可能有問題 -- 選擇此選項以強制使用 TelephonyManager。</string>
+    <string name="pref_developer_telephony_manager_removable_desc">在預設情況下，可移除 eSIM 將僅使用 OMAPI。這與非特權模式 (EasyEUICC) 一致。在某些裝置上 OMAPI 可能有問題 — 選擇此選項以強制使用 TelephonyManager。</string>
 </resources>

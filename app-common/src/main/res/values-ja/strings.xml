@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc">このアプリでアクセスできるリムーバブル eUICC カードがデバイス上で検出されていません。互換性のあるカード挿入または USB リーダーを接続してください。</string>
+    <string name="no_euicc">このアプリでアクセスできるリムーバブル v カードがデバイス上で検出されていません。互換性のあるカード挿入または USB リーダーを接続してください。</string>
     <string name="no_profile">この eSIM にはプロファイルがありません。</string>
     <string name="notification_help">ヘルプ</string>
     <string name="profile_reload_slots">スロットを再読み込み</string>
@@ -125,8 +125,8 @@
     <string name="profile_notification_operation_disable">無効化済み</string>
     <string name="profile_notification_process">処理</string>
     <string name="profile_notification_delete">削除</string>
-    <string name="euicc_info">eUICC 情報</string>
-    <string name="euicc_info_activity_title">eUICC 情報 (%s)</string>
+    <string name="euicc_info">eSIM 情報</string>
+    <string name="euicc_info_activity_title">eSIM 情報 (%s)</string>
     <string name="euicc_info_access_mode">アクセスモード</string>
     <string name="euicc_info_removable">リムーバブル</string>
     <string name="euicc_info_sku">製品名</string>
@@ -140,13 +140,13 @@
     <string name="euicc_info_ci_gsma_live">GSMA ライブ CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA テスト CI</string>
     <string name="euicc_info_ci_unknown">不明な eSIM CI</string>
-    <string name="euicc_memory_reset">eUICC を消去</string>
-    <string name="euicc_memory_reset_title">eUICC を消去</string>
+    <string name="euicc_memory_reset">eSIM を消去</string>
+    <string name="euicc_memory_reset_title">eSIM を消去</string>
     <string name="euicc_memory_reset_message">このチップ上のすべてのプロファイルを削除することを確認してください。この操作は元に戻せないことを理解してください。\n\nEID: %1$s\n\n%2$s</string>
     <string name="euicc_memory_reset_hint_text">確認のために「%s」を入力してください</string>
     <string name="euicc_memory_reset_confirm_text">EID が %s で終わるチップを消去することを確認し、この操作は元に戻せないことを理解してください</string>
     <string name="euicc_memory_reset_invoke_button">消去</string>
-    <!-- eUICC Info -->
+    <!-- eSIM Info -->
     <string name="euicc_info_yes">はい</string>
     <string name="euicc_info_no">いいえ</string>
     <string name="euicc_info_unknown">不明</string>
@@ -183,7 +183,7 @@
     <string name="pref_developer_unfiltered_profile_list_desc">非運用のプロファイルも含めるようにします。</string>
     <string name="pref_developer_ignore_tls_certificate">SM-DP+ TLS 証明書を無視する</string>
     <string name="pref_developer_ignore_tls_certificate_desc">RSP サーバーで使用される TLS 証明書を受け入れます。</string>
-    <string name="pref_developer_euicc_memory_reset">eUICC の消去を許可</string>
+    <string name="pref_developer_euicc_memory_reset">eSIM の消去を許可</string>
     <string name="pref_developer_euicc_memory_reset_desc">これは危険な操作であり、デフォルトでは非表示になっています。代わりとしてすべてのプロファイルを手動で削除することもできます。</string>
     <string name="pref_developer_es10x_mss_desc">グローバル ES10x MSS を設定します。</string>
     <string-array name="pref_developer_es10x_entry_keys">
@@ -191,7 +191,7 @@
         <item>高い互換性</item>
     </string-array>
     <string name="pref_developer_isdr_aid_list">ISD-R AID リストをカスタマイズ</string>
-    <string name="pref_developer_isdr_aid_list_desc">一部ブランドのリムーバブル eUICC は独自の非標準な ISD-R AID を使用しているため、サードパーティー製アプリからアクセスできない場合があります。このリストに追加された非標準な AID の使用を試みますが、動作の保証はできません。</string>
+    <string name="pref_developer_isdr_aid_list_desc">一部ブランドのリムーバブル eSIM は独自の非標準な ISD-R AID を使用しているため、サードパーティー製アプリからアクセスできない場合があります。このリストに追加された非標準な AID の使用を試みますが、動作の保証はできません。</string>
     <string name="pref_info">情報</string>
     <string name="pref_info_app_version">アプリバージョン</string>
     <string name="pref_info_source_code">ソースコード</string>

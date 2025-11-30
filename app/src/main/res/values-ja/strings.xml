@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc_priv">このデバイスで eUICC が見つかりません。\nデバイスによってはアプリのメニューからデュアル SIM を有効化する必要があります。</string>
+    <string name="no_euicc_priv">このデバイスで eSIM が見つかりません。\nデバイスによってはアプリのメニューからデュアル SIM を有効化する必要があります。</string>
     <string name="channel_type_telephony_manager">TelephonyManager (特権)</string>
     <string name="dsds">デュアル SIM</string>
     <string name="toast_dsds_switched">DSDS の状態が切り替わりました。モデムが再起動するまでお待ちください。</string>
@@ -19,5 +19,5 @@
     <string name="lui_download">eSIM をダウンロード</string>
     <!-- Preference -->
     <string name="pref_developer_telephony_manager_removable">TelephonyManager を常に使用可能にする</string>
-    <string name="pref_developer_telephony_manager_removable_desc">デフォルトでは、非特権モード (EasyEUICC など) での動作と一致させるためにリムーバブル eUICC に対しては OMAPI のみを試行します。ただし、一部デバイスでは正常に動作しない場合があります。このオプションを選択するとリムーバブル eUICC でも TelephonyManager の使用が強制されます。</string>
+    <string name="pref_developer_telephony_manager_removable_desc">デフォルトでは、非特権モード (EasyEUICC など) での動作と一致させるためにリムーバブル eSIM に対しては OMAPI のみを試行します。ただし、一部デバイスでは正常に動作しない場合があります。このオプションを選択するとリムーバブル eSIM でも TelephonyManager の使用が強制されます。</string>
 </resources>

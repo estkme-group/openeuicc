@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc">在此设备上未检测到此应用程序可访问的可插拔 eUICC 卡。请插入兼容卡或 USB 读卡器。</string>
+    <string name="no_euicc">在此设备上未检测到此应用程序可访问的可插拔 eSIM 卡。请插入兼容卡或 USB 读卡器。</string>
     <string name="no_profile">此 eSIM 上还没有配置文件</string>
     <string name="euicc_info_unknown">未知</string>
     <string name="notification_help">帮助</string>
@@ -83,7 +83,7 @@
     <string name="pref_advanced_verbose_logging_desc">详细日志中包含敏感信息，开启此功能后请仅与你信任的人共享你的日志。</string>
     <string name="pref_advanced_logs">日志</string>
     <string name="pref_advanced_logs_desc">查看应用程序的最新调试日志</string>
-    <string name="pref_developer_isdr_aid_list_desc">某些品牌的可移除 eUICC 可能会使用自己的非标准 ISD-R AID，导致第三方应用无法访问。此 App 可以尝试使用此列表中添加的非标准 AID，但不能保证它们一定有效。</string>
+    <string name="pref_developer_isdr_aid_list_desc">某些品牌的可移除 eSIM 可能会使用自己的非标准 ISD-R AID，导致第三方应用无法访问。此 App 可以尝试使用此列表中添加的非标准 AID，但不能保证它们一定有效。</string>
     <string name="pref_developer_es10x_mss_desc">全局 ES10x MSS</string>
     <string-array name="pref_developer_es10x_entry_keys">
         <item>最佳效率</item>
@@ -132,8 +132,8 @@
     <string name="download_wizard_diagnostics_last_apdu_exception">上次 APDU 错误:</string>
     <string name="download_wizard_diagnostics_save">保存</string>
     <string name="download_wizard_diagnostics_file_template">%s 的错误诊断</string>
-    <string name="euicc_info">eUICC 详情</string>
-    <string name="euicc_info_activity_title">eUICC 详情 (%s)</string>
+    <string name="euicc_info">eSIM 详情</string>
+    <string name="euicc_info_activity_title">eSIM 详情 (%s)</string>
     <string name="euicc_info_access_mode">访问方式</string>
     <string name="euicc_info_removable">可插拔</string>
     <string name="euicc_info_sgp22_version">SGP.22 版本</string>
@@ -167,7 +167,7 @@
     <string name="euicc_memory_reset_hint_text">请在此处输入「%s」以确认</string>
     <string name="euicc_memory_reset_confirm_text">我确认擦除 EID 以 %s 结尾的芯片，并了解此操作不可逆</string>
     <string name="euicc_memory_reset_invoke_button">擦除</string>
-    <string name="pref_developer_euicc_memory_reset">允许擦除 eUICC</string>
+    <string name="pref_developer_euicc_memory_reset">允许擦除 eSIM</string>
     <string name="pref_developer_euicc_memory_reset_desc">此操作是默认隐藏的危险操作。作为替代方案，您可以手动删除所有配置文件。</string>
     <string name="pref_developer_refresh_after_switch">向基带发送刷新命令</string>
     <string name="pref_developer_isdr_aid_list">自定义 ISD-R AID 列表</string>
