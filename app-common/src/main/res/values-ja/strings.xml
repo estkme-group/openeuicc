@@ -21,6 +21,7 @@
     <string name="profile_switch_timeout">eSIM チップがプロファイルの切り替えの待機中にタイムアウトしました。これはデバイスのモデムファームウェアのバグの可能性があります。機内モードに切り替えるかアプリを再起動、デバイスを再起動してください。</string>
     <string name="profile_switch_did_not_refresh">操作は成功しましたが、デバイスのモデムが更新を拒否しました。新しいプロファイルを使用するには機内モードに切り替えるか、再起動する必要があります。</string>
     <string name="toast_profile_enable_failed">新しい eSIM プロファイルに切り替えることができません。</string>
+    <string name="toast_profile_enable_cross_class">このプロファイルに切り替えるには、現在有効になっているプロファイルを手動で無効にしてください。</string>
     <string name="toast_profile_delete_confirm_text_mismatched">確認文字列が一致しません</string>
     <string name="toast_euicc_memory_reset_confirm_text_mismatched">確認文字列が一致しません</string>
     <string name="toast_euicc_memory_reset_finitshed">このチップは消去されました</string>
@@ -40,8 +41,8 @@
     <string name="task_profile_delete_failure">eSIM プロファイルの削除に失敗しました</string>
     <string name="task_profile_switch">eSIM プロファイルを切り替え中</string>
     <string name="task_profile_switch_failure">eSIM プロファイルの切り替えに失敗しました</string>
-    <string name="task_euicc_memory_reset">eSIM チップを消去中</string>
-    <string name="task_euicc_memory_reset_failure">eSIM チップの消去に失敗しました</string>
+    <string name="task_euicc_memory_reset">eSIM データを消去中</string>
+    <string name="task_euicc_memory_reset_failure">eSIM データの消去に失敗しました</string>
     <string name="profile_download">新しい eSIM</string>
     <string name="profile_download_server">サーバー (RSP / SM-DP+)</string>
     <string name="profile_download_code">アクティベーションコード</string>
@@ -94,6 +95,7 @@
     <string name="download_wizard_error_eid_not_supported">使用しているデバイスまたは eSIM チップの EID は、通信事業者によってサポートされていません。</string>
     <string name="download_wizard_error_eid_mismatch">この eSIM プロファイルは、別のデバイスにダウンロードされています。</string>
     <string name="download_wizard_error_profile_unreleased">この eSIM プロファイルは取り消されました。</string>
+    <string name="download_wizard_error_profile_unavailable">この eSIM プロファイルは利用できません。</string>
     <string name="download_wizard_error_matching_id_refused">アクティベーションコードが無効です。</string>
     <string name="download_wizard_error_profile_retries_exceeded">eSIM プロファイルのダウンロード試行回数の上限を超えました。</string>
     <string name="download_wizard_error_confirmation_code_missing">このプロファイルをダウンロードするには確認コードが必要です。</string>
@@ -140,12 +142,12 @@
     <string name="euicc_info_ci_gsma_live">GSMA ライブ CI</string>
     <string name="euicc_info_ci_gsma_test">GSMA テスト CI</string>
     <string name="euicc_info_ci_unknown">不明な eSIM CI</string>
-    <string name="euicc_memory_reset">eSIM を消去</string>
-    <string name="euicc_memory_reset_title">eSIM を消去</string>
+    <string name="euicc_memory_reset">eSIM を初期化</string>
+    <string name="euicc_memory_reset_title">eSIM を初期化</string>
     <string name="euicc_memory_reset_message">このチップ上のすべてのプロファイルを削除することを確認してください。この操作は元に戻せないことを理解してください。\n\nEID: %1$s\n\n%2$s</string>
     <string name="euicc_memory_reset_hint_text">確認のために「%s」を入力してください</string>
     <string name="euicc_memory_reset_confirm_text">EID が %s で終わるチップを消去することを確認し、この操作は元に戻せないことを理解してください</string>
-    <string name="euicc_memory_reset_invoke_button">消去</string>
+    <string name="euicc_memory_reset_invoke_button">初期化</string>
     <!-- eSIM Info -->
     <string name="euicc_info_yes">はい</string>
     <string name="euicc_info_no">いいえ</string>
@@ -183,7 +185,7 @@
     <string name="pref_developer_unfiltered_profile_list_desc">非運用のプロファイルも含めるようにします。</string>
     <string name="pref_developer_ignore_tls_certificate">SM-DP+ TLS 証明書を無視する</string>
     <string name="pref_developer_ignore_tls_certificate_desc">RSP サーバーで使用される TLS 証明書を受け入れます。</string>
-    <string name="pref_developer_euicc_memory_reset">eSIM の消去を許可</string>
+    <string name="pref_developer_euicc_memory_reset">eSIM の初期化を許可</string>
     <string name="pref_developer_euicc_memory_reset_desc">これは危険な操作であり、デフォルトでは非表示になっています。代わりとしてすべてのプロファイルを手動で削除することもできます。</string>
     <string name="pref_developer_es10x_mss_desc">グローバル ES10x MSS を設定します。</string>
     <string-array name="pref_developer_es10x_entry_keys">
@@ -195,4 +197,5 @@
     <string name="pref_info">情報</string>
     <string name="pref_info_app_version">アプリバージョン</string>
     <string name="pref_info_source_code">ソースコード</string>
+    <string name="channel_name_format_se">論理スロット %d, SE %d</string>
 </resources>

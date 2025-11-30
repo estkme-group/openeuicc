@@ -18,6 +18,7 @@
     <string name="profile_switch_timeout">等待 eSIM 切換設定檔時逾時。這可能是您手機基頻處理器韌體中的一個錯誤。請嘗試切換飛航模式、重新啟動應用程式或重新啟動手機</string>
     <string name="profile_switch_did_not_refresh">操作成功, 但是您手機的基頻處理器沒有重新整理。您可能需要切換飛航模式或重新啟動，以便使用新的設定檔。</string>
     <string name="toast_profile_enable_failed">無法切換到新的 eSIM 設定檔。</string>
+    <string name="toast_profile_enable_cross_class">請手動停用目前啟用的設定檔，以便切換到此設定檔。</string>
     <string name="toast_profile_delete_confirm_text_mismatched">輸入的確認文字不匹配</string>
     <string name="toast_iccid_copied">已複製 ICCID 到剪貼簿</string>
     <string name="toast_eid_copied">已複製 EID 到剪貼簿</string>
@@ -176,6 +177,7 @@
     <string name="download_wizard_error_eid_not_supported">您的裝置或 eSIM 晶片的 EID 不受您的電信業者支援。</string>
     <string name="download_wizard_error_eid_mismatch">此 eSIM 設定檔已被下載到另一台裝置上。</string>
     <string name="download_wizard_error_profile_unreleased">此 eSIM 設定檔已被撤銷。</string>
+    <string name="download_wizard_error_profile_unavailable">此 eSIM 設定檔不可用。</string>
     <string name="download_wizard_error_matching_id_refused">啟用碼無效。</string>
     <string name="download_wizard_error_profile_retries_exceeded">已超出 eSIM 設定檔的最大下載嘗試次數。</string>
     <string name="download_wizard_error_confirmation_code_missing">下載此設定檔需要確認碼。</string>
@@ -189,4 +191,5 @@
     <string name="download_wizard_error_suggest_insufficient_memory">請刪除一些未使用的 eSIM 設定檔，然後重試</string>
     <string name="download_wizard_error_suggest_contact_carrier">請聯絡您的電信業者尋求協助。</string>
     <string name="download_wizard_error_suggest_contact_reissue">請聯絡您的電信業者重新簽發此 eSIM 設定檔。</string>
+    <string name="channel_name_format_se">虛擬卡槽 %d, SE %d</string>
 </resources>

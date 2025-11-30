@@ -33,7 +33,7 @@
     <string name="profile_switch_did_not_refresh">The operation was successful, but your phone\'s modem refused to refresh. You might need to toggle airplane mode or reboot in order to use the new profile.</string>
 
     <string name="toast_profile_enable_failed">Cannot switch to new eSIM profile.</string>
-    <string name="toast_profile_enable_cross_class">To enable this profile, please first disable the currently enabled profile.</string>
+    <string name="toast_profile_enable_cross_class">Please disable the currently enabled profile manually in order to switch to this profile.</string>
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>
     <string name="toast_euicc_memory_reset_confirm_text_mismatched">Confirmation string mismatch</string>
     <string name="toast_euicc_memory_reset_finitshed">This chip has been erased</string>
@@ -113,7 +113,7 @@
     <string name="download_wizard_error_eid_not_supported">The EID of your device or eSIM chip is unsupported by your carrier.</string>
     <string name="download_wizard_error_eid_mismatch">This eSIM profile has been downloaded on another device.</string>
     <string name="download_wizard_error_profile_unreleased">This eSIM profile has been revoked.</string>
-    <string name="download_wizard_error_profile_unavailable">This eSIM profile has been unavailable.</string>
+    <string name="download_wizard_error_profile_unavailable">This eSIM profile is no longer available.</string>
     <string name="download_wizard_error_matching_id_refused">The activation code is invalid.</string>
     <string name="download_wizard_error_profile_retries_exceeded">The maximum number of download attempts for the eSIM profile has been exceeded.</string>
     <string name="download_wizard_error_confirmation_code_missing">Confirmation code is required to download this profile.</string>
