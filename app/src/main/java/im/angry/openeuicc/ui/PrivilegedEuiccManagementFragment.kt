@@ -5,13 +5,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.PopupMenu
 import im.angry.openeuicc.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 import net.typeblog.lpac_jni.LocalProfileInfo
 
-class PrivilegedEuiccManagementFragment: EuiccManagementFragment() {
+class PrivilegedEuiccManagementFragment : EuiccManagementFragment() {
     companion object {
-        fun newInstance(slotId: Int, portId: Int): EuiccManagementFragment =
-            newInstanceEuicc(PrivilegedEuiccManagementFragment::class.java, slotId, portId)
+        fun newInstance(
+            slotId: Int,
+            portId: Int,
+            seId: EuiccChannel.SecureElementId
+        ): EuiccManagementFragment =
+            newInstanceEuicc(PrivilegedEuiccManagementFragment::class.java, slotId, portId, seId)
     }
 
     private var isMEP = false

@@ -17,6 +17,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 import im.angry.openeuicc.util.*
@@ -24,10 +25,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
-class DownloadWizardActivity: BaseEuiccAccessActivity() {
+class DownloadWizardActivity : BaseEuiccAccessActivity() {
     data class DownloadWizardState(
         var currentStepFragmentClassName: String?,
-        var selectedLogicalSlot: Int,
+        var selectedSyntheticSlotId: Int,
         var smdp: String,
         var matchingId: String?,
         var confirmationCode: String?,
@@ -66,7 +67,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
 
         state = DownloadWizardState(
             currentStepFragmentClassName = null,
-            selectedLogicalSlot = intent.getIntExtra("selectedLogicalSlot", 0),
+            selectedSyntheticSlotId = intent.getIntExtra("selectedLogicalSlot", 0),
             smdp = "",
             matchingId = null,
             confirmationCode = null,
@@ -151,7 +152,7 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("currentStepFragmentClassName", state.currentStepFragmentClassName)
-        outState.putInt("selectedLogicalSlot", state.selectedLogicalSlot)
+        outState.putInt("selectedLogicalSlot", state.selectedSyntheticSlotId)
         outState.putString("smdp", state.smdp)
         outState.putString("matchingId", state.matchingId)
         outState.putString("confirmationCode", state.confirmationCode)
@@ -167,16 +168,20 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
             "currentStepFragmentClassName",
             state.currentStepFragmentClassName
         )
-        state.selectedLogicalSlot =
-            savedInstanceState.getInt("selectedLogicalSlot", state.selectedLogicalSlot)
+        state.selectedSyntheticSlotId =
+            savedInstanceState.getInt("selectedSyntheticSlotId", state.selectedSyntheticSlotId)
         state.smdp = savedInstanceState.getString("smdp", state.smdp)
         state.matchingId = savedInstanceState.getString("matchingId", state.matchingId)
         state.imei = savedInstanceState.getString("imei", state.imei)
         state.downloadStarted =
             savedInstanceState.getBoolean("downloadStarted", state.downloadStarted)
         state.downloadTaskID = savedInstanceState.getLong("downloadTaskID", state.downloadTaskID)
-        state.confirmationCode = savedInstanceState.getString("confirmationCode", state.confirmationCode)
-        state.confirmationCodeRequired = savedInstanceState.getBoolean("confirmationCodeRequired", state.confirmationCodeRequired)
+        state.confirmationCode =
+            savedInstanceState.getString("confirmationCode", state.confirmationCode)
+        state.confirmationCodeRequired = savedInstanceState.getBoolean(
+            "confirmationCodeRequired",
+            state.confirmationCodeRequired
+        )
     }
 
     private fun onPrevPressed() {
@@ -200,10 +205,13 @@ class DownloadWizardActivity: BaseEuiccAccessActivity() {
         progressBar.isIndeterminate = true
 
         lifecycleScope.launch(Dispatchers.Main) {
-            if (state.selectedLogicalSlot >= 0) {
+            if (state.selectedSyntheticSlotId >= 0) {
                 try {
+                    val (slotId, seId) = DownloadWizardSlotSelectFragment.decodeSyntheticSlotId(
+                        state.selectedSyntheticSlotId
+                    )
                     // This is run on IO by default
-                    euiccChannelManager.withEuiccChannel(state.selectedLogicalSlot) { channel ->
+                    euiccChannelManager.withEuiccChannel(slotId, seId) { channel ->
                         // Be _very_ sure that the channel we got is valid
                         if (!channel.valid) throw EuiccChannelManager.EuiccChannelNotFoundException()
                     }

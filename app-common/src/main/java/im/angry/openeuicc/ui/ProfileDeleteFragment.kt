@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.onStart
@@ -20,8 +21,8 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
         private const val FIELD_ICCID = "iccid"
         private const val FIELD_NAME = "name"
 
-        fun newInstance(slotId: Int, portId: Int, iccid: String, name: String) =
-            newInstanceEuicc(ProfileDeleteFragment::class.java, slotId, portId) {
+        fun newInstance(slotId: Int, portId: Int, seId: EuiccChannel.SecureElementId, iccid: String, name: String) =
+            newInstanceEuicc(ProfileDeleteFragment::class.java, slotId, portId, seId) {
                 putString(FIELD_ICCID, iccid)
                 putString(FIELD_NAME, name)
         }
@@ -88,7 +89,7 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
         requireParentFragment().lifecycleScope.launch {
             ensureEuiccChannelManager()
             euiccChannelManagerService.waitForForegroundTask()
-            euiccChannelManagerService.launchProfileDeleteTask(slotId, portId, iccid)
+            euiccChannelManagerService.launchProfileDeleteTask(slotId, portId, seId, iccid)
                 .onStart {
                     parentFragment?.notifyEuiccProfilesChanged()
                     runCatching(::dismiss)

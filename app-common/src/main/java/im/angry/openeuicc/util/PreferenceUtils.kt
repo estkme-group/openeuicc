@@ -50,13 +50,8 @@ internal object PreferenceConstants {
         # Refs: <https://euicc-manual.osmocom.org/docs/lpa/applet-id-oem/>
 
         # eUICC standard
+        # Even if this AID is deleted here, it will still be attempted as the last resort.
         $EUICC_DEFAULT_ISDR_AID
-
-        # ESTKme AUX (deprecated, use SE0 instead)
-        A06573746B6D65FFFFFFFF4953442D52
-
-        # ESTKme SE0
-        A06573746B6D65FFFF4953442D522030
 
         # eSIM.me
         A0000005591010000000008900000300
@@ -66,6 +61,17 @@ internal object PreferenceConstants {
 
         # Xesim
         A0000005591010FFFFFFFF8900000177
+        
+        # ESTKme SE0
+        # For multi-SE eSTK.me products, this will always be attempted even if removed from the list
+        ${ESTKme.ESTK_SE0_AID.encodeHex()}
+        
+        # ESTKme SE1
+        # For multi-SE eSTK.me products, this will always be attempted even if removed from the list
+        ${ESTKme.ESTK_SE1_AID.encodeHex()}
+        
+        # ESTKme AUX (deprecated, use SE0 instead)
+        A06573746B6D65FFFFFFFF4953442D52
     """.trimIndent()
 }
 

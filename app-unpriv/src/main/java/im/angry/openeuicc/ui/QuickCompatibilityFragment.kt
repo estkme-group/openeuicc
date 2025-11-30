@@ -148,7 +148,7 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
         if (omapiSlots.isEmpty()) {
             return CompatibilityResult(Compatibility.NOT_COMPATIBLE)
         }
-        val formatChannelName = appContainer.customizableTextProvider::formatInternalChannelName
+        val formatChannelName = appContainer.customizableTextProvider::formatNonUsbChannelName
         return CompatibilityResult(
             Compatibility.COMPATIBLE,
             slotsOmapi = omapiSlots.map(formatChannelName),

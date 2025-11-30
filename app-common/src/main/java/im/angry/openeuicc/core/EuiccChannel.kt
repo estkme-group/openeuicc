@@ -1,5 +1,7 @@
 package im.angry.openeuicc.core
 
+import android.os.Parcel
+import android.os.Parcelable
 import im.angry.openeuicc.util.*
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
@@ -12,6 +14,59 @@ interface EuiccChannel {
     val slotId: Int // PHYSICAL slot
     val logicalSlotId: Int
     val portId: Int
+
+    /**
+     * A semi-obscure wrapper over the integer ID of a secure element on a card.
+     *
+     * Because the ID is arbitrary, this is intended to discourage the use of the
+     * integer value directly. Additionally, it prevents accidentally calling the
+     * wrong function in EuiccChannelManager with a ton of integer parameters.
+     */
+    class SecureElementId private constructor(val id: Int) : Parcelable {
+        companion object {
+            val DEFAULT = SecureElementId(0)
+
+            /**
+             * Create a SecureElementId from an integer ID. You should not call this directly
+             * unless you know what you're doing.
+             *
+             * This is currently only ever used in the download flow.
+             */
+            fun createFromInt(id: Int): SecureElementId =
+                SecureElementId(id)
+
+            @Suppress("unused")
+            @JvmField
+            val CREATOR = object : Parcelable.Creator<SecureElementId> {
+                override fun createFromParcel(parcel: Parcel): SecureElementId =
+                    createFromInt(parcel.readInt())
+
+                override fun newArray(size: Int): Array<SecureElementId?> = arrayOfNulls(size)
+            }
+        }
+
+        override fun hashCode(): Int =
+            id.hashCode()
+
+        override fun equals(other: Any?): Boolean =
+            if (other is SecureElementId) {
+                this.id == other.id
+            } else {
+                super.equals(other)
+            }
+
+        override fun describeContents(): Int = id
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(id)
+        }
+    }
+
+    /**
+     * Some chips support multiple SEs on one chip. The seId here is intended
+     * to distinguish channels opened from these different SEs.
+     */
+    val seId: SecureElementId
 
     val lpa: LocalProfileAssistant
 

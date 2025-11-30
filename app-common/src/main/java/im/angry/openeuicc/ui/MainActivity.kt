@@ -112,10 +112,12 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
+
             R.id.reload -> {
                 refresh()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
 
@@ -149,21 +151,27 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         euiccChannelManager.flowInternalEuiccPorts().onEach { (slotId, portId) ->
             Log.d(TAG, "slot $slotId port $portId")
 
-            euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
-                if (preferenceRepository.verboseLoggingFlow.first()) {
-                    Log.d(TAG, channel.lpa.eID)
-                }
-                // Request the system to refresh the list of profiles every time we start
-                // Note that this is currently supposed to be no-op when unprivileged,
-                // but it could change in the future
-                euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
+            euiccChannelManager.flowEuiccSecureElements(slotId, portId).onEach { seId ->
+                euiccChannelManager.withEuiccChannel(slotId, portId, seId) { channel ->
+                    if (preferenceRepository.verboseLoggingFlow.first()) {
+                        Log.d(TAG, channel.lpa.eID)
+                    }
+                    // Request the system to refresh the list of profiles every time we start
+                    // Note that this is currently supposed to be no-op when unprivileged,
+                    // but it could change in the future
+                    euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
 
-                val channelName =
-                    appContainer.customizableTextProvider.formatInternalChannelName(channel.logicalSlotId)
-                newPages.add(Page(channel.logicalSlotId, channelName) {
-                    appContainer.uiComponentFactory.createEuiccManagementFragment(slotId, portId)
-                })
-            }
+                    val channelName =
+                        appContainer.customizableTextProvider.formatNonUsbChannelName(channel.logicalSlotId)
+                    newPages.add(Page(channel.logicalSlotId, channelName) {
+                        appContainer.uiComponentFactory.createEuiccManagementFragment(
+                            slotId,
+                            portId,
+                            seId
+                        )
+                    })
+                }
+            }.collect()
         }.collect()
 
         // If USB readers exist, add them at the very last

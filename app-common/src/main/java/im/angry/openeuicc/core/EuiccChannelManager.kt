@@ -38,6 +38,14 @@ interface EuiccChannelManager {
     fun flowAllOpenEuiccPorts(): Flow<Pair<Int, Int>>
 
     /**
+     * Iterate over all the Secure Elements available on one eUICC.
+     *
+     * This is going to almost always return only 1 result, except in the case where
+     * a card has multiple SEs.
+     */
+    fun flowEuiccSecureElements(slotId: Int, portId: Int): Flow<EuiccChannel.SecureElementId>
+
+    /**
      * Scan all possible USB devices for CCID readers that may contain eUICC cards.
      * If found, try to open it for access, and add it to the internal EuiccChannel cache
      * as a "port" with id 99. When user interaction is required to obtain permission
@@ -81,14 +89,16 @@ interface EuiccChannelManager {
     suspend fun <R> withEuiccChannel(
         physicalSlotId: Int,
         portId: Int,
+        seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT,
         fn: suspend (EuiccChannel) -> R
     ): R
 
     /**
-     * Same as withEuiccChannel(Int, Int, (EuiccChannel) -> R) but instead uses logical slot ID
+     * Same as withEuiccChannel(Int, Int, SecureElementId, (EuiccChannel) -> R) but instead uses logical slot ID
      */
     suspend fun <R> withEuiccChannel(
         logicalSlotId: Int,
+        seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT,
         fn: suspend (EuiccChannel) -> R
     ): R
 

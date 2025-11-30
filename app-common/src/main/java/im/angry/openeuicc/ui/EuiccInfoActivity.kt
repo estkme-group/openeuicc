@@ -43,6 +43,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
     private lateinit var infoList: RecyclerView
 
     private var logicalSlotId: Int = -1
+    private var seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT
 
     data class Item(
         @StringRes
@@ -67,11 +68,17 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
 
         logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
+        seId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("seId", EuiccChannel.SecureElementId::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra("seId")
+        } ?: EuiccChannel.SecureElementId.DEFAULT
 
         val channelTitle = if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
             getString(R.string.channel_type_usb)
         } else {
-            appContainer.customizableTextProvider.formatInternalChannelName(logicalSlotId)
+            appContainer.customizableTextProvider.formatNonUsbChannelName(logicalSlotId)
         }
 
         title = getString(R.string.euicc_info_activity_title, channelTitle)
@@ -99,7 +106,7 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
         lifecycleScope.launch {
             (infoList.adapter!! as EuiccInfoAdapter).euiccInfoItems =
-                euiccChannelManager.withEuiccChannel(logicalSlotId, ::buildEuiccInfoItems)
+                euiccChannelManager.withEuiccChannel(logicalSlotId, seId, fn = ::buildEuiccInfoItems)
 
             swipeRefresh.isRefreshing = false
         }
@@ -115,7 +122,15 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         }
         channel.tryParseEuiccVendorInfo()?.let { vendorInfo ->
             vendorInfo.skuName?.let { add(Item(R.string.euicc_info_sku, it)) }
-            vendorInfo.serialNumber?.let { add(Item(R.string.euicc_info_sn, it, copiedToastResId = R.string.toast_sn_copied)) }
+            vendorInfo.serialNumber?.let {
+                add(
+                    Item(
+                        R.string.euicc_info_sn,
+                        it,
+                        copiedToastResId = R.string.toast_sn_copied
+                    )
+                )
+            }
             vendorInfo.firmwareVersion?.let { add(Item(R.string.euicc_info_fw_ver, it)) }
         }
         channel.lpa.euiccInfo2?.let { info ->

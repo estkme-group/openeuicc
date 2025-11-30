@@ -16,19 +16,46 @@ private val EUICC_VENDORS: Array<EuiccVendor> = arrayOf(ESTKme(), SIMLink())
 fun EuiccChannel.tryParseEuiccVendorInfo(): EuiccVendorInfo? =
     EUICC_VENDORS.firstNotNullOfOrNull { it.tryParseEuiccVendorInfo(this) }
 
-interface EuiccVendor {
-    fun tryParseEuiccVendorInfo(channel: EuiccChannel): EuiccVendorInfo?
+fun EuiccChannel.queryVendorAidListTransformation(aidList: List<ByteArray>): Pair<List<ByteArray>, VendorAidDecider>? =
+    EUICC_VENDORS.firstNotNullOfOrNull { it.transformAidListIfNeeded(this, aidList) }
+
+fun interface VendorAidDecider {
+    /**
+     * Given a list of already opened AIDs, should we still attempt to open the next?
+     */
+    fun shouldOpenMore(openedAids: List<ByteArray>, nextAid: ByteArray): Boolean
 }
 
-private class ESTKme : EuiccVendor {
+interface EuiccVendor {
+    fun tryParseEuiccVendorInfo(channel: EuiccChannel): EuiccVendorInfo?
+
+    /**
+     * Removable eSIM products from some vendors may prefer a vendor-specific list of AIDs or
+     * a specific ordering. For example, multi-SE products from eSTK.me might prefer us trying
+     * SE0 and SE1 AIDs first instead of the generic GSMA ISD-R AID. This method is intended
+     * to implement these vendor-specific cases.
+     *
+     * This method is called on an already opened `EuiccChannel`. If the method returns a non-null
+     * value, the channel will be closed and the process that attempts to open all channels will
+     * be restarted from the beginning. The method will not be called again for the same chip,
+     * but it should still ensure idempotency when called with an already-transformed input.
+     *
+     * The second return value of this method is used to decide when we should stop attempting more
+     * AIDs from the list.
+     */
+    fun transformAidListIfNeeded(
+        referenceChannel: EuiccChannel,
+        aidList: List<ByteArray>
+    ): Pair<List<ByteArray>, VendorAidDecider>? = null
+}
+
+class ESTKme : EuiccVendor {
     companion object {
         private val PRODUCT_AID = "A06573746B6D65FFFFFFFFFFFF6D6774".decodeHex()
-    }
 
-    private fun checkAtr(channel: EuiccChannel): Boolean =
-        (channel.apduInterface as? ApduInterfaceAtrProvider)
-            ?.atr?.decodeToString()?.contains("estk.me")
-            ?: false
+        val ESTK_SE0_AID = "A06573746B6D65FFFF4953442D522030".decodeHex()
+        val ESTK_SE1_AID = "A06573746B6D65FFFF4953442D522031".decodeHex()
+    }
 
     private fun decodeAsn1String(b: ByteArray): String? {
         if (b.size < 2) return null
@@ -37,8 +64,6 @@ private class ESTKme : EuiccVendor {
     }
 
     override fun tryParseEuiccVendorInfo(channel: EuiccChannel): EuiccVendorInfo? {
-        if (!checkAtr(channel)) return null
-
         val iface = channel.apduInterface
         return try {
             iface.withLogicalChannel(PRODUCT_AID) { transmit ->
@@ -59,9 +84,38 @@ private class ESTKme : EuiccVendor {
             null
         }
     }
+
+    override fun transformAidListIfNeeded(
+        referenceChannel: EuiccChannel,
+        aidList: List<ByteArray>
+    ): Pair<List<ByteArray>, VendorAidDecider>? {
+        try {
+            referenceChannel.apduInterface.withLogicalChannel(PRODUCT_AID) {}
+        } catch (_: Exception) {
+            // Not eSTK!
+            return null
+        }
+
+        // If we get here, this is eSTK, and we need to rearrange aidList such that:
+        //   1. SE0 and SE1 AIDs are _always_ included in the list
+        //   2. SE0 and SE1 AIDs are always sorted at the beginning of the list
+        val expected = listOf(ESTK_SE0_AID, ESTK_SE1_AID, *aidList.filter {
+            !it.contentEquals(ESTK_SE0_AID) && !it.contentEquals(ESTK_SE1_AID)
+        }.toTypedArray())
+
+        return if (expected == aidList) {
+            null
+        } else {
+            Pair(expected, VendorAidDecider { openedAids, nextAid ->
+                // Don't open any more channels if we have reached the GSMA default AID and at least 1
+                // eSTK AID has been opened (note that above we re-sorted them to the top of the list)
+                !(openedAids.isNotEmpty() && nextAid.contentEquals(EUICC_DEFAULT_ISDR_AID.decodeHex()))
+            })
+        }
+    }
 }
 
-private class SIMLink : EuiccVendor {
+class SIMLink : EuiccVendor {
     companion object {
         private val EID_PATTERN = Regex("^89044045(84|21)67274948")
     }

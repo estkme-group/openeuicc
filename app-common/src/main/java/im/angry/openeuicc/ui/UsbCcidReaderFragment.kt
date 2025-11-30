@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
@@ -156,7 +157,9 @@ class UsbCcidReaderFragment : Fragment(), OpenEuiccContextMarker {
                     R.id.child_container,
                     appContainer.uiComponentFactory.createEuiccManagementFragment(
                         slotId = EuiccChannelManager.USB_CHANNEL_ID,
-                        portId = 0
+                        portId = 0,
+                        // TODO: What if a USB card has multiple SEs?
+                        seId = EuiccChannel.SecureElementId.DEFAULT
                     )
                 )
             }

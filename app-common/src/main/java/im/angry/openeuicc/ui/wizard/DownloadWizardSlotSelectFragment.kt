@@ -14,8 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -24,19 +27,28 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
     companion object {
         const val LOW_NVRAM_THRESHOLD =
             30 * 1024 // < 30 KiB, alert about potential download failure
+
+        fun decodeSyntheticSlotId(id: Int): Pair<Int, EuiccChannel.SecureElementId> =
+            Pair(id shr 16, EuiccChannel.SecureElementId.createFromInt(id and 0xFF))
     }
 
     private data class SlotInfo(
         val logicalSlotId: Int,
         val isRemovable: Boolean,
         val hasMultiplePorts: Boolean,
+        val hasMultipleSEs: Boolean,
         val portId: Int,
+        val seId: EuiccChannel.SecureElementId,
         val eID: String,
         val freeSpace: Int,
         val imei: String,
         val enabledProfileName: String?,
         val intrinsicChannelName: String?,
-    )
+    ) {
+        // A synthetic slot ID used to uniquely identify this slot + SE chip in the download process
+        // We assume we don't have anywhere near 2^16 ports...
+        val syntheticSlotId: Int = (logicalSlotId shl 16) + seId.id
+    }
 
     private var loaded = false
 
@@ -85,7 +97,12 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         recyclerView.adapter = adapter
         recyclerView.layoutManager =
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
-        recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL))
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                LinearLayoutManager.VERTICAL
+            )
+        )
         return view
     }
 
@@ -97,37 +114,43 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
     }
 
     @SuppressLint("NotifyDataSetChanged", "MissingPermission")
+    @OptIn(kotlinx.coroutines.FlowPreview::class)
     private suspend fun init() {
         ensureEuiccChannelManager()
         showProgressBar(-1)
-        val slots = euiccChannelManager.flowAllOpenEuiccPorts().map { (slotId, portId) ->
-            euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
-                SlotInfo(
-                    channel.logicalSlotId,
-                    channel.port.card.isRemovable,
-                    channel.port.card.ports.size > 1,
-                    channel.portId,
-                    channel.lpa.eID,
-                    channel.lpa.euiccInfo2?.freeNvram ?: 0,
-                    try {
-                        telephonyManager.getImei(channel.logicalSlotId) ?: ""
-                    } catch (e: Exception) {
-                        ""
-                    },
-                    channel.lpa.profiles.enabled?.displayName,
-                    channel.intrinsicChannelName,
-                )
+        val slots = euiccChannelManager.flowAllOpenEuiccPorts().flatMapConcat { (slotId, portId) ->
+            val ses = euiccChannelManager.flowEuiccSecureElements(slotId, portId).toList()
+            ses.asFlow().map { seId ->
+                euiccChannelManager.withEuiccChannel(slotId, portId, seId) { channel ->
+                    SlotInfo(
+                        channel.logicalSlotId,
+                        channel.port.card.isRemovable,
+                        channel.port.card.ports.size > 1,
+                        ses.size > 1,
+                        channel.portId,
+                        channel.seId,
+                        channel.lpa.eID,
+                        channel.lpa.euiccInfo2?.freeNvram ?: 0,
+                        try {
+                            telephonyManager.getImei(channel.logicalSlotId) ?: ""
+                        } catch (e: Exception) {
+                            ""
+                        },
+                        channel.lpa.profiles.enabled?.displayName,
+                        channel.intrinsicChannelName,
+                    )
+                }
             }
-        }.toList().sortedBy { it.logicalSlotId }
+        }.toList().sortedBy { it.syntheticSlotId }
         adapter.slots = slots
 
         // Ensure we always have a selected slot by default
-        val selectedIdx = slots.indexOfFirst { it.logicalSlotId == state.selectedLogicalSlot }
+        val selectedIdx = slots.indexOfFirst { it.syntheticSlotId == state.selectedSyntheticSlotId }
         adapter.currentSelectedIdx = if (selectedIdx > 0) {
             selectedIdx
         } else {
             if (slots.isNotEmpty()) {
-                state.selectedLogicalSlot = slots[0].logicalSlotId
+                state.selectedSyntheticSlotId = slots[0].syntheticSlotId
             }
             0
         }
@@ -167,7 +190,8 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             adapter.notifyItemChanged(lastIdx)
             adapter.notifyItemChanged(curIdx)
             // Selected index isn't logical slot ID directly, needs a conversion
-            state.selectedLogicalSlot = adapter.slots[adapter.currentSelectedIdx].logicalSlotId
+            state.selectedSyntheticSlotId =
+                adapter.slots[adapter.currentSelectedIdx].syntheticSlotId
             state.imei = adapter.slots[adapter.currentSelectedIdx].imei
         }
 
@@ -187,11 +211,17 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
 
             title.text = if (item.logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
                 item.intrinsicChannelName ?: root.context.getString(R.string.channel_type_usb)
+            } else if (item.hasMultipleSEs) {
+                appContainer.customizableTextProvider.formatNonUsbChannelNameWithSeId(
+                    item.logicalSlotId,
+                    item.seId
+                )
             } else {
-                appContainer.customizableTextProvider.formatInternalChannelName(item.logicalSlotId)
+                appContainer.customizableTextProvider.formatNonUsbChannelName(item.logicalSlotId)
             }
             eID.text = item.eID
-            activeProfile.text = item.enabledProfileName ?: root.context.getString(R.string.profile_no_enabled_profile)
+            activeProfile.text = item.enabledProfileName
+                ?: root.context.getString(R.string.profile_no_enabled_profile)
             freeSpace.text = formatFreeSpace(item.freeSpace)
             checkBox.isChecked = adapter.currentSelectedIdx == idx
         }
@@ -205,7 +235,8 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
             get() = slots[currentSelectedIdx]
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlotItemHolder {
-            val root = LayoutInflater.from(parent.context).inflate(R.layout.download_slot_item, parent, false)
+            val root = LayoutInflater.from(parent.context)
+                .inflate(R.layout.download_slot_item, parent, false)
             return SlotItemHolder(root)
         }
 

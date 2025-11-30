@@ -79,9 +79,10 @@ fun LocalProfileAssistant.disableActiveProfileKeepIccId(refresh: Boolean): Strin
 suspend inline fun EuiccChannelManager.beginTrackedOperation(
     slotId: Int,
     portId: Int,
+    seId: EuiccChannel.SecureElementId,
     op: () -> Boolean
 ) {
-    val latestSeq = withEuiccChannel(slotId, portId) { channel ->
+    val latestSeq = withEuiccChannel(slotId, portId, seId) { channel ->
         channel.lpa.notifications.firstOrNull()?.seqNumber
             ?: 0
     }
@@ -91,7 +92,7 @@ suspend inline fun EuiccChannelManager.beginTrackedOperation(
         try {
             // Note that the exact instance of "channel" might have changed here if reconnected;
             // this is why we need to use two distinct calls to withEuiccChannel()
-            withEuiccChannel(slotId, portId) { channel ->
+            withEuiccChannel(slotId, portId, seId) { channel ->
                 channel.lpa.notifications.filter { it.seqNumber > latestSeq }.forEach {
                     Log.d(TAG, "Handling notification $it")
                     channel.lpa.handleNotification(it.seqNumber)

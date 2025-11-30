@@ -20,7 +20,8 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
 
     override suspend fun tryOpenEuiccChannel(
         port: UiccPortInfoCompat,
-        isdrAid: ByteArray
+        isdrAid: ByteArray,
+        seId: EuiccChannel.SecureElementId,
     ): EuiccChannel? = try {
         if (port.portIndex != 0) {
             Log.w(
@@ -45,6 +46,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
                 context.preferenceRepository.verboseLoggingFlow
             ),
             isdrAid,
+            seId,
             context.preferenceRepository.verboseLoggingFlow,
             context.preferenceRepository.ignoreTLSCertificateFlow,
             context.preferenceRepository.es10xMssFlow,
@@ -60,7 +62,8 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
 
     override fun tryOpenUsbEuiccChannel(
         ccidCtx: UsbCcidContext,
-        isdrAid: ByteArray
+        isdrAid: ByteArray,
+        seId: EuiccChannel.SecureElementId
     ): EuiccChannel? = try {
         EuiccChannelImpl(
             context.getString(R.string.channel_type_usb),
@@ -70,6 +73,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
                 ccidCtx
             ),
             isdrAid,
+            seId,
             context.preferenceRepository.verboseLoggingFlow,
             context.preferenceRepository.ignoreTLSCertificateFlow,
             context.preferenceRepository.es10xMssFlow,

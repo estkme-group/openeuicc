@@ -153,7 +153,12 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
         } else {
             euiccChannelManagerService.waitForForegroundTask()
 
-            val (slotId, portId) = euiccChannelManager.withEuiccChannel(state.selectedLogicalSlot) { channel ->
+            val (logicalSlotId, seId) = DownloadWizardSlotSelectFragment.decodeSyntheticSlotId(state.selectedSyntheticSlotId)
+
+            val (slotId, portId) = euiccChannelManager.withEuiccChannel(
+                logicalSlotId,
+                seId
+            ) { channel ->
                 Pair(channel.slotId, channel.portId)
             }
 
@@ -163,6 +168,7 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
             val ret = euiccChannelManagerService.launchProfileDownloadTask(
                 slotId,
                 portId,
+                seId,
                 state.smdp,
                 state.matchingId,
                 state.confirmationCode,

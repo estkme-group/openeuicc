@@ -9,6 +9,7 @@
     <string name="profile_no_enabled_profile">Unknown</string>
 
     <string name="channel_name_format">Logical Slot %d</string>
+    <string name="channel_name_format_se">Logical Slot %d, SE %d</string>
     <string name="channel_type_usb" translatable="false">USB</string>
     <string name="channel_type_omapi" translatable="false">OpenMobile API (OMAPI)</string>
 

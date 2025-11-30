@@ -1,5 +1,7 @@
 package im.angry.openeuicc.di
 
+import im.angry.openeuicc.core.EuiccChannel
+
 interface CustomizableTextProvider {
     /**
      * Explanation string for when no eUICC is found on the device.
@@ -13,8 +15,13 @@ interface CustomizableTextProvider {
     val profileSwitchingTimeoutMessage: String
 
     /**
-     * Format the name of a logical slot; internal only -- not intended for
-     * other channels such as USB.
+     * Format the name of a logical slot -- not for USB channels
      */
-    fun formatInternalChannelName(logicalSlotId: Int): String
+    fun formatNonUsbChannelName(logicalSlotId: Int): String
+
+    /**
+     * Format the name of a logical slot with a SE ID, in case of multi-SE chips; currently
+     * this is used in the download flow to distinguish between them on the same chip.
+     */
+    fun formatNonUsbChannelNameWithSeId(logicalSlotId: Int, seId: EuiccChannel.SecureElementId): String
 }
