@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_euicc">このアプリでアクセスできるリムーバブル v カードがデバイス上で検出されていません。互換性のあるカード挿入または USB リーダーを接続してください。</string>
+    <string name="no_euicc">このアプリでアクセスできるリムーバブル eSIM カードがデバイス上で検出されていません。互換性のあるカード挿入または USB リーダーを接続してください。</string>
     <string name="no_profile">この eSIM にはプロファイルがありません。</string>
     <string name="notification_help">ヘルプ</string>
     <string name="profile_reload_slots">スロットを再読み込み</string>

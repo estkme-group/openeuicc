@@ -18,7 +18,7 @@
     <string name="profile_switch_timeout">等待 eSIM 芯片切换配置文件时超时。这可能是您手机基带固件中的一个错误。请尝试切换飞行模式、重新启动应用程序或重新启动手机</string>
     <string name="profile_switch_did_not_refresh">操作成功, 但是您手机的基带拒绝刷新。您可能需要切换飞行模式或重新启动，以便使用新的配置文件。</string>
     <string name="toast_profile_enable_failed">无法切换到新的 eSIM 配置文件。</string>
-    <string name="toast_profile_enable_cross_class">"请手动禁用当前启用的配置文件，以便切换到此配置文件。 "</string>
+    <string name="toast_profile_enable_cross_class">请手动禁用当前启用的配置文件，以便切换到此配置文件。</string>
     <string name="toast_profile_delete_confirm_text_mismatched">输入的确认文本不匹配</string>
     <string name="toast_iccid_copied">已复制 ICCID 到剪贴板</string>
     <string name="toast_eid_copied">已复制 EID 到剪贴板</string>
