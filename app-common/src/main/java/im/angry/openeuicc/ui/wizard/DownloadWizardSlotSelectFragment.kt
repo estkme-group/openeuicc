@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,9 +24,6 @@ import kotlinx.coroutines.launch
 
 class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
     companion object {
-        const val LOW_NVRAM_THRESHOLD =
-            30 * 1024 // < 30 KiB, alert about potential download failure
-
         fun decodeSyntheticSlotId(id: Int): Pair<Int, EuiccChannel.SecureElementId> =
             Pair(id shr 16, EuiccChannel.SecureElementId.createFromInt(id and 0xFF))
     }
@@ -67,25 +63,6 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         }
 
     override fun createPrevFragment(): DownloadWizardActivity.DownloadWizardStepFragment? = null
-
-    override fun beforeNext() {
-        super.beforeNext()
-
-        if (adapter.selected.freeSpace < LOW_NVRAM_THRESHOLD) {
-            val activity = requireActivity()
-
-            AlertDialog.Builder(requireContext()).apply {
-                setTitle(R.string.profile_download_low_nvram_title)
-                setMessage(R.string.profile_download_low_nvram_message)
-                setCancelable(true)
-                setPositiveButton(android.R.string.ok, null)
-                setNegativeButton(android.R.string.cancel) { _, _ ->
-                    activity.finish()
-                }
-                show()
-            }
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

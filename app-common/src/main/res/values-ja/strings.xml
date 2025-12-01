@@ -49,8 +49,6 @@
     <string name="profile_download_confirmation_code">確認コード (オプション)</string>
     <string name="profile_download_confirmation_code_required">確認コード (必須)</string>
     <string name="profile_download_imei">IMEI (オプション)</string>
-    <string name="profile_download_low_nvram_title">残りの容量が少量です</string>
-    <string name="profile_download_low_nvram_message">残り容量が少ないため、このプロファイルのダウンロードに失敗する可能性があります。</string>
     <string name="profile_download_no_lpa_string">クリップボードに LPA コードがありません</string>
     <string name="profile_download_incorrect_lpa_string">解析できません</string>
     <string name="profile_download_incorrect_lpa_string_message">QR コードまたはクリップボードの内容を LPA コードとして解析できませんでした。</string>

@@ -65,8 +65,6 @@
     <string name="profile_download_confirmation_code_required">Confirmation Code (Required)</string>
     <string name="profile_download_imei">IMEI (Optional)</string>
 
-    <string name="profile_download_low_nvram_title">Low remaining capacity</string>
-    <string name="profile_download_low_nvram_message">This profile may fail to download due to low remaining capacity.</string>
     <string name="profile_download_no_lpa_string">No LPA code found in clipboard</string>
     <string name="profile_download_incorrect_lpa_string">Unable to parse</string>
     <string name="profile_download_incorrect_lpa_string_message">Could not parse QR code or clipboard content as a LPA code.</string>

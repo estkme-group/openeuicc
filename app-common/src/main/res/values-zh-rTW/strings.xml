@@ -45,8 +45,6 @@
     <string name="euicc_info_fw_ver">產品韌體版本</string>
     <string name="profile_download_confirmation_code_required">確認碼 (必需)</string>
     <string name="profile_download_imei">IMEI (可選)</string>
-    <string name="profile_download_low_nvram_title">剩餘空間不足</string>
-    <string name="profile_download_low_nvram_message">目前晶片的剩餘空間不足，可能導致設定檔下載失敗。\n是否繼續下載？</string>
     <string name="download_wizard_error_suggest_network_unreachable">請連線到其他網路（例如在 Wi-Fi 和行動網路之間切換）後重試。</string>
     <string name="logs_saved_message">日誌已儲存到指定路徑。需要透過其他 App 分享嗎？</string>
     <string name="profile_rename_new_name">新名稱</string>
