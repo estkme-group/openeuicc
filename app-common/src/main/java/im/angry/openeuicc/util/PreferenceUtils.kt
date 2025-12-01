@@ -37,7 +37,6 @@ internal object PreferenceKeys {
     val REFRESH_AFTER_SWITCH = booleanPreferencesKey("refresh_after_switch")
     val UNFILTERED_PROFILE_LIST = booleanPreferencesKey("unfiltered_profile_list")
     val IGNORE_TLS_CERTIFICATE = booleanPreferencesKey("ignore_tls_certificate")
-    val EUICC_MEMORY_RESET = booleanPreferencesKey("euicc_memory_reset")
     val ISDR_AID_LIST = stringPreferencesKey("isdr_aid_list")
     val ES10X_MSS = intPreferencesKey("es10x_mss")
 }
@@ -91,7 +90,6 @@ open class PreferenceRepository(private val context: Context) {
     val developerOptionsEnabledFlow = bindFlow(PreferenceKeys.DEVELOPER_OPTIONS_ENABLED, false)
     val unfilteredProfileListFlow = bindFlow(PreferenceKeys.UNFILTERED_PROFILE_LIST, false)
     val ignoreTLSCertificateFlow = bindFlow(PreferenceKeys.IGNORE_TLS_CERTIFICATE, false)
-    val euiccMemoryResetFlow = bindFlow(PreferenceKeys.EUICC_MEMORY_RESET, false)
     val isdrAidListFlow = bindFlow(
         PreferenceKeys.ISDR_AID_LIST,
         PreferenceConstants.DEFAULT_AID_LIST,

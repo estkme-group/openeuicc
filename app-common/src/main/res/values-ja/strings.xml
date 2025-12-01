@@ -183,8 +183,6 @@
     <string name="pref_developer_unfiltered_profile_list_desc">非運用のプロファイルも含めるようにします。</string>
     <string name="pref_developer_ignore_tls_certificate">SM-DP+ TLS 証明書を無視する</string>
     <string name="pref_developer_ignore_tls_certificate_desc">RSP サーバーで使用される TLS 証明書を受け入れます。</string>
-    <string name="pref_developer_euicc_memory_reset">eSIM の初期化を許可</string>
-    <string name="pref_developer_euicc_memory_reset_desc">これは危険な操作であり、デフォルトでは非表示になっています。代わりとしてすべてのプロファイルを手動で削除することもできます。</string>
     <string name="pref_developer_es10x_mss_desc">グローバル ES10x MSS を設定します。</string>
     <string-array name="pref_developer_es10x_entry_keys">
         <item>高効率</item>

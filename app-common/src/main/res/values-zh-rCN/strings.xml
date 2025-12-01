@@ -166,8 +166,6 @@
     <string name="euicc_memory_reset_hint_text">请在此处输入「%s」以确认</string>
     <string name="euicc_memory_reset_confirm_text">我确认擦除 EID 以 %s 结尾的芯片，并了解此操作不可逆</string>
     <string name="euicc_memory_reset_invoke_button">擦除</string>
-    <string name="pref_developer_euicc_memory_reset">允许擦除 eSIM</string>
-    <string name="pref_developer_euicc_memory_reset_desc">此操作是默认隐藏的危险操作。作为替代方案，您可以手动删除所有配置文件。</string>
     <string name="pref_developer_refresh_after_switch">向基带发送刷新命令</string>
     <string name="pref_developer_isdr_aid_list">自定义 ISD-R AID 列表</string>
     <string name="isdr_aid_list_restore_defaults">重置</string>

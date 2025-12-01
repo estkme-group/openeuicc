@@ -63,6 +63,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     private lateinit var profileList: RecyclerView
     private var logicalSlotId: Int = -1
     private lateinit var eid: String
+    private var enabledProfile: LocalProfileInfo? = null
 
     private val adapter = EuiccProfileAdapter()
 
@@ -146,7 +147,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         menu.findItem(R.id.euicc_info).isVisible =
             logicalSlotId != -1
         menu.findItem(R.id.euicc_memory_reset).isVisible =
-            runBlocking { preferenceRepository.euiccMemoryResetFlow.first() }
+            enabledProfile == null
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -214,6 +215,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         val profiles = withEuiccChannel { channel ->
             logicalSlotId = channel.logicalSlotId
             eid = channel.lpa.eID
+            enabledProfile = channel.lpa.profiles.enabled
             euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
             if (unfilteredProfileListFlow.value)
                 channel.lpa.profiles

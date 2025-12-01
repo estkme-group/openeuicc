@@ -81,9 +81,6 @@ open class SettingsFragment: PreferenceFragmentCompat() {
         requirePreference<CheckBoxPreference>("pref_developer_refresh_after_switch")
             .bindBooleanFlow(preferenceRepository.refreshAfterSwitchFlow)
 
-        requirePreference<CheckBoxPreference>("pref_developer_euicc_memory_reset")
-            .bindBooleanFlow(preferenceRepository.euiccMemoryResetFlow)
-
         requirePreference<ListPreference>("pref_developer_es10x_mss")
             .bindIntFlow(preferenceRepository.es10xMssFlow, 63)
 
