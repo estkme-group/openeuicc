@@ -166,7 +166,7 @@ open class DefaultEuiccChannelManager(
             for (card in uiccCards) {
                 for (port in card.ports) {
                     if (port.logicalSlotIndex == logicalSlotId) {
-                        return@withContext tryOpenEuiccChannel(port)
+                        return@withContext tryOpenEuiccChannel(port, seId)
                     }
                 }
             }
