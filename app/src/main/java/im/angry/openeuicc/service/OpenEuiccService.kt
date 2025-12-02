@@ -33,6 +33,8 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         const val TAG = "OpenEuiccService"
     }
 
+    private val seId = EuiccChannel.SecureElementId.DEFAULT
+
     private val hasInternalEuicc by lazy {
         telephonyManager.uiccCardsInfoCompat.any { it.isEuicc && !it.isRemovable }
     }
@@ -63,15 +65,13 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
      * This ensures that we only spawn and connect to APDU channels when we absolutely need to,
      * instead of keeping them open unnecessarily in the background at all times.
      *
-     * This function cannot be inline because non-local returns may bypass the unbind
+     * This function cannot be inline because non-local returns may bypass to unbind
      */
     private fun <T> withEuiccChannelManager(fn: suspend EuiccChannelManagerContext.() -> T): T {
         val (binder, unbind) = runBlocking {
             bindServiceSuspended(
-                Intent(
-                    this@OpenEuiccService,
-                    EuiccChannelManagerService::class.java
-                ), BIND_AUTO_CREATE
+                Intent(this@OpenEuiccService, EuiccChannelManagerService::class.java),
+                BIND_AUTO_CREATE
             )
         }
 
@@ -92,7 +92,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
     override fun onGetEid(slotId: Int): String? = withEuiccChannelManager {
         val portId = euiccChannelManager.findFirstAvailablePort(slotId)
         if (portId < 0) return@withEuiccChannelManager null
-        euiccChannelManager.withEuiccChannel(slotId, portId) { channel ->
+        euiccChannelManager.withEuiccChannel(slotId, portId, seId) { channel ->
             channel.lpa.eID
         }
     }
@@ -199,7 +199,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             }
 
             return@withEuiccChannelManager try {
-                euiccChannelManager.withEuiccChannel(slotId, port) { channel ->
+                euiccChannelManager.withEuiccChannel(slotId, port, seId) { channel ->
                     val filteredProfiles =
                         if (preferenceRepository.unfilteredProfileListFlow.first())
                             channel.lpa.profiles
@@ -232,7 +232,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                         channel.port.card.isRemovable
                     )
                 }
-            } catch (e: EuiccChannelManager.EuiccChannelNotFoundException) {
+            } catch (_: EuiccChannelManager.EuiccChannelNotFoundException) {
                 GetEuiccProfileInfoListResult(
                     RESULT_FIRST_USER,
                     arrayOf(),
@@ -254,7 +254,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
 
         // Check that the profile has been disabled on all slots
         val enabledAnywhere = ports.any { port ->
-            euiccChannelManager.withEuiccChannel(slotId, port) { channel ->
+            euiccChannelManager.withEuiccChannel(slotId, port, seId) { channel ->
                 channel.lpa.profiles.enabled?.iccid == iccid
             }
         }
@@ -316,7 +316,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                     Pair(slotId, port)
                 } else {
                     // Else, check until the indicated port is available
-                    euiccChannelManager.withEuiccChannel(slotId, portIndex) { channel ->
+                    euiccChannelManager.withEuiccChannel(slotId, portIndex, seId) { channel ->
                         if (!channel.valid) {
                             throw IllegalStateException("Indicated slot / port combination is unavailable; may need to try again")
                         }
@@ -350,7 +350,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
 
                 // Wait for availability again
                 retryWithTimeout(5000) {
-                    euiccChannelManager.withEuiccChannel(slotId, foundPortId) { channel ->
+                    euiccChannelManager.withEuiccChannel(slotId, foundPortId, seId) { channel ->
                         if (!channel.valid) {
                             throw IllegalStateException("Indicated slot / port combination is unavailable; may need to try again")
                         }
@@ -366,7 +366,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             val (foundIccid, enable) = if (iccid == null) {
                 // iccid == null means disabling
                 val foundIccid =
-                    euiccChannelManager.withEuiccChannel(foundSlotId, foundPortId) { channel ->
+                    euiccChannelManager.withEuiccChannel(foundSlotId, foundPortId, seId) { channel ->
                         channel.lpa.profiles.enabled?.iccid
                     } ?: return@withEuiccChannelManager RESULT_FIRST_USER
                 Pair(foundIccid, false)
@@ -386,7 +386,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             if (res != null) return@withEuiccChannelManager RESULT_FIRST_USER
 
             return@withEuiccChannelManager RESULT_OK
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return@withEuiccChannelManager RESULT_FIRST_USER
         } finally {
             euiccChannelManager.invalidate()
@@ -416,7 +416,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 )
                     .waitDone()) == null
 
-            euiccChannelManager.withEuiccChannel(slotId, port) { channel ->
+            euiccChannelManager.withEuiccChannel(slotId, port, seId) { channel ->
                 appContainer.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)
             }
             return@withEuiccChannelManager if (success) {
