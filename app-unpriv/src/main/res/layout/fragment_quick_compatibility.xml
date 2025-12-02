@@ -47,10 +47,10 @@
 
     <CheckBox
         android:id="@+id/quick_compatibility_skip"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/quick_compatibility_skip" />
+        android:text="@string/quick_compatibility_skip"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/quick_compatibility_button_continue"

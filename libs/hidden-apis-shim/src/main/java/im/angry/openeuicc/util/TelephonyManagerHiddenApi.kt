@@ -95,12 +95,14 @@ fun TelephonyManager.iccTransmitApduLogicalChannelByPort(
 
 var TelephonyManager.simSlotMapping: Collection<UiccSlotMapping>
     get() = getSimSlotMapping.invoke(this) as Collection<UiccSlotMapping>
-    set(new) { setSimSlotMapping.invoke(this, new) }
+    set(new) {
+        setSimSlotMapping.invoke(this, new)
+    }
 
 private val requestEmbeddedSubscriptionInfoListRefresh: Method by lazy {
     SubscriptionManager::class.java.getMethod("requestEmbeddedSubscriptionInfoListRefresh", Int::class.java)
 }
 
-fun SubscriptionManager.requestEmbeddedSubscriptionInfoListRefresh(cardId: Int): Unit {
+fun SubscriptionManager.requestEmbeddedSubscriptionInfoListRefresh(cardId: Int) {
     requestEmbeddedSubscriptionInfoListRefresh.invoke(this, cardId)
 }

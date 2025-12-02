@@ -2,8 +2,11 @@ package im.angry.openeuicc.core
 
 import android.content.Context
 import im.angry.openeuicc.di.AppContainer
-import im.angry.openeuicc.util.*
-import java.lang.Exception
+import im.angry.openeuicc.util.UiccCardInfoCompat
+import im.angry.openeuicc.util.cardId
+import im.angry.openeuicc.util.iccCloseLogicalChannelBySlot
+import im.angry.openeuicc.util.tryRefreshCachedEuiccInfo
+import im.angry.openeuicc.util.uiccCardsInfoCompat
 
 class PrivilegedEuiccChannelManager(appContainer: AppContainer, context: Context) :
     DefaultEuiccChannelManager(appContainer, context) {

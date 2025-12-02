@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.OpenEuiccContextMarker
 
 class NoEuiccPlaceholderFragment : Fragment(), OpenEuiccContextMarker {
     override fun onCreateView(

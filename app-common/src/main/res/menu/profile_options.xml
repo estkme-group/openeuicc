@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/enable"
-        android:title="@string/profile_enable"/>
+        android:title="@string/profile_enable" />
 
     <item
         android:id="@+id/disable"
-        android:visible="false"
-        android:title="@string/profile_disable"/>
+        android:title="@string/profile_disable"
+        android:visible="false" />
 
     <item
         android:id="@+id/rename"
-        android:title="@string/profile_rename"/>
+        android:title="@string/profile_rename" />
 
     <item
         android:id="@+id/delete"
-        android:title="@string/profile_delete"/>
+        android:title="@string/profile_delete" />
 </menu>

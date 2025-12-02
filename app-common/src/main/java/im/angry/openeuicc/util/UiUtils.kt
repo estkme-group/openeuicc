@@ -47,7 +47,7 @@ fun AppCompatActivity.setupToolbarInsets() {
     ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.toolbar)) { v, insets ->
         val bars = insets.getInsets(
             WindowInsetsCompat.Type.systemBars()
-                    or WindowInsetsCompat.Type.displayCutout()
+                or WindowInsetsCompat.Type.displayCutout()
         )
 
         v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -69,7 +69,7 @@ fun setupRootViewInsets(view: ViewGroup) {
     ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
         val bars = insets.getInsets(
             WindowInsetsCompat.Type.systemBars()
-                    or WindowInsetsCompat.Type.displayCutout()
+                or WindowInsetsCompat.Type.displayCutout()
         )
 
         v.updatePadding(bars.left, v.paddingTop, bars.right, bars.bottom)

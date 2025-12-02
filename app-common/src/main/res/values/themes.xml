@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.OpenEUICC" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>

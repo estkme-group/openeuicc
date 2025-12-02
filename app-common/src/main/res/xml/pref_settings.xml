@@ -2,40 +2,40 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory
-        app:title="@string/pref_notifications"
+        app:iconSpaceReserved="false"
         app:summary="@string/pref_notifications_desc"
-        app:iconSpaceReserved="false">
+        app:title="@string/pref_notifications">
         <CheckBoxPreference
             app:iconSpaceReserved="false"
-            app:title="@string/pref_notifications_download"
+            app:key="pref_notifications_download"
             app:summary="@string/pref_notifications_download_desc"
-            app:key="pref_notifications_download" />
+            app:title="@string/pref_notifications_download" />
         <CheckBoxPreference
             app:iconSpaceReserved="false"
-            app:title="@string/pref_notifications_delete"
+            app:key="pref_notifications_delete"
             app:summary="@string/pref_notifications_delete_desc"
-            app:key="pref_notifications_delete" />
+            app:title="@string/pref_notifications_delete" />
         <CheckBoxPreference
             app:iconSpaceReserved="false"
-            app:title="@string/pref_notifications_switch"
+            app:key="pref_notifications_switch"
             app:summary="@string/pref_notifications_switch_desc"
-            app:key="pref_notifications_switch" />
+            app:title="@string/pref_notifications_switch" />
     </im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory>
 
     <PreferenceCategory
-        app:title="@string/pref_advanced"
-        app:iconSpaceReserved="false">
+        app:iconSpaceReserved="false"
+        app:title="@string/pref_advanced">
         <CheckBoxPreference
-            app:key="pref_advanced_disable_safeguard_removable_esim"
             app:iconSpaceReserved="false"
-            app:title="@string/pref_advanced_disable_safeguard_removable_esim"
-            app:summary="@string/pref_advanced_disable_safeguard_removable_esim_desc" />
+            app:key="pref_advanced_disable_safeguard_removable_esim"
+            app:summary="@string/pref_advanced_disable_safeguard_removable_esim_desc"
+            app:title="@string/pref_advanced_disable_safeguard_removable_esim" />
 
         <CheckBoxPreference
-            app:key="pref_advanced_verbose_logging"
             app:iconSpaceReserved="false"
-            app:title="@string/pref_advanced_verbose_logging"
-            app:summary="@string/pref_advanced_verbose_logging_desc" />
+            app:key="pref_advanced_verbose_logging"
+            app:summary="@string/pref_advanced_verbose_logging_desc"
+            app:title="@string/pref_advanced_verbose_logging" />
 
         <Preference
             app:iconSpaceReserved="false"
@@ -45,17 +45,17 @@
             app:title="@string/pref_advanced_language" />
 
         <Preference
-            app:key="pref_advanced_logs"
             app:iconSpaceReserved="false"
-            app:title="@string/pref_advanced_logs"
-            app:summary="@string/pref_advanced_logs_desc" />
+            app:key="pref_advanced_logs"
+            app:summary="@string/pref_advanced_logs_desc"
+            app:title="@string/pref_advanced_logs" />
 
     </PreferenceCategory>
 
     <im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory
+        app:iconSpaceReserved="false"
         app:key="pref_developer"
-        app:title="@string/pref_developer"
-        app:iconSpaceReserved="false">
+        app:title="@string/pref_developer">
 
         <CheckBoxPreference
             app:iconSpaceReserved="false"
@@ -76,37 +76,37 @@
             app:title="@string/pref_developer_ignore_tls_certificate" />
 
         <ListPreference
+            app:entries="@array/pref_developer_es10x_entry_keys"
+            app:entryValues="@array/pref_developer_es10x_entry_values"
             app:iconSpaceReserved="false"
             app:key="pref_developer_es10x_mss"
             app:summary="@string/pref_developer_es10x_mss_desc"
-            app:title="@string/pref_developer_es10x_mss"
-            app:entries="@array/pref_developer_es10x_entry_keys"
-            app:entryValues="@array/pref_developer_es10x_entry_values" />
+            app:title="@string/pref_developer_es10x_mss" />
 
         <Preference
             app:iconSpaceReserved="false"
             app:key="pref_developer_isdr_aid_list"
-            app:title="@string/pref_developer_isdr_aid_list"
-            app:summary="@string/pref_developer_isdr_aid_list_desc" />
+            app:summary="@string/pref_developer_isdr_aid_list_desc"
+            app:title="@string/pref_developer_isdr_aid_list" />
 
     </im.angry.openeuicc.ui.preference.LongSummaryPreferenceCategory>
 
     <PreferenceCategory
+        app:iconSpaceReserved="false"
         app:key="pref_info"
-        app:title="@string/pref_info"
-        app:iconSpaceReserved="false">
+        app:title="@string/pref_info">
         <Preference
-            app:iconSpaceReserved="false"
-            app:title="@string/pref_info_app_version"
             app:enableCopying="true"
-            app:key="pref_info_app_version" />
+            app:iconSpaceReserved="false"
+            app:key="pref_info_app_version"
+            app:title="@string/pref_info_app_version" />
 
         <Preference
-            app:iconSpaceReserved="false"
-            app:title="@string/pref_info_source_code"
-            app:summary="@string/pref_info_source_code_url"
             app:enableCopying="true"
-            app:key="pref_info_source_code">
+            app:iconSpaceReserved="false"
+            app:key="pref_info_source_code"
+            app:summary="@string/pref_info_source_code_url"
+            app:title="@string/pref_info_source_code">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/pref_info_source_code_url" />

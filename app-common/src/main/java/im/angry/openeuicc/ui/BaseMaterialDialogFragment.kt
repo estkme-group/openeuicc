@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.color.DynamicColors
 import im.angry.openeuicc.common.R
 
-abstract class BaseMaterialDialogFragment: DialogFragment() {
+abstract class BaseMaterialDialogFragment : DialogFragment() {
     override fun onGetLayoutInflater(savedInstanceState: Bundle?): LayoutInflater {
         val inflater = super.onGetLayoutInflater(savedInstanceState)
         val wrappedContext = ContextThemeWrapper(requireContext(), R.style.Theme_OpenEUICC)

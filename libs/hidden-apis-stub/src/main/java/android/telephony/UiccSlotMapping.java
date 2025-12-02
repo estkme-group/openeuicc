@@ -6,6 +6,17 @@ import android.os.Parcelable;
 public final class UiccSlotMapping implements Parcelable {
     public static final Creator<UiccSlotMapping> CREATOR = null;
 
+    /**
+     *
+     * @param portIndex         The port index is an enumeration of the ports available on the UICC.
+     * @param physicalSlotIndex is unique index referring to a physical SIM slot.
+     * @param logicalSlotIndex  is unique index referring to a logical SIM slot.
+     *
+     */
+    public UiccSlotMapping(int portIndex, int physicalSlotIndex, int logicalSlotIndex) {
+        throw new RuntimeException("stub");
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         throw new RuntimeException("stub");
@@ -14,17 +25,6 @@ public final class UiccSlotMapping implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    /**
-     *
-     * @param portIndex The port index is an enumeration of the ports available on the UICC.
-     * @param physicalSlotIndex is unique index referring to a physical SIM slot.
-     * @param logicalSlotIndex is unique index referring to a logical SIM slot.
-     *
-     */
-    public UiccSlotMapping(int portIndex, int physicalSlotIndex, int logicalSlotIndex) {
-        throw new RuntimeException("stub");
     }
 
     /**

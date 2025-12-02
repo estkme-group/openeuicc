@@ -12,25 +12,25 @@ import java.io.File
 
 abstract class MagiskModuleDirTask : DefaultTask() {
     @get:Input
-    abstract val variant : Property<String>
+    abstract val variant: Property<String>
 
     @get:Input
-    abstract val appName : Property<String>
+    abstract val appName: Property<String>
 
     @get:InputFile
-    abstract val permsFile : Property<File>
+    abstract val permsFile: Property<File>
 
     @get:InputFile
-    abstract val moduleInstaller : Property<File>
+    abstract val moduleInstaller: Property<File>
 
     @get:Input
-    abstract val moduleCustomizeScriptText : Property<String>
+    abstract val moduleCustomizeScriptText: Property<String>
 
     @get:Input
-    abstract val moduleUninstallScriptText : Property<String>
+    abstract val moduleUninstallScriptText: Property<String>
 
     @get:Input
-    abstract val moduleProp : MapProperty<String, String>
+    abstract val moduleProp: MapProperty<String, String>
 
     @InputDirectory
     val inputDir = variant.map { project.layout.buildDirectory.dir("outputs/apk/${it}") }

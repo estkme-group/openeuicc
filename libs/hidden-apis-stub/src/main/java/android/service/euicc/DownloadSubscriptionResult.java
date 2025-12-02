@@ -17,36 +17,46 @@ package android.service.euicc;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 /**
  * @hide
  */
 public final class DownloadSubscriptionResult implements Parcelable {
     public static final Creator<DownloadSubscriptionResult> CREATOR =
-            new Creator<DownloadSubscriptionResult>() {
-                @Override
-                public DownloadSubscriptionResult createFromParcel(Parcel in) {
-                    return new DownloadSubscriptionResult(in);
-                }
-                @Override
-                public DownloadSubscriptionResult[] newArray(int size) {
-                    return new DownloadSubscriptionResult[size];
-                }
-            };
+        new Creator<DownloadSubscriptionResult>() {
+            @Override
+            public DownloadSubscriptionResult createFromParcel(Parcel in) {
+                return new DownloadSubscriptionResult(in);
+            }
+
+            @Override
+            public DownloadSubscriptionResult[] newArray(int size) {
+                return new DownloadSubscriptionResult[size];
+            }
+        };
 
     public DownloadSubscriptionResult(int result, int resolvableErrors,
                                       int cardId) {
 
     }
-    /** Gets the result of the operation. */
+
+    private DownloadSubscriptionResult(Parcel in) {
+    }
+
+    /**
+     * Gets the result of the operation.
+     */
     public int getResult() {
         return 0;
     }
+
     /**
      * Gets the bit map of resolvable errors.
      */
     public int getResolvableErrors() {
         return 0;
     }
+
     /**
      * Gets the card Id. This is used when resolving resolvable errors. The value is passed from
      * EuiccService.
@@ -54,14 +64,14 @@ public final class DownloadSubscriptionResult implements Parcelable {
     public int getCardId() {
         return 0;
     }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
     }
+
     @Override
     public int describeContents() {
         return 0;
-    }
-    private DownloadSubscriptionResult(Parcel in) {
     }
 }

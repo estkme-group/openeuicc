@@ -1,7 +1,6 @@
 package im.angry.openeuicc.util
 
 import android.util.Log
-import im.angry.openeuicc.core.ApduInterfaceAtrProvider
 import im.angry.openeuicc.core.EuiccChannel
 import net.typeblog.lpac_jni.Version
 

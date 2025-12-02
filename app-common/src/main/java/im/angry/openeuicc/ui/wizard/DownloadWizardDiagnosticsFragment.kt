@@ -7,7 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.encodeHex
+import im.angry.openeuicc.util.setupLogSaving
 import org.json.JSONObject
 import java.util.Date
 

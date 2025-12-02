@@ -20,6 +20,7 @@ interface LocalProfileAssistant {
     val profiles: List<LocalProfileInfo>
     val notifications: List<LocalProfileNotification>
     val eID: String
+
     // Extended EuiccInfo for use with LUIs, containing information such as firmware version
     val euiccInfo2: EuiccInfo2?
 
@@ -36,8 +37,10 @@ interface LocalProfileAssistant {
     fun disableProfile(iccid: String, refresh: Boolean = true): Boolean
     fun deleteProfile(iccid: String): Boolean
 
-    fun downloadProfile(smdp: String, matchingId: String?, imei: String?,
-                        confirmationCode: String?, callback: ProfileDownloadCallback)
+    fun downloadProfile(
+        smdp: String, matchingId: String?, imei: String?,
+        confirmationCode: String?, callback: ProfileDownloadCallback
+    )
 
     fun deleteNotification(seqNumber: Long): Boolean
     fun handleNotification(seqNumber: Long): Boolean

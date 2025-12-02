@@ -7,7 +7,6 @@ import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
-import java.lang.Exception
 
 val TelephonyManager.supportsDSDS: Boolean
     get() = supportedModemCount == 2
@@ -27,7 +26,7 @@ fun TelephonyManager.setDsdsEnabled(euiccManager: EuiccChannelManager, enabled: 
         }
     }
 
-    switchMultiSimConfig(if (enabled) { 2 } else { 1 })
+    switchMultiSimConfig(if (enabled) 2 else 1)
 }
 
 // Disable eSIM profiles before switching the slot mapping

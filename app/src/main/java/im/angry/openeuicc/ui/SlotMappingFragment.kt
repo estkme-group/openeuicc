@@ -2,7 +2,6 @@ package im.angry.openeuicc.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.telephony.TelephonyManager
 import android.telephony.UiccSlotMapping
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -19,14 +18,20 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.R
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.OpenEuiccContextMarker
+import im.angry.openeuicc.util.UiccPortInfoCompat
+import im.angry.openeuicc.util.dsdsEnabled
+import im.angry.openeuicc.util.setWidthPercent
+import im.angry.openeuicc.util.simSlotMapping
+import im.angry.openeuicc.util.supportsDSDS
+import im.angry.openeuicc.util.uiccCardsInfoCompat
+import im.angry.openeuicc.util.updateSimSlotMapping
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SlotMappingFragment: BaseMaterialDialogFragment(),
+class SlotMappingFragment : BaseMaterialDialogFragment(),
     OnMenuItemClickListener, OpenEuiccContextMarker {
     companion object {
         const val TAG = "SlotMappingFragment"
@@ -147,15 +152,17 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
                 commit()
                 true
             }
+
             else -> false
         }
 
-    inner class ViewHolder(root: View): RecyclerView.ViewHolder(root), OnItemSelectedListener {
+    inner class ViewHolder(root: View) : RecyclerView.ViewHolder(root), OnItemSelectedListener {
         private val textViewLogicalSlot: TextView = root.requireViewById(R.id.slot_mapping_logical_slot)
         private val spinnerPorts: Spinner = root.requireViewById(R.id.slot_mapping_ports)
 
         init {
-            spinnerPorts.adapter = ArrayAdapter(requireContext(), im.angry.openeuicc.common.R.layout.spinner_item, portsDesc)
+            spinnerPorts.adapter =
+                ArrayAdapter(requireContext(), im.angry.openeuicc.common.R.layout.spinner_item, portsDesc)
             spinnerPorts.onItemSelectedListener = this
         }
 
@@ -166,10 +173,11 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
             this.mappings = mappings
             this.mappingId = mappingId
 
-            textViewLogicalSlot.text = getString(R.string.slot_mapping_logical_slot, mappings[mappingId].logicalSlotIndex)
+            textViewLogicalSlot.text =
+                getString(R.string.slot_mapping_logical_slot, mappings[mappingId].logicalSlotIndex)
             spinnerPorts.setSelection(ports.indexOfFirst {
                 it.card.physicalSlotIndex == mappings[mappingId].physicalSlotIndex
-                        && it.portIndex == mappings[mappingId].portIndex
+                    && it.portIndex == mappings[mappingId].portIndex
             })
         }
 
@@ -177,7 +185,10 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
             check(this::mappings.isInitialized) { "mapping not assigned" }
             mappings[mappingId] =
                 UiccSlotMapping(
-                    ports[position].portIndex, ports[position].card.physicalSlotIndex, mappings[mappingId].logicalSlotIndex)
+                    ports[position].portIndex,
+                    ports[position].card.physicalSlotIndex,
+                    mappings[mappingId].logicalSlotIndex
+                )
         }
 
         override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -185,7 +196,7 @@ class SlotMappingFragment: BaseMaterialDialogFragment(),
         }
     }
 
-    inner class SlotMappingAdapter(val mappings: MutableList<UiccSlotMapping>): RecyclerView.Adapter<ViewHolder>() {
+    inner class SlotMappingAdapter(val mappings: MutableList<UiccSlotMapping>) : RecyclerView.Adapter<ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_slot_mapping_item, parent, false)
             return ViewHolder(view)

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,46 +12,46 @@
 
         <TextView
             android:id="@+id/download_wizard_diagnostics_title"
-            android:text="@string/download_wizard_diagnostics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textSize="20sp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
             android:layout_marginStart="60dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="60dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_horizontal"
+            android:text="@string/download_wizard_diagnostics"
+            android:textSize="20sp"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/download_wizard_diagnostics_save"
-            android:src="@drawable/ic_save_as_black"
-            android:layout_margin="20dp"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_margin="20dp"
             android:contentDescription="@string/download_wizard_diagnostics_save"
-            app:tint="?attr/colorAccent"
+            android:src="@drawable/ic_save_as_black"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:tint="?attr/colorAccent" />
 
         <TextView
             android:id="@+id/download_wizard_diagnostics_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textIsSelectable="true"
             android:focusable="true"
-            android:textSize="10sp"
             android:fontFamily="monospace"
             android:lineSpacingMultiplier="1.1"
             android:longClickable="true"
-            app:layout_constraintTop_toBottomOf="@id/download_wizard_diagnostics_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:padding="10dp"
+            android:textIsSelectable="true"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/download_wizard_diagnostics_title"
             tools:ignore="SmallSp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

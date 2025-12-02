@@ -18,6 +18,7 @@ package android.service.euicc;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.telephony.euicc.DownloadableSubscription;
+
 import java.util.List;
 
 /**
@@ -25,34 +26,24 @@ import java.util.List;
  */
 public final class GetDefaultDownloadableSubscriptionListResult implements Parcelable {
     public static Creator<GetDefaultDownloadableSubscriptionListResult> CREATOR =
-            new Creator<GetDefaultDownloadableSubscriptionListResult>() {
-                @Override
-                public GetDefaultDownloadableSubscriptionListResult createFromParcel(Parcel in) {
-                    return new GetDefaultDownloadableSubscriptionListResult(in);
-                }
-                @Override
-                public GetDefaultDownloadableSubscriptionListResult[] newArray(int size) {
-                    return new GetDefaultDownloadableSubscriptionListResult[size];
-                }
-            };
+        new Creator<GetDefaultDownloadableSubscriptionListResult>() {
+            @Override
+            public GetDefaultDownloadableSubscriptionListResult createFromParcel(Parcel in) {
+                return new GetDefaultDownloadableSubscriptionListResult(in);
+            }
+
+            @Override
+            public GetDefaultDownloadableSubscriptionListResult[] newArray(int size) {
+                return new GetDefaultDownloadableSubscriptionListResult[size];
+            }
+        };
     /**
      * @hide
      * @deprecated - Do no use. Use getResult() instead.
      */
     @Deprecated
     public final int result = 0;
-    /**
-     * Gets the result of the operation.
-     */
-    public int getResult() {
-        return 0;
-    }
-    /**
-     * Gets the available {@link DownloadableSubscription}s (with filled-in metadata).
-     */
-    public List<DownloadableSubscription> getDownloadableSubscriptions() {
-        return null;
-    }
+
     /**
      * Construct a new {@link GetDefaultDownloadableSubscriptionListResult}.
      */
@@ -60,12 +51,29 @@ public final class GetDefaultDownloadableSubscriptionListResult implements Parce
                                                         DownloadableSubscription[] subscriptions) {
 
     }
+
     private GetDefaultDownloadableSubscriptionListResult(Parcel in) {
     }
+
+    /**
+     * Gets the result of the operation.
+     */
+    public int getResult() {
+        return 0;
+    }
+
+    /**
+     * Gets the available {@link DownloadableSubscription}s (with filled-in metadata).
+     */
+    public List<DownloadableSubscription> getDownloadableSubscriptions() {
+        return null;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
     }
+
     @Override
     public int describeContents() {
         return 0;

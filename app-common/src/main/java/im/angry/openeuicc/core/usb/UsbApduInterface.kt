@@ -2,7 +2,8 @@ package im.angry.openeuicc.core.usb
 
 import android.util.Log
 import im.angry.openeuicc.core.ApduInterfaceAtrProvider
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.decodeHex
+import im.angry.openeuicc.util.encodeHex
 import net.typeblog.lpac_jni.ApduInterface
 
 class UsbApduInterface(

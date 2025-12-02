@@ -5,7 +5,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import im.angry.openeuicc.R
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.dsdsEnabled
+import im.angry.openeuicc.util.setDsdsEnabled
+import im.angry.openeuicc.util.supportsDSDS
 
 class PrivilegedMainActivity : MainActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -34,10 +36,12 @@ class PrivilegedMainActivity : MainActivity() {
             finish()
             true
         }
+
         R.id.slot_mapping -> {
             showSlotMappingFragment()
             true
         }
+
         else -> super.onOptionsItemSelected(item)
     }
 }

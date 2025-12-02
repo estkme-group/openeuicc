@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="ProtectedPermissions"
-    package="im.angry.openeuicc">
+    package="im.angry.openeuicc"
+    tools:ignore="ProtectedPermissions">
+
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="true"
@@ -18,9 +19,9 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locale_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:localeConfig="@xml/locale_config"
         android:theme="@style/Theme.OpenEUICC"
         tools:targetApi="tiramisu">
         <activity
@@ -42,12 +43,14 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ui.LuiActivity"
+        <activity
+            android:name=".ui.LuiActivity"
             android:exported="true"
             android:permission="android.permission.BIND_EUICC_SERVICE">
             <intent-filter android:priority="100">
                 <action android:name="android.service.euicc.action.MANAGE_EMBEDDED_SUBSCRIPTIONS" />
                 <action android:name="android.service.euicc.action.PROVISION_EMBEDDED_SUBSCRIPTION" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.service.euicc.category.EUICC_UI" />
             </intent-filter>

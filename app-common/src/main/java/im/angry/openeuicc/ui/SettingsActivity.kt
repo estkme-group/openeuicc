@@ -6,9 +6,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.setupToolbarInsets
 
-class SettingsActivity: AppCompatActivity() {
+class SettingsActivity : AppCompatActivity() {
     private val appContainer
         get() = (application as OpenEuiccApplication).appContainer
 
@@ -31,6 +31,7 @@ class SettingsActivity: AppCompatActivity() {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
 }

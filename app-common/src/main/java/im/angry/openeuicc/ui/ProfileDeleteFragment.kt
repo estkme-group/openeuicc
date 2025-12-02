@@ -11,7 +11,14 @@ import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.EuiccChannelFragmentMarker
+import im.angry.openeuicc.util.ensureEuiccChannelManager
+import im.angry.openeuicc.util.euiccChannelManagerService
+import im.angry.openeuicc.util.newInstanceEuicc
+import im.angry.openeuicc.util.notifyEuiccProfilesChanged
+import im.angry.openeuicc.util.portId
+import im.angry.openeuicc.util.seId
+import im.angry.openeuicc.util.slotId
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
@@ -25,7 +32,7 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
             newInstanceEuicc(ProfileDeleteFragment::class.java, slotId, portId, seId) {
                 putString(FIELD_ICCID, iccid)
                 putString(FIELD_NAME, name)
-        }
+            }
     }
 
     private val iccid by lazy {

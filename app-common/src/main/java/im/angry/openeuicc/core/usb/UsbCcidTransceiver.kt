@@ -4,7 +4,7 @@ import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbEndpoint
 import android.os.SystemClock
 import android.util.Log
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.encodeHex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

@@ -33,7 +33,7 @@ val Project.gitVersionName: String
             "Unknown"
         }
 
-class MyVersioningPlugin: Plugin<Project> {
+class MyVersioningPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.configure<BaseAppModuleExtension> {
             defaultConfig {

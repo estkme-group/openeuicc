@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="20sp"
-    android:paddingTop="10sp"
+    android:background="?attr/selectableItemBackground"
     android:paddingStart="20sp"
+    android:paddingTop="10sp"
     android:paddingEnd="20sp"
-    android:background="?attr/selectableItemBackground">
+    android:paddingBottom="20sp">
 
     <TextView
         android:id="@+id/slot_item_title"
@@ -83,7 +83,6 @@
         android:layout_marginTop="20sp"
         android:layout_marginEnd="10sp"
         app:constraint_referenced_ids="slot_item_type_label,slot_item_type,slot_item_eid_label,slot_item_eid,slot_item_active_profile_label,slot_item_active_profile,slot_item_free_space_label,slot_item_free_space"
-        app:flow_wrapMode="aligned"
         app:flow_horizontalAlign="start"
         app:flow_horizontalBias="1"
         app:flow_horizontalGap="10sp"
@@ -92,6 +91,7 @@
         app:flow_verticalBias="0"
         app:flow_verticalGap="16sp"
         app:flow_verticalStyle="packed"
+        app:flow_wrapMode="aligned"
         app:layout_constraintEnd_toStartOf="@id/slot_checkbox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/slot_item_title" />

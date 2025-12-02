@@ -5,5 +5,5 @@
         android:id="@+id/ok"
         android:icon="@drawable/ic_check_black"
         android:title="@string/profile_rename"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 </menu>

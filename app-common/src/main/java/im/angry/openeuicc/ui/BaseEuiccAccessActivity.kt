@@ -1,7 +1,6 @@
 package im.angry.openeuicc.ui
 
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
@@ -36,7 +35,7 @@ abstract class BaseEuiccAccessActivity : AppCompatActivity() {
         bindService(
             Intent(this, EuiccChannelManagerService::class.java),
             euiccChannelManagerServiceConnection,
-            Context.BIND_AUTO_CREATE
+            BIND_AUTO_CREATE
         )
     }
 

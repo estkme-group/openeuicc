@@ -167,8 +167,8 @@ enum class SimplifiedErrorMessages(
 
         private fun fromAPDUResponse(resp: ByteArray): SimplifiedErrorMessages? {
             val isSuccess = resp.size >= 2 &&
-                    resp[resp.size - 2] == 0x90.toByte() &&
-                    resp[resp.size - 1] == 0x00.toByte()
+                resp[resp.size - 2] == 0x90.toByte() &&
+                resp[resp.size - 1] == 0x00.toByte()
             if (isSuccess) return null
             return CardInternalError
         }

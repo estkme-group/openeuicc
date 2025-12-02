@@ -14,7 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.OpenEuiccContextMarker
+import im.angry.openeuicc.util.beginTrackedOperation
+import im.angry.openeuicc.util.switchProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.BufferOverflow

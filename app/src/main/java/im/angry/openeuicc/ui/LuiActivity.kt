@@ -19,7 +19,7 @@ class LuiActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.lui_container)) { v, insets ->
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
+                    or WindowInsetsCompat.Type.displayCutout()
             )
             v.updatePadding(bars.left, bars.top, bars.right, bars.bottom)
             WindowInsetsCompat.CONSUMED

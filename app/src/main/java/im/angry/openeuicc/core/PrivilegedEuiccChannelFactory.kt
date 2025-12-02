@@ -3,9 +3,12 @@ package im.angry.openeuicc.core
 import android.content.Context
 import android.util.Log
 import im.angry.openeuicc.R
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.PrivilegedEuiccContextMarker
+import im.angry.openeuicc.util.RealUiccPortInfoCompat
+import im.angry.openeuicc.util.UiccPortInfoCompat
+import im.angry.openeuicc.util.encodeHex
+import im.angry.openeuicc.util.preferenceRepository
 import kotlinx.coroutines.flow.first
-import java.lang.IllegalArgumentException
 
 class PrivilegedEuiccChannelFactory(context: Context) : DefaultEuiccChannelFactory(context),
     PrivilegedEuiccContextMarker {

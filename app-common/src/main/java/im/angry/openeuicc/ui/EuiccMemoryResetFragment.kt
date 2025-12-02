@@ -8,13 +8,11 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.util.EuiccChannelFragmentMarker
-import im.angry.openeuicc.util.EuiccProfilesChangedListener
 import im.angry.openeuicc.util.ensureEuiccChannelManager
 import im.angry.openeuicc.util.euiccChannelManagerService
 import im.angry.openeuicc.util.newInstanceEuicc

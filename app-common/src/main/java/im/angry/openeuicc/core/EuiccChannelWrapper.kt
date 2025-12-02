@@ -1,6 +1,6 @@
 package im.angry.openeuicc.core
 
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.UiccPortInfoCompat
 import net.typeblog.lpac_jni.ApduInterface
 import net.typeblog.lpac_jni.LocalProfileAssistant
 

@@ -11,18 +11,18 @@
 
         <TextView
             android:id="@+id/download_wizard_details_title"
-            android:text="@string/download_wizard_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textSize="20sp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
             android:layout_marginStart="60dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="60dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_horizontal"
+            android:text="@string/download_wizard_details"
+            android:textSize="20sp"
             app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -32,10 +32,10 @@
             android:hint="@string/profile_download_server">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:maxLines="1"
-                android:inputType="text"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:inputType="text"
+                android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -47,10 +47,10 @@
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:maxLines="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,10 +62,10 @@
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:maxLines="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,25 +79,25 @@
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:maxLines="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="numberPassword" />
+                android:inputType="numberPassword"
+                android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.helper.widget.Flow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginHorizontal="20dp"
+            android:orientation="vertical"
             app:constraint_referenced_ids="profile_download_server,profile_download_code,profile_download_confirmation_code,profile_download_imei"
             app:flow_verticalGap="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/download_wizard_details_title"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constrainedWidth="true" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/download_wizard_details_title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

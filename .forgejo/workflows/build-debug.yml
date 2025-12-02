@@ -1,3 +1,5 @@
+name: Build Debug APKs
+
 on:
   push:
     branches:
@@ -7,7 +9,7 @@ on:
 
 jobs:
   build-debug:
-    runs-on: [docker, android-app-certs]
+    runs-on: [ docker, android-app-certs ]
     container:
       volumes:
         - android-app-keystore:/keystore

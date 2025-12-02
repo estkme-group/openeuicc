@@ -17,7 +17,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlin.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -96,13 +95,12 @@ inline fun <T> Bitmap.use(f: (Bitmap) -> T): T =
         recycle()
     }
 
-fun decodeQrFromBitmap(bmp: Bitmap): String? =
-     runCatching {
-        val pixels = IntArray(bmp.width * bmp.height)
-        bmp.getPixels(pixels, 0, bmp.width, 0, 0, bmp.width, bmp.height)
+fun decodeQrFromBitmap(bmp: Bitmap): String? = runCatching {
+    val pixels = IntArray(bmp.width * bmp.height)
+    bmp.getPixels(pixels, 0, bmp.width, 0, 0, bmp.width, bmp.height)
 
-        val luminanceSource = RGBLuminanceSource(bmp.width, bmp.height, pixels)
-        val binaryBmp = BinaryBitmap(HybridBinarizer(luminanceSource))
+    val luminanceSource = RGBLuminanceSource(bmp.width, bmp.height, pixels)
+    val binaryBmp = BinaryBitmap(HybridBinarizer(luminanceSource))
 
-        QRCodeReader().decode(binaryBmp).text
-    }.getOrNull()
+    QRCodeReader().decode(binaryBmp).text
+}.getOrNull()

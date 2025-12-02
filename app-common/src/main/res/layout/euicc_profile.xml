@@ -20,16 +20,16 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:singleLine="true"
                 android:ellipsize="marquee"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/profile_menu"
-                app:layout_constraintTop_toTopOf="parent"
+                android:singleLine="true"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@+id/state"
                 app:layout_constraintHorizontal_bias="0"
-                app:layout_constrainedWidth="true" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/profile_menu"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/profile_menu"
@@ -37,98 +37,98 @@
                 android:layout_height="25dp"
                 android:background="?selectableItemBackground"
                 android:src="@drawable/ic_menu_black"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintRight_toRightOf="parent"/>
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
+                android:includeFontPadding="true"
+                android:singleLine="true"
                 android:textSize="14sp"
                 android:textStyle="italic"
-                android:singleLine="true"
-                android:includeFontPadding="true"
+                app:layout_constraintBottom_toTopOf="@+id/provider_label"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/name"
-                app:layout_constraintBottom_toTopOf="@+id/provider_label"/>
+                app:layout_constraintTop_toBottomOf="@id/name" />
 
             <TextView
                 android:id="@+id/provider_label"
-                android:text="@string/profile_provider"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
+                android:singleLine="true"
+                android:text="@string/profile_provider"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:singleLine="true"
+                app:layout_constraintBottom_toTopOf="@+id/profile_class_label"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/state"
-                app:layout_constraintBottom_toTopOf="@+id/profile_class_label"/>
+                app:layout_constraintTop_toBottomOf="@id/state" />
 
             <TextView
                 android:id="@+id/provider"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:layout_marginStart="7dp"
-                android:textSize="14sp"
+                android:layout_marginTop="6dp"
                 android:singleLine="true"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/profile_class"
                 app:layout_constraintLeft_toRightOf="@id/provider_label"
-                app:layout_constraintTop_toBottomOf="@id/state"
-                app:layout_constraintBottom_toTopOf="@+id/profile_class"/>
+                app:layout_constraintTop_toBottomOf="@id/state" />
 
             <TextView
                 android:id="@+id/profile_class_label"
-                android:text="@string/profile_class"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
+                android:singleLine="true"
+                android:text="@string/profile_class"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:singleLine="true"
                 android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/iccid_label"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/provider_label"
-                app:layout_constraintBottom_toTopOf="@+id/iccid_label"/>
+                app:layout_constraintTop_toBottomOf="@id/provider_label" />
 
             <TextView
                 android:id="@+id/profile_class"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:layout_marginStart="7dp"
-                android:textSize="14sp"
+                android:layout_marginTop="6dp"
                 android:singleLine="true"
+                android:textSize="14sp"
                 android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/iccid"
                 app:layout_constraintLeft_toRightOf="@id/profile_class_label"
-                app:layout_constraintTop_toBottomOf="@id/provider"
-                app:layout_constraintBottom_toTopOf="@+id/iccid"/>
+                app:layout_constraintTop_toBottomOf="@id/provider" />
 
             <TextView
                 android:id="@+id/iccid_label"
-                android:text="@string/profile_iccid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
+                android:singleLine="true"
+                android:text="@string/profile_iccid"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:singleLine="true"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_class_label"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/profile_class_label" />
 
             <TextView
                 android:id="@+id/iccid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:layout_marginStart="7dp"
-                android:textSize="14sp"
+                android:layout_marginTop="6dp"
                 android:singleLine="true"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/iccid_label"
-                app:layout_constraintTop_toBottomOf="@id/profile_class"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/profile_class" />
 
             <TextView
                 android:id="@+id/profile_sequence_number"

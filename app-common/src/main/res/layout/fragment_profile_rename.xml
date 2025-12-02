@@ -8,8 +8,8 @@
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="1"
         app:navigationIcon="?homeAsUpIndicator" />
 
@@ -25,14 +25,14 @@
 
     <ProgressBar
         android:id="@+id/progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guideline"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/profile_rename_new_name"
@@ -40,10 +40,10 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="15dp"
         android:hint="@string/profile_rename_new_name"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintWidth_percent=".8">
 
         <com.google.android.material.textfield.TextInputEditText

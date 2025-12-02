@@ -75,7 +75,7 @@ interface EuiccChannelManager {
      */
     suspend fun findAvailablePorts(physicalSlotId: Int): List<Int>
 
-    class EuiccChannelNotFoundException: Exception("EuiccChannel not found")
+    class EuiccChannelNotFoundException : Exception("EuiccChannel not found")
 
     /**
      * Find a EuiccChannel by its slot and port, then run a callback with a reference to it.

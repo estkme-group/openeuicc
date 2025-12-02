@@ -8,7 +8,7 @@ import im.angry.openeuicc.core.DefaultEuiccChannelManager
 import im.angry.openeuicc.core.DefaultEuiccChannelManagerFactory
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.core.EuiccChannelManagerFactory
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.PreferenceRepository
 
 open class DefaultAppContainer(context: Context) : AppContainer {
     override val telephonyManager by lazy {

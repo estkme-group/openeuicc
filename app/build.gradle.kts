@@ -1,5 +1,7 @@
 import com.android.build.gradle.internal.api.ApkVariantOutputImpl
-import im.angry.openeuicc.build.*
+import im.angry.openeuicc.build.MagiskModuleDirTask
+import im.angry.openeuicc.build.MySigningPlugin
+import im.angry.openeuicc.build.MyVersioningPlugin
 
 plugins {
     id("com.android.application")
@@ -76,7 +78,11 @@ tasks.register<MagiskModuleDirTask>("assembleDebugMagiskModuleDir") {
     moduleUninstallScriptText = moduleUninstallScript
     moduleProp = modulePropsTemplate.let {
         it["description"] = "(debug build) ${it["description"]}"
-        it["versionCode"] = "${(android.applicationVariants.find { it.name == "debug" }!!.outputs.first() as ApkVariantOutputImpl).versionCodeOverride}"
+        it["versionCode"] = (android.applicationVariants
+            .find { v -> v.name == "debug" }!!
+            .outputs
+            .first() as ApkVariantOutputImpl)
+            .versionCodeOverride.toString()
         it["updateJson"] = "https://openeuicc.com/magisk/magisk-debug.json"
         it
     }

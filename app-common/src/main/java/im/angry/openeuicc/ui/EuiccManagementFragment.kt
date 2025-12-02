@@ -29,21 +29,34 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.service.EuiccChannelManagerService
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
 import im.angry.openeuicc.ui.wizard.DownloadWizardActivity
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.EuiccChannelFragmentMarker
+import im.angry.openeuicc.util.EuiccProfilesChangedListener
+import im.angry.openeuicc.util.displayName
+import im.angry.openeuicc.util.enabled
+import im.angry.openeuicc.util.ensureEuiccChannelManager
+import im.angry.openeuicc.util.euiccChannelManager
+import im.angry.openeuicc.util.euiccChannelManagerService
+import im.angry.openeuicc.util.isEnabled
+import im.angry.openeuicc.util.isUsb
+import im.angry.openeuicc.util.newInstanceEuicc
+import im.angry.openeuicc.util.operational
+import im.angry.openeuicc.util.portId
+import im.angry.openeuicc.util.seId
+import im.angry.openeuicc.util.setupRootViewInsets
+import im.angry.openeuicc.util.slotId
+import im.angry.openeuicc.util.withEuiccChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import net.typeblog.lpac_jni.LocalProfileInfo
 
 open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     EuiccChannelFragmentMarker {
@@ -417,7 +430,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             // cannot cross profile class enable profile
             // e.g: testing -> operational or operational -> testing
             canEnable = enabledProfile == null ||
-                    enabledProfile.profileClass == profile.profileClass
+                enabledProfile.profileClass == profile.profileClass
         }
 
         private fun showOptionsMenu() {

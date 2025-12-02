@@ -37,6 +37,7 @@ class UnprivilegedMainActivity : MainActivity(), UnprivilegedEuiccContextMarker 
                 startActivity(Intent(this, QuickCompatibilityActivity::class.java))
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
 

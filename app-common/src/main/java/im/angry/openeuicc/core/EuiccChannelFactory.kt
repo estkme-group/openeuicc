@@ -1,12 +1,16 @@
 package im.angry.openeuicc.core
 
 import im.angry.openeuicc.core.usb.UsbCcidContext
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.UiccPortInfoCompat
 
 // This class is here instead of inside DI because it contains a bit more logic than just
 // "dumb" dependency injection.
 interface EuiccChannelFactory {
-    suspend fun tryOpenEuiccChannel(port: UiccPortInfoCompat, isdrAid: ByteArray, seId: EuiccChannel.SecureElementId): EuiccChannel?
+    suspend fun tryOpenEuiccChannel(
+        port: UiccPortInfoCompat,
+        isdrAid: ByteArray,
+        seId: EuiccChannel.SecureElementId
+    ): EuiccChannel?
 
     fun tryOpenUsbEuiccChannel(
         ccidCtx: UsbCcidContext,

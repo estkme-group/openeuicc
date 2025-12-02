@@ -5,5 +5,5 @@
         android:id="@+id/ok"
         android:icon="@drawable/ic_check_black"
         android:title="@string/slot_mapping"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 </menu>

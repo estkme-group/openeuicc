@@ -17,10 +17,10 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.LPAString
+import im.angry.openeuicc.util.OpenEuiccContextMarker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.LocalProfileAssistant
@@ -99,8 +99,8 @@ class DownloadWizardActivity : BaseEuiccAccessActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(navigation) { v, insets ->
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
-                        or WindowInsetsCompat.Type.ime()
+                    or WindowInsetsCompat.Type.displayCutout()
+                    or WindowInsetsCompat.Type.ime()
             )
             v.updatePadding(bars.left, 0, bars.right, bars.bottom)
             val newParams = navigation.layoutParams
@@ -113,7 +113,7 @@ class DownloadWizardActivity : BaseEuiccAccessActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(fragmentRoot) { v, insets ->
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
+                    or WindowInsetsCompat.Type.displayCutout()
             )
             v.updatePadding(bars.left, bars.top, bars.right, 0)
             WindowInsetsCompat.CONSUMED

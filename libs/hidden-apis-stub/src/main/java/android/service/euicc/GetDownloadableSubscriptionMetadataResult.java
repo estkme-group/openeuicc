@@ -18,39 +18,30 @@ package android.service.euicc;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.telephony.euicc.DownloadableSubscription;
+
 /**
  * @hide
  */
 public final class GetDownloadableSubscriptionMetadataResult implements Parcelable {
     public static final Creator<GetDownloadableSubscriptionMetadataResult> CREATOR =
-            new Creator<GetDownloadableSubscriptionMetadataResult>() {
-                @Override
-                public GetDownloadableSubscriptionMetadataResult createFromParcel(Parcel in) {
-                    return new GetDownloadableSubscriptionMetadataResult(in);
-                }
-                @Override
-                public GetDownloadableSubscriptionMetadataResult[] newArray(int size) {
-                    return new GetDownloadableSubscriptionMetadataResult[size];
-                }
-            };
+        new Creator<GetDownloadableSubscriptionMetadataResult>() {
+            @Override
+            public GetDownloadableSubscriptionMetadataResult createFromParcel(Parcel in) {
+                return new GetDownloadableSubscriptionMetadataResult(in);
+            }
+
+            @Override
+            public GetDownloadableSubscriptionMetadataResult[] newArray(int size) {
+                return new GetDownloadableSubscriptionMetadataResult[size];
+            }
+        };
     /**
      * @hide
      * @deprecated - Do no use. Use getResult() instead.
      */
     @Deprecated
     public final int result = 0;
-    /**
-     * Gets the result of the operation.
-     */
-    public int getResult() {
-        return 0;
-    }
-    /**
-     * Gets the {@link DownloadableSubscription} with filled-in metadata.
-     */
-    public DownloadableSubscription getDownloadableSubscription() {
-        return null;
-    }
+
     /**
      * Construct a new {@link GetDownloadableSubscriptionMetadataResult}.
      */
@@ -58,13 +49,30 @@ public final class GetDownloadableSubscriptionMetadataResult implements Parcelab
                                                      DownloadableSubscription subscription) {
 
     }
+
     private GetDownloadableSubscriptionMetadataResult(Parcel in) {
 
     }
+
+    /**
+     * Gets the result of the operation.
+     */
+    public int getResult() {
+        return 0;
+    }
+
+    /**
+     * Gets the {@link DownloadableSubscription} with filled-in metadata.
+     */
+    public DownloadableSubscription getDownloadableSubscription() {
+        return null;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
     }
+
     @Override
     public int describeContents() {
         return 0;

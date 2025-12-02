@@ -4,7 +4,9 @@ import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.invoke
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.util.Properties
@@ -33,7 +35,7 @@ fun Project.signingKeystoreProperties(_configure: Action<KeystorePropertiesExten
     }
 }
 
-class MySigningPlugin: Plugin<Project> {
+class MySigningPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         val ext = target.extensions.findByType(KeystorePropertiesExtension::class.java)
         target.configure<BaseAppModuleExtension> {

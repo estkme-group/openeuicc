@@ -26,7 +26,7 @@ fun <T> newInstanceEuicc(
     seId: EuiccChannel.SecureElementId,
     addArguments: BundleSetter = {}
 ): T
-        where T : Fragment, T : EuiccChannelFragmentMarker =
+    where T : Fragment, T : EuiccChannelFragmentMarker =
     clazz.getDeclaredConstructor().newInstance().apply {
         arguments = Bundle()
         arguments!!.putInt(FIELD_SLOT_ID, slotId)
@@ -39,13 +39,13 @@ fun <T> newInstanceEuicc(
 // `channel` requires that the channel actually exists in EuiccChannelManager, which is
 // not always the case during operations such as switching
 val <T> T.slotId: Int
-        where T : Fragment, T : EuiccChannelFragmentMarker
+    where T : Fragment, T : EuiccChannelFragmentMarker
     get() = requireArguments().getInt(FIELD_SLOT_ID)
 val <T> T.portId: Int
-        where T : Fragment, T : EuiccChannelFragmentMarker
+    where T : Fragment, T : EuiccChannelFragmentMarker
     get() = requireArguments().getInt(FIELD_PORT_ID)
 val <T> T.seId: EuiccChannel.SecureElementId
-        where T : Fragment, T : EuiccChannelFragmentMarker
+    where T : Fragment, T : EuiccChannelFragmentMarker
     get() =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireArguments().getParcelable(
@@ -57,30 +57,25 @@ val <T> T.seId: EuiccChannel.SecureElementId
             requireArguments().getParcelable(FIELD_SE_ID)!!
         }
 val <T> T.isUsb: Boolean
-        where T : Fragment, T : EuiccChannelFragmentMarker
+    where T : Fragment, T : EuiccChannelFragmentMarker
     get() = slotId == EuiccChannelManager.USB_CHANNEL_ID
 
 private fun <T> T.requireEuiccActivity(): BaseEuiccAccessActivity
-        where T : Fragment, T : OpenEuiccContextMarker =
+    where T : Fragment, T : OpenEuiccContextMarker =
     requireActivity() as BaseEuiccAccessActivity
 
 val <T> T.euiccChannelManager: EuiccChannelManager
-        where T : Fragment, T : OpenEuiccContextMarker
+    where T : Fragment, T : OpenEuiccContextMarker
     get() = requireEuiccActivity().euiccChannelManager
 
 val <T> T.euiccChannelManagerService: EuiccChannelManagerService
-        where T : Fragment, T : OpenEuiccContextMarker
+    where T : Fragment, T : OpenEuiccContextMarker
     get() = requireEuiccActivity().euiccChannelManagerService
 
 suspend fun <T, R> T.withEuiccChannel(fn: suspend (EuiccChannel) -> R): R
-        where T : Fragment, T : EuiccChannelFragmentMarker {
+    where T : Fragment, T : EuiccChannelFragmentMarker {
     ensureEuiccChannelManager()
-    return euiccChannelManager.withEuiccChannel(
-        slotId,
-        portId,
-        seId,
-        fn
-    )
+    return euiccChannelManager.withEuiccChannel(slotId, portId, seId, fn)
 }
 
 suspend fun <T> T.ensureEuiccChannelManager() where T : Fragment, T : OpenEuiccContextMarker =

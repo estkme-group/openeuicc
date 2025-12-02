@@ -1,22 +1,32 @@
 package im.angry.openeuicc.service
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.service.euicc.*
+import android.service.euicc.EuiccProfileInfo
+import android.service.euicc.EuiccService
+import android.service.euicc.GetDefaultDownloadableSubscriptionListResult
+import android.service.euicc.GetDownloadableSubscriptionMetadataResult
+import android.service.euicc.GetEuiccProfileInfoListResult
 import android.telephony.UiccSlotMapping
 import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
 import android.util.Log
 import im.angry.openeuicc.core.EuiccChannel
-import net.typeblog.lpac_jni.LocalProfileInfo
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.OpenEuiccContextMarker
+import im.angry.openeuicc.util.bindServiceSuspended
+import im.angry.openeuicc.util.cardId
+import im.angry.openeuicc.util.displayName
+import im.angry.openeuicc.util.enabled
+import im.angry.openeuicc.util.operational
+import im.angry.openeuicc.util.simSlotMapping
+import im.angry.openeuicc.util.tryRefreshCachedEuiccInfo
+import im.angry.openeuicc.util.uiccCardsInfoCompat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlin.IllegalStateException
+import net.typeblog.lpac_jni.LocalProfileInfo
 
 class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
     companion object {
@@ -61,7 +71,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 Intent(
                     this@OpenEuiccService,
                     EuiccChannelManagerService::class.java
-                ), Context.BIND_AUTO_CREATE
+                ), BIND_AUTO_CREATE
             )
         }
 

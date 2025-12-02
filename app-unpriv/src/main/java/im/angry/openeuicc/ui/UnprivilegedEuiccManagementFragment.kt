@@ -1,7 +1,6 @@
 package im.angry.openeuicc.ui
 
 import android.content.pm.PackageManager
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem

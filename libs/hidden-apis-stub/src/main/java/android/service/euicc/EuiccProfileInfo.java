@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 package android.service.euicc;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.service.carrier.CarrierIdentifier;
 import android.telephony.UiccAccessRule;
+
 import java.util.List;
 
 /**
@@ -27,31 +29,49 @@ import java.util.List;
  */
 public final class EuiccProfileInfo implements Parcelable {
     /** Profile policy rules (bit mask) */
-    /** Once this profile is enabled, it cannot be disabled. */
+    /**
+     * Once this profile is enabled, it cannot be disabled.
+     */
     public static final int POLICY_RULE_DO_NOT_DISABLE = 1;
-    /** This profile cannot be deleted. */
+    /**
+     * This profile cannot be deleted.
+     */
     public static final int POLICY_RULE_DO_NOT_DELETE = 1 << 1;
-    /** This profile should be deleted after being disabled. */
+    /**
+     * This profile should be deleted after being disabled.
+     */
     public static final int POLICY_RULE_DELETE_AFTER_DISABLING = 1 << 2;
     /** Class of the profile */
-    /** Testing profiles */
+    /**
+     * Testing profiles
+     */
     public static final int PROFILE_CLASS_TESTING = 0;
-    /** Provisioning profiles which are pre-loaded on eUICC */
+    /**
+     * Provisioning profiles which are pre-loaded on eUICC
+     */
     public static final int PROFILE_CLASS_PROVISIONING = 1;
-    /** Operational profiles which can be pre-loaded or downloaded */
+    /**
+     * Operational profiles which can be pre-loaded or downloaded
+     */
     public static final int PROFILE_CLASS_OPERATIONAL = 2;
     /**
      * Profile class not set.
+     *
      * @hide
      */
     public static final int PROFILE_CLASS_UNSET = -1;
     /** State of the profile */
-    /** Disabled profiles */
+    /**
+     * Disabled profiles
+     */
     public static final int PROFILE_STATE_DISABLED = 0;
-    /** Enabled profile */
+    /**
+     * Enabled profile
+     */
     public static final int PROFILE_STATE_ENABLED = 1;
     /**
      * Profile state not set.
+     *
      * @hide
      */
     public static final int PROFILE_STATE_UNSET = -1;
@@ -61,12 +81,14 @@ public final class EuiccProfileInfo implements Parcelable {
         public EuiccProfileInfo createFromParcel(Parcel in) {
             return new EuiccProfileInfo(in);
         }
+
         @Override
         public EuiccProfileInfo[] newArray(int size) {
             return new EuiccProfileInfo[size];
         }
     };
     // TODO(b/70292228): Remove this method when LPA can be updated.
+
     /**
      * @hide
      * @deprecated - Do not use.
@@ -81,131 +103,203 @@ public final class EuiccProfileInfo implements Parcelable {
 
     }
 
+    private EuiccProfileInfo(
+        String iccid,
+        String nickname,
+        String serviceProviderName,
+        String profileName,
+        int profileClass,
+        int state,
+        CarrierIdentifier carrierIdentifier,
+        int policyRules,
+        List<UiccAccessRule> accessRules) {
+
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
     }
+
     @Override
     public int describeContents() {
         return 0;
     }
-    /** The builder to build a new {@link EuiccProfileInfo} instance. */
-    public static final class Builder {
 
-        public Builder(String value) {
-
-        }
-        public Builder(EuiccProfileInfo baseProfile) {
-
-        }
-        /** Builds the profile instance. */
-        public EuiccProfileInfo build() {
-            return null;
-        }
-        /** Sets the iccId of the subscription. */
-        public Builder setIccid(String value) {
-            return this;
-        }
-        /** Sets the nickname of the subscription. */
-        public Builder setNickname(String value) {
-            return this;
-        }
-        /** Sets the service provider name of the subscription. */
-        public Builder setServiceProviderName(String value) {
-            return this;
-        }
-        /** Sets the profile name of the subscription. */
-        public Builder setProfileName(String value) {
-            return this;
-        }
-        /** Sets the profile class of the subscription. */
-        public Builder setProfileClass(int value) {
-            return this;
-        }
-        /** Sets the state of the subscription. */
-        public Builder setState(int value) {
-            return this;
-        }
-        /** Sets the carrier identifier of the subscription. */
-        public Builder setCarrierIdentifier(CarrierIdentifier value) {
-            return this;
-        }
-        /** Sets the policy rules of the subscription. */
-        public Builder setPolicyRules(int value) {
-            return this;
-        }
-        /** Sets the access rules of the subscription. */
-        public Builder setUiccAccessRule(List<UiccAccessRule> value) {
-            return this;
-        }
-    }
-    private EuiccProfileInfo(
-            String iccid,
-            String nickname,
-            String serviceProviderName,
-            String profileName,
-            int profileClass,
-            int state,
-            CarrierIdentifier carrierIdentifier,
-            int policyRules,
-            List<UiccAccessRule> accessRules) {
-
-    }
-    /** Gets the ICCID string. */
+    /**
+     * Gets the ICCID string.
+     */
     public String getIccid() {
         return null;
     }
-    /** Gets the access rules. */
+
+    /**
+     * Gets the access rules.
+     */
     public List<UiccAccessRule> getUiccAccessRules() {
         return null;
     }
-    /** Gets the nickname. */
+
+    /**
+     * Gets the nickname.
+     */
     public String getNickname() {
         return null;
     }
-    /** Gets the service provider name. */
+
+    /**
+     * Gets the service provider name.
+     */
     public String getServiceProviderName() {
         return null;
     }
-    /** Gets the profile name. */
+
+    /**
+     * Gets the profile name.
+     */
     public String getProfileName() {
         return null;
     }
-    /** Gets the profile class. */
+
+    /**
+     * Gets the profile class.
+     */
     public int getProfileClass() {
         return 0;
     }
-    /** Gets the state of the subscription. */
+
+    /**
+     * Gets the state of the subscription.
+     */
     public int getState() {
         return 0;
     }
-    /** Gets the carrier identifier. */
+
+    /**
+     * Gets the carrier identifier.
+     */
     public CarrierIdentifier getCarrierIdentifier() {
         return null;
     }
-    /** Gets the policy rules. */
+
+    /**
+     * Gets the policy rules.
+     */
     public int getPolicyRules() {
         return 0;
     }
-    /** Returns whether any policy rule exists. */
+
+    /**
+     * Returns whether any policy rule exists.
+     */
     public boolean hasPolicyRules() {
         return false;
     }
-    /** Checks whether a certain policy rule exists. */
+
+    /**
+     * Checks whether a certain policy rule exists.
+     */
     public boolean hasPolicyRule(int policy) {
         return false;
     }
+
     @Override
     public boolean equals(Object obj) {
         return false;
     }
+
     @Override
     public int hashCode() {
         int result = 1;
         return result;
     }
+
     @Override
     public String toString() {
         return null;
+    }
+
+    /**
+     * The builder to build a new {@link EuiccProfileInfo} instance.
+     */
+    public static final class Builder {
+
+        public Builder(String value) {
+
+        }
+
+        public Builder(EuiccProfileInfo baseProfile) {
+
+        }
+
+        /**
+         * Builds the profile instance.
+         */
+        public EuiccProfileInfo build() {
+            return null;
+        }
+
+        /**
+         * Sets the iccId of the subscription.
+         */
+        public Builder setIccid(String value) {
+            return this;
+        }
+
+        /**
+         * Sets the nickname of the subscription.
+         */
+        public Builder setNickname(String value) {
+            return this;
+        }
+
+        /**
+         * Sets the service provider name of the subscription.
+         */
+        public Builder setServiceProviderName(String value) {
+            return this;
+        }
+
+        /**
+         * Sets the profile name of the subscription.
+         */
+        public Builder setProfileName(String value) {
+            return this;
+        }
+
+        /**
+         * Sets the profile class of the subscription.
+         */
+        public Builder setProfileClass(int value) {
+            return this;
+        }
+
+        /**
+         * Sets the state of the subscription.
+         */
+        public Builder setState(int value) {
+            return this;
+        }
+
+        /**
+         * Sets the carrier identifier of the subscription.
+         */
+        public Builder setCarrierIdentifier(CarrierIdentifier value) {
+            return this;
+        }
+
+        /**
+         * Sets the policy rules of the subscription.
+         */
+        public Builder setPolicyRules(int value) {
+            return this;
+        }
+
+        /**
+         * Sets the access rules of the subscription.
+         */
+        public Builder setUiccAccessRule(List<UiccAccessRule> value) {
+            return this;
+        }
     }
 }

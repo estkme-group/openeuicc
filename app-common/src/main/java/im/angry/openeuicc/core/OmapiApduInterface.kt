@@ -4,7 +4,9 @@ import android.se.omapi.Channel
 import android.se.omapi.SEService
 import android.se.omapi.Session
 import android.util.Log
-import im.angry.openeuicc.util.*
+import im.angry.openeuicc.util.UiccPortInfoCompat
+import im.angry.openeuicc.util.encodeHex
+import im.angry.openeuicc.util.getUiccReaderCompat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -15,7 +17,7 @@ class OmapiApduInterface(
     private val service: SEService,
     private val port: UiccPortInfoCompat,
     private val verboseLoggingFlow: Flow<Boolean>
-): ApduInterface, ApduInterfaceAtrProvider {
+) : ApduInterface, ApduInterfaceAtrProvider {
     companion object {
         const val TAG = "OmapiApduInterface"
     }

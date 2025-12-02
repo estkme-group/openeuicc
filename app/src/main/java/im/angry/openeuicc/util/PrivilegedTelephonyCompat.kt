@@ -6,14 +6,13 @@ import android.telephony.IccOpenLogicalChannelResponse
 import android.telephony.TelephonyManager
 import android.telephony.UiccCardInfo
 import android.telephony.UiccPortInfo
-import java.lang.RuntimeException
 
 /*
  * Implementation of Uicc{Card,Port}InfoCompat when privileged.
  * Also handles compatibility with different platform API versions.
  */
 @Suppress("DEPRECATION")
-class RealUiccCardInfoCompat(val inner: UiccCardInfo): UiccCardInfoCompat {
+class RealUiccCardInfoCompat(val inner: UiccCardInfo) : UiccCardInfoCompat {
     override val physicalSlotIndex: Int
         get() =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -51,7 +50,7 @@ class RealUiccCardInfoCompat(val inner: UiccCardInfo): UiccCardInfoCompat {
 class RealUiccPortInfoCompat(
     private val _inner: Any?,
     override val card: RealUiccCardInfoCompat
-): UiccPortInfoCompat {
+) : UiccPortInfoCompat {
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             check(_inner != null && _inner is UiccPortInfo) {
