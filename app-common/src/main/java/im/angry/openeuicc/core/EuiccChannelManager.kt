@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
  * or when this instance is destroyed.
  *
  * To precisely control the lifecycle of this object itself (and thus its cached channels),
- * all other compoents must access EuiccChannelManager objects through EuiccChannelManagerService.
+ * all other components must access EuiccChannelManager objects through EuiccChannelManagerService.
  * Holding references independent of EuiccChannelManagerService is unsupported.
  */
 interface EuiccChannelManager {
@@ -86,21 +86,12 @@ interface EuiccChannelManager {
      *
      * If a channel for that slot / port is not found, EuiccChannelNotFoundException is thrown
      */
-    suspend fun <R> withEuiccChannel(
-        physicalSlotId: Int,
-        portId: Int,
-        seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT,
-        fn: suspend (EuiccChannel) -> R
-    ): R
+    suspend fun <R> withEuiccChannel(physicalSlotId: Int, portId: Int, seId: EuiccChannel.SecureElementId, fn: suspend (EuiccChannel) -> R): R
 
     /**
      * Same as withEuiccChannel(Int, Int, SecureElementId, (EuiccChannel) -> R) but instead uses logical slot ID
      */
-    suspend fun <R> withEuiccChannel(
-        logicalSlotId: Int,
-        seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT,
-        fn: suspend (EuiccChannel) -> R
-    ): R
+    suspend fun <R> withEuiccChannel(logicalSlotId: Int, seId: EuiccChannel.SecureElementId, fn: suspend (EuiccChannel) -> R): R
 
     /**
      * Invalidate all EuiccChannels previously cached by this Manager

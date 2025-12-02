@@ -52,16 +52,13 @@ class NotificationsActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker 
     }
 
     override fun onInit() {
-        notificationList.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        notificationList.addItemDecoration(
-            DividerItemDecoration(
-                this,
-                LinearLayoutManager.VERTICAL
-            )
-        )
-        notificationList.adapter = notificationAdapter
-        registerForContextMenu(notificationList)
+        notificationList.apply {
+            val context = this@NotificationsActivity
+            adapter = notificationAdapter
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            registerForContextMenu(this)
+        }
 
         logicalSlotId = intent.getIntExtra("logicalSlotId", 0)
         seId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -131,20 +128,19 @@ class NotificationsActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker 
 
     private fun refresh() {
         launchTask {
-            notificationAdapter.notifications =
-                euiccChannelManager.withEuiccChannel(logicalSlotId, seId) { channel ->
-                    val nameMap = buildMap {
-                        for (profile in channel.lpa.profiles) {
-                            put(profile.iccid, profile.displayName)
-                        }
-                    }
+            notificationAdapter.notifications = withEuiccChannel { channel ->
+                val nameMap = channel.lpa.profiles
+                    .associate { Pair(it.iccid, it.displayName) }
 
-                    channel.lpa.notifications.map {
-                        LocalProfileNotificationWrapper(it, nameMap[it.iccid] ?: "???")
-                    }
+                channel.lpa.notifications.map {
+                    LocalProfileNotificationWrapper(it, nameMap[it.iccid] ?: "???")
                 }
+            }
         }
     }
+
+    private suspend fun <R> withEuiccChannel(fn: suspend (EuiccChannel) -> R) =
+        euiccChannelManager.withEuiccChannel(logicalSlotId, seId, fn)
 
     data class LocalProfileNotificationWrapper(
         val inner: LocalProfileNotification,
@@ -224,7 +220,7 @@ class NotificationsActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker 
                 R.id.notification_process -> {
                     launchTask {
                         withContext(Dispatchers.IO) {
-                            euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
+                            withEuiccChannel { channel ->
                                 channel.lpa.handleNotification(notification.inner.seqNumber)
                             }
                         }
@@ -237,7 +233,7 @@ class NotificationsActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker 
                 R.id.notification_delete -> {
                     launchTask {
                         withContext(Dispatchers.IO) {
-                            euiccChannelManager.withEuiccChannel(logicalSlotId) { channel ->
+                            withEuiccChannel { channel ->
                                 channel.lpa.deleteNotification(notification.inner.seqNumber)
                             }
                         }
