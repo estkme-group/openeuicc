@@ -193,5 +193,5 @@
     <string name="pref_info">情報</string>
     <string name="pref_info_app_version">アプリバージョン</string>
     <string name="pref_info_source_code">ソースコード</string>
-    <string name="channel_name_format_se">論理スロット %d, SE %d</string>
+    <string name="channel_name_format_se">論理スロット %1$d, SE %2$d</string>
 </resources>
