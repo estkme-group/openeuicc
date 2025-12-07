@@ -114,22 +114,25 @@ open class DefaultEuiccChannelManager(
 
     private suspend fun tryOpenEuiccChannel(
         port: UiccPortInfoCompat,
-        seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT
-    ): EuiccChannel? {
+    ): List<EuiccChannel>? {
         lock.withLock {
             if (port.card.physicalSlotIndex == EuiccChannelManager.USB_CHANNEL_ID) {
-                // We only compare seId because we assume we can only open 1 card from USB
-                return usbChannels.find { it.seId == seId }
+                return usbChannels
             }
 
+            // First get all channels for the requested port
             val existing =
-                channelCache.find { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex && it.seId == seId }
-            if (existing != null) {
-                if (existing.valid && port.logicalSlotIndex == existing.logicalSlotId) {
+                channelCache.filter { it.slotId == port.card.physicalSlotIndex && it.portId == port.portIndex }
+            if (existing.isNotEmpty()) {
+                if (existing.all { it.valid && it.logicalSlotId == port.logicalSlotIndex }) {
                     return existing
                 } else {
-                    existing.close()
-                    channelCache.remove(existing)
+                    // If any channel shouldn't be considered valid anymore, close all existing for the same slot / port
+                    // and reopen
+                    existing.forEach {
+                        it.close()
+                        channelCache.remove(it)
+                    }
                 }
             }
 
@@ -149,7 +152,7 @@ open class DefaultEuiccChannelManager(
 
             if (channels.isNotEmpty()) {
                 channelCache.addAll(channels)
-                return channels.find { it.seId == seId }
+                return channels
             } else {
                 Log.i(
                     TAG,
@@ -172,7 +175,7 @@ open class DefaultEuiccChannelManager(
             for (card in uiccCards) {
                 for (port in card.ports) {
                     if (port.logicalSlotIndex == logicalSlotId) {
-                        return@withContext tryOpenEuiccChannel(port, seId)
+                        return@withContext tryOpenEuiccChannel(port)?.find { it.seId == seId }
                     }
                 }
             }
@@ -180,6 +183,10 @@ open class DefaultEuiccChannelManager(
             null
         }
 
+    /**
+     * Find all EuiccChannels associated with a _physical_ slot, including all secure elements
+     * on cards with multiple of them.
+     */
     private suspend fun findAllEuiccChannelsByPhysicalSlot(physicalSlotId: Int): List<EuiccChannel>? {
         if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
             return usbChannels.ifEmpty { null }
@@ -188,6 +195,7 @@ open class DefaultEuiccChannelManager(
         for (card in uiccCards) {
             if (card.physicalSlotIndex != physicalSlotId) continue
             return card.ports.mapNotNull { tryOpenEuiccChannel(it) }
+                .flatten()
                 .ifEmpty { null }
         }
         return null
@@ -204,8 +212,8 @@ open class DefaultEuiccChannelManager(
             }
 
             uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
-                card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it, seId) }
-            }
+                card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
+            }?.find { it.seId == seId }
         }
 
     override suspend fun findFirstAvailablePort(physicalSlotId: Int): Int =
