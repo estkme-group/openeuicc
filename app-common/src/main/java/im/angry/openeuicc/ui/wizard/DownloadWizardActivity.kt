@@ -95,27 +95,20 @@ class DownloadWizardActivity : BaseEuiccAccessActivity() {
 
         val navigation = requireViewById<View>(R.id.download_wizard_navigation)
         val origHeight = navigation.layoutParams.height
+        val fragmentRoot = requireViewById<View>(R.id.step_fragment_container)
 
-        ViewCompat.setOnApplyWindowInsetsListener(navigation) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView.rootView) { _, insets ->
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
                     or WindowInsetsCompat.Type.displayCutout()
                     or WindowInsetsCompat.Type.ime()
             )
-            v.updatePadding(bars.left, 0, bars.right, bars.bottom)
-            val newParams = navigation.layoutParams
-            newParams.height = origHeight + bars.bottom
-            navigation.layoutParams = newParams
-            WindowInsetsCompat.CONSUMED
-        }
 
-        val fragmentRoot = requireViewById<View>(R.id.step_fragment_container)
-        ViewCompat.setOnApplyWindowInsetsListener(fragmentRoot) { v, insets ->
-            val bars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                    or WindowInsetsCompat.Type.displayCutout()
-            )
-            v.updatePadding(bars.left, bars.top, bars.right, 0)
+            fragmentRoot.updatePadding(bars.left, bars.top, bars.right, 0)
+            navigation.updatePadding(bars.left, 0, bars.right, bars.bottom)
+            val newNavParams = navigation.layoutParams
+            newNavParams.height = origHeight + bars.bottom
+            navigation.layoutParams = newNavParams
             WindowInsetsCompat.CONSUMED
         }
     }
