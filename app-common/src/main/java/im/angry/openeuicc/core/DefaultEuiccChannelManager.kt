@@ -169,7 +169,7 @@ open class DefaultEuiccChannelManager(
 
     protected suspend fun findEuiccChannelByLogicalSlot(
         logicalSlotId: Int,
-        seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT
+        seId: EuiccChannel.SecureElementId
     ): EuiccChannel? =
         withContext(Dispatchers.IO) {
             if (logicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
