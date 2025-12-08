@@ -201,19 +201,22 @@ open class DefaultEuiccChannelManager(
         return null
     }
 
-    private suspend fun findEuiccChannelByPort(
+    /**
+     * Finds all EuiccChannels associated with a physical slot + port. Note that this
+     * may return multiple in case there are multiple SEs.
+     */
+    private suspend fun findEuiccChannelsByPort(
         physicalSlotId: Int,
         portId: Int,
-        seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT
-    ): EuiccChannel? =
+    ): List<EuiccChannel>? =
         withContext(Dispatchers.IO) {
             if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
-                return@withContext usbChannels.find { it.seId == seId }
+                return@withContext usbChannels.ifEmpty { null }
             }
 
             uiccCards.find { it.physicalSlotIndex == physicalSlotId }?.let { card ->
                 card.ports.find { it.portIndex == portId }?.let { tryOpenEuiccChannel(it) }
-            }?.find { it.seId == seId }
+            }
         }
 
     override suspend fun findFirstAvailablePort(physicalSlotId: Int): Int =
@@ -241,7 +244,7 @@ open class DefaultEuiccChannelManager(
         seId: EuiccChannel.SecureElementId,
         fn: suspend (EuiccChannel) -> R
     ): R {
-        val channel = findEuiccChannelByPort(physicalSlotId, portId, seId)
+        val channel = findEuiccChannelsByPort(physicalSlotId, portId)?.find { it.seId == seId }
             ?: throw EuiccChannelManager.EuiccChannelNotFoundException()
         val wrapper = EuiccChannelWrapper(channel)
         try {
@@ -271,37 +274,48 @@ open class DefaultEuiccChannelManager(
     }
 
     override suspend fun waitForReconnect(physicalSlotId: Int, portId: Int, timeoutMillis: Long) {
-        if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
-            usbChannels.forEach { it.close() }
-            usbChannels.clear()
+        val numChannelsBefore = if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+            usbChannels.size
         } else {
-            // If there is already a valid channel, we close it proactively
-            // Sometimes the current channel can linger on for a bit even after it should have become invalid
-            channelCache.find { it.slotId == physicalSlotId && it.portId == portId }?.apply {
-                if (valid) close()
+            // Don't use find* methods since they reopen channels if not found
+            channelCache.filter { it.slotId == physicalSlotId && it.portId == portId }.size
+        }
+
+        val resetChannels = {
+            if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+                usbChannels.forEach { it.close() }
+                usbChannels.clear()
+            } else {
+                // If there is already a valid channel, we close it proactively
+                channelCache.filter { it.slotId == physicalSlotId && it.portId == portId }.forEach { it.close() }
             }
         }
+
+        resetChannels()
 
         withTimeout(timeoutMillis) {
             while (true) {
                 try {
-                    val channel = if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
+                    val channels = if (physicalSlotId == EuiccChannelManager.USB_CHANNEL_ID) {
                         // tryOpenUsbEuiccChannel() will always try to reopen the channel, even if
                         // a USB channel already exists
                         tryOpenUsbEuiccChannel()
-                        usbChannels.getOrNull(0)!!
+                        usbChannels
                     } else {
                         // tryOpenEuiccChannel() will automatically dispose of invalid channels
                         // and recreate when needed
-                        findEuiccChannelByPort(physicalSlotId, portId)!!
+                        findEuiccChannelsByPort(physicalSlotId, portId)!!
                     }
-                    check(channel.valid) { "Invalid channel" }
+                    check(channels.isNotEmpty()) { "No channel" }
+                    check(channels.all { it.valid }) { "Invalid channel" }
+                    check(numChannelsBefore > 0 && channels.size >= numChannelsBefore) { "Less channels than before" }
                     break
                 } catch (e: Exception) {
                     Log.d(
                         TAG,
                         "Slot $physicalSlotId port $portId reconnect failure, retrying in 1000 ms"
                     )
+                    resetChannels()
                 }
                 delay(1000)
             }
@@ -334,13 +348,8 @@ open class DefaultEuiccChannelManager(
         slotId: Int,
         portId: Int
     ): Flow<EuiccChannel.SecureElementId> = flow {
-        // Emit the "default" channel first
-        // TODO: This function below should really return a list, not just one SE
-        findEuiccChannelByPort(slotId, portId, seId = EuiccChannel.SecureElementId.DEFAULT)?.let {
-            emit(EuiccChannel.SecureElementId.DEFAULT)
-
-            channelCache.filter { it.slotId == slotId && it.portId == portId && it.seId != EuiccChannel.SecureElementId.DEFAULT }
-                .forEach { emit(it.seId) }
+        findEuiccChannelsByPort(slotId, portId)?.forEach {
+            emit(it.seId)
         }
     }
 
