@@ -166,8 +166,14 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
                     // but it could change in the future
                     euiccChannelManager.notifyEuiccProfilesChanged(channel.logicalSlotId)
 
-                    val channelName =
+                    val channelName = if (channel.hasMultipleSE) {
+                        appContainer.customizableTextProvider.formatNonUsbChannelNameWithSeId(
+                            channel.logicalSlotId,
+                            channel.seId
+                        )
+                    } else {
                         appContainer.customizableTextProvider.formatNonUsbChannelName(channel.logicalSlotId)
+                    }
                     newPages.add(Page(channel.logicalSlotId, channelName) {
                         appContainer.uiComponentFactory.createEuiccManagementFragment(
                             slotId,

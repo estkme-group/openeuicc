@@ -109,6 +109,10 @@ open class DefaultEuiccChannelManager(
             break
         }
 
+        // Set the hasMultipleSE field now since we only get to know that after we have iterated all AIDs
+        // This also flips a flag in EuiccChannelImpl and prevents the field from being set again
+        ret.forEach { it.hasMultipleSE = (seId > 1) }
+
         return ret
     }
 

@@ -42,6 +42,11 @@ class EuiccChannelWrapper(orig: EuiccChannel) : EuiccChannel {
         get() = channel.atr
     override val isdrAid: ByteArray
         get() = channel.isdrAid
+    override var hasMultipleSE: Boolean
+        get() = channel.hasMultipleSE
+        set(value) {
+            channel.hasMultipleSE = value
+        }
 
     override fun close() = channel.close()
 

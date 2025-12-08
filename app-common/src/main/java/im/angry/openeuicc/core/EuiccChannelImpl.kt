@@ -39,5 +39,16 @@ class EuiccChannelImpl(
     override val valid: Boolean
         get() = lpa.valid
 
+    private var hasMultipleSEInitialized = false
+
+    override var hasMultipleSE: Boolean = false
+        set(value) {
+            if (hasMultipleSEInitialized) {
+                throw IllegalStateException("already initialized")
+            }
+
+            field = value
+        }
+
     override fun close() = lpa.close()
 }

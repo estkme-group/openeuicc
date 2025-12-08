@@ -68,6 +68,14 @@ interface EuiccChannel {
      */
     val seId: SecureElementId
 
+    /**
+     * Does this channel belong to a chip that supports multiple SEs?
+     * Note that this is only made `var` to make initialization a bit less annoying --
+     * this should never be set again after the channel is originally opened.
+     * Attempting to do so will yield an exception.
+     */
+    var hasMultipleSE: Boolean
+
     val lpa: LocalProfileAssistant
 
     val valid: Boolean

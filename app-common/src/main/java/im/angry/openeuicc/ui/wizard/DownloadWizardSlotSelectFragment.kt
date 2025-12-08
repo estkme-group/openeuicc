@@ -20,7 +20,6 @@ import im.angry.openeuicc.util.enabled
 import im.angry.openeuicc.util.ensureEuiccChannelManager
 import im.angry.openeuicc.util.euiccChannelManager
 import im.angry.openeuicc.util.formatFreeSpace
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -100,14 +99,13 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         ensureEuiccChannelManager()
         showProgressBar(-1)
         val slots = euiccChannelManager.flowAllOpenEuiccPorts().flatMapConcat { (slotId, portId) ->
-            val ses = euiccChannelManager.flowEuiccSecureElements(slotId, portId).toList()
-            ses.asFlow().map { seId ->
+            euiccChannelManager.flowEuiccSecureElements(slotId, portId).map { seId ->
                 euiccChannelManager.withEuiccChannel(slotId, portId, seId) { channel ->
                     SlotInfo(
                         channel.logicalSlotId,
                         channel.port.card.isRemovable,
                         channel.port.card.ports.size > 1,
-                        ses.size > 1,
+                        channel.hasMultipleSE,
                         channel.portId,
                         channel.seId,
                         channel.lpa.eID,
