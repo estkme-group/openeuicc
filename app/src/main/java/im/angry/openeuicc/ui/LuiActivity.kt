@@ -17,7 +17,7 @@ class LuiActivity : AppCompatActivity() {
         setContentView(R.layout.activity_lui)
 
         ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.lui_container)) { v, insets ->
-            val bars = insets.getInsets(
+            val bars = insets.getInsetsIgnoringVisibility(
                 WindowInsetsCompat.Type.systemBars()
                     or WindowInsetsCompat.Type.displayCutout()
             )

@@ -24,6 +24,7 @@ import im.angry.openeuicc.util.OpenEuiccContextMarker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.LocalProfileAssistant
+import kotlin.math.max
 
 class DownloadWizardActivity : BaseEuiccAccessActivity() {
     data class DownloadWizardState(
@@ -97,21 +98,21 @@ class DownloadWizardActivity : BaseEuiccAccessActivity() {
         val origHeight = navigation.layoutParams.height
 
         ViewCompat.setOnApplyWindowInsetsListener(navigation) { v, insets ->
-            val bars = insets.getInsets(
+            val bars = insets.getInsetsIgnoringVisibility(
                 WindowInsetsCompat.Type.systemBars()
                     or WindowInsetsCompat.Type.displayCutout()
-                    or WindowInsetsCompat.Type.ime()
             )
-            v.updatePadding(bars.left, 0, bars.right, bars.bottom)
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.updatePadding(bars.left, 0, bars.right, max(bars.bottom, ime.bottom))
             val newParams = navigation.layoutParams
-            newParams.height = origHeight + bars.bottom
+            newParams.height = origHeight + max(bars.bottom, ime.bottom)
             navigation.layoutParams = newParams
             WindowInsetsCompat.CONSUMED
         }
 
         val fragmentRoot = requireViewById<View>(R.id.step_fragment_container)
         ViewCompat.setOnApplyWindowInsetsListener(fragmentRoot) { v, insets ->
-            val bars = insets.getInsets(
+            val bars = insets.getInsetsIgnoringVisibility(
                 WindowInsetsCompat.Type.systemBars()
                     or WindowInsetsCompat.Type.displayCutout()
             )

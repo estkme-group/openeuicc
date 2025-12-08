@@ -34,18 +34,10 @@ fun DialogFragment.setWidthPercent(percentage: Int) {
     dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
 }
 
-/**
- * Call this method (in onActivityCreated or later)
- * to make the dialog near-full screen.
- */
-fun DialogFragment.setFullScreen() {
-    dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-}
-
 fun AppCompatActivity.setupToolbarInsets() {
     val spacer = requireViewById<View>(R.id.toolbar_spacer)
     ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.toolbar)) { v, insets ->
-        val bars = insets.getInsets(
+        val bars = insets.getInsetsIgnoringVisibility(
             WindowInsetsCompat.Type.systemBars()
                 or WindowInsetsCompat.Type.displayCutout()
         )
