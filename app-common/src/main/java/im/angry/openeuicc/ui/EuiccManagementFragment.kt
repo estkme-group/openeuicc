@@ -109,7 +109,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
         val origFabMarginRight = (fab.layoutParams as ViewGroup.MarginLayoutParams).rightMargin
         val origFabMarginBottom = (fab.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
         ViewCompat.setOnApplyWindowInsetsListener(fab) { v, insets ->
-            val bars = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars())
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
             v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 rightMargin = origFabMarginRight + bars.right
