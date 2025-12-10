@@ -29,7 +29,8 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.ui.wizard.DownloadWizardActivity
 import im.angry.openeuicc.util.OpenEuiccContextMarker
-import im.angry.openeuicc.util.setupToolbarInsets
+import im.angry.openeuicc.util.activityToolbarInsetHandler
+import im.angry.openeuicc.util.setupRootViewSystemBarInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
@@ -83,7 +84,6 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(requireViewById(R.id.toolbar))
-        setupToolbarInsets()
         loadingProgress = requireViewById(R.id.loading)
         tabs = requireViewById(R.id.main_tabs)
         viewPager = requireViewById(R.id.view_pager)
@@ -99,6 +99,12 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
             addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
             addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         })
+
+        setupRootViewSystemBarInsets(
+            window.decorView.rootView, arrayOf(
+                this::activityToolbarInsetHandler
+            ), consume = false
+        )
     }
 
     override fun onDestroy() {

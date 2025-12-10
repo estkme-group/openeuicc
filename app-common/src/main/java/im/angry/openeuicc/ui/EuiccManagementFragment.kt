@@ -19,8 +19,6 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
@@ -43,11 +41,12 @@ import im.angry.openeuicc.util.euiccChannelManager
 import im.angry.openeuicc.util.euiccChannelManagerService
 import im.angry.openeuicc.util.isEnabled
 import im.angry.openeuicc.util.isUsb
+import im.angry.openeuicc.util.mainViewPaddingInsetHandler
 import im.angry.openeuicc.util.newInstanceEuicc
 import im.angry.openeuicc.util.operational
 import im.angry.openeuicc.util.portId
 import im.angry.openeuicc.util.seId
-import im.angry.openeuicc.util.setupRootViewInsets
+import im.angry.openeuicc.util.setupRootViewSystemBarInsets
 import im.angry.openeuicc.util.slotId
 import im.angry.openeuicc.util.withEuiccChannel
 import kotlinx.coroutines.Dispatchers
@@ -108,18 +107,17 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
         val origFabMarginRight = (fab.layoutParams as ViewGroup.MarginLayoutParams).rightMargin
         val origFabMarginBottom = (fab.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
-        ViewCompat.setOnApplyWindowInsetsListener(fab) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                rightMargin = origFabMarginRight + bars.right
-                bottomMargin = origFabMarginBottom + bars.bottom
+        setupRootViewSystemBarInsets(
+            view, arrayOf(
+            mainViewPaddingInsetHandler(profileList),
+            { insets ->
+                fab.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    rightMargin = origFabMarginRight + insets.right
+                    bottomMargin = origFabMarginBottom + insets.bottom
+                }
             }
-
-            WindowInsetsCompat.CONSUMED
-        }
-
-        setupRootViewInsets(profileList)
+        ))
 
         return view
     }

@@ -24,9 +24,10 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.OpenEuiccContextMarker
+import im.angry.openeuicc.util.activityToolbarInsetHandler
 import im.angry.openeuicc.util.displayName
-import im.angry.openeuicc.util.setupRootViewInsets
-import im.angry.openeuicc.util.setupToolbarInsets
+import im.angry.openeuicc.util.mainViewPaddingInsetHandler
+import im.angry.openeuicc.util.setupRootViewSystemBarInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,13 +46,17 @@ class NotificationsActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notifications)
         setSupportActionBar(requireViewById(R.id.toolbar))
-        setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         swipeRefresh = requireViewById(R.id.swipe_refresh)
         notificationList = requireViewById(R.id.recycler_view)
 
-        setupRootViewInsets(notificationList)
+        setupRootViewSystemBarInsets(
+            window.decorView.rootView, arrayOf(
+                this::activityToolbarInsetHandler,
+                mainViewPaddingInsetHandler(notificationList)
+            )
+        )
     }
 
     override fun onInit() {

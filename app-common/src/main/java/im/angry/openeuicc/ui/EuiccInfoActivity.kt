@@ -24,11 +24,12 @@ import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.EUICC_DEFAULT_ISDR_AID
 import im.angry.openeuicc.util.OpenEuiccContextMarker
+import im.angry.openeuicc.util.activityToolbarInsetHandler
 import im.angry.openeuicc.util.decodeHex
 import im.angry.openeuicc.util.encodeHex
 import im.angry.openeuicc.util.formatFreeSpace
-import im.angry.openeuicc.util.setupRootViewInsets
-import im.angry.openeuicc.util.setupToolbarInsets
+import im.angry.openeuicc.util.mainViewPaddingInsetHandler
+import im.angry.openeuicc.util.setupRootViewSystemBarInsets
 import im.angry.openeuicc.util.tryParseEuiccVendorInfo
 import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
@@ -64,7 +65,6 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_euicc_info)
         setSupportActionBar(requireViewById(R.id.toolbar))
-        setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         swipeRefresh = requireViewById(R.id.swipe_refresh)
@@ -92,7 +92,10 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
         swipeRefresh.setOnRefreshListener { refresh() }
 
-        setupRootViewInsets(infoList)
+        setupRootViewSystemBarInsets(window.decorView.rootView, arrayOf(
+            this::activityToolbarInsetHandler,
+            mainViewPaddingInsetHandler(infoList)
+        ))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

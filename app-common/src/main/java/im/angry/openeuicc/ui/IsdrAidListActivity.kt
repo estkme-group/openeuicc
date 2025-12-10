@@ -10,8 +10,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.util.activityToolbarInsetHandler
+import im.angry.openeuicc.util.mainViewPaddingInsetHandler
 import im.angry.openeuicc.util.preferenceRepository
-import im.angry.openeuicc.util.setupToolbarInsets
+import im.angry.openeuicc.util.setupRootViewSystemBarInsets
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -24,10 +26,16 @@ class IsdrAidListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_isdr_aid_list)
         setSupportActionBar(requireViewById(R.id.toolbar))
-        setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         isdrAidListEditor = requireViewById(R.id.isdr_aid_list_editor)
+
+        setupRootViewSystemBarInsets(
+            window.decorView.rootView, arrayOf(
+                this::activityToolbarInsetHandler,
+                mainViewPaddingInsetHandler(isdrAidListEditor)
+            )
+        )
 
         lifecycleScope.launch {
             preferenceRepository.isdrAidListFlow.onEach {

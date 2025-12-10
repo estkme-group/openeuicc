@@ -6,7 +6,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.util.setupToolbarInsets
+import im.angry.openeuicc.util.activityToolbarInsetHandler
+import im.angry.openeuicc.util.setupRootViewSystemBarInsets
 
 class SettingsActivity : AppCompatActivity() {
     private val appContainer
@@ -17,8 +18,14 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         setSupportActionBar(requireViewById(R.id.toolbar))
-        setupToolbarInsets()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        setupRootViewSystemBarInsets(
+            window.decorView.rootView, arrayOf(
+                this::activityToolbarInsetHandler
+            ), consume = false
+        )
+
         val settingsFragment = appContainer.uiComponentFactory.createSettingsFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.settings_container, settingsFragment)

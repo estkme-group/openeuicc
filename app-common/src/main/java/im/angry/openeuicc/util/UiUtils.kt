@@ -11,6 +11,7 @@ import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -35,46 +36,71 @@ fun DialogFragment.setWidthPercent(percentage: Int) {
 }
 
 /**
- * Call this method (in onActivityCreated or later)
- * to make the dialog near-full screen.
+ * A handler function for `setupRootViewSystemBarInsets`, which is intended to set up
+ * insets for the top toolbar, in the case where the activity contains a toolbar with the default
+ * ID `R.id.toolbar`, and a spacer `R.id.toolbar_spacer` for status bar background.
  */
-fun DialogFragment.setFullScreen() {
-    dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-}
-
-fun AppCompatActivity.setupToolbarInsets() {
-    val spacer = requireViewById<View>(R.id.toolbar_spacer)
-    ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.toolbar)) { v, insets ->
-        val bars = insets.getInsets(
-            WindowInsetsCompat.Type.systemBars()
-                or WindowInsetsCompat.Type.displayCutout()
-        )
-
-        v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-            topMargin = bars.top
+fun AppCompatActivity.activityToolbarInsetHandler(insets: Insets) {
+    val toolbar = requireViewById<View>(R.id.toolbar)
+    toolbar.apply {
+        updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            topMargin = insets.top
         }
-        v.updatePadding(bars.left, v.paddingTop, bars.right, v.paddingBottom)
+        updatePadding(insets.left, paddingTop, insets.right, paddingBottom)
+    }
 
-        spacer.updateLayoutParams {
-            height = v.top
-        }
-
-        WindowInsetsCompat.CONSUMED
+    requireViewById<View>(R.id.toolbar_spacer).updateLayoutParams {
+        height = toolbar.top
     }
 }
 
-fun setupRootViewInsets(view: ViewGroup) {
+/**
+ * A handler function for `setupRootViewSystemBarInsets`, which is intended to set up
+ * left, right, and bottom padding for a "main view", usually a RecyclerView or a ScrollView.
+ *
+ * It ignores top paddings because that should be handled by the toolbar handler for the activity.
+ * See above.
+ */
+fun mainViewPaddingInsetHandler(v: View): (Insets) -> Unit = { insets ->
     // Disable clipToPadding to make sure content actually display
-    view.clipToPadding = false
-    ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+    if (v is ViewGroup) {
+        v.clipToPadding = false
+    }
+    v.updatePadding(insets.left, v.paddingTop, insets.right, insets.bottom)
+}
+
+/**
+ * A wrapper for `ViewCompat.setOnApplyWindowInsetsListener`, which should only be called
+ * on a root view of a certain component. For activities, this should usually be `window.decorView.rootView`,
+ * and for Fragments this should be the outermost layer of view it inflated during creation.
+ *
+ * This function takes in an array of handler functions, and is expected to only ever be called
+ * on views belonging to the same hierarchy. All sibling views should be handled from the array of
+ * handler functions, rather than a separate call to this function OR `ViewCompat.setOnApplyWindowInsetsListener`.
+ *
+ * The reason this function exists is that on some versions of Android, the dispatch of window inset
+ * events is completely broken. If an inset event is handled by a view, it will never be seen by any of
+ * its siblings. By wrapping this function and restricting its use to only the "main" view hierarchy and
+ * handling all sibling views using our own handler functions, we work around that issue.
+ *
+ * Note that this function by default returns `WindowInsetCompat.CONSUME`, which will prevent the event from
+ * being dispatched further to child views. This may be a problem for activities that act as fragment hosts.
+ * In that case, please set `consume = false` in order for the event to propagate.
+ */
+fun setupRootViewSystemBarInsets(rootView: View, handlers: Array<(Insets) -> Unit>, consume: Boolean = true) {
+    ViewCompat.setOnApplyWindowInsetsListener(rootView) { _, insets ->
         val bars = insets.getInsets(
             WindowInsetsCompat.Type.systemBars()
                 or WindowInsetsCompat.Type.displayCutout()
         )
 
-        v.updatePadding(bars.left, v.paddingTop, bars.right, bars.bottom)
+        handlers.forEach { it(bars) }
 
-        WindowInsetsCompat.CONSUMED
+        if (consume) {
+            WindowInsetsCompat.CONSUMED
+        } else {
+            insets
+        }
     }
 }
 

@@ -14,9 +14,10 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.util.PreferenceFlowWrapper
+import im.angry.openeuicc.util.mainViewPaddingInsetHandler
 import im.angry.openeuicc.util.preferenceRepository
 import im.angry.openeuicc.util.selfAppVersion
-import im.angry.openeuicc.util.setupRootViewInsets
+import im.angry.openeuicc.util.setupRootViewSystemBarInsets
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -97,7 +98,9 @@ open class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onStart() {
         super.onStart()
-        setupRootViewInsets(requireView().requireViewById(R.id.recycler_view))
+        setupRootViewSystemBarInsets(requireView(), arrayOf(
+            mainViewPaddingInsetHandler(requireView().requireViewById(R.id.recycler_view))
+        ))
     }
 
     @Suppress("UNUSED_PARAMETER")
