@@ -258,9 +258,7 @@ open class MainActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         val downloadShortcut = ShortcutInfoCompat.Builder(this, "download")
             .setShortLabel(getString(R.string.profile_download))
             .setIcon(IconCompat.createWithResource(this, R.drawable.ic_task_sim_card_download))
-            .setIntent(Intent(this, DownloadWizardActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-            })
+            .setIntent(DownloadWizardActivity.newIntent(this).apply { action = Intent.ACTION_VIEW })
             .build()
         return listOf(downloadShortcut)
     }

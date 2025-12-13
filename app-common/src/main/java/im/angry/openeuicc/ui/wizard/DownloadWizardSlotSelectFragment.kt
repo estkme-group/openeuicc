@@ -27,7 +27,10 @@ import kotlinx.coroutines.launch
 
 class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
     companion object {
-        fun decodeSyntheticSlotId(id: Int): Pair<Int, EuiccChannel.SecureElementId> =
+        internal fun encodeSyntheticSlotId(logicalSlotId: Int, seId: EuiccChannel.SecureElementId): Int =
+            (logicalSlotId shl 16) + seId.id
+
+        internal fun decodeSyntheticSlotId(id: Int): Pair<Int, EuiccChannel.SecureElementId> =
             Pair(id shr 16, EuiccChannel.SecureElementId.createFromInt(id and 0xFF))
     }
 

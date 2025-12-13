@@ -1,6 +1,8 @@
 package im.angry.openeuicc.ui.wizard
 
 import android.app.assist.AssistContent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -17,6 +19,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import im.angry.openeuicc.common.R
+import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.ui.BaseEuiccAccessActivity
 import im.angry.openeuicc.util.LPAString
@@ -26,6 +29,22 @@ import kotlinx.coroutines.launch
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
 class DownloadWizardActivity : BaseEuiccAccessActivity() {
+    companion object {
+        const val TAG = "DownloadWizardActivity"
+
+        private const val FIELD_LOGICAL_SLOT_ID = "selectedLogicalSlot"
+
+        fun newIntent(
+            context: Context,
+            logicalSlotId: Int = 0,
+            seId: EuiccChannel.SecureElementId = EuiccChannel.SecureElementId.DEFAULT
+        ) = Intent(context, DownloadWizardActivity::class.java).apply {
+            val selectedSyntheticSlotId = DownloadWizardSlotSelectFragment
+                .encodeSyntheticSlotId(logicalSlotId, seId)
+            putExtra(FIELD_LOGICAL_SLOT_ID, selectedSyntheticSlotId)
+        }
+    }
+
     data class DownloadWizardState(
         var currentStepFragmentClassName: String?,
         var selectedSyntheticSlotId: Int,
@@ -67,7 +86,7 @@ class DownloadWizardActivity : BaseEuiccAccessActivity() {
 
         state = DownloadWizardState(
             currentStepFragmentClassName = null,
-            selectedSyntheticSlotId = intent.getIntExtra("selectedLogicalSlot", 0),
+            selectedSyntheticSlotId = intent.getIntExtra(FIELD_LOGICAL_SLOT_ID, 0),
             smdp = "",
             matchingId = null,
             confirmationCode = null,
