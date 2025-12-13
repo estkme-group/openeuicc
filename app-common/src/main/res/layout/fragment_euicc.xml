@@ -29,6 +29,7 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/profile_download"
         android:src="@drawable/ic_add"
+        android:tooltipText="@string/profile_download"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
