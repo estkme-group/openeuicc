@@ -104,6 +104,13 @@
         <Preference
             app:enableCopying="true"
             app:iconSpaceReserved="false"
+            app:isPreferenceVisible="false"
+            app:key="pref_info_website"
+            app:title="@string/pref_info_website" />
+
+        <Preference
+            app:enableCopying="true"
+            app:iconSpaceReserved="false"
             app:key="pref_info_source_code"
             app:summary="@string/pref_info_source_code_url"
             app:title="@string/pref_info_source_code">

@@ -2,7 +2,7 @@ package im.angry.openeuicc.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -13,17 +13,11 @@ import java.security.MessageDigest
 
 class UnprivilegedSettingsFragment : SettingsFragment() {
     private val firstSigner by lazy {
-        val packageInfo = requireContext().let {
-            it.packageManager.getPackageInfo(
-                it.packageName,
-                PackageManager.GET_SIGNING_CERTIFICATES,
-            )
+        val packageInfo = with(requireContext()) {
+            packageManager.getPackageInfo(packageName, /* flags = */ GET_SIGNING_CERTIFICATES)
         }
-        packageInfo.signingInfo!!.apkContentsSigners.first().let {
-            MessageDigest.getInstance("SHA-1")
-                .apply { update(it.toByteArray()) }
-                .digest()
-        }
+        packageInfo.signingInfo!!.apkContentsSigners.first().toByteArray()
+            .let(MessageDigest.getInstance("SHA-1")::digest)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

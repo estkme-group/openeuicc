@@ -86,6 +86,7 @@
     <string name="pref_developer_es10x_mss_desc">全域 ES10x MSS</string>
     <string name="pref_info">資訊</string>
     <string name="pref_info_app_version">App 版本</string>
+    <string name="pref_info_website">官方網站</string>
     <string name="pref_info_source_code">原始碼</string>
     <string name="profile_class_testing">測試</string>
     <string name="profile_class_provisioning">準備中</string>

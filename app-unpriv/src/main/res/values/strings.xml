@@ -9,6 +9,7 @@
 
     <!-- Settings -->
     <string name="pref_developer_ara_m" translatable="false">ARA-M SHA-1</string>
+    <string name="pref_info_website_url" translatable="false">https://easyeuicc.org</string>
 
     <!-- Toast -->
     <string name="toast_ara_m_copied">ARA-M SHA-1 copied to clipboard</string>

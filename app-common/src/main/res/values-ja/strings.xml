@@ -192,6 +192,7 @@
     <string name="pref_developer_isdr_aid_list_desc">一部ブランドのリムーバブル eSIM は独自の非標準な ISD-R AID を使用しているため、サードパーティー製アプリからアクセスできない場合があります。このリストに追加された非標準な AID の使用を試みますが、動作の保証はできません。</string>
     <string name="pref_info">情報</string>
     <string name="pref_info_app_version">アプリバージョン</string>
+    <string name="pref_info_website">公式サイト</string>
     <string name="pref_info_source_code">ソースコード</string>
     <string name="channel_name_format_se">論理スロット %1$d, SE %2$d</string>
 </resources>

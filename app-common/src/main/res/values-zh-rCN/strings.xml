@@ -90,6 +90,7 @@
     </string-array>
     <string name="pref_info">信息</string>
     <string name="pref_info_app_version">App 版本</string>
+    <string name="pref_info_website">官方网站</string>
     <string name="pref_info_source_code">源码</string>
     <string name="profile_class_testing">测试</string>
     <string name="profile_class_provisioning">准备中</string>

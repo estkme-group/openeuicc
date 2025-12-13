@@ -231,6 +231,7 @@
     <string name="pref_developer_isdr_aid_list_desc">Some brands of removable eSIMs may use their own non-standard ISD-R AID, rendering them inaccessible to third-party apps. We can attempt to use non-standard AIDs added in this list, but there is no guarantee that they will work.</string>
     <string name="pref_info">Info</string>
     <string name="pref_info_app_version">App Version</string>
+    <string name="pref_info_website">Official Website</string>
     <string name="pref_info_source_code">Source Code</string>
     <string name="pref_info_source_code_url" translatable="false">https://gitea.angry.im/PeterCxy/OpenEUICC</string>
 </resources>

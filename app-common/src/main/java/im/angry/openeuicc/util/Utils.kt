@@ -1,6 +1,7 @@
 package im.angry.openeuicc.util
 
 import android.content.Context
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.se.omapi.SEService
@@ -21,14 +22,14 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+val Context.packageInfo: PackageInfo
+    get() = packageManager.getPackageInfo(packageName, /* flags = */ 0)!!
+
 val Context.selfAppVersion: String
-    get() =
-        try {
-            val pInfo = packageManager.getPackageInfo(packageName, 0)
-            pInfo.versionName!!
-        } catch (e: PackageManager.NameNotFoundException) {
-            throw RuntimeException(e)
-        }
+    get() = packageInfo.versionName!!
+
+val Context.selfAppVersionCode: Long
+    get() = packageInfo.longVersionCode
 
 suspend fun readSelfLog(lines: Int = 2048): String = withContext(Dispatchers.IO) {
     try {

@@ -1,5 +1,6 @@
 package im.angry.openeuicc.di
 
+import android.net.Uri
 import im.angry.openeuicc.core.EuiccChannel
 
 interface CustomizableTextProvider {
@@ -13,6 +14,11 @@ interface CustomizableTextProvider {
      * Shown when we timed out switching between profiles.
      */
     val profileSwitchingTimeoutMessage: String
+
+    /**
+     * Display the website link in settings; null if not available.
+     */
+    val websiteUri: Uri?
 
     /**
      * Format the name of a logical slot -- not for USB channels
