@@ -60,15 +60,18 @@ internal object PreferenceConstants {
 
         # Xesim
         A0000005591010FFFFFFFF8900000177
-        
+
+        # LinksField
+        A000000559104C696E6B736669656C64
+
         # ESTKme SE0
         # For multi-SE eSTK.me products, this will always be attempted even if removed from the list
         ${ESTKme.ESTK_SE0_AID.encodeHex()}
-        
+
         # ESTKme SE1
         # For multi-SE eSTK.me products, this will always be attempted even if removed from the list
         ${ESTKme.ESTK_SE1_AID.encodeHex()}
-        
+
         # ESTKme AUX (deprecated, use SE0 instead)
         A06573746B6D65FFFFFFFF4953442D52
     """.trimIndent()
