@@ -13,11 +13,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.util.OpenEuiccContextMarker
-import im.angry.openeuicc.util.PreferenceFlowWrapper
-import im.angry.openeuicc.util.mainViewPaddingInsetHandler
-import im.angry.openeuicc.util.selfAppVersion
-import im.angry.openeuicc.util.setupRootViewSystemBarInsets
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

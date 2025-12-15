@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import im.angry.openeuicc.R
-import im.angry.openeuicc.util.PrivilegedEuiccContextMarker
+import im.angry.openeuicc.util.*
 
 class PrivilegedSettingsFragment : SettingsFragment(), PrivilegedEuiccContextMarker {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

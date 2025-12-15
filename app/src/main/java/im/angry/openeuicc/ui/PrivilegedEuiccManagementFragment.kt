@@ -6,10 +6,7 @@ import android.widget.Button
 import android.widget.PopupMenu
 import im.angry.openeuicc.R
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.util.isEnabled
-import im.angry.openeuicc.util.isMEP
-import im.angry.openeuicc.util.newInstanceEuicc
-import im.angry.openeuicc.util.withEuiccChannel
+import im.angry.openeuicc.util.*
 import net.typeblog.lpac_jni.LocalProfileInfo
 
 class PrivilegedEuiccManagementFragment : EuiccManagementFragment() {

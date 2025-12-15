@@ -5,7 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import im.angry.easyeuicc.R
 import im.angry.openeuicc.di.UnprivilegedUiComponentFactory
-import im.angry.openeuicc.util.OpenEuiccContextMarker
+import im.angry.openeuicc.util.*
 
 class QuickCompatibilityActivity : AppCompatActivity(), OpenEuiccContextMarker {
     override fun onCreate(savedInstanceState: Bundle?) {

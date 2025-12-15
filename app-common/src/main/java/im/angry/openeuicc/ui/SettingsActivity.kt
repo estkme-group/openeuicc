@@ -6,8 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import im.angry.openeuicc.OpenEuiccApplication
 import im.angry.openeuicc.common.R
-import im.angry.openeuicc.util.activityToolbarInsetHandler
-import im.angry.openeuicc.util.setupRootViewSystemBarInsets
+import im.angry.openeuicc.util.*
 
 class SettingsActivity : AppCompatActivity() {
     private val appContainer

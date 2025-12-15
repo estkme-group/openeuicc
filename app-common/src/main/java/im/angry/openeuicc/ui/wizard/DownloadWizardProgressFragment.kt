@@ -14,9 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.service.EuiccChannelManagerService
-import im.angry.openeuicc.util.ensureEuiccChannelManager
-import im.angry.openeuicc.util.euiccChannelManager
-import im.angry.openeuicc.util.euiccChannelManagerService
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

@@ -5,7 +5,7 @@ import android.telephony.TelephonyManager
 import im.angry.openeuicc.core.EuiccChannelFactory
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.core.EuiccChannelManagerFactory
-import im.angry.openeuicc.util.PreferenceRepository
+import im.angry.openeuicc.util.*
 
 interface AppContainer {
     val telephonyManager: TelephonyManager

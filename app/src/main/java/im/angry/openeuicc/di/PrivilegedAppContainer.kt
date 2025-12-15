@@ -6,7 +6,7 @@ import im.angry.openeuicc.core.EuiccChannelManagerFactory
 import im.angry.openeuicc.core.PrivilegedEuiccChannelFactory
 import im.angry.openeuicc.core.PrivilegedEuiccChannelManager
 import im.angry.openeuicc.core.PrivilegedEuiccChannelManagerFactory
-import im.angry.openeuicc.util.PrivilegedPreferenceRepository
+import im.angry.openeuicc.util.*
 
 class PrivilegedAppContainer(context: Context) : DefaultAppContainer(context) {
     override val euiccChannelManager: EuiccChannelManager by lazy {

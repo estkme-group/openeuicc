@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.preference.Preference
 import im.angry.easyeuicc.R
-import im.angry.openeuicc.util.encodeHex
+import im.angry.openeuicc.util.*
 import java.security.MessageDigest
 
 class UnprivilegedSettingsFragment : SettingsFragment() {

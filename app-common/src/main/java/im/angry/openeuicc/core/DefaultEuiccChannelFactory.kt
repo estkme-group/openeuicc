@@ -6,12 +6,7 @@ import android.util.Log
 import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.usb.UsbApduInterface
 import im.angry.openeuicc.core.usb.UsbCcidContext
-import im.angry.openeuicc.util.FakeUiccCardInfoCompat
-import im.angry.openeuicc.util.FakeUiccPortInfoCompat
-import im.angry.openeuicc.util.UiccPortInfoCompat
-import im.angry.openeuicc.util.connectSEService
-import im.angry.openeuicc.util.encodeHex
-import im.angry.openeuicc.util.preferenceRepository
+import im.angry.openeuicc.util.*
 
 open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccChannelFactory {
     private var seService: SEService? = null

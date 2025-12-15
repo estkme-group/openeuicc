@@ -7,9 +7,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import im.angry.easyeuicc.R
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.util.SIMToolkit
-import im.angry.openeuicc.util.newInstanceEuicc
-import im.angry.openeuicc.util.slotId
+import im.angry.openeuicc.util.*
 
 
 class UnprivilegedEuiccManagementFragment : EuiccManagementFragment() {

@@ -1,7 +1,7 @@
 package im.angry.openeuicc.core
 
 import im.angry.openeuicc.core.usb.UsbCcidContext
-import im.angry.openeuicc.util.UiccPortInfoCompat
+import im.angry.openeuicc.util.*
 
 // This class is here instead of inside DI because it contains a bit more logic than just
 // "dumb" dependency injection.

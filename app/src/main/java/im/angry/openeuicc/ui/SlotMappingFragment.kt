@@ -19,14 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import im.angry.openeuicc.R
-import im.angry.openeuicc.util.OpenEuiccContextMarker
-import im.angry.openeuicc.util.UiccPortInfoCompat
-import im.angry.openeuicc.util.dsdsEnabled
-import im.angry.openeuicc.util.setWidthPercent
-import im.angry.openeuicc.util.simSlotMapping
-import im.angry.openeuicc.util.supportsDSDS
-import im.angry.openeuicc.util.uiccCardsInfoCompat
-import im.angry.openeuicc.util.updateSimSlotMapping
+import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -8,8 +8,7 @@ import androidx.core.net.toUri
 import im.angry.easyeuicc.R
 import im.angry.openeuicc.common.BuildConfig
 import im.angry.openeuicc.core.EuiccChannel
-import im.angry.openeuicc.util.selfAppVersion
-import im.angry.openeuicc.util.selfAppVersionCode
+import im.angry.openeuicc.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
