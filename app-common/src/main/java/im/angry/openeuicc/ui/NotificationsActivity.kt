@@ -137,6 +137,13 @@ class NotificationsActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker 
     private fun refresh() {
         launchTask {
             notificationAdapter.notifications = withEuiccChannel { channel ->
+                if (channel.hasMultipleSE && logicalSlotId != EuiccChannelManager.USB_CHANNEL_ID) {
+                    withContext(Dispatchers.Main) {
+                        title =
+                            appContainer.customizableTextProvider.formatNonUsbChannelNameWithSeId(logicalSlotId, seId)
+                    }
+                }
+
                 val nameMap = channel.lpa.profiles
                     .associate { Pair(it.iccid, it.displayName) }
 

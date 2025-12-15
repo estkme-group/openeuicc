@@ -31,7 +31,9 @@ import im.angry.openeuicc.util.formatFreeSpace
 import im.angry.openeuicc.util.mainViewPaddingInsetHandler
 import im.angry.openeuicc.util.setupRootViewSystemBarInsets
 import im.angry.openeuicc.util.tryParseEuiccVendorInfo
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.impl.PKID_GSMA_LIVE_CI
 import net.typeblog.lpac_jni.impl.PKID_GSMA_TEST_CI
 
@@ -92,10 +94,12 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
 
         swipeRefresh.setOnRefreshListener { refresh() }
 
-        setupRootViewSystemBarInsets(window.decorView.rootView, arrayOf(
-            this::activityToolbarInsetHandler,
-            mainViewPaddingInsetHandler(infoList)
-        ))
+        setupRootViewSystemBarInsets(
+            window.decorView.rootView, arrayOf(
+                this::activityToolbarInsetHandler,
+                mainViewPaddingInsetHandler(infoList)
+            )
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
@@ -115,8 +119,23 @@ class EuiccInfoActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker {
         swipeRefresh.isRefreshing = true
 
         lifecycleScope.launch {
-            (infoList.adapter!! as EuiccInfoAdapter).euiccInfoItems =
-                euiccChannelManager.withEuiccChannel(logicalSlotId, seId, fn = ::buildEuiccInfoItems)
+            euiccChannelManager.withEuiccChannel(logicalSlotId, seId) { channel ->
+                // When the chip multi-SE, we need to include seId in the title (because we don't have access
+                // to hasMultipleSE in the onCreate() function, we need to do it here).
+                // TODO: Move channel formatting to somewhere centralized and remove this hack. (And also, of course, add support for USB)
+                if (channel.hasMultipleSE && logicalSlotId != EuiccChannelManager.USB_CHANNEL_ID) {
+                    withContext(Dispatchers.Main) {
+                        title =
+                            appContainer.customizableTextProvider.formatNonUsbChannelNameWithSeId(logicalSlotId, seId)
+                    }
+                }
+
+                val items = buildEuiccInfoItems(channel)
+
+                withContext(Dispatchers.Main) {
+                    (infoList.adapter!! as EuiccInfoAdapter).euiccInfoItems = items
+                }
+            }
 
             swipeRefresh.isRefreshing = false
         }
