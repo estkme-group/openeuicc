@@ -2,7 +2,7 @@
 
 A fully free and open-source Local Profile Assistant implementation for Android devices.
 
-There are two variants of this project, OpenEUICC and EasyEUICC:
+There are two variants of this project, OpenEUICC and [EasyEUICC](https://easyeuicc.org):
 
 |                               |            OpenEUICC            |      EasyEUICC      |
 |:------------------------------|:-------------------------------:|:-------------------:|
@@ -124,7 +124,7 @@ There are two ways to include OpenEUICC in your AOSP-based system image:
 Everything except `libs/lpac-jni` and `art/`:
 
 ```
-Copyright 2022-2024 OpenEUICC contributors
+Copyright 2022-2026 OpenEUICC contributors
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -143,7 +143,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 `libs/lpac-jni`:
 
 ```
-Copyright (C) 2022-2024 OpenEUICC contributiors
+Copyright (C) 2022-2026 OpenEUICC contributiors
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
