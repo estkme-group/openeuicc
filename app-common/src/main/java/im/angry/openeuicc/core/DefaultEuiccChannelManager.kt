@@ -100,9 +100,10 @@ open class DefaultEuiccChannelManager(
                     ret.add(channel)
                     openedAids.add(aid)
 
-                    // This only exists because the UI side doesn't yet support multi-SE over USB readers properly.
-                    // TODO: Fix that and remove this.
-                    if (!supportsMultiSE) {
+                    // Don't try opening more than 1 channel unless we support multi SE or
+                    // there is a vendor implementation for deciding when we should stop
+                    // opening more channels
+                    if (!supportsMultiSE || vendorDecider == null) {
                         break@outer
                     }
                 }
