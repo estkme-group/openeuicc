@@ -20,32 +20,35 @@ val Project.gitVersionCode: Int
             0
         }
 
-val Project.gitVersionName: String
-    get() =
-        try {
-            val stdout = ByteArrayOutputStream()
-            exec {
-                commandLine("git", "describe", "--always", "--tags", "--dirty")
-                standardOutput = stdout
-            }
-            stdout.toString("utf-8").trim('\n')
-        } catch (_: Exception) {
-            "Unknown"
+fun Project.getGitVersionName(vararg args: String): String =
+    try {
+        val stdout = ByteArrayOutputStream()
+        exec {
+            commandLine("git", "describe", "--always", "--tags", "--dirty", *args)
+            standardOutput = stdout
         }
+        stdout.toString("utf-8").trim('\n').removePrefix("unpriv-")
+    } catch (_: Exception) {
+        "Unknown"
+    }
+
 
 class MyVersioningPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.configure<BaseAppModuleExtension> {
             defaultConfig {
                 versionCode = target.gitVersionCode
-                versionName = target.gitVersionName.removePrefix("unpriv-")
+                versionName = target.getGitVersionName()
             }
 
             applicationVariants.all {
                 if (name == "debug") {
                     outputs.forEach {
-                        (it as ApkVariantOutputImpl).versionCodeOverride =
-                            (System.currentTimeMillis() / 1000).toInt()
+                        with(it as ApkVariantOutputImpl) {
+                            versionCodeOverride = (System.currentTimeMillis() / 1000).toInt()
+                            // always keep the format: <tag>-<commits>-g<hash>[-dirty]
+                            versionNameOverride = target.getGitVersionName("--long")
+                        }
                     }
                 }
             }
