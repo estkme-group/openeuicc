@@ -84,6 +84,8 @@ data class UsbCcidDescription(
 
     private fun hasFeature(feature: Int) = (dwFeatures and feature) != 0
 
+    val isTpdu = hasFeature(0x10000)
+
     val voltages: List<Voltage>
         get() {
             if (hasFeature(FEATURE_AUTOMATIC_VOLTAGE)) return listOf(Voltage.AUTO)

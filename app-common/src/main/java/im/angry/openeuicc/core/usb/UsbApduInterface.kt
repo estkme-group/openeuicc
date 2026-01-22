@@ -24,6 +24,11 @@ class UsbApduInterface(
     override fun connect() {
         ccidCtx.connect()
 
+        if (ccidCtx.transceiver.isTpdu) {
+            ccidCtx.transceiver.sendXfrBlock("FF109679".decodeHex())
+            ccidCtx.transceiver.sendParamBlock("9600000a00".decodeHex())
+        }
+
         // Send Terminal Capabilities
         // Specs: ETSI TS 102 221 v15.0.0 - 11.1.19 TERMINAL CAPABILITY
         val terminalCapabilities = buildCmd(

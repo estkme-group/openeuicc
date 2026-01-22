@@ -143,6 +143,8 @@ class UsbCcidTransceiver(
 
     val hasAutomaticPps = usbCcidDescription.hasAutomaticPps
 
+    val isTpdu = usbCcidDescription.isTpdu
+
     private val inputBuffer = ByteArray(usbBulkIn.maxPacketSize)
 
     private var currentSequenceNumber: Byte = 0
@@ -156,6 +158,46 @@ class UsbCcidTransceiver(
                 "USB error - failed to transmit data ($tr1/$length)"
             )
         }
+    }
+
+    private fun receiveParamBlock(expectedSequenceNumber: Byte): ByteArray {
+        var response: ByteArray?
+        do {
+            response = receiveParamBlockImmediate(expectedSequenceNumber)
+        } while (response!![7] == 0x80.toByte())
+        return response
+    }
+
+    private fun receiveParamBlockImmediate(expectedSequenceNumber: Byte): ByteArray {
+        /*
+         * Some USB CCID devices (notably NitroKey 3) may time-out and need a subsequent poke to
+         * carry on communications.  No particular reason why the number 3 was chosen.  If we get a
+         * zero-sized reply (or a time-out), we try again.  Clamped retries prevent an infinite loop
+         * if things really turn sour.
+         */
+        var attempts = 3
+        Log.d(TAG, "Receive data block immediate seq=$expectedSequenceNumber")
+        var readBytes: Int
+        do {
+            readBytes = usbConnection.bulkTransfer(
+                usbBulkIn, inputBuffer, inputBuffer.size, DEVICE_COMMUNICATE_TIMEOUT_MILLIS
+            )
+            if (runBlocking { verboseLoggingFlow.first() }) {
+                Log.d(TAG, "Received $readBytes bytes: ${inputBuffer.encodeHex()}")
+            }
+        } while (readBytes <= 0 && attempts-- > 0)
+        if (inputBuffer[0] != 0x82.toByte()) {
+            throw UsbTransportException(buildString {
+                append("USB-CCID error - bad CCID header")
+                append(", type ")
+                append("%d (expected %d)".format(inputBuffer[0], MESSAGE_TYPE_RDR_TO_PC_DATA_BLOCK))
+                if (expectedSequenceNumber != inputBuffer[6]) {
+                    append(", sequence number ")
+                    append("%d (expected %d)".format(inputBuffer[6], expectedSequenceNumber))
+                }
+            })
+        }
+        return inputBuffer
     }
 
     private fun receiveDataBlock(expectedSequenceNumber: Byte): CcidDataBlock {
@@ -280,6 +322,38 @@ class UsbCcidTransceiver(
         val ccidDataBlock = receiveDataBlock(sequenceNumber)
         val elapsedTime = SystemClock.elapsedRealtime() - startTime
         Log.d(TAG, "USB XferBlock call took ${elapsedTime}ms")
+        return ccidDataBlock
+    }
+
+    fun sendParamBlock(
+        payload: ByteArray
+    ): ByteArray {
+        val startTime = SystemClock.elapsedRealtime()
+        val l = payload.size
+        val sequenceNumber: Byte = currentSequenceNumber++
+        val headerData = byteArrayOf(
+            0x61.toByte(),
+            l.toByte(),
+            (l shr 8).toByte(),
+            (l shr 16).toByte(),
+            (l shr 24).toByte(),
+            SLOT_NUMBER.toByte(),
+            sequenceNumber,
+            0x00.toByte(),
+            0x00.toByte(),
+            0x00.toByte()
+        )
+        val data: ByteArray = headerData + payload
+        Log.d(TAG, "USB ParamBlock: ${data.encodeHex()}")
+        var sentBytes = 0
+        while (sentBytes < data.size) {
+            val bytesToSend = usbBulkOut.maxPacketSize.coerceAtMost(data.size - sentBytes)
+            sendRaw(data, sentBytes, bytesToSend)
+            sentBytes += bytesToSend
+        }
+        val ccidDataBlock = receiveParamBlock(sequenceNumber)
+        val elapsedTime = SystemClock.elapsedRealtime() - startTime
+        Log.d(TAG, "USB ParamBlock call took ${elapsedTime}ms")
         return ccidDataBlock
     }
 
