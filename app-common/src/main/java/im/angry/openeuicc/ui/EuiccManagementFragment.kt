@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.typeblog.lpac_jni.LocalProfileInfo
+import net.typeblog.lpac_jni.ProfileClass
 
 open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
     EuiccChannelFragmentMarker {
@@ -395,9 +396,9 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             profileClass.isVisible = unfilteredProfileListFlow.value
             profileClass.setText(
                 when (profile.profileClass) {
-                    LocalProfileInfo.Clazz.Testing -> R.string.profile_class_testing
-                    LocalProfileInfo.Clazz.Provisioning -> R.string.profile_class_provisioning
-                    LocalProfileInfo.Clazz.Operational -> R.string.profile_class_operational
+                    ProfileClass.Testing -> R.string.profile_class_testing
+                    ProfileClass.Provisioning -> R.string.profile_class_provisioning
+                    ProfileClass.Operational -> R.string.profile_class_operational
                 }
             )
             iccid.text = profile.iccid

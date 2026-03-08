@@ -7,7 +7,7 @@ data class LocalProfileInfo(
     val nickName: String,
     val providerName: String,
     val isdpAID: String,
-    val profileClass: Clazz
+    val profileClass: ProfileClass
 ) {
     enum class State {
         Enabled,
@@ -24,20 +24,4 @@ data class LocalProfileInfo(
         }
     }
 
-    enum class Clazz {
-        Testing,
-        Provisioning,
-        Operational;
-
-        companion object {
-            @JvmStatic
-            fun fromString(str: String?) =
-                when (str?.lowercase()) {
-                    "test" -> Testing
-                    "provisioning" -> Provisioning
-                    "operational" -> Operational
-                    else -> Operational
-                }
-        }
-    }
 }

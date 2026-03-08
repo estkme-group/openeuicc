@@ -5,6 +5,7 @@ import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
+import net.typeblog.lpac_jni.ProfileClass
 
 const val TAG = "LPAUtils"
 
@@ -16,7 +17,7 @@ val LocalProfileInfo.isEnabled: Boolean
     get() = state == LocalProfileInfo.State.Enabled
 
 val List<LocalProfileInfo>.operational: List<LocalProfileInfo>
-    get() = filter { it.profileClass == LocalProfileInfo.Clazz.Operational || it.isEnabled }
+    get() = filter { it.profileClass == ProfileClass.Operational || it.isEnabled }
 
 val List<LocalProfileInfo>.enabled: LocalProfileInfo?
     get() = find { it.isEnabled }

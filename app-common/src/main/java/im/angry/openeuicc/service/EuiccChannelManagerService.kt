@@ -37,7 +37,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
+import net.typeblog.lpac_jni.ProfileDownloadCallback
 import net.typeblog.lpac_jni.ProfileDownloadInput
+import net.typeblog.lpac_jni.ProfileDownloadState
+import net.typeblog.lpac_jni.RemoteProfileInfo
 
 /**
  * An Android Service wrapper for EuiccChannelManager.
@@ -389,10 +392,23 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         ) {
             euiccChannelManager.beginTrackedOperation(slotId, portId, seId) {
                 euiccChannelManager.withEuiccChannel(slotId, portId, seId) { channel ->
-                    channel.lpa.downloadProfile(input) { state ->
-                        if (state.progress == 0) return@downloadProfile
-                        foregroundTaskState.value = ForegroundTaskState.InProgress(state.progress)
-                    }
+                    channel.lpa.downloadProfile(input, object : ProfileDownloadCallback {
+                        override fun onStateUpdate(state: ProfileDownloadState) {
+                            if (state.progress == 0) return
+                            foregroundTaskState.value = ForegroundTaskState.InProgress(state.progress)
+                        }
+
+                        override fun onConfirmMetadata(metadata: RemoteProfileInfo?): Boolean {
+                            // TODO: Actually do something here and not just logging?
+                            if (metadata != null) {
+                                Log.i(
+                                    TAG,
+                                    "Downloading profile provider=${metadata.providerName} name=${metadata.name}"
+                                )
+                            }
+                            return true
+                        }
+                    })
                 }
 
                 preferenceRepository.notificationDownloadFlow.first()

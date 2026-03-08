@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import net.typeblog.lpac_jni.LocalProfileInfo
+import net.typeblog.lpac_jni.ProfileClass
 
 class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
     companion object {
@@ -210,9 +211,9 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                             )
                             setProfileClass(
                                 when (it.profileClass) {
-                                    LocalProfileInfo.Clazz.Testing -> EuiccProfileInfo.PROFILE_CLASS_TESTING
-                                    LocalProfileInfo.Clazz.Provisioning -> EuiccProfileInfo.PROFILE_CLASS_PROVISIONING
-                                    LocalProfileInfo.Clazz.Operational -> EuiccProfileInfo.PROFILE_CLASS_OPERATIONAL
+                                    ProfileClass.Testing -> EuiccProfileInfo.PROFILE_CLASS_TESTING
+                                    ProfileClass.Provisioning -> EuiccProfileInfo.PROFILE_CLASS_PROVISIONING
+                                    ProfileClass.Operational -> EuiccProfileInfo.PROFILE_CLASS_OPERATIONAL
                                 }
                             )
                         }.build()
