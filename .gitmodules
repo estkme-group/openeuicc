@@ -1,3 +1,6 @@
 [submodule "libs/lpac-jni/src/main/jni/lpac"]
 	path = libs/lpac-jni/src/main/jni/lpac
 	url = https://github.com/estkme-group/lpac.git
+[submodule "libs/lpac-jni/src/main/jni/cJSON"]
+	path = libs/lpac-jni/src/main/jni/cjson/cjson
+	url = https://github.com/DaveGamble/cJSON
