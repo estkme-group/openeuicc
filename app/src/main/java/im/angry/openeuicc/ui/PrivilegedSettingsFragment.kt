@@ -1,5 +1,6 @@
 package im.angry.openeuicc.ui
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
@@ -7,6 +8,13 @@ import im.angry.openeuicc.R
 import im.angry.openeuicc.util.*
 
 class PrivilegedSettingsFragment : SettingsFragment(), PrivilegedEuiccContextMarker {
+    private val isSignedWithPlatformKey by lazy {
+        val info = with(requireContext()) {
+            packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        }
+        info.javaClass.getMethod("isSignedWithPlatformKey").invoke(info) as Boolean
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         addPreferencesFromResource(R.xml.pref_privileged_settings)
@@ -18,7 +26,9 @@ class PrivilegedSettingsFragment : SettingsFragment(), PrivilegedEuiccContextMar
         // This is disabled here, not moved to unprivileged, because I have hope that this will
         // eventually work for platform-signed apps. Or, at some point we might introduce our own
         // locale picker, which hopefully works whether privileged or not.
-        requirePreference<Preference>("pref_advanced_language").isVisible = false
+        requirePreference<Preference>("pref_advanced_language").apply {
+            isVisible = isVisible && !isSignedWithPlatformKey
+        }
 
         // Force use TelephonyManager API
         requirePreference<CheckBoxPreference>("pref_developer_removable_telephony_manager")
