@@ -13,7 +13,8 @@ jobject download_state_downloading;
 jobject download_state_finalizing;
 
 jmethodID on_state_update;
-jmethodID on_confirm_metadata;
+jclass confirming_download_class;
+jmethodID confirming_download_constructor;
 jclass remote_profile_info_class;
 jmethodID remote_profile_info_constructor;
 jobject profile_class_testing;
@@ -23,46 +24,68 @@ jobject profile_class_operational;
 void lpac_download_init() {
     LPAC_JNI_SETUP_ENV;
 
-    jclass download_state_class = (*env)->FindClass(env,
-                                                    "net/typeblog/lpac_jni/ProfileDownloadState");
-    jfieldID download_state_preparing_field = (*env)->GetStaticFieldID(env, download_state_class,
-                                                                       "Preparing",
-                                                                       "Lnet/typeblog/lpac_jni/ProfileDownloadState;");
-    download_state_preparing = (*env)->GetStaticObjectField(env, download_state_class,
-                                                            download_state_preparing_field);
-    download_state_preparing = (*env)->NewGlobalRef(env, download_state_preparing);
-    jfieldID download_state_connecting_field = (*env)->GetStaticFieldID(env, download_state_class,
-                                                                        "Connecting",
-                                                                        "Lnet/typeblog/lpac_jni/ProfileDownloadState;");
-    download_state_connecting = (*env)->GetStaticObjectField(env, download_state_class,
-                                                             download_state_connecting_field);
-    download_state_connecting = (*env)->NewGlobalRef(env, download_state_connecting);
-    jfieldID download_state_authenticating_field = (*env)->GetStaticFieldID(env,
-                                                                            download_state_class,
-                                                                            "Authenticating",
-                                                                            "Lnet/typeblog/lpac_jni/ProfileDownloadState;");
-    download_state_authenticating = (*env)->GetStaticObjectField(env, download_state_class,
-                                                                 download_state_authenticating_field);
-    download_state_authenticating = (*env)->NewGlobalRef(env, download_state_authenticating);
-    jfieldID download_state_downloading_field = (*env)->GetStaticFieldID(env, download_state_class,
-                                                                         "Downloading",
-                                                                         "Lnet/typeblog/lpac_jni/ProfileDownloadState;");
-    download_state_downloading = (*env)->GetStaticObjectField(env, download_state_class,
-                                                              download_state_downloading_field);
-    download_state_downloading = (*env)->NewGlobalRef(env, download_state_downloading);
-    jfieldID download_state_finalizng_field = (*env)->GetStaticFieldID(env, download_state_class,
-                                                                       "Finalizing",
-                                                                       "Lnet/typeblog/lpac_jni/ProfileDownloadState;");
-    download_state_finalizing = (*env)->GetStaticObjectField(env, download_state_class,
-                                                             download_state_finalizng_field);
-    download_state_finalizing = (*env)->NewGlobalRef(env, download_state_finalizing);
+    jclass preparing_class = (*env)->FindClass(env,
+                                               "net/typeblog/lpac_jni/ProfileDownloadState$Preparing");
+    jmethodID preparing_constructor = (*env)->GetMethodID(env, preparing_class,
+                                                          "<init>",
+                                                          "()V");
+    jobject _download_state_preparing = (*env)->NewObject(env, preparing_class,
+                                                          preparing_constructor);
+    download_state_preparing = (*env)->NewGlobalRef(env, _download_state_preparing);
+    (*env)->DeleteLocalRef(env, _download_state_preparing);
+
+    jclass connecting_class = (*env)->FindClass(env,
+                                                "net/typeblog/lpac_jni/ProfileDownloadState$Connecting");
+    jmethodID connecting_constructor = (*env)->GetMethodID(env, connecting_class,
+                                                           "<init>",
+                                                           "()V");
+    jobject _download_state_connecting = (*env)->NewObject(env, connecting_class,
+                                                           connecting_constructor);
+    download_state_connecting = (*env)->NewGlobalRef(env, _download_state_connecting);
+    (*env)->DeleteLocalRef(env, _download_state_connecting);
+
+    jclass authenticating_class = (*env)->FindClass(env,
+                                                    "net/typeblog/lpac_jni/ProfileDownloadState$Authenticating");
+    jmethodID authenticating_constructor = (*env)->GetMethodID(env, authenticating_class,
+                                                               "<init>",
+                                                               "()V");
+    jobject _download_state_authenticating = (*env)->NewObject(env, authenticating_class,
+                                                               authenticating_constructor);
+    download_state_authenticating = (*env)->NewGlobalRef(env, _download_state_authenticating);
+    (*env)->DeleteLocalRef(env, _download_state_authenticating);
+
+    jclass downloading_class = (*env)->FindClass(env,
+                                                 "net/typeblog/lpac_jni/ProfileDownloadState$Downloading");
+    jmethodID downloading_constructor = (*env)->GetMethodID(env, downloading_class,
+                                                            "<init>",
+                                                            "()V");
+    jobject _download_state_downloading = (*env)->NewObject(env, downloading_class,
+                                                            downloading_constructor);
+    download_state_downloading = (*env)->NewGlobalRef(env, _download_state_downloading);
+    (*env)->DeleteLocalRef(env, _download_state_downloading);
+
+    jclass finalizing_class = (*env)->FindClass(env,
+                                                "net/typeblog/lpac_jni/ProfileDownloadState$Finalizing");
+    jmethodID finalizing_constructor = (*env)->GetMethodID(env, finalizing_class,
+                                                           "<init>",
+                                                           "()V");
+    jobject _download_state_finalizing = (*env)->NewObject(env, finalizing_class,
+                                                           finalizing_constructor);
+    download_state_finalizing = (*env)->NewGlobalRef(env, _download_state_finalizing);
+    (*env)->DeleteLocalRef(env, _download_state_finalizing);
 
     jclass download_callback_class = (*env)->FindClass(env,
                                                        "net/typeblog/lpac_jni/ProfileDownloadCallback");
-    on_state_update = (*env)->GetMethodID(env, download_callback_class, "onStateUpdate",
-                                          "(Lnet/typeblog/lpac_jni/ProfileDownloadState;)V");
-    on_confirm_metadata = (*env)->GetMethodID(env, download_callback_class, "onConfirmMetadata",
-                                              "(Lnet/typeblog/lpac_jni/RemoteProfileInfo;)Z");
+    on_state_update = (*env)->GetMethodID(env, download_callback_class, "onStatusUpdate",
+                                          "(Lnet/typeblog/lpac_jni/ProfileDownloadState;)Z");
+
+    jclass _confirming_download_class = (*env)->FindClass(env,
+                                                          "net/typeblog/lpac_jni/ProfileDownloadState$ConfirmingDownload");
+    confirming_download_class = (*env)->NewGlobalRef(env, _confirming_download_class);
+    confirming_download_constructor = (*env)->GetMethodID(env,
+                                                          confirming_download_class,
+                                                          "<init>",
+                                                          "(Lnet/typeblog/lpac_jni/RemoteProfileInfo;)V");
 
     jclass profile_class_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/ProfileClass");
     jfieldID profile_class_testing_field = (*env)->GetStaticFieldID(env, profile_class_class,
@@ -147,7 +170,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     const char *_smdp = NULL;
     const char *_imei = NULL;
     jobject remote_profile_info = NULL;
-    jboolean confirmed = JNI_FALSE;
+    jobject confirming_download_state = NULL;
+    jboolean confirmed = JNI_TRUE;
     int ret;
 
     if (confirmation_code != NULL)
@@ -160,7 +184,12 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
 
     ctx->http.server_address = _smdp;
 
-    (*env)->CallVoidMethod(env, callback, on_state_update, download_state_preparing);
+    confirmed = (*env)->CallBooleanMethod(env, callback, on_state_update, download_state_preparing);
+    if (!confirmed) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
+        goto out;
+    }
+
     ret = es10b_get_euicc_challenge_and_info(ctx);
     syslog(LOG_INFO, "es10b_get_euicc_challenge_and_info %d", ret);
     if (ret < 0) {
@@ -168,7 +197,12 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
         goto out;
     }
 
-    (*env)->CallVoidMethod(env, callback, on_state_update, download_state_connecting);
+    confirmed = (*env)->CallBooleanMethod(env, callback, on_state_update, download_state_connecting);
+    if (!confirmed) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
+        goto out;
+    }
+
     ret = es9p_initiate_authentication(ctx);
     syslog(LOG_INFO, "es9p_initiate_authentication %d", ret);
     if (ret < 0) {
@@ -176,7 +210,12 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
         goto out;
     }
 
-    (*env)->CallVoidMethod(env, callback, on_state_update, download_state_authenticating);
+    confirmed = (*env)->CallBooleanMethod(env, callback, on_state_update, download_state_authenticating);
+    if (!confirmed) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
+        goto out;
+    }
+
     ret = es10b_authenticate_server(ctx, _matching_id, _imei);
     syslog(LOG_INFO, "es10b_authenticate_server %d", ret);
     if (ret < 0) {
@@ -206,11 +245,24 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
         }
     }
 
-    confirmed = (*env)->CallBooleanMethod(env, callback, on_confirm_metadata, remote_profile_info);
+    confirming_download_state = (*env)->NewObject(env,
+                                                  confirming_download_class,
+                                                  confirming_download_constructor,
+                                                  remote_profile_info);
+    if (confirming_download_state == NULL) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
+        goto out;
+    }
+
+    confirmed = (*env)->CallBooleanMethod(env, callback, on_state_update, confirming_download_state);
 
     if (remote_profile_info != NULL) {
         (*env)->DeleteLocalRef(env, remote_profile_info);
         remote_profile_info = NULL;
+    }
+    if (confirming_download_state != NULL) {
+        (*env)->DeleteLocalRef(env, confirming_download_state);
+        confirming_download_state = NULL;
     }
 
     if (!confirmed) {
@@ -218,7 +270,12 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
         goto out;
     }
 
-    (*env)->CallVoidMethod(env, callback, on_state_update, download_state_downloading);
+    confirmed = (*env)->CallBooleanMethod(env, callback, on_state_update, download_state_downloading);
+    if (!confirmed) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
+        goto out;
+    }
+
     ret = es10b_prepare_download(ctx, _confirmation_code);
     syslog(LOG_INFO, "es10b_prepare_download %d", ret);
     if (ret < 0) {
@@ -230,7 +287,12 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     if (ret < 0)
         goto out;
 
-    (*env)->CallVoidMethod(env, callback, on_state_update, download_state_finalizing);
+    confirmed = (*env)->CallBooleanMethod(env, callback, on_state_update, download_state_finalizing);
+    if (!confirmed) {
+        ret = -ES10B_ERROR_REASON_UNDEFINED;
+        goto out;
+    }
+
     ret = es10b_load_bound_profile_package(ctx, &es10b_load_bound_profile_package_result);
     syslog(LOG_INFO, "es10b_load_bound_profile_package %d, reason %d", ret, es10b_load_bound_profile_package_result.errorReason);
     if (ret < 0) {
@@ -252,6 +314,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
         (*env)->ReleaseStringUTFChars(env, imei, _imei);
     if (remote_profile_info != NULL)
         (*env)->DeleteLocalRef(env, remote_profile_info);
+    if (confirming_download_state != NULL)
+        (*env)->DeleteLocalRef(env, confirming_download_state);
     if (profile_metadata != NULL)
         es8p_metadata_free(&profile_metadata);
     return ret;

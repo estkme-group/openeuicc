@@ -23,19 +23,6 @@ import net.typeblog.lpac_jni.ProfileDownloadState
 import net.typeblog.lpac_jni.LocalProfileAssistant
 
 class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStepFragment() {
-    companion object {
-        /**
-         * An array of LPA-side state types, mapping 1:1 to progressItems
-         */
-        val LPA_PROGRESS_STATES = arrayOf(
-            ProfileDownloadState.Preparing,
-            ProfileDownloadState.Connecting,
-            ProfileDownloadState.Authenticating,
-            ProfileDownloadState.Downloading,
-            ProfileDownloadState.Finalizing,
-        )
-    }
-
     private enum class ProgressState {
         NotStarted,
         InProgress,
@@ -139,7 +126,7 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
                     }
 
                     is EuiccChannelManagerService.ForegroundTaskState.InProgress ->
-                        updateProgress(it.progress)
+                        updateProgress(it.context as? ProfileDownloadState ?: return@onEach)
 
                     else -> {}
                 }
@@ -176,11 +163,19 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
             ret
         }
 
-    private fun updateProgress(progress: Int) {
+    private fun updateProgress(state: ProfileDownloadState) {
+        val progress = state.downloadProgress
         showProgressBar(progress)
 
-        val lpaState = ProfileDownloadState.lookupStateFromProgress(progress)
-        val stateIndex = LPA_PROGRESS_STATES.indexOf(lpaState)
+        val stateIndex = when (state) {
+            is ProfileDownloadState.Preparing -> 0
+            is ProfileDownloadState.Connecting -> 1
+            is ProfileDownloadState.Authenticating -> 2
+            // TODO: Actually implement metadata confirmation (a dialog or something else)
+            is ProfileDownloadState.ConfirmingDownload -> 2
+            is ProfileDownloadState.Downloading -> 3
+            is ProfileDownloadState.Finalizing -> 4
+        }
 
         if (stateIndex > 0) {
             for (i in (0..<stateIndex)) {

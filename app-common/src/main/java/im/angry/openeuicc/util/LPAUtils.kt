@@ -6,6 +6,7 @@ import im.angry.openeuicc.core.EuiccChannelManager
 import net.typeblog.lpac_jni.LocalProfileAssistant
 import net.typeblog.lpac_jni.LocalProfileInfo
 import net.typeblog.lpac_jni.ProfileClass
+import net.typeblog.lpac_jni.ProfileDownloadState
 
 const val TAG = "LPAUtils"
 
@@ -21,6 +22,16 @@ val List<LocalProfileInfo>.operational: List<LocalProfileInfo>
 
 val List<LocalProfileInfo>.enabled: LocalProfileInfo?
     get() = find { it.isEnabled }
+
+val ProfileDownloadState.downloadProgress: Int
+    get() = when (this) {
+        is ProfileDownloadState.Preparing -> 0
+        is ProfileDownloadState.Connecting -> 20
+        is ProfileDownloadState.Authenticating -> 40
+        is ProfileDownloadState.ConfirmingDownload -> 50
+        is ProfileDownloadState.Downloading -> 60
+        is ProfileDownloadState.Finalizing -> 80
+    }
 
 val List<EuiccChannel>.hasMultipleChips: Boolean
     get() = distinctBy { it.slotId }.size > 1

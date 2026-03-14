@@ -37,10 +37,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
-import net.typeblog.lpac_jni.ProfileDownloadCallback
 import net.typeblog.lpac_jni.ProfileDownloadInput
 import net.typeblog.lpac_jni.ProfileDownloadState
-import net.typeblog.lpac_jni.RemoteProfileInfo
 
 /**
  * An Android Service wrapper for EuiccChannelManager.
@@ -107,7 +105,7 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
      */
     sealed interface ForegroundTaskState {
         data object Idle : ForegroundTaskState
-        data class InProgress(val progress: Int) : ForegroundTaskState
+        data class InProgress(val progress: Int, val context: Any? = null) : ForegroundTaskState
         data class Done(val error: Throwable?) : ForegroundTaskState
     }
 
@@ -392,23 +390,25 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
         ) {
             euiccChannelManager.beginTrackedOperation(slotId, portId, seId) {
                 euiccChannelManager.withEuiccChannel(slotId, portId, seId) { channel ->
-                    channel.lpa.downloadProfile(input, object : ProfileDownloadCallback {
-                        override fun onStateUpdate(state: ProfileDownloadState) {
-                            if (state.progress == 0) return
-                            foregroundTaskState.value = ForegroundTaskState.InProgress(state.progress)
-                        }
+                    channel.lpa.downloadProfile(input) { state ->
+                        val progress = state.downloadProgress
+                        foregroundTaskState.value = ForegroundTaskState.InProgress(
+                            progress,
+                            state
+                        )
 
-                        override fun onConfirmMetadata(metadata: RemoteProfileInfo?): Boolean {
-                            // TODO: Actually do something here and not just logging?
-                            if (metadata != null) {
+                        if (state is ProfileDownloadState.ConfirmingDownload) {
+                            state.metadata?.let { metadata ->
+                                // TODO: Actually do something here and not just logging?
                                 Log.i(
                                     TAG,
                                     "Downloading profile provider=${metadata.providerName} name=${metadata.name}"
                                 )
                             }
-                            return true
                         }
-                    })
+
+                        true
+                    }
                 }
 
                 preferenceRepository.notificationDownloadFlow.first()
