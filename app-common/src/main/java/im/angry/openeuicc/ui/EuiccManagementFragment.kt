@@ -120,7 +120,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
             LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
         fab.setOnClickListener {
-            val intent = DownloadWizardActivity.newIntent(requireContext(), slotId, seId)
+            val intent = DownloadWizardActivity.newIntent(requireContext(), logicalSlotId, seId)
             startActivity(intent)
         }
     }
