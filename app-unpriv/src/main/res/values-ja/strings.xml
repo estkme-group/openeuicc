@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="compatibility_check">互換性の確認</string>
-    <string name="open_sim_toolkit">SIM ツールキットを開く</string>
+    <string name="open_sim_toolkit">STK メニューを開く</string>
     <!-- Settings -->
     <!-- Toast -->
     <string name="toast_ara_m_copied">ARA-M SHA-1 をクリップボードにコピーしました</string>
