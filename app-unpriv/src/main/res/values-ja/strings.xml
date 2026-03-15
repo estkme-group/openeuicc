@@ -18,4 +18,6 @@
     <string name="quick_compatibility_button_continue">続行</string>
     <string name="quick_compatibility_skip">このメッセージを再度表示しない</string>
     <string name="quick_compatibility_unknown">不明</string>
+    <string name="shortcut_sim_toolkit">STK メニュー</string>
+    <string name="shortcut_sim_toolkit_with_slot">STK メニュー #%d</string>
 </resources>
