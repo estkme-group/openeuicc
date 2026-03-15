@@ -17,7 +17,10 @@ import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,7 +37,9 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.yield
 import net.typeblog.lpac_jni.ProfileDownloadInput
@@ -381,7 +386,13 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
 
     fun launchProfileDownloadTask(
         slotId: Int, portId: Int, seId: EuiccChannel.SecureElementId,
-        input: ProfileDownloadInput
+        input: ProfileDownloadInput,
+        // Optionally, a Channel to send confirmation signal when metadata preview is received.
+        // When we emit a ForegroundTaskState.InProgress with ProfileDownloadState.ConfirmingMetadata,
+        // the caller can send a true/false value into this channel to either continue immediately or cancel the download.
+        // Note that there is a timeout of 1 minute, after which we default to cancelling.
+        // When absent, the default value is just a buffered channel with 1 true value in it, so effectively no-op.
+        confirmationSignal: Channel<Boolean> = Channel<Boolean>(1).apply { trySendBlocking(true) }
     ): ForegroundTaskSubscriberFlow =
         launchForegroundTask(
             getString(R.string.task_profile_download),
@@ -404,6 +415,21 @@ class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMarker {
                                     TAG,
                                     "Downloading profile provider=${metadata.providerName} name=${metadata.name}"
                                 )
+                            }
+
+                            // Try to receive a signal for confirmation while blocking this thread
+                            // This of course assumes we're NOT on the main thread here. We aren't,
+                            // because we don't run download on the main thread; see withEuiccChannel.
+                            return@downloadProfile runBlocking {
+                                try {
+                                    // We can't wait indefinitely; just time out after 1 minute.
+                                    withTimeout(60 * 1000) {
+                                        confirmationSignal.receive()
+                                    }
+                                } catch (_: TimeoutCancellationException) {
+                                    // Default to cancelling / aborting here if we didn't receive a confirmation signal
+                                    false
+                                }
                             }
                         }
 
