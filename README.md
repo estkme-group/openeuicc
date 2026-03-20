@@ -2,6 +2,8 @@
 
 A fully free and open-source Local Profile Assistant implementation for Android devices.
 
+__Google is threatening to lock down the Android platform in 2026. OpenEUICC and EasyEUICC, as Free Software projects, will never accept Google's proposed third-party developer verification flow. Join us in Keeping Android Open at <https://keepandroidopen.org/>.__
+
 There are two variants of this project, OpenEUICC and [EasyEUICC](https://easyeuicc.org):
 
 |                               |            OpenEUICC            |      EasyEUICC      |
