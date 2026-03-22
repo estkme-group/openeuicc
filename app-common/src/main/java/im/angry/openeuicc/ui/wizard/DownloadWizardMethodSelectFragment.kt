@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,8 +51,7 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
                         }
                     }
                 }
-
-                decoded.getOrNull()?.let { processLpaString(it) }
+                decoded.getOrNull()?.let(::processLpaString)
             }
         }
 
@@ -84,49 +84,45 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
     override fun createPrevFragment(): DownloadWizardActivity.DownloadWizardStepFragment =
         DownloadWizardSlotSelectFragment()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_download_method_select, container, false)
-        val recyclerView = view.requireViewById<RecyclerView>(R.id.download_method_list)
-        recyclerView.adapter = DownloadMethodAdapter()
-        recyclerView.layoutManager =
-            LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(
-                requireContext(),
-                LinearLayoutManager.VERTICAL
-            )
-        )
-        return view
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.fragment_download_method_select, container, false).apply {
+            requireViewById<RecyclerView>(R.id.download_method_list).apply {
+                adapter = DownloadMethodAdapter()
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            }
+        }
 
     private fun handleLoadFromClipboard() {
         val clipboard = requireContext().getSystemService(ClipboardManager::class.java)
         val text = clipboard.primaryClip?.getItemAt(0)?.text
 
         if (text == null) {
-            Toast.makeText(
-                requireContext(),
-                R.string.profile_download_no_lpa_string,
-                Toast.LENGTH_SHORT
-            ).show()
+            val resId = R.string.profile_download_no_lpa_string
+            Toast.makeText(requireContext(), resId, Toast.LENGTH_SHORT).show()
             return
         }
 
         processLpaString(text.toString())
     }
 
+    private fun extractLpaString(input: String): String {
+        val prefix = "LPA:1$"
+        if (input.startsWith(prefix, ignoreCase = true)) return input
+        val uri = input.toUri()
+        return uri.queryParameterNames.flatMap(uri::getQueryParameters)
+            .firstOrNull { it.startsWith(prefix, ignoreCase = true) }
+            ?: throw IllegalArgumentException("No LPA string found in input")
+    }
+
     private fun processLpaString(input: String) {
         try {
-            val parsed = LPAString.parse(input)
+            val parsed = LPAString.parse(extractLpaString(input))
             state.smdp = parsed.address
             state.matchingId = parsed.matchingId
             state.confirmationCodeRequired = parsed.confirmationCodeRequired
             gotoNextFragment(DownloadWizardDetailsFragment())
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             AlertDialog.Builder(requireContext()).apply {
                 setTitle(R.string.profile_download_incorrect_lpa_string)
                 setMessage(R.string.profile_download_incorrect_lpa_string_message)
@@ -144,9 +140,8 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
         fun bind(item: DownloadMethod) {
             icon.setImageResource(item.iconRes)
             title.setText(item.titleRes)
+            // If the user elected to use another download method, reset the confirmation code flag too
             root.setOnClickListener {
-                // If the user elected to use another download method, reset the confirmation code flag
-                // too
                 state.confirmationCodeRequired = false
                 item.onClick()
             }
@@ -154,10 +149,7 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
     }
 
     private inner class DownloadMethodAdapter : RecyclerView.Adapter<DownloadMethodViewHolder>() {
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
-        ): DownloadMethodViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DownloadMethodViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.download_method_item, parent, false)
             return DownloadMethodViewHolder(view)
@@ -165,9 +157,7 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
 
         override fun getItemCount(): Int = downloadMethods.size
 
-        override fun onBindViewHolder(holder: DownloadMethodViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: DownloadMethodViewHolder, position: Int) =
             holder.bind(downloadMethods[position])
-        }
-
     }
 }
