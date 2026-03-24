@@ -99,13 +99,10 @@ class NotificationsActivity : BaseEuiccAccessActivity(), OpenEuiccContextMarker 
             }
 
             R.id.help -> {
-                AlertDialog.Builder(this, R.style.AlertDialogTheme).apply {
-                    setMessage(R.string.profile_notifications_help)
-                    setPositiveButton(android.R.string.ok) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    show()
-                }
+                AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                    .setMessage(R.string.profile_notifications_help)
+                    .setPositiveButton(android.R.string.ok) { _, _ -> }
+                    .show()
                 true
             }
 

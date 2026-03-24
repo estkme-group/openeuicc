@@ -1,6 +1,5 @@
 package im.angry.openeuicc.ui.wizard
 
-import android.app.AlertDialog
 import android.content.ClipboardManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -11,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -123,13 +123,12 @@ class DownloadWizardMethodSelectFragment : DownloadWizardActivity.DownloadWizard
             state.confirmationCodeRequired = parsed.confirmationCodeRequired
             gotoNextFragment(DownloadWizardDetailsFragment())
         } catch (_: IllegalArgumentException) {
-            AlertDialog.Builder(requireContext()).apply {
-                setTitle(R.string.profile_download_incorrect_lpa_string)
-                setMessage(R.string.profile_download_incorrect_lpa_string_message)
-                setCancelable(true)
-                setNegativeButton(android.R.string.cancel, null)
-                show()
-            }
+            AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
+                .setTitle(R.string.profile_download_incorrect_lpa_string)
+                .setMessage(R.string.profile_download_incorrect_lpa_string_message)
+                .setCancelable(true)
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
         }
     }
 

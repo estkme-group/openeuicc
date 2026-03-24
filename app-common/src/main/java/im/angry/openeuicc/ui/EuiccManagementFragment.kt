@@ -95,14 +95,14 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
 
         setupRootViewSystemBarInsets(
             view, arrayOf(
-            mainViewPaddingInsetHandler(profileList),
-            { insets ->
-                fab.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                    rightMargin = origFabMarginRight + insets.right
-                    bottomMargin = origFabMarginBottom + insets.bottom
+                mainViewPaddingInsetHandler(profileList),
+                { insets ->
+                    fab.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        rightMargin = origFabMarginRight + insets.right
+                        bottomMargin = origFabMarginBottom + insets.bottom
+                    }
                 }
-            }
-        ))
+            ))
 
         profileList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(view: RecyclerView, newState: Int) =
@@ -256,17 +256,11 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     // This is only really fatal for internal eSIMs
                     if (!isUsb) {
                         withContext(Dispatchers.Main) {
-                            AlertDialog.Builder(requireContext()).apply {
-                                setMessage(R.string.profile_switch_did_not_refresh)
-                                setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                    dialog.dismiss()
-                                    requireActivity().finish()
-                                }
-                                setOnDismissListener { _ ->
-                                    requireActivity().finish()
-                                }
-                                show()
-                            }
+                            AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
+                                .setMessage(R.string.profile_switch_did_not_refresh)
+                                .setPositiveButton(android.R.string.ok) { _, _ -> requireActivity().finish() }
+                                .setOnDismissListener { _ -> requireActivity().finish() }
+                                .show()
                         }
                     }
                 }
@@ -276,17 +270,11 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                         // Prevent this Fragment from being used again
                         invalid = true
                         // Timed out waiting for SIM to come back online, we can no longer assume that the LPA is still valid
-                        AlertDialog.Builder(requireContext()).apply {
-                            setMessage(appContainer.customizableTextProvider.profileSwitchingTimeoutMessage)
-                            setPositiveButton(android.R.string.ok) { dialog, _ ->
-                                dialog.dismiss()
-                                requireActivity().finish()
-                            }
-                            setOnDismissListener { _ ->
-                                requireActivity().finish()
-                            }
-                            show()
-                        }
+                        AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
+                            .setMessage(appContainer.customizableTextProvider.profileSwitchingTimeoutMessage)
+                            .setPositiveButton(android.R.string.ok) { _, _ -> requireActivity().finish() }
+                            .setOnDismissListener { _ -> requireActivity().finish() }
+                            .show()
                     }
                 }
 

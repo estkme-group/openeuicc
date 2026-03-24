@@ -54,12 +54,13 @@ class ProfileDeleteFragment : DialogFragment(), EuiccChannelFragmentMarker {
         get() = requireDialog() as AlertDialog
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme).apply {
-            setMessage(getString(R.string.profile_delete_confirm, name))
-            setView(editText)
-            setPositiveButton(android.R.string.ok, null) // Set listener to null to prevent auto closing
-            setNegativeButton(android.R.string.cancel, null)
-        }.create()
+        AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
+            .setMessage(getString(R.string.profile_delete_confirm, name))
+            .setView(editText)
+            // Set listener to null to prevent auto closing
+            .setPositiveButton(android.R.string.ok, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
 
     override fun onResume() {
         super.onResume()
