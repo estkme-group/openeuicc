@@ -25,3 +25,12 @@ val Iterable<UsbEndpoint>.bulkPair: Pair<UsbEndpoint?, UsbEndpoint?>
             endpoints.find { it.direction == UsbConstants.USB_DIR_OUT },
         )
     }
+
+val KNOWN_TPDU_READERS: Set<Pair<Int, Int>> = setOf(
+    // USB vendor ID + product ID pairs that require TPDU mode
+    // Realtek RTS5169 from <https://gitea.angry.im/PeterCxy/OpenEUICC/issues/37>
+    Pair(0x0bda, 0x0169)
+)
+
+fun isKnownTpduReader(vendorId: Int, productId: Int): Boolean =
+    KNOWN_TPDU_READERS.contains(Pair(vendorId, productId))

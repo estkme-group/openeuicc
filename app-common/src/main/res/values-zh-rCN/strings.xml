@@ -80,6 +80,8 @@
     <string name="pref_advanced_disable_safeguard_removable_esim_desc">默认情况下，此应用程序会阻止您禁用可插拔 eSIM 中已启用的配置文件。\n因为这样做 <i>有时</i> 会使其无法访问。\n勾选此框以 <i>移除</i> 此保护措施。</string>
     <string name="pref_advanced_verbose_logging">记录详细日志</string>
     <string name="pref_advanced_verbose_logging_desc">详细日志中包含敏感信息，开启此功能后请仅与你信任的人共享你的日志。</string>
+    <string name="pref_advanced_force_tpdu_mode">强制 USB 读卡器使用 TPDU 模式</string>
+    <string name="pref_advanced_force_tpdu_mode_desc">强制所有 USB CCID 读卡器使用 TPDU 模式。仅在您的 USB 读卡器仅支持 TPDU 模式时启用。</string>
     <string name="pref_advanced_logs">日志</string>
     <string name="pref_advanced_logs_desc">查看应用程序的最新调试日志</string>
     <string name="pref_developer_isdr_aid_list_desc">某些品牌的可移除 eSIM 可能会使用自己的非标准 ISD-R AID，导致第三方应用无法访问。此 App 可以尝试使用此列表中添加的非标准 AID，但不能保证它们一定有效。</string>

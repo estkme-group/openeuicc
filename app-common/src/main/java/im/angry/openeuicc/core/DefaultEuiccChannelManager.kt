@@ -363,7 +363,12 @@ open class DefaultEuiccChannelManager(
     override suspend fun tryOpenUsbEuiccChannel(): Pair<UsbDevice?, Boolean> =
         withContext(Dispatchers.IO) {
             usbManager.deviceList.values.forEach { device ->
-                Log.i(TAG, "Scanning USB device ${device.deviceId}:${device.vendorId}")
+                Log.i(
+                    TAG,
+                    "Scanning USB device ${device.vendorId.toUInt().toString(16)}:${
+                        device.productId.toUInt().toString(16)
+                    }"
+                )
                 val iface = device.interfaces.smartCard ?: return@forEach
                 // If we don't have permission, tell UI code that we found a candidate device, but we
                 // need permission to be able to do anything with it

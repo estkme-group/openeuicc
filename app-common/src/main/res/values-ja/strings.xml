@@ -172,6 +172,8 @@
     <string name="pref_advanced_disable_safeguard_removable_esim_desc">デフォルトでは、このアプリでデバイスに挿入されたリムーバブル eSIM の有効なプロファイルを無効化することを防いでいます。なぜなのかというと<i>時々</i>アクセスができなくなるからです。\nこのチェックボックスを ON にすることで、この保護機能を<i>解除</i>します。</string>
     <string name="pref_advanced_verbose_logging">詳細ログ</string>
     <string name="pref_advanced_verbose_logging_desc">詳細ログを有効化します。これには個人的な情報が含まれている可能性があります。この機能を ON にした後は、信頼できるユーザーとのみログを共有してください。</string>
+    <string name="pref_advanced_force_tpdu_mode">USBリーダーでTPDUモードを強制</string>
+    <string name="pref_advanced_force_tpdu_mode_desc">すべてのUSB CCIDリーダーでTPDUモードを強制します。TPDUのみで動作するUSBリーダーがある場合にのみ有効にしてください。</string>
     <string name="pref_advanced_language">言語</string>
     <string name="pref_advanced_language_desc">アプリの言語を設定します。</string>
     <string name="pref_advanced_logs">ログ</string>

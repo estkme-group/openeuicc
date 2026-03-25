@@ -37,6 +37,12 @@
             app:summary="@string/pref_advanced_verbose_logging_desc"
             app:title="@string/pref_advanced_verbose_logging" />
 
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
+            app:key="pref_advanced_force_tpdu_mode"
+            app:summary="@string/pref_advanced_force_tpdu_mode_desc"
+            app:title="@string/pref_advanced_force_tpdu_mode" />
+
         <Preference
             app:iconSpaceReserved="false"
             app:isPreferenceVisible="false"

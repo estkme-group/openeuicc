@@ -71,6 +71,9 @@ open class SettingsFragment : PreferenceFragmentCompat(), OpenEuiccContextMarker
         requirePreference<CheckBoxPreference>("pref_advanced_verbose_logging")
             .bindBooleanFlow(preferenceRepository.verboseLoggingFlow)
 
+        requirePreference<CheckBoxPreference>("pref_advanced_force_tpdu_mode")
+            .bindBooleanFlow(preferenceRepository.forceTpduModeFlow)
+
         requirePreference<CheckBoxPreference>("pref_developer_unfiltered_profile_list")
             .bindBooleanFlow(preferenceRepository.unfilteredProfileListFlow)
 

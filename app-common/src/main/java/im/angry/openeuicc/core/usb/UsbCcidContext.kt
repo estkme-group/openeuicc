@@ -8,6 +8,8 @@ import android.hardware.usb.UsbInterface
 import android.hardware.usb.UsbManager
 import im.angry.openeuicc.util.preferenceRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 /**
  * A wrapper over an usb device + interface, manages the lifecycle independent
@@ -20,7 +22,8 @@ class UsbCcidContext private constructor(
     private val conn: UsbDeviceConnection,
     private val bulkIn: UsbEndpoint,
     private val bulkOut: UsbEndpoint,
-    val verboseLoggingFlow: Flow<Boolean>
+    val verboseLoggingFlow: Flow<Boolean>,
+    val useTpdu: Boolean
 ) {
     companion object {
         fun createFromUsbDevice(
@@ -33,11 +36,16 @@ class UsbCcidContext private constructor(
             val conn = context.getSystemService(UsbManager::class.java).openDevice(usbDevice)
                 ?: return@runCatching null
             if (!conn.claimInterface(usbInterface, true)) return@runCatching null
+
+            val forceTpduMode = runBlocking { context.preferenceRepository.forceTpduModeFlow.first() }
+            val useTpdu = forceTpduMode || isKnownTpduReader(usbDevice.vendorId, usbDevice.productId)
+
             UsbCcidContext(
                 conn,
                 bulkIn,
                 bulkOut,
-                context.preferenceRepository.verboseLoggingFlow
+                context.preferenceRepository.verboseLoggingFlow,
+                useTpdu
             )
         }.getOrNull()
     }

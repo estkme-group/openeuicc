@@ -21,8 +21,81 @@ class UsbApduInterface(
 
     private var channels = mutableSetOf<Int>()
 
+    // ATR parser
+    // Specs: ISO/IEC 7816-3:2006 8.2 Answer-to-Reset
+    // See also: https://en.wikipedia.org/wiki/Answer_to_reset
+    class ParsedAtr private constructor(
+        val ts: Byte?,
+        val t0: Byte?,
+        val ta1: Byte?,
+        val tb1: Byte?,
+        val tc1: Byte?,
+        val td1: Byte?,
+        val ta2: Byte?,
+        val tb2: Byte?,
+        val tc2: Byte?,
+        val td2: Byte?
+    ) {
+        companion object {
+            fun parse(atr: ByteArray): ParsedAtr {
+                val ts = atr[0]
+                val t0 = atr[1]
+                val tx1 = arrayOf<Byte?>(null, null, null, null)
+                val tx2 = arrayOf<Byte?>(null, null, null, null)
+                var pointer = 2
+
+                for (i in 0..3) {
+                    if (t0.toInt() and (0x10 shl i) != 0) {
+                        tx1[i] = atr[pointer]
+                        pointer++
+                    }
+                }
+
+                val td1 = tx1[3] ?: 0
+
+                for (i in 0..3) {
+                    if (td1.toInt() and (0x10 shl i) != 0) {
+                        tx2[i] = atr[pointer]
+                        pointer++
+                    }
+                }
+
+                return ParsedAtr(
+                    ts = ts, t0 = t0, ta1 = tx1[0], tb1 = tx1[1], tc1 = tx1[2], td1 = tx1[3],
+                    ta2 = tx2[0], tb2 = tx2[1], tc2 = tx2[2], td2 = tx2[3],
+                )
+            }
+        }
+    }
+
     override fun connect() {
         ccidCtx.connect()
+
+        if (ccidCtx.useTpdu) {
+            // Send parameter selection
+            // Specs: USB-CCID 3.2.1 TPDU level of exchange
+            val parsedAtr = ParsedAtr.parse(atr!!)
+            val ta1 = parsedAtr.ta1 ?: 0x11.toByte()
+            val pts1 = ta1 // TODO: Check that reader supports baud rate proposed by the card
+            val pps = byteArrayOf(0xff.toByte(), 0x10.toByte(), pts1, 0x00.toByte())
+            Log.d(TAG, "PTS1=${pts1} PPS: ${pps.encodeHex()}")
+            ccidCtx.transceiver.sendXfrBlock(pps)
+
+            // Send Set Parameters
+            // Specs: USB-CCID 6.1.7 PC_to_RDR_SetParameters
+
+            val param = byteArrayOf(
+                pts1,
+                (if (parsedAtr.ts == 0x3F.toByte()) 0x02 else 0x00),
+                parsedAtr.tc1 ?: 0,
+                parsedAtr.tc2 ?: 0x0A,
+                0x00
+            )
+
+            Log.d(TAG, "Param: ${param.encodeHex()}")
+
+            ccidCtx.transceiver.sendParamBlock(param)
+        }
 
         // Send Terminal Capabilities
         // Specs: ETSI TS 102 221 v15.0.0 - 11.1.19 TERMINAL CAPABILITY
