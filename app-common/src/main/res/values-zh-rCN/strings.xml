@@ -43,7 +43,7 @@
     <string name="euicc_info_sku">产品名称</string>
     <string name="euicc_info_sn">产品序列号</string>
     <string name="euicc_info_fw_ver">产品固件版本</string>
-    <string name="profile_download_confirmation_code_required">确认码 (必需)</string>
+    <string name="profile_download_confirmation_code_required">确认码 (必须)</string>
     <string name="profile_download_imei">IMEI (可选)</string>
     <string name="download_wizard_error_suggest_network_unreachable">请连接到其他网络（例如在 Wi-Fi 和数据之间切换）后重试。</string>
     <string name="logs_saved_message">日志已保存到指定路径。需要通过其他 App 分享吗？</string>
