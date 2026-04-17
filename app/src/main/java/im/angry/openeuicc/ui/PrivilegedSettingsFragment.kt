@@ -12,7 +12,11 @@ class PrivilegedSettingsFragment : SettingsFragment(), PrivilegedEuiccContextMar
         val info = with(requireContext()) {
             packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
         }
-        info.javaClass.getMethod("isSignedWithPlatformKey").invoke(info) as Boolean
+        try {
+            info.javaClass.getMethod("isSignedWithPlatformKey").invoke(info) as Boolean
+        } catch (_: NoSuchMethodException) {
+            false
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
