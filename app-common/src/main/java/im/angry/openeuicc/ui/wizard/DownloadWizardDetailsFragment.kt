@@ -24,8 +24,11 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
     private val matchingId: EditText by lazy {
         requireView().requireViewById<TextInputLayout>(R.id.profile_download_code).editText!!
     }
+    private val confirmationCodeInput: TextInputLayout by lazy {
+        requireView().requireViewById(R.id.profile_download_confirmation_code)
+    }
     private val confirmationCode: EditText by lazy {
-        requireView().requireViewById<TextInputLayout>(R.id.profile_download_confirmation_code).editText!!
+        confirmationCodeInput.editText!!
     }
     private val imei: EditText by lazy {
         requireView().requireViewById<TextInputLayout>(R.id.profile_download_imei).editText!!
@@ -71,10 +74,10 @@ class DownloadWizardDetailsFragment : DownloadWizardActivity.DownloadWizardStepF
         updateInputCompleteness()
 
         if (state.confirmationCodeRequired) {
-            confirmationCode.requestFocus()
-            confirmationCode.setHint(R.string.profile_download_confirmation_code_required)
+            confirmationCodeInput.requestFocus()
+            confirmationCodeInput.setHint(R.string.profile_download_confirmation_code_required)
         } else {
-            confirmationCode.setHint(R.string.profile_download_confirmation_code)
+            confirmationCodeInput.setHint(R.string.profile_download_confirmation_code)
         }
     }
 
