@@ -100,7 +100,7 @@ class EuiccMemoryResetFragment : DialogFragment(), EuiccChannelFragmentMarker {
                 .onStart {
                     parentFragment?.notifyEuiccProfilesChanged()
 
-                    val resId = R.string.toast_euicc_memory_reset_finitshed
+                    val resId = R.string.toast_euicc_memory_reset_finished
                     toast = Toast.makeText(requireContext(), resId, Toast.LENGTH_LONG)
 
                     runCatching(::dismiss)

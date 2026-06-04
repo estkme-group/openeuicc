@@ -160,7 +160,7 @@
     <string name="pref_developer_ignore_tls_certificate_desc">允许 RSP 服务器使用任意证书</string>
     <string name="euicc_info_unavailable">无信息</string>
     <string name="toast_euicc_memory_reset_confirm_text_mismatched">输入的确认文本不匹配</string>
-    <string name="toast_euicc_memory_reset_finitshed">此芯片已被擦除</string>
+    <string name="toast_euicc_memory_reset_finished">此芯片已被擦除</string>
     <string name="task_euicc_memory_reset">正在擦除 eSIM 芯片</string>
     <string name="task_euicc_memory_reset_failure">eSIM 芯片擦除失败</string>
     <string name="euicc_memory_reset">擦除 eSIM 芯片</string>

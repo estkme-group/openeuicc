@@ -24,7 +24,7 @@
     <string name="toast_profile_enable_cross_class">このプロファイルに切り替えるには、現在有効になっているプロファイルを手動で無効にしてください。</string>
     <string name="toast_profile_delete_confirm_text_mismatched">確認文字列が一致しません</string>
     <string name="toast_euicc_memory_reset_confirm_text_mismatched">確認文字列が一致しません</string>
-    <string name="toast_euicc_memory_reset_finitshed">このチップは消去されました</string>
+    <string name="toast_euicc_memory_reset_finished">このチップは消去されました</string>
     <string name="toast_iccid_copied">ICCID をクリップボードにコピーしました</string>
     <string name="toast_sn_copied">シリアル番号をクリップボードにコピーしました</string>
     <string name="toast_eid_copied">EID をクリップボードにコピーしました</string>

@@ -38,7 +38,7 @@
     <string name="toast_profile_enable_cross_class">Please disable the currently enabled profile manually in order to switch to this profile.</string>
     <string name="toast_profile_delete_confirm_text_mismatched">Confirmation string mismatch</string>
     <string name="toast_euicc_memory_reset_confirm_text_mismatched">Confirmation string mismatch</string>
-    <string name="toast_euicc_memory_reset_finitshed">This chip has been erased</string>
+    <string name="toast_euicc_memory_reset_finished">This chip has been erased</string>
     <string name="toast_iccid_copied">ICCID copied to clipboard</string>
     <string name="toast_sn_copied">Serial number copied to clipboard</string>
     <string name="toast_eid_copied">EID copied to clipboard</string>
