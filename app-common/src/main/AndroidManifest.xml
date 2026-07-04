@@ -35,7 +35,17 @@
         <activity
             android:name="im.angry.openeuicc.ui.wizard.DownloadWizardActivity"
             android:exported="true"
-            android:label="@string/download_wizard">
+            android:label="@string/download_wizard" />
+
+        <activity
+            android:name="im.angry.openeuicc.ui.wizard.DownloadGuardActivity"
+            android:clearTaskOnLaunch="true"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:finishOnTaskLaunch="true"
+            android:label="@string/download_guard"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.App.DeepLinkTransparent">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
