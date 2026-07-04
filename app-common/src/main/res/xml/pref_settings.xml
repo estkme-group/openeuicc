@@ -24,6 +24,7 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
+        app:key="pref_advanced"
         app:title="@string/pref_advanced">
         <CheckBoxPreference
             app:iconSpaceReserved="false"

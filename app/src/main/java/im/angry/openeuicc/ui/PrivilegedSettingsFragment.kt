@@ -22,7 +22,7 @@ class PrivilegedSettingsFragment : SettingsFragment(), PrivilegedEuiccContextMar
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         addPreferencesFromResource(R.xml.pref_privileged_settings)
-        mergePreferenceOverlay("pref_developer_overlay", "pref_developer")
+        mergePreferenceOverlay("pref_advanced_overlay", "pref_advanced")
 
         // It's stupid to _disable_ things for privileged, but for now, the per-app locale picker
         // is not usable for apps signed with the platform key.
@@ -35,7 +35,7 @@ class PrivilegedSettingsFragment : SettingsFragment(), PrivilegedEuiccContextMar
         }
 
         // Force use TelephonyManager API
-        requirePreference<CheckBoxPreference>("pref_developer_removable_telephony_manager")
+        requirePreference<CheckBoxPreference>("pref_advanced_removable_telephony_manager")
             .bindBooleanFlow(preferenceRepository.removableTelephonyManagerFlow)
     }
 }

@@ -2,11 +2,11 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         app:isPreferenceVisible="false"
-        app:key="pref_developer_overlay">
+        app:key="pref_advanced_overlay">
         <CheckBoxPreference
             app:iconSpaceReserved="false"
-            app:key="pref_developer_removable_telephony_manager"
-            app:summary="@string/pref_developer_telephony_manager_removable_desc"
-            app:title="@string/pref_developer_telephony_manager_removable" />
+            app:key="pref_advanced_removable_telephony_manager"
+            app:summary="@string/pref_advanced_telephony_manager_removable_desc"
+            app:title="@string/pref_advanced_telephony_manager_removable" />
     </PreferenceCategory>
 </PreferenceScreen>
