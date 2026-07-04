@@ -74,8 +74,8 @@
     <string name="download_wizard">Download Wizard</string>
     <string name="download_wizard_back">Back</string>
     <string name="download_wizard_next">Next</string>
-    <string name="download_wizard_low_power">Low Power WARNING</string>
-    <string name="download_wizard_low_power_content">Your download process may be unexpectedly interrupted due to low battery or sudden shutdown.\n\nTo prevent interruption due to screen darkness, the screen will remain on during the download process.\n\nIf you believe continuing the download is safe, please click "Next" to begin the download.</string>
+    <string name="download_wizard_low_power">WARNING: Low Battery</string>
+    <string name="download_wizard_low_power_content">Your download process may be unexpectedly interrupted due to sudden shutdown.\n\nClick "Next" to acknowledge this risk and continue download.</string>
     <string name="download_wizard_slot_removed">Selected SIM has been removed</string>
     <string name="download_wizard_slot_select">Select or confirm the eSIM you would like to download to:</string>
     <string name="download_wizard_slot_type">Type:</string>
@@ -225,7 +225,7 @@
     <string name="pref_advanced_logs_desc">View recent debug logs of the application</string>
     <string name="pref_advanced_http_proxy">HTTP Proxy</string>
     <string name="pref_advanced_http_proxy_desc">HTTP proxy for outgoing requests</string>
-    <string name="pref_advanced_http_proxy_dialog_message">The proxy should be in the format \"http://&lt;host&gt;:&lt;port&gt;\". Leave blank to DISABLE the proxy.</string>
+    <string name="pref_advanced_http_proxy_dialog_message">Specify a proxy in the format \"http://&lt;host&gt;:&lt;port&gt;\". Leave blank to DISABLE.</string>
     <string name="pref_developer">Developer Options</string>
     <string name="pref_developer_refresh_after_switch">Send refresh command to modem</string>
     <string name="pref_developer_refresh_after_switch_desc">Whether to send a refresh command to the modem after switching profiles. Try disabling this if you see crashes.</string>

@@ -109,7 +109,7 @@
     <string name="download_wizard_back">返回</string>
     <string name="download_wizard_next">下一步</string>
     <string name="download_wizard_low_power">低电量警告</string>
-    <string name="download_wizard_low_power_content">由于电量不足或电池电量低时突然关机，<b>您的下载过程可能会意外中断</b>。\n\n为保持下载时不会因为屏幕熄灭而中断，下载过程中画面将保持常亮。\n\n如果您认为继续下载无风险请点击 “<b>下一步</b>” 以开始下载。</string>
+    <string name="download_wizard_low_power_content">由于电量不足或电池电量低时突然关机，<b>您的下载过程可能会意外中断</b>。\n\n如果您认为继续下载无风险请点击 “<b>下一步</b>” 以开始下载。</string>
     <string name="download_wizard_slot_removed">您选择的 SIM 已被移除</string>
     <string name="download_wizard_slot_select">请选择或确认下载目标 eSIM 卡槽:</string>
     <string name="download_wizard_slot_type">类型:</string>
