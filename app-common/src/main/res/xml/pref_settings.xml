@@ -44,6 +44,13 @@
             app:summary="@string/pref_advanced_force_tpdu_mode_desc"
             app:title="@string/pref_advanced_force_tpdu_mode" />
 
+        <EditTextPreference
+            app:dialogMessage="@string/pref_advanced_http_proxy_dialog_message"
+            app:iconSpaceReserved="false"
+            app:key="pref_advanced_http_proxy"
+            app:summary="@string/pref_advanced_http_proxy_desc"
+            app:title="@string/pref_advanced_http_proxy" />
+
         <Preference
             app:iconSpaceReserved="false"
             app:isPreferenceVisible="false"

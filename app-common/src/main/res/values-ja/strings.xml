@@ -180,6 +180,9 @@
     <string name="pref_advanced_language_desc">アプリの言語を設定します。</string>
     <string name="pref_advanced_logs">ログ</string>
     <string name="pref_advanced_logs_desc">アプリの最新デバッグログを表示します。</string>
+    <string name="pref_advanced_http_proxy">HTTP プロキシ</string>
+    <string name="pref_advanced_http_proxy_desc">送信リクエスト用の HTTP プロキシ</string>
+    <string name="pref_advanced_http_proxy_dialog_message">プロキシは次の形式である必要があります「http://&lt;host&gt;:&lt;port&gt;」。プロキシを無効にするには、空欄のままにしてください。</string>
     <string name="pref_developer">開発者オプション</string>
     <string name="pref_developer_refresh_after_switch">モデムに更新コマンドを送信</string>
     <string name="pref_developer_refresh_after_switch_desc">プロファイルを切り替えた後にモデムに更新コマンドを送信するかどうかを設定します。クラッシュが発生する場合は、この機能を無効化してください。</string>

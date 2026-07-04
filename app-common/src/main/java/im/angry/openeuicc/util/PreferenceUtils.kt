@@ -40,6 +40,7 @@ internal object PreferenceKeys {
     val IGNORE_TLS_CERTIFICATE = booleanPreferencesKey("ignore_tls_certificate")
     val ISDR_AID_LIST = stringPreferencesKey("isdr_aid_list")
     val ES10X_MSS = intPreferencesKey("es10x_mss")
+    val HTTP_PROXY = stringPreferencesKey("http_proxy")
 }
 
 const val EUICC_DEFAULT_ISDR_AID = "A0000005591010FFFFFFFF8900000100"
@@ -101,6 +102,7 @@ open class PreferenceRepository(private val context: Context) {
         { Base64.getEncoder().encodeToString(it.encodeToByteArray()) },
         { Base64.getDecoder().decode(it).decodeToString() })
     val es10xMssFlow = bindFlow(PreferenceKeys.ES10X_MSS, 63)
+    val httpProxyFlow = bindFlow(PreferenceKeys.HTTP_PROXY, "")
 
     protected fun <T> bindFlow(
         key: Preferences.Key<T>,

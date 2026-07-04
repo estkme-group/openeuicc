@@ -1,11 +1,16 @@
 package net.typeblog.lpac_jni.impl
 
+import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import net.typeblog.lpac_jni.HttpInterface
+import java.net.InetSocketAddress
+import java.net.Proxy
 import java.net.URL
+import java.net.URLConnection
 import java.security.SecureRandom
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
@@ -13,9 +18,11 @@ import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManager
 import javax.net.ssl.TrustManagerFactory
 
+
 class HttpInterfaceImpl(
     private val verboseLoggingFlow: Flow<Boolean>,
-    private val ignoreTLSCertificateFlow: Flow<Boolean>
+    private val ignoreTLSCertificateFlow: Flow<Boolean>,
+    private val httpProxyFlow: Flow<String>
 ) : HttpInterface {
     companion object {
         private const val TAG = "HttpInterfaceImpl"
@@ -40,7 +47,9 @@ class HttpInterfaceImpl(
         }
 
         try {
-            val conn = parsedUrl.openConnection() as HttpsURLConnection
+            val proxy = runBlocking { httpProxyFlow.first().toUri().normalizeScheme() }
+            val conn = parsedUrl.openConnection(proxy) as HttpsURLConnection
+
             conn.connectTimeout = 2000
 
             if (url.contains("handleNotification")) {
@@ -90,6 +99,18 @@ class HttpInterfaceImpl(
         val sslContext = SSLContext.getInstance("TLS")
         sslContext.init(null, trustManagers, SecureRandom())
         return sslContext.socketFactory
+    }
+
+    private fun URL.openConnection(proxy: Uri): URLConnection {
+        if (proxy.scheme == null || proxy.host == null || proxy.port == -1) return openConnection()
+        val type = when (proxy.scheme) {
+            "http", "https" -> Proxy.Type.HTTP
+            "socks", "socks5" -> Proxy.Type.SOCKS
+            "direct" -> return openConnection(Proxy.NO_PROXY)
+            else -> return openConnection() // fallback to system proxy
+        }
+        val proxy = Proxy(type, /* sa = */ InetSocketAddress(/* hostname = */ proxy.host, proxy.port))
+        return openConnection(proxy)
     }
 
     override fun usePublicKeyIds(pkids: Array<String>) {

@@ -82,8 +82,13 @@
     <string name="pref_advanced_verbose_logging_desc">详细日志中包含敏感信息，开启此功能后请仅与你信任的人共享你的日志。</string>
     <string name="pref_advanced_force_tpdu_mode">强制 USB 读卡器使用 TPDU 模式</string>
     <string name="pref_advanced_force_tpdu_mode_desc">强制所有 USB CCID 读卡器使用 TPDU 模式。仅在您的 USB 读卡器仅支持 TPDU 模式时启用。</string>
+    <string name="pref_advanced_language">语言</string>
+    <string name="pref_advanced_language_desc">选择 App 语言</string>
     <string name="pref_advanced_logs">日志</string>
     <string name="pref_advanced_logs_desc">查看应用程序的最新调试日志</string>
+    <string name="pref_advanced_http_proxy">HTTP 代理</string>
+    <string name="pref_advanced_http_proxy_desc">用于出站请求的 HTTP 代理</string>
+    <string name="pref_advanced_http_proxy_dialog_message">代理服务器地址应采用此格式 \"http://&lt;host&gt;:&lt;port&gt;\"。留空则表示禁用代理。</string>
     <string name="pref_developer_isdr_aid_list_desc">某些品牌的可移除 eSIM 可能会使用自己的非标准 ISD-R AID，导致第三方应用无法访问。此 App 可以尝试使用此列表中添加的非标准 AID，但不能保证它们一定有效。</string>
     <string name="pref_developer_es10x_mss_desc">全局 ES10x MSS</string>
     <string-array name="pref_developer_es10x_entry_keys">
@@ -152,8 +157,6 @@
     <string name="euicc_info_no">否</string>
     <string name="developer_options_steps">还有 %d 步成为开发者</string>
     <string name="developer_options_enabled">你现在是开发者了！</string>
-    <string name="pref_advanced_language">语言</string>
-    <string name="pref_advanced_language_desc">选择 App 语言</string>
     <string name="pref_developer">开发者选项</string>
     <string name="pref_developer_refresh_after_switch_desc">切换配置文件后是否向基带发送刷新命令。如果发现崩溃，请尝试禁用此功能。</string>
     <string name="pref_developer_unfiltered_profile_list">显示未经过滤的配置文件列表</string>

@@ -47,6 +47,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
             seId,
             context.preferenceRepository.verboseLoggingFlow,
             context.preferenceRepository.ignoreTLSCertificateFlow,
+            context.preferenceRepository.httpProxyFlow,
             context.preferenceRepository.es10xMssFlow,
         )
     } catch (_: IllegalArgumentException) {
@@ -73,6 +74,7 @@ open class DefaultEuiccChannelFactory(protected val context: Context) : EuiccCha
             seId,
             context.preferenceRepository.verboseLoggingFlow,
             context.preferenceRepository.ignoreTLSCertificateFlow,
+            context.preferenceRepository.httpProxyFlow,
             context.preferenceRepository.es10xMssFlow,
         )
     } catch (_: IllegalArgumentException) {

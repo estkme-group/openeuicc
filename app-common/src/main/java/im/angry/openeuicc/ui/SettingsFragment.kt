@@ -5,9 +5,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
+import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -73,6 +75,9 @@ open class SettingsFragment : PreferenceFragmentCompat(), OpenEuiccContextMarker
 
         requirePreference<CheckBoxPreference>("pref_advanced_force_tpdu_mode")
             .bindBooleanFlow(preferenceRepository.forceTpduModeFlow)
+
+        requirePreference<EditTextPreference>("pref_advanced_http_proxy")
+            .bindStringFlow(preferenceRepository.httpProxyFlow)
 
         requirePreference<CheckBoxPreference>("pref_developer_unfiltered_profile_list")
             .bindBooleanFlow(preferenceRepository.unfilteredProfileListFlow)
@@ -140,6 +145,19 @@ open class SettingsFragment : PreferenceFragmentCompat(), OpenEuiccContextMarker
         setOnPreferenceChangeListener { _, newValue ->
             lifecycleScope.launch {
                 flow.updatePreference(newValue as Boolean)
+            }
+            true
+        }
+    }
+
+    private fun EditTextPreference.bindStringFlow(flow: PreferenceFlowWrapper<String>) {
+        lifecycleScope.launch {
+            flow.collect(::setText)
+        }
+
+        setOnPreferenceChangeListener { _, newValue ->
+            lifecycleScope.launch {
+                flow.updatePreference(newValue as String)
             }
             true
         }

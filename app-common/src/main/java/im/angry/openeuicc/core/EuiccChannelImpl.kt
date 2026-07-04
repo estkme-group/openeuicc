@@ -17,6 +17,7 @@ class EuiccChannelImpl(
     override val seId: EuiccChannel.SecureElementId,
     verboseLoggingFlow: Flow<Boolean>,
     ignoreTLSCertificateFlow: Flow<Boolean>,
+    httpProxyFlow: Flow<String>,
     es10xMssFlow: Flow<Int>,
 ) : EuiccChannel {
     override val slotId = port.card.physicalSlotIndex
@@ -27,7 +28,7 @@ class EuiccChannelImpl(
         LocalProfileAssistantImpl(
             isdrAid,
             apduInterface,
-            HttpInterfaceImpl(verboseLoggingFlow, ignoreTLSCertificateFlow),
+            HttpInterfaceImpl(verboseLoggingFlow, ignoreTLSCertificateFlow, httpProxyFlow),
         ).also {
             it.setEs10xMss(runBlocking { es10xMssFlow.first().toByte() })
         }
