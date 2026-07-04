@@ -55,6 +55,8 @@
     <string name="download_wizard">ダウンロードウィザード</string>
     <string name="download_wizard_back">戻る</string>
     <string name="download_wizard_next">次へ</string>
+    <string name="download_wizard_low_power">バッテリー残量が少ない</string>
+    <string name="download_wizard_low_power_content">バッテリー残量低下や突然のシャットダウンにより、<b>ダウンロード処理が予期せず中断される場合があります</b>。\n\n画面が暗くなっても中断を防ぐため、ダウンロード中は画面が点灯したままになります。\n\nダウンロードを続行しても問題ないと判断される場合は、「<b>次へ</b>」をクリックしてダウンロードを開始してください。</string>
     <string name="download_wizard_slot_removed">選択した SIM が削除されました</string>
     <string name="download_wizard_slot_select">ダウンロードする eSIM を選択または確認:</string>
     <string name="download_wizard_slot_type">タイプ:</string>
