@@ -103,6 +103,10 @@ There are two ways to include OpenEUICC in your AOSP-based system image:
 
 [`privapp_whitelist_im.angry.openeuicc.xml`]: privapp_whitelist_im.angry.openeuicc.xml "OpenEUICC Privapp Whitelist"
 
+# Documentation
+
+- [Deep Link](docs/DEEP-LINK.md) - How to use the `lpa:` deep link to call {Open/Easy}EUICC from other apps.
+
 # FAQs
 
 - Q: Do you provide prebuilt binaries for OpenEUICC? \
