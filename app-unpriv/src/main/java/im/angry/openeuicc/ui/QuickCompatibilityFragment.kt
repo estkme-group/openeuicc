@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
+import androidx.core.os.ConfigurationCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -91,6 +92,9 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
     private fun onCompatibilityUpdate(result: CompatibilityResult) {
         conclusion.text = formatConclusion(result)
         if (result.compatibility == Compatibility.COMPATIBLE) {
+            val listFormatter = ListFormatter.getInstance(
+                ConfigurationCompat.getLocales(resources.configuration).get(0)
+            )
             // Don't show the message again, ever, if the result is compatible
             runBlocking {
                 preferenceRepository.skipQuickCompatibilityFlow
@@ -99,7 +103,7 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
             resultSlots.isVisible = true
             resultSlots.text = getString(
                 R.string.quick_compatibility_result_slots,
-                ListFormatter.getInstance().format(result.slotsOmapi)
+                listFormatter.format(result.slotsOmapi)
             )
             resultSlotsIsdr.isVisible = true
             resultSlotsIsdr.text =
@@ -108,7 +112,7 @@ open class QuickCompatibilityFragment : Fragment(), UnprivilegedEuiccContextMark
                     if (result.slotsIsdr.isEmpty()) {
                         getString(R.string.quick_compatibility_unknown)
                     } else {
-                        ListFormatter.getInstance().format(result.slotsIsdr)
+                        listFormatter.format(result.slotsIsdr)
                     }
                 )
             resultNotes.isVisible = true
