@@ -38,12 +38,12 @@
             android:label="@string/download_wizard" />
 
         <activity
-            android:name="im.angry.openeuicc.ui.wizard.DownloadGuardActivity"
+            android:name="im.angry.openeuicc.ui.wizard.DeepLinkConfirmationActivity"
             android:clearTaskOnLaunch="true"
             android:excludeFromRecents="true"
             android:exported="true"
             android:finishOnTaskLaunch="true"
-            android:label="@string/download_guard"
+            android:label="@string/deep_link_confirmation"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.App.DeepLinkTransparent">
             <intent-filter>

@@ -110,6 +110,12 @@
     <string name="download_wizard_error_suggest_contact_carrier">サポートについては、通信事業者にお問い合わせください。</string>
     <string name="download_wizard_error_suggest_contact_reissue">この eSIM プロファイルを再発行するには、通信事業者にお問い合わせください。</string>
     <string name="download_wizard_error_suggest_network_unreachable">別のネットワークに接続後 (例: Wi-Fi とデータを切り替え) を行った後に再度お試しください。</string>
+    <string name="deep_link_confirmation">ディープリンク確認</string>
+    <string name="deep_link_confirmation_dialog_title">eSIM をセットアップ</string>
+    <string name="deep_link_confirmation_dialog_description">"セットアップに必要な一部のデバイス情報がキャリアに送信されます。"</string>
+    <string name="deep_link_confirmation_cancel_button">キャンセル</string>
+    <string name="deep_link_confirmation_setup_button">セットアップ</string>
+    <string name="deep_link_confirmation_unable_to_read_url">"eSIM のセットアップリンクに問題があります。キャリアにご連絡ください。"</string>
     <string name="logs_saved_message">ログは共有したパスに保存されました。別のアプリで共有しますか？</string>
     <string name="profile_rename_new_name">新しいニックネーム</string>
     <string name="profile_rename_encoding_error">ニックネームを UTF-8 にエンコードできませんでした</string>

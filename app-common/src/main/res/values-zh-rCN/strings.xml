@@ -46,6 +46,12 @@
     <string name="profile_download_confirmation_code_required">确认码 (必须)</string>
     <string name="profile_download_imei">IMEI (可选)</string>
     <string name="download_wizard_error_suggest_network_unreachable">请连接到其他网络（例如在 Wi-Fi 和数据之间切换）后重试。</string>
+    <string name="deep_link_confirmation">深度链接确认</string>
+    <string name="deep_link_confirmation_dialog_title">设置您的 eSIM</string>
+    <string name="deep_link_confirmation_dialog_description">"设置所需的一些设备信息将被发送到运营商。"</string>
+    <string name="deep_link_confirmation_cancel_button">取消</string>
+    <string name="deep_link_confirmation_setup_button">设置</string>
+    <string name="deep_link_confirmation_unable_to_read_url">"eSIM 的设置链接有问题，请联系您的运营商寻求帮助。"</string>
     <string name="logs_saved_message">日志已保存到指定路径。需要通过其他 App 分享吗？</string>
     <string name="profile_rename_new_name">新昵称</string>
     <string name="profile_rename_encoding_error">无法将昵称编码为 UTF-8</string>

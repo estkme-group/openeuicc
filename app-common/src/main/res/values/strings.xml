@@ -131,12 +131,12 @@
     <string name="download_wizard_error_suggest_contact_reissue">Please contact your carrier to reissue this eSIM profile.</string>
     <string name="download_wizard_error_suggest_network_unreachable">Please try again after connecting to a different network (e.g. switching between Wi-Fi and data).</string>
 
-    <string name="download_guard">Download Guard</string>
-    <string name="download_guard_dialog_title">Setup your eSIM</string>
-    <string name="download_guard_dialog_description">"Some device info that's needed for setup will be sent to your carrier."</string>
-    <string name="download_guard_cancel_button">Cancel</string>
-    <string name="download_guard_setup_button">Setup</string>
-    <string name="download_guard_unable_to_read_url">"There's an issue with the setup link for your eSIM. Contact your carrier for help."</string>
+    <string name="deep_link_confirmation">Deep Link Confirmation</string>
+    <string name="deep_link_confirmation_dialog_title">Setup your eSIM</string>
+    <string name="deep_link_confirmation_dialog_description">"Some device info that's needed for setup will be sent to your carrier."</string>
+    <string name="deep_link_confirmation_cancel_button">Cancel</string>
+    <string name="deep_link_confirmation_setup_button">Setup</string>
+    <string name="deep_link_confirmation_unable_to_read_url">"There's an issue with the setup link for your eSIM. Contact your carrier for help."</string>
 
     <string name="logs_saved_message">Logs have been saved to the selected path. Would you like to share the log through another app?</string>
 
