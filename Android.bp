@@ -8,6 +8,7 @@ java_library {
     },
     static_libs: [
         "kotlinx_coroutines",
+        "androidx.core_core-ktx",
     ],
     system_ext_specific: true,
 }
