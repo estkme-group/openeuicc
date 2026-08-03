@@ -15,12 +15,12 @@ apply {
 
 android {
     namespace = "im.angry.openeuicc"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "im.angry.openeuicc"
         minSdk = 30
-        targetSdk = 35
+        targetSdk = 37
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

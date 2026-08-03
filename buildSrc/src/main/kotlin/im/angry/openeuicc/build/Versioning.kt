@@ -10,24 +10,18 @@ import java.io.ByteArrayOutputStream
 val Project.gitVersionCode: Int
     get() =
         try {
-            val stdout = ByteArrayOutputStream()
-            exec {
+            providers.exec {
                 commandLine("git", "rev-list", "--first-parent", "--count", "HEAD")
-                standardOutput = stdout
-            }
-            stdout.toString("utf-8").trim('\n').toInt()
+            }.standardOutput.asText.get().trim('\n').toInt()
         } catch (_: Exception) {
             0
         }
 
 fun Project.getGitVersionName(vararg args: String): String =
     try {
-        val stdout = ByteArrayOutputStream()
-        exec {
+        providers.exec {
             commandLine("git", "describe", "--always", "--tags", "--dirty", *args)
-            standardOutput = stdout
-        }
-        stdout.toString("utf-8").trim('\n').removePrefix("unpriv-")
+        }.standardOutput.asText.get().trim('\n').removePrefix("unpriv-")
     } catch (_: Exception) {
         "Unknown"
     }

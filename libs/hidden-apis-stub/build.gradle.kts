@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 37
     namespace = "im.angry.hidden.apis"
 }
 

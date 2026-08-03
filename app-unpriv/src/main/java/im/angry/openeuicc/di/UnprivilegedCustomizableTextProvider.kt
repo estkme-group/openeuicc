@@ -6,8 +6,8 @@ import android.net.Uri
 import android.util.Base64
 import androidx.core.net.toUri
 import androidx.core.os.ConfigurationCompat
+import im.angry.easyeuicc.BuildConfig
 import im.angry.easyeuicc.R
-import im.angry.openeuicc.common.BuildConfig
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.util.*
 import javax.crypto.Mac

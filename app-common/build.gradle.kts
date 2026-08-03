@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "im.angry.openeuicc.common"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 28

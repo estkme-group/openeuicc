@@ -1,5 +1,6 @@
 /.gradle
 /captures
+/build
 
 # Configuration files
 

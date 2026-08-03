@@ -17,15 +17,19 @@ apply {
 
 android {
     namespace = "im.angry.easyeuicc"
-    compileSdk = 35
+    compileSdk = 37
     ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "im.angry.easyeuicc"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 37
 
         emitAssetStatements("https://easyeuicc.org", "https://preview.easyeuicc.org")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
