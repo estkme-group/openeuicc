@@ -2,6 +2,7 @@ import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 import im.angry.openeuicc.build.MagiskModuleDirTask
 import im.angry.openeuicc.build.MySigningPlugin
 import im.angry.openeuicc.build.MyVersioningPlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
@@ -34,12 +35,11 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
     }
 }
 
