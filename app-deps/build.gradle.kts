@@ -63,7 +63,6 @@ configure<GenerateBpPluginExtension> {
     targetSdk.set(android.compileSdk!!)
     availableInAOSP.set { module: Module ->
         when {
-            module.group == "androidx.datastore" -> false
             module.group.startsWith("androidx") -> true
             module.group == "com.google.android.material" -> true
             module.group.startsWith("org.jetbrains") -> true
