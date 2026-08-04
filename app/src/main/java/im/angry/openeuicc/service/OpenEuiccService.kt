@@ -261,7 +261,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             EuiccChannel.SecureElementId.DEFAULT,
             iccid
         )
-            .waitDone() == null
+            .stateFlow.waitDone() == null
 
         return@withEuiccChannelManager if (success) {
             RESULT_OK
@@ -374,7 +374,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 foundIccid,
                 enable,
                 30 * 1000
-            ).waitDone()
+            ).stateFlow.waitDone()
 
             if (res != null) return@withEuiccChannelManager RESULT_FIRST_USER
 
@@ -407,7 +407,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                     iccid,
                     nickname!!
                 )
-                    .waitDone()) == null
+                    .stateFlow.waitDone()) == null
 
             euiccChannelManager.withEuiccChannel(slotId, port, seId) { channel ->
                 appContainer.subscriptionManager.tryRefreshCachedEuiccInfo(channel.cardId)

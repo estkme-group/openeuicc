@@ -97,6 +97,7 @@ class EuiccMemoryResetFragment : DialogFragment(), EuiccChannelFragmentMarker {
             euiccChannelManagerService.waitForForegroundTask()
 
             euiccChannelManagerService.launchMemoryReset(slotId, portId, seId)
+                .stateFlow
                 .onStart {
                     parentFragment?.notifyEuiccProfilesChanged()
 

@@ -248,7 +248,7 @@ open class EuiccManagementFragment : Fragment(), EuiccProfilesChangedListener,
                     slotId, portId, seId, iccid, enable,
                     reconnectTimeoutMillis = 30 * 1000
                 )
-                .waitDone()
+                .stateFlow.waitDone()
 
             when (err) {
                 null -> {}

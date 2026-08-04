@@ -91,14 +91,14 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
             showProgressBar(-1) // set indeterminate first
             ensureEuiccChannelManager()
 
-            val subscriber = startDownloadOrSubscribe()
+            val handle = startDownloadOrSubscribe()
 
-            if (subscriber == null) {
+            if (handle == null) {
                 requireActivity().finish()
                 return@launch
             }
 
-            subscriber.onEach {
+            handle.stateFlow.onEach {
                 when (it) {
                     is EuiccChannelManagerService.ForegroundTaskState.Done -> {
                         hideProgressBar()
@@ -134,7 +134,7 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
         }
     }
 
-    private suspend fun startDownloadOrSubscribe(): EuiccChannelManagerService.ForegroundTaskSubscriberFlow? =
+    private suspend fun startDownloadOrSubscribe(): EuiccChannelManagerService.ForegroundTaskHandle? =
         if (state.downloadStarted) {
             // This will also return null if task ID is -1 (uninitialized), too
             euiccChannelManagerService.recoverForegroundTaskSubscriber(state.downloadTaskID)
