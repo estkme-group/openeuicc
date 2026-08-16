@@ -49,6 +49,6 @@ jobs:
           # Release details are expected to be edited manually
           release-notes: TBD
           prerelease: 'true'
-          title: ${{ forge.ref_name }}
-          tag: ${{ forge.ref_name }}
+          title: ${{ github.ref_name }}
+          tag: ${{ github.ref_name }}
           verbose: true
