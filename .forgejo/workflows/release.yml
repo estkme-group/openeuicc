@@ -40,7 +40,7 @@ jobs:
         run: cp app-unpriv/build/outputs/native-debug-symbols/release/native-debug-symbols.zip app-unpriv/build/outputs/apk/release/
 
       - name: Create Release
-        uses: https://gitea.angry.im/actions/forgejo-release@v1
+        uses: https://gitea.angry.im/actions/forgejo-release@v2
         with:
           direction: upload
           release-dir: app-unpriv/build/outputs/apk/release
