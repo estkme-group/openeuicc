@@ -40,7 +40,7 @@ jobs:
         run: cp app-unpriv/build/outputs/native-debug-symbols/release/native-debug-symbols.zip app-unpriv/build/outputs/apk/release/
 
       - name: Create Release
-        uses: https://gitea.angry.im/actions/forgejo-release@v2
+        uses: https://gitea.angry.im/actions/forgejo-release@v1
         with:
           direction: upload
           release-dir: app-unpriv/build/outputs/apk/release
@@ -49,3 +49,4 @@ jobs:
           # Release details are expected to be edited manually
           release-notes: TBD
           prerelease: 'true'
+          title: ${{ forge.ref_name }}
