@@ -49,6 +49,6 @@ jobs:
           # Release details are expected to be edited manually
           release-notes: TBD
           prerelease: 'true'
-          title: ${{ github.ref_name }}
+          title: TBD ${{ github.ref_name }}
           tag: ${{ github.ref_name }}
           verbose: true
