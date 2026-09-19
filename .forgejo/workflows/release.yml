@@ -31,7 +31,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Android SDK
-        uses: https://gitea.angry.im/actions/setup-android@v3
+        uses: https://gitea.angry.im/actions/setup-android@v4
 
       - name: Run Tests
         run: ./gradlew --no-daemon test
