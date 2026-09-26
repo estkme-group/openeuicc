@@ -17,6 +17,8 @@ jclass confirming_download_class;
 jmethodID confirming_download_constructor;
 jclass remote_profile_info_class;
 jmethodID remote_profile_info_constructor;
+jclass remote_profile_access_rule_class;
+jmethodID remote_profile_access_rule_constructor;
 jobject profile_class_testing;
 jobject profile_class_provisioning;
 jobject profile_class_operational;
@@ -111,7 +113,15 @@ void lpac_download_init() {
                                                           "net/typeblog/lpac_jni/RemoteProfileInfo");
     remote_profile_info_class = (*env)->NewGlobalRef(env, _remote_profile_info_class);
     remote_profile_info_constructor = (*env)->GetMethodID(env, remote_profile_info_class, "<init>",
-                                                          "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/typeblog/lpac_jni/ProfileClass;)V");
+                                                          "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/typeblog/lpac_jni/ProfileClass;[Lnet/typeblog/lpac_jni/RemoteProfileAccessRule;)V");
+
+    jclass _remote_profile_access_rule_class = (*env)->FindClass(env,
+                                                                 "net/typeblog/lpac_jni/RemoteProfileAccessRule");
+    remote_profile_access_rule_class = (*env)->NewGlobalRef(env, _remote_profile_access_rule_class);
+    remote_profile_access_rule_constructor = (*env)->GetMethodID(env,
+                                                                 remote_profile_access_rule_class,
+                                                                 "<init>",
+                                                                 "(Ljava/lang/String;Ljava/lang/String;)V");
 }
 
 static jobject profile_class_from_es10c_profile_class(enum es10c_profile_class profile_class) {
@@ -133,7 +143,27 @@ static jobject create_remote_profile_info(JNIEnv *env,
     jstring metadata_iccid = NULL;
     jstring metadata_profile_name = NULL;
     jstring metadata_provider_name = NULL;
+    jobjectArray metadata_access_rules = NULL;
     jobject remote_profile_info = NULL;
+    struct es8p_metadata_access_rule *rule;
+    jsize i = 0;
+
+    for (rule = profile_metadata->accessRules; rule != NULL; rule = rule->next)
+        i++;
+    metadata_access_rules = (*env)->NewObjectArray(env, i, remote_profile_access_rule_class, NULL);
+    for (i = 0, rule = profile_metadata->accessRules; rule != NULL; i++, rule = rule->next) {
+        jstring cert_hash = toJString(env, rule->certificateHash);
+        // toJString() would turn a missing package name into ""
+        jstring package_name = rule->packageName != NULL ? toJString(env, rule->packageName) : NULL;
+        jobject access_rule = (*env)->NewObject(env, remote_profile_access_rule_class,
+                                                remote_profile_access_rule_constructor,
+                                                cert_hash, package_name);
+        (*env)->SetObjectArrayElement(env, metadata_access_rules, i, access_rule);
+        (*env)->DeleteLocalRef(env, access_rule);
+        (*env)->DeleteLocalRef(env, cert_hash);
+        if (package_name != NULL)
+            (*env)->DeleteLocalRef(env, package_name);
+    }
 
     metadata_iccid = toJString(env, profile_metadata->iccid);
     metadata_profile_name = toJString(env, profile_metadata->profileName);
@@ -145,8 +175,10 @@ static jobject create_remote_profile_info(JNIEnv *env,
                                             metadata_iccid,
                                             metadata_profile_name,
                                             metadata_provider_name,
-                                            profile_class);
+                                            profile_class,
+                                            metadata_access_rules);
 
+    (*env)->DeleteLocalRef(env, metadata_access_rules);
     if (metadata_iccid != NULL)
         (*env)->DeleteLocalRef(env, metadata_iccid);
     if (metadata_profile_name != NULL)
