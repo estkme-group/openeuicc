@@ -56,6 +56,27 @@
             </intent-filter>
         </activity>
 
+        <!--
+            LUI resolution activity, started by com.android.phone's
+            EuiccResolutionUiDispatcherActivity. Like all LUI components, it must require
+            BIND_EUICC_SERVICE and declare a non-zero priority (EuiccConnector.findBestActivity).
+        -->
+        <activity
+            android:name=".ui.EuiccResolutionActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_EUICC_SERVICE"
+            android:theme="@style/Theme.App.DeepLinkTransparent">
+            <intent-filter android:priority="100">
+                <action android:name="android.service.euicc.action.RESOLVE_NO_PRIVILEGES" />
+                <action android:name="android.service.euicc.action.RESOLVE_DEACTIVATE_SIM" />
+                <action android:name="android.service.euicc.action.RESOLVE_RESOLVABLE_ERRORS" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.service.euicc.category.EUICC_UI" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
             android:enabled="false"
