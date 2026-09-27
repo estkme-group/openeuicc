@@ -589,10 +589,14 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 30 * 1000
             ).stateFlow.waitDone()
 
-            if (res != null) return@withEuiccChannelManager RESULT_FIRST_USER
+            if (res != null) {
+                Log.e(TAG, "Profile switch task failed (iccid=$foundIccid enable=$enable)", res)
+                return@withEuiccChannelManager RESULT_FIRST_USER
+            }
 
             return@withEuiccChannelManager RESULT_OK
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.e(TAG, "onSwitchToSubscriptionWithPort failed", e)
             return@withEuiccChannelManager RESULT_FIRST_USER
         } finally {
             euiccChannelManager.invalidate()
