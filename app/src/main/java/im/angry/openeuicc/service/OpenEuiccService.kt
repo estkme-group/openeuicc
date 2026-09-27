@@ -357,10 +357,13 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         if (downloadResult.result != RESULT_OK || !switchAfterDownload) return downloadResult
 
         // Never RESULT_MUST_DEACTIVATE_SIM at this point (forceDeactivateSim = true): the profile is
-        // installed, and the platform would download it again after the user's consent.
+        // installed, and the platform would download it again after the user's consent. No other
+        // error either: the carrier app would ask for a new activation code, which counts against
+        // the order's retry limit.
         if (iccid.isNullOrEmpty() || onSwitchToSubscriptionWithPort(slotIndex, portIndex, iccid, true) != RESULT_OK) {
-            Log.e(TAG, "Profile $iccid downloaded but not enabled")
-            return result(RESULT_FIRST_USER, cardId = cardId)
+            Log.e(TAG, "Profile $iccid downloaded but not enabled; it has to be enabled manually")
+            // The platform only refreshes its list after the switch
+            appContainer.subscriptionManager.tryRefreshCachedEuiccInfo(cardId)
         }
         return downloadResult
     }
