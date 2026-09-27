@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Default ES10x maximum segment size (MSS) when the user has not set
+      pref_developer_es10x_mss. Device overlays may raise this (e.g. to 255)
+      for eUICCs that mishandle small LoadBPP STORE DATA chains.
+    -->
+    <integer name="config_es10x_mss_default">63</integer>
+</resources>

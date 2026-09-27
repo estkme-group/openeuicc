@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import im.angry.openeuicc.OpenEuiccApplication
+import im.angry.openeuicc.common.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.Base64
@@ -79,6 +80,9 @@ internal object PreferenceConstants {
     """.trimIndent()
 }
 
+fun defaultEs10xMss(context: Context): Int =
+    context.resources.getInteger(R.integer.config_es10x_mss_default)
+
 open class PreferenceRepository(private val context: Context) {
     // Expose flows so that we can also handle default values
     // ---- Profile Notifications ----
@@ -101,7 +105,7 @@ open class PreferenceRepository(private val context: Context) {
         PreferenceConstants.DEFAULT_AID_LIST,
         { Base64.getEncoder().encodeToString(it.encodeToByteArray()) },
         { Base64.getDecoder().decode(it).decodeToString() })
-    val es10xMssFlow = bindFlow(PreferenceKeys.ES10X_MSS, 63)
+    val es10xMssFlow = bindFlow(PreferenceKeys.ES10X_MSS, defaultEs10xMss(context))
     val httpProxyFlow = bindFlow(PreferenceKeys.HTTP_PROXY, "")
 
     protected fun <T> bindFlow(

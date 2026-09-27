@@ -89,7 +89,7 @@ open class SettingsFragment : PreferenceFragmentCompat(), OpenEuiccContextMarker
             .bindBooleanFlow(preferenceRepository.refreshAfterSwitchFlow)
 
         requirePreference<ListPreference>("pref_developer_es10x_mss")
-            .bindIntFlow(preferenceRepository.es10xMssFlow, 63)
+            .bindIntFlow(preferenceRepository.es10xMssFlow, defaultEs10xMss(requireContext()))
 
         requirePreference<Preference>("pref_developer_isdr_aid_list").apply {
             intent = Intent(requireContext(), IsdrAidListActivity::class.java)

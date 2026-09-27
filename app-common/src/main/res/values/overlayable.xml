@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <overlayable name="OpenEUICC">
+        <policy type="system|product|vendor">
+            <item type="integer" name="config_es10x_mss_default" />
+        </policy>
+    </overlayable>
+</resources>
