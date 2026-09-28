@@ -132,11 +132,13 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
      * and a way to back-communicate (via backChannel).
      *
      * taskID is the exact millisecond-precision timestamp when the task is launched.
+     * key is an optional identifier given by whoever launched the task.
      */
     data class ForegroundTaskHandle(
         val taskId: Long,
         val stateFlow: Flow<ForegroundTaskState>,
-        val backChannel: Channel<Any>
+        val backChannel: Channel<Any>,
+        val key: Any? = null
     )
 
     /**
@@ -147,7 +149,8 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
      */
     private data class ForegroundTaskRecord(
         val stateFlow: SharedFlow<ForegroundTaskState>,
-        val backChannel: Channel<Any>
+        val backChannel: Channel<Any>,
+        val key: Any?
     )
 
     /**
@@ -159,6 +162,12 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
      * the task completes while they are being recreated.
      */
     private val foregroundTaskRecords: MutableMap<Long, ForegroundTaskRecord> = mutableMapOf()
+
+    /**
+     * ID of the foreground task that is currently running, if any
+     */
+    @Volatile
+    private var runningTaskId: Long? = null
 
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
@@ -243,9 +252,15 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
      * null if the task doesn't exist, or was launched too long ago.
      */
     fun recoverForegroundTaskSubscriber(taskId: Long): ForegroundTaskHandle? =
-        foregroundTaskRecords[taskId]?.let {
-            ForegroundTaskHandle(taskId, it.stateFlow.applyCompletionTransform(), it.backChannel)
+        synchronized(foregroundTaskRecords) { foregroundTaskRecords[taskId] }?.let {
+            ForegroundTaskHandle(taskId, it.stateFlow.applyCompletionTransform(), it.backChannel, it.key)
         }
+
+    /**
+     * Recover the handle to the foreground task that is currently running, if any.
+     */
+    fun recoverRunningForegroundTask(): ForegroundTaskHandle? =
+        runningTaskId?.let { recoverForegroundTaskSubscriber(it) }
 
     /**
      * Launch a potentially blocking foreground task in this service's lifecycle context.
@@ -269,6 +284,7 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
         title: String,
         failureTitle: String,
         iconRes: Int,
+        key: Any? = null,
         task: suspend EuiccChannelManagerService.(Channel<Any>) -> Unit
     ): ForegroundTaskHandle {
         val taskID = System.currentTimeMillis()
@@ -300,6 +316,7 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
                 // to the flow is stuck. Or we failed to start foreground.
                 // In that case, we should just set our state back to Idle -- setting it
                 // to Done wouldn't help much because nothing is going to then set it Idle.
+                runningTaskId = null
                 foregroundTaskState.value = ForegroundTaskState.Idle
                 return@launch
             }
@@ -365,21 +382,26 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
                     // when emitted by the main coroutine in quick succession.
                     // Doing it here ensures we've seen Done. This Idle event won't be
                     // emitted to the consumer because the subscription has completed here.
+                    runningTaskId = null
                     foregroundTaskState.value = ForegroundTaskState.Idle
                     backChannel.close()
                 }
                 .collect()
         }
 
-        foregroundTaskRecords[taskID] = ForegroundTaskRecord(stateFlow.asSharedFlow(), backChannel)
+        synchronized(foregroundTaskRecords) {
+            foregroundTaskRecords[taskID] = ForegroundTaskRecord(stateFlow.asSharedFlow(), backChannel, key)
 
-        if (foregroundTaskRecords.size > 5) {
-            // Remove enough elements so that the size is kept at 5
-            for (key in foregroundTaskRecords.keys.sorted()
-                .take(foregroundTaskRecords.size - 5)) {
-                foregroundTaskRecords.remove(key)
+            if (foregroundTaskRecords.size > 5) {
+                // Remove enough elements so that the size is kept at 5 (never the new task,
+                // whose ID is not necessarily the largest if the clock went back)
+                for (key in (foregroundTaskRecords.keys - taskID).sorted()
+                    .take(foregroundTaskRecords.size - 5)) {
+                    foregroundTaskRecords.remove(key)
+                }
             }
         }
+        runningTaskId = taskID
 
         // Before we return, and after we have set everything up,
         // self-start with foreground permission.
@@ -394,7 +416,8 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
         return ForegroundTaskHandle(
             taskID,
             stateFlow.asSharedFlow().applyCompletionTransform(),
-            backChannel
+            backChannel,
+            key
         )
     }
 
@@ -403,14 +426,21 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
             .collect()
     }
 
+    /**
+     * The download waits at ProfileDownloadState.ConfirmingDownload for a Boolean on the
+     * backChannel, for at most confirmationTimeoutMillis. The backChannel is closed after that.
+     */
     open fun launchProfileDownloadTask(
         slotId: Int, portId: Int, seId: EuiccChannel.SecureElementId,
         input: ProfileDownloadInput,
+        confirmationTimeoutMillis: Long = 60 * 1000,
+        key: Any? = null,
     ): ForegroundTaskHandle =
         launchForegroundTask(
             getString(R.string.task_profile_download),
             getString(R.string.task_profile_download_failure),
-            R.drawable.ic_task_sim_card_download
+            R.drawable.ic_task_sim_card_download,
+            key
         ) { backChannel ->
             euiccChannelManager.beginTrackedOperation(slotId, portId, seId) {
                 euiccChannelManager.withEuiccChannel(slotId, portId, seId) { channel ->
@@ -435,13 +465,16 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
                             // because we don't run download on the main thread; see withEuiccChannel.
                             return@downloadProfile runBlocking {
                                 try {
-                                    // We can't wait indefinitely; just time out after 1 minute.
-                                    withTimeout(60 * 1000) {
+                                    // We can't wait indefinitely; just time out.
+                                    withTimeout(confirmationTimeoutMillis) {
                                         backChannel.receive() as Boolean
                                     }
                                 } catch (_: TimeoutCancellationException) {
                                     // Default to cancelling / aborting here if we didn't receive a confirmation signal
                                     false
+                                } finally {
+                                    // Late confirmations fail to send instead of getting lost
+                                    backChannel.close()
                                 }
                             }
                         }
