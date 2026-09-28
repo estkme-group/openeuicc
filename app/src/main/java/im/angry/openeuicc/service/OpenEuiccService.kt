@@ -40,7 +40,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         } else {
             // Otherwise, we can report at least one removable eUICC to the system without confusing
             // it too much.
-            telephonyManager.uiccCardsInfoCompat.firstOrNull { it.isEuicc }?.physicalSlotIndex == physicalSlotId
+            telephonyManager.uiccCardsInfoCompat.firstOrNull { it.isEuicc }?.physicalSlotIndex != physicalSlotId
         }
 
     private data class EuiccChannelManagerContext(
