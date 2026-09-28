@@ -15,6 +15,7 @@ jobject download_state_finalizing;
 jmethodID on_state_update;
 jclass confirming_download_class;
 jmethodID confirming_download_constructor;
+jmethodID confirming_download_get_confirmation_code;
 jclass remote_profile_info_class;
 jmethodID remote_profile_info_constructor;
 jclass remote_profile_access_rule_class;
@@ -88,6 +89,10 @@ void lpac_download_init() {
                                                           confirming_download_class,
                                                           "<init>",
                                                           "(Lnet/typeblog/lpac_jni/RemoteProfileInfo;)V");
+    confirming_download_get_confirmation_code = (*env)->GetMethodID(env,
+                                                                    confirming_download_class,
+                                                                    "getConfirmationCode",
+                                                                    "()Ljava/lang/String;");
 
     jclass profile_class_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/ProfileClass");
     jfieldID profile_class_testing_field = (*env)->GetStaticFieldID(env, profile_class_class,
@@ -198,11 +203,13 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     struct es8p_metadata *profile_metadata = NULL;
     struct es10b_load_bound_profile_package_result es10b_load_bound_profile_package_result;
     const char *_confirmation_code = NULL;
+    const char *_late_confirmation_code = NULL;
     const char *_matching_id = NULL;
     const char *_smdp = NULL;
     const char *_imei = NULL;
     jobject remote_profile_info = NULL;
     jobject confirming_download_state = NULL;
+    jstring late_confirmation_code = NULL;
     jboolean confirmed = JNI_TRUE;
     int ret;
 
@@ -288,6 +295,14 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
 
     confirmed = (*env)->CallBooleanMethod(env, callback, on_state_update, confirming_download_state);
 
+    if (confirmed) {
+        // The callback may have set the confirmation code only now (it is needed from here on)
+        late_confirmation_code = (*env)->CallObjectMethod(env, confirming_download_state,
+                                                          confirming_download_get_confirmation_code);
+        if (late_confirmation_code != NULL)
+            _late_confirmation_code = (*env)->GetStringUTFChars(env, late_confirmation_code, NULL);
+    }
+
     if (remote_profile_info != NULL) {
         (*env)->DeleteLocalRef(env, remote_profile_info);
         remote_profile_info = NULL;
@@ -308,7 +323,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
         goto out;
     }
 
-    ret = es10b_prepare_download(ctx, _confirmation_code);
+    ret = es10b_prepare_download(ctx, _late_confirmation_code != NULL ? _late_confirmation_code
+                                                                      : _confirmation_code);
     syslog(LOG_INFO, "es10b_prepare_download %d", ret);
     if (ret < 0) {
         ret = -ES10B_ERROR_REASON_UNDEFINED;
@@ -339,6 +355,10 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     // This is so that Java side can access the last HTTP and/or APDU errors when we return.
     if (_confirmation_code != NULL)
         (*env)->ReleaseStringUTFChars(env, confirmation_code, _confirmation_code);
+    if (_late_confirmation_code != NULL)
+        (*env)->ReleaseStringUTFChars(env, late_confirmation_code, _late_confirmation_code);
+    if (late_confirmation_code != NULL)
+        (*env)->DeleteLocalRef(env, late_confirmation_code);
     if (_matching_id != NULL)
         (*env)->ReleaseStringUTFChars(env, matching_id, _matching_id);
     (*env)->ReleaseStringUTFChars(env, smdp, _smdp);
