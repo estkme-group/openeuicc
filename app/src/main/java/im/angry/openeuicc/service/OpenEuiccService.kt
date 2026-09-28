@@ -2,11 +2,15 @@ package im.angry.openeuicc.service
 
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
+import android.service.euicc.DownloadSubscriptionResult
 import android.service.euicc.EuiccProfileInfo
 import android.service.euicc.EuiccService
 import android.service.euicc.GetDefaultDownloadableSubscriptionListResult
 import android.service.euicc.GetDownloadableSubscriptionMetadataResult
 import android.service.euicc.GetEuiccProfileInfoListResult
+import android.telephony.TelephonyManager
+import android.telephony.UiccAccessRule
 import android.telephony.UiccSlotMapping
 import android.telephony.euicc.DownloadableSubscription
 import android.telephony.euicc.EuiccInfo
@@ -14,16 +18,24 @@ import android.util.Log
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.service.EuiccChannelManagerService.Companion.waitDone
+import im.angry.openeuicc.service.EuiccChannelManagerService.ForegroundTaskHandle
+import im.angry.openeuicc.service.EuiccChannelManagerService.ForegroundTaskState
 import im.angry.openeuicc.util.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import net.typeblog.lpac_jni.LocalProfileInfo
 import net.typeblog.lpac_jni.ProfileClass
+import net.typeblog.lpac_jni.ProfileDownloadInput
+import net.typeblog.lpac_jni.ProfileDownloadState
+import java.util.concurrent.ConcurrentHashMap
 
 class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
     companion object {
         const val TAG = "OpenEuiccService"
+
+        // EIDs by slot, for onGetEid() while a download holds the eUICC (see launchDownloadTask)
+        private val eids = ConcurrentHashMap<Int, String>()
     }
 
     private val seId = EuiccChannel.SecureElementId.DEFAULT
@@ -83,6 +95,9 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
     }
 
     override fun onGetEid(slotId: Int): String? = withEuiccChannelManager {
+        if ((euiccChannelManagerService.recoverRunningForegroundTask()?.key as? Pair<*, *>)?.first == slotId) {
+            eids[slotId]?.let { return@withEuiccChannelManager it }
+        }
         val portId = euiccChannelManager.findFirstAvailablePort(slotId)
         if (portId < 0) return@withEuiccChannelManager null
         euiccChannelManager.withEuiccChannel(slotId, portId, seId) { channel ->
@@ -151,14 +166,203 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         // Not implemented
     }
 
+    private fun DownloadableSubscription.parseActivationCode(): LPAString? =
+        encodedActivationCode?.let { runCatching { LPAString.parse(it) }.getOrNull() }
+
+    // Wait for a download task to reach ConfirmingDownload; null if it failed before
+    private suspend fun ForegroundTaskHandle.awaitConfirmingDownload() =
+        stateFlow.first {
+            it is ForegroundTaskState.Done ||
+                    (it as? ForegroundTaskState.InProgress)?.context is ProfileDownloadState.ConfirmingDownload
+        }.let { (it as? ForegroundTaskState.InProgress)?.context as? ProfileDownloadState.ConfirmingDownload }
+
+    /**
+     * The profile metadata is only available within a download session (from
+     * ES9+.AuthenticateClient on), and many SM-DP+ servers refuse a second session for the same
+     * order. So onGetDownloadableSubscriptionMetadata() launches the download, which then waits at
+     * ConfirmingDownload until onDownloadSubscription() confirms it, the user declines
+     * (EuiccResolutionActivity) or it times out. The task's key identifies the subscription.
+     * Meanwhile, it holds the eUICC: onGetEid() and onGetEuiccProfileInfoList() don't wait for it.
+     *
+     * Returns null if the caller should return RESULT_MUST_DEACTIVATE_SIM.
+     */
+    private suspend fun EuiccChannelManagerContext.launchDownloadTask(
+        slotId: Int,
+        portIndex: Int,
+        lpaString: LPAString,
+        subscription: DownloadableSubscription,
+        forceDeactivateSim: Boolean
+    ): ForegroundTaskHandle? {
+        // Only one task can run at a time; don't wait until another waiting download times out
+        euiccChannelManagerService.recoverRunningForegroundTask()
+            ?.takeIf { it.key != null }?.backChannel?.trySend(false)
+
+        val port = euiccChannelManager.findFirstAvailablePort(slotId).takeIf { it >= 0 } ?: run {
+            if (!forceDeactivateSim) return null
+            val port = if (portIndex >= 0) portIndex else 0
+            ensurePortIsMapped(slotId, port)
+            retryWithTimeout(5000) {
+                euiccChannelManager.withEuiccChannel(slotId, port, seId) { channel ->
+                    if (!channel.valid) {
+                        throw IllegalStateException("Slot $slotId port $port is unavailable; may need to try again")
+                    }
+                    port
+                }
+            } ?: throw IllegalStateException("Slot $slotId port $port did not become available")
+        }
+        val imei = euiccChannelManager.withEuiccChannel(slotId, port, seId) { channel ->
+            eids[slotId] = channel.lpa.eID
+            runCatching { telephonyManager.getImei(channel.logicalSlotId) }.getOrNull()
+        }
+
+        euiccChannelManagerService.waitForForegroundTask()
+        return euiccChannelManagerService.launchProfileDownloadTask(
+            slotId,
+            port,
+            seId,
+            ProfileDownloadInput(
+                lpaString.address,
+                lpaString.matchingId,
+                imei,
+                subscription.confirmationCode?.ifEmpty { null }
+            ),
+            // Leaves time for the user to consent or enter a confirmation code in between
+            5 * 60 * 1000,
+            Pair(slotId, lpaString)
+        )
+    }
+
     override fun onGetDownloadableSubscriptionMetadata(
         slotId: Int,
         subscription: DownloadableSubscription?,
         forceDeactivateSim: Boolean
-    ): GetDownloadableSubscriptionMetadataResult {
-        // Stub: return as-is and do not fetch anything
-        // This is incompatible with carrier eSIM apps; should we make it compatible?
-        return GetDownloadableSubscriptionMetadataResult(RESULT_OK, subscription)
+    ): GetDownloadableSubscriptionMetadataResult =
+        if (subscription == null) {
+            GetDownloadableSubscriptionMetadataResult(RESULT_FIRST_USER, null)
+        } else {
+            // -1 = any port
+            onGetDownloadableSubscriptionMetadata(slotId, -1, subscription, forceDeactivateSim)
+        }
+
+    override fun onGetDownloadableSubscriptionMetadata(
+        slotId: Int,
+        portIndex: Int,
+        subscription: DownloadableSubscription,
+        forceDeactivateSim: Boolean
+    ): GetDownloadableSubscriptionMetadataResult = withEuiccChannelManager {
+        Log.i(
+            TAG,
+            "onGetDownloadableSubscriptionMetadata slotId=$slotId portIndex=$portIndex forceDeactivateSim=$forceDeactivateSim"
+        )
+        val lpaString = subscription.parseActivationCode()
+        if (shouldIgnoreSlot(slotId) || lpaString == null) {
+            return@withEuiccChannelManager GetDownloadableSubscriptionMetadataResult(
+                RESULT_FIRST_USER,
+                null
+            )
+        }
+
+        val confirming = try {
+            // The platform asks again after the user entered a confirmation code, while the
+            // download is still waiting
+            (euiccChannelManagerService.recoverRunningForegroundTask()
+                ?.takeIf { it.key == Pair(slotId, lpaString) }
+                ?: launchDownloadTask(slotId, portIndex, lpaString, subscription, forceDeactivateSim)
+                ?: return@withEuiccChannelManager GetDownloadableSubscriptionMetadataResult(
+                    RESULT_MUST_DEACTIVATE_SIM,
+                    null
+                )).awaitConfirmingDownload()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to fetch profile metadata", e)
+            null
+        } ?: return@withEuiccChannelManager GetDownloadableSubscriptionMetadataResult(
+            RESULT_FIRST_USER,
+            null
+        )
+
+        // The platform checks the calling (carrier) app against the access rules
+        val builder = DownloadableSubscription.Builder(subscription)
+        confirming.metadata?.let { metadata ->
+            if (metadata.providerName.isNotBlank()) {
+                builder.setCarrierName(metadata.providerName)
+            }
+            if (metadata.accessRules.isNotEmpty()) {
+                builder.setAccessRules(metadata.accessRules.map {
+                    UiccAccessRule(it.certificateHash.decodeHex(), it.packageName, 0)
+                })
+            }
+        }
+        GetDownloadableSubscriptionMetadataResult(RESULT_OK, builder.build())
+    }
+
+    override fun onDownloadSubscription(
+        slotIndex: Int,
+        portIndex: Int,
+        subscription: DownloadableSubscription,
+        switchAfterDownload: Boolean,
+        forceDeactivateSim: Boolean,
+        resolvedBundle: Bundle
+    ): DownloadSubscriptionResult {
+        Log.i(
+            TAG,
+            "onDownloadSubscription slotIndex=$slotIndex portIndex=$portIndex switchAfterDownload=$switchAfterDownload forceDeactivateSim=$forceDeactivateSim " +
+                    "callingPackage=${resolvedBundle.getString("android.service.euicc.extra.PACKAGE_NAME")}"
+        )
+
+        fun result(code: Int, resolvableErrors: Int = 0, cardId: Int = TelephonyManager.UNSUPPORTED_CARD_ID) =
+            DownloadSubscriptionResult(code, resolvableErrors, cardId)
+
+        val lpaString = subscription.parseActivationCode()
+        if (shouldIgnoreSlot(slotIndex) || lpaString == null) return result(RESULT_FIRST_USER)
+
+        if (lpaString.confirmationCodeRequired && subscription.confirmationCode.isNullOrEmpty()) {
+            // The platform asks the user for the code, then requests the metadata and the download
+            // again. The waiting download keeps waiting until then.
+            return result(RESULT_RESOLVABLE_ERRORS, RESOLVABLE_ERROR_CONFIRMATION_CODE)
+        }
+
+        val cardId = telephonyManager.uiccCardsInfoCompat.find { it.physicalSlotIndex == slotIndex }
+            ?.cardId ?: TelephonyManager.UNSUPPORTED_CARD_ID
+
+        val (downloadResult, iccid) = withEuiccChannelManager<Pair<DownloadSubscriptionResult, String?>> {
+            suspend fun confirm(handle: ForegroundTaskHandle) =
+                handle.awaitConfirmingDownload()?.takeIf {
+                    it.confirmationCode = subscription.confirmationCode?.ifEmpty { null }
+                    // Fails if the download is not waiting any more, e.g. timed out
+                    handle.backChannel.trySend(true).isSuccess
+                }
+
+            // Confirm the download onGetDownloadableSubscriptionMetadata() left waiting, or a new
+            // one (privileged callers skip the metadata step)
+            val waiting = euiccChannelManagerService.recoverRunningForegroundTask()
+                ?.takeIf { it.key == Pair(slotIndex, lpaString) }
+            val (handle, confirming) = waiting?.let { h -> confirm(h)?.let { Pair(h, it) } } ?: try {
+                launchDownloadTask(slotIndex, portIndex, lpaString, subscription, forceDeactivateSim)
+                    ?.let { Pair(it, confirm(it)) }
+                    ?: return@withEuiccChannelManager Pair(result(RESULT_MUST_DEACTIVATE_SIM), null)
+            } catch (e: Exception) {
+                Log.e(TAG, "Could not start the profile download", e)
+                return@withEuiccChannelManager Pair(result(RESULT_FIRST_USER), null)
+            }
+
+            val error = handle.stateFlow.waitDone()
+            if (error != null) {
+                Log.e(TAG, "Profile download failed", error)
+                Pair(result(RESULT_FIRST_USER, cardId = cardId), null)
+            } else {
+                Pair(result(RESULT_OK, cardId = cardId), confirming?.metadata?.iccid)
+            }
+        }
+
+        if (downloadResult.result != RESULT_OK || !switchAfterDownload) return downloadResult
+
+        // Never RESULT_MUST_DEACTIVATE_SIM at this point (forceDeactivateSim = true): the profile is
+        // installed, and the platform would download it again after the user's consent.
+        if (iccid.isNullOrEmpty() || onSwitchToSubscriptionWithPort(slotIndex, portIndex, iccid, true) != RESULT_OK) {
+            Log.e(TAG, "Profile $iccid downloaded but not enabled")
+            return result(RESULT_FIRST_USER, cardId = cardId)
+        }
+        return downloadResult
     }
 
     override fun onGetDefaultDownloadableSubscriptionList(
@@ -174,6 +378,15 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             Log.i(TAG, "onGetEuiccProfileInfoList slotId=$slotId")
             if (slotId == -1 || shouldIgnoreSlot(slotId)) {
                 Log.i(TAG, "ignoring slot $slotId")
+                return@withEuiccChannelManager GetEuiccProfileInfoListResult(
+                    RESULT_FIRST_USER,
+                    arrayOf(),
+                    true
+                )
+            }
+
+            // Don't wait for a download that holds the eUICC; the platform keeps its current list
+            if ((euiccChannelManagerService.recoverRunningForegroundTask()?.key as? Pair<*, *>)?.first == slotId) {
                 return@withEuiccChannelManager GetEuiccProfileInfoListResult(
                     RESULT_FIRST_USER,
                     arrayOf(),
