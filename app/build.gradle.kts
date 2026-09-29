@@ -35,6 +35,18 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+    testOptions {
+        unitTests {
+            // Robolectric needs real resources (task titles, dialog themes)
+            isIncludeAndroidResources = true
+        }
+    }
+
+    sourceSets {
+        // Reuse app-common's Robolectric mocks (EuiccChannel / EuiccChannelManager / test application)
+        getByName("test").java.srcDir("../app-common/src/test/java/im/angry/openeuicc/testutil")
+    }
 }
 
 kotlin {
@@ -48,7 +60,11 @@ dependencies {
     implementation(project(":libs:hidden-apis-shim"))
     implementation(project(":libs:lpac-jni"))
     implementation(project(":app-common"))
+    // Lets JUnit load test classes that mention EuiccService outside the Robolectric sandbox;
+    // inside it, the real classes from android-all take precedence
+    testImplementation(project(":libs:hidden-apis-stub"))
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.17-beta-4")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 }
