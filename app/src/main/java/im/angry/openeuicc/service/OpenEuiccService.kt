@@ -397,6 +397,9 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
                 )
             }
 
+            // A profile switch (its SIM refresh is why the platform asks) reopens the channels
+            euiccChannelManagerService.waitForForegroundTask()
+
             // TODO: Temporarily enable the slot to access its profiles if it is currently unmapped
             val port = euiccChannelManager.findFirstAvailablePort(slotId)
             if (port == -1) {
@@ -601,8 +604,6 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
         } catch (e: Exception) {
             Log.e(TAG, "onSwitchToSubscriptionWithPort failed", e)
             return@withEuiccChannelManager RESULT_FIRST_USER
-        } finally {
-            euiccChannelManager.invalidate()
         }
     }
 
