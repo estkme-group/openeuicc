@@ -585,9 +585,8 @@ class VirtualClockEuiccChannelManagerService : EuiccChannelManagerService() {
         seId: EuiccChannel.SecureElementId,
         input: ProfileDownloadInput,
         confirmationTimeoutMillis: Long,
-        key: Any?
     ): ForegroundTaskHandle =
-        super.launchProfileDownloadTask(slotId, portId, seId, input, Long.MAX_VALUE, key).also {
+        super.launchProfileDownloadTask(slotId, portId, seId, input, Long.MAX_VALUE).also {
             Handler(Looper.getMainLooper()).postDelayed(
                 { it.backChannel.trySend(false) },
                 confirmationTimeoutMillis

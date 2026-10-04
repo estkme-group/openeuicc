@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import im.angry.openeuicc.R
+import im.angry.openeuicc.service.OpenEuiccService
 import im.angry.openeuicc.util.*
 
 /**
@@ -184,9 +185,13 @@ class EuiccResolutionActivity : BaseEuiccAccessActivity() {
 
         if (!consent && !isSwitch && euiccChannelManagerLoaded.isCompleted) {
             // The platform doesn't tell OpenEuiccService; cancel the download it may have left
-            // waiting for confirmation
-            euiccChannelManagerService.recoverRunningForegroundTask()
-                ?.takeIf { it.key != null }?.backChannel?.trySend(false)
+            // waiting for confirmation. OpenEuiccService remembers the waiting download task's ID
+            // (it runs in the same process, so a static field is fine).
+            OpenEuiccService.runningDownloadTaskId?.let { taskId ->
+                euiccChannelManagerService.recoverForegroundTaskSubscriber(taskId)
+                    ?.backChannel?.trySend(false)
+            }
+            OpenEuiccService.runningDownloadTaskId = null
         }
 
         val resolutionExtras = Bundle(extras).apply {
