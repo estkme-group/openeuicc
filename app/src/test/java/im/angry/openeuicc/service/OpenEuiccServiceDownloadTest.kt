@@ -385,15 +385,26 @@ class OpenEuiccServiceDownloadTest {
     }
 
     // The waiting session holds the eUICC (the LPA lock). The platform calls these synchronously,
-    // e.g. on the telephony worker thread, so they must not wait for it.
+    // e.g. on the telephony worker thread; they block until the session is over and only then
+    // touch the eUICC. Nothing confirms the session here, so the confirmation timeout cancels it.
     @Test
-    fun `EID and profile list requests don't wait for a waiting session`() {
+    fun `EID and profile list requests block until the waiting session is over`() = runBlocking {
         platformCall { onGetDownloadableSubscriptionMetadata(SLOT, PORT, activationCode, true) }
-
-        assertEquals(EID, platformCall { onGetEid(SLOT) })
-        assertEquals(EuiccService.RESULT_FIRST_USER, platformCall { onGetEuiccProfileInfoList(SLOT) }.result)
         assertEquals(1, lpa.sessions.get())
-        assertEquals(emptyList<Boolean>(), lpa.metadataStepAnswers)
+
+        // Both block until the waiting session is over; nothing confirms it, so the confirmation
+        // timeout cancels it while they wait (idleFor() advances the virtual clock)
+        val eid = CoroutineScope(Dispatchers.IO).async { service.onGetEid(SLOT) }
+        val profiles = CoroutineScope(Dispatchers.IO).async { service.onGetEuiccProfileInfoList(SLOT) }
+        awaitMainLooper(30_000) {
+            shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMinutes(1))
+            eid.isCompleted && profiles.isCompleted
+        }
+
+        assertEquals(EID, eid.await())
+        assertEquals(EuiccService.RESULT_OK, profiles.await().result)
+        assertEquals(1, lpa.sessions.get())
+        assertEquals(listOf(false), lpa.metadataStepAnswers)
     }
 
     // An invalid matching ID, refused by the SM-DP+ in
