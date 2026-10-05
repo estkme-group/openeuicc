@@ -82,8 +82,11 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
      * that is still using it. By default it also waits for a running download task to finish first,
      * so that the eUICC is quiescent when the method runs (e.g. a fresh profile list) -- only the
      * download methods themselves opt out, because they interact with the running download task.
-     * The wait happens without holding the lock, so that onDownloadSubscription() can still confirm
-     * the download and unblock the waiters.
+     * The check for a running download task and the callback itself run under the same lock
+     * acquisition, so that a download registered by a method that ran ahead of us is always seen
+     * before the callback runs; if a download is running, the wait for it happens without holding
+     * the lock, so that onDownloadSubscription() can still confirm a waiting download and unblock
+     * the waiters.
      *
      * This function cannot be inline because non-local returns may bypass to unbind
      */
@@ -104,17 +107,38 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
 
         val localBinder = binder as EuiccChannelManagerService.LocalBinder
 
-        if (waitForDownload) {
-            runningDownloadTaskId?.let { taskId ->
-                localBinder.service.recoverForegroundTaskSubscriber(taskId)
-                    ?.stateFlow?.let { runBlocking { it.waitDone() } }
+        val ret = runBlocking {
+            var result: T? = null
+            // The check for a running download task and the callback itself run under the SAME
+            // lock acquisition, so that a download registered by a method that ran ahead of us
+            // (and may have returned before the download finished) is always seen before the
+            // callback runs. If a download is running, wait for it without holding the lock, so
+            // that onDownloadSubscription() can still confirm a waiting download and unblock us,
+            // then re-acquire the lock and re-check.
+            while (true) {
+                val task = synchronized(this@OpenEuiccService) {
+                    if (waitForDownload) {
+                        val taskId = runningDownloadTaskId
+                        val task = taskId?.let {
+                            localBinder.service.recoverForegroundTaskSubscriber(it)?.takeIf { handle ->
+                                !handle.backChannel.isClosedForSend
+                            }
+                        }
+                        if (task == null) {
+                            // The task is gone or has already finished
+                            if (taskId != null) runningDownloadTaskId = null
+                            result = runBlocking { EuiccChannelManagerContext(localBinder.service).fn() }
+                        }
+                        task
+                    } else {
+                        result = runBlocking { EuiccChannelManagerContext(localBinder.service).fn() }
+                        null
+                    }
+                }
+                if (task == null) break
+                task.stateFlow.waitDone()
             }
-        }
-
-        val ret = synchronized(this@OpenEuiccService) {
-            runBlocking {
-                EuiccChannelManagerContext(localBinder.service).fn()
-            }
+            result!!
         }
 
         unbind()
