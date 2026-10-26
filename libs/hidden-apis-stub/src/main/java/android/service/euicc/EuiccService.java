@@ -152,6 +152,12 @@ public abstract class EuiccService extends Service {
     public static final String EXTRA_RESOLUTION_CARD_ID =
         "android.service.euicc.extra.RESOLUTION_CARD_ID";
     /**
+     * Intent extra set for resolution requests containing an int indicating the subscription id
+     * to be enabled.
+     */
+    public static final String EXTRA_RESOLUTION_SUBSCRIPTION_ID =
+        "android.service.euicc.extra.RESOLUTION_SUBSCRIPTION_ID";
+    /**
      * Intent extra set for resolution requests containing an int indicating the current port index.
      */
     public static final String EXTRA_RESOLUTION_PORT_INDEX =
@@ -288,6 +294,14 @@ public abstract class EuiccService extends Service {
     public abstract GetDownloadableSubscriptionMetadataResult onGetDownloadableSubscriptionMetadata(
         int slotId, DownloadableSubscription subscription, boolean forceDeactivateSim);
 
+    public GetDownloadableSubscriptionMetadataResult onGetDownloadableSubscriptionMetadata(
+        int slotId, int portIndex, DownloadableSubscription subscription,
+        boolean forceDeactivateSim) {
+        // stub implementation, LPA needs to implement this
+        throw new UnsupportedOperationException(
+            "LPA must override onGetDownloadableSubscriptionMetadata");
+    }
+
     /**
      * Return metadata for subscriptions which are available for download for this device.
      *
@@ -326,6 +340,13 @@ public abstract class EuiccService extends Service {
                                                              DownloadableSubscription subscription, boolean switchAfterDownload,
                                                              boolean forceDeactivateSim, Bundle resolvedBundle) {
         return null;
+    }
+
+    public DownloadSubscriptionResult onDownloadSubscription(int slotIndex, int portIndex,
+                                                             DownloadableSubscription subscription, boolean switchAfterDownload,
+                                                             boolean forceDeactivateSim, Bundle resolvedBundle) {
+        // stub implementation, LPA needs to implement this
+        throw new UnsupportedOperationException("LPA must override onDownloadSubscription");
     }
 
     /**

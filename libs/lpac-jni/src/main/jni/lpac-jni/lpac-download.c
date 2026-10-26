@@ -15,8 +15,11 @@ jobject download_state_finalizing;
 jmethodID on_state_update;
 jclass confirming_download_class;
 jmethodID confirming_download_constructor;
+jmethodID confirming_download_get_confirmation_code;
 jclass remote_profile_info_class;
 jmethodID remote_profile_info_constructor;
+jclass remote_profile_access_rule_class;
+jmethodID remote_profile_access_rule_constructor;
 jobject profile_class_testing;
 jobject profile_class_provisioning;
 jobject profile_class_operational;
@@ -86,6 +89,10 @@ void lpac_download_init() {
                                                           confirming_download_class,
                                                           "<init>",
                                                           "(Lnet/typeblog/lpac_jni/RemoteProfileInfo;)V");
+    confirming_download_get_confirmation_code = (*env)->GetMethodID(env,
+                                                                    confirming_download_class,
+                                                                    "getConfirmationCode",
+                                                                    "()Ljava/lang/String;");
 
     jclass profile_class_class = (*env)->FindClass(env, "net/typeblog/lpac_jni/ProfileClass");
     jfieldID profile_class_testing_field = (*env)->GetStaticFieldID(env, profile_class_class,
@@ -111,7 +118,15 @@ void lpac_download_init() {
                                                           "net/typeblog/lpac_jni/RemoteProfileInfo");
     remote_profile_info_class = (*env)->NewGlobalRef(env, _remote_profile_info_class);
     remote_profile_info_constructor = (*env)->GetMethodID(env, remote_profile_info_class, "<init>",
-                                                          "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/typeblog/lpac_jni/ProfileClass;)V");
+                                                          "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/typeblog/lpac_jni/ProfileClass;[Lnet/typeblog/lpac_jni/RemoteProfileAccessRule;)V");
+
+    jclass _remote_profile_access_rule_class = (*env)->FindClass(env,
+                                                                 "net/typeblog/lpac_jni/RemoteProfileAccessRule");
+    remote_profile_access_rule_class = (*env)->NewGlobalRef(env, _remote_profile_access_rule_class);
+    remote_profile_access_rule_constructor = (*env)->GetMethodID(env,
+                                                                 remote_profile_access_rule_class,
+                                                                 "<init>",
+                                                                 "(Ljava/lang/String;Ljava/lang/String;)V");
 }
 
 static jobject profile_class_from_es10c_profile_class(enum es10c_profile_class profile_class) {
@@ -133,7 +148,27 @@ static jobject create_remote_profile_info(JNIEnv *env,
     jstring metadata_iccid = NULL;
     jstring metadata_profile_name = NULL;
     jstring metadata_provider_name = NULL;
+    jobjectArray metadata_access_rules = NULL;
     jobject remote_profile_info = NULL;
+    struct es8p_metadata_access_rule *rule;
+    jsize i = 0;
+
+    for (rule = profile_metadata->accessRules; rule != NULL; rule = rule->next)
+        i++;
+    metadata_access_rules = (*env)->NewObjectArray(env, i, remote_profile_access_rule_class, NULL);
+    for (i = 0, rule = profile_metadata->accessRules; rule != NULL; i++, rule = rule->next) {
+        jstring cert_hash = toJString(env, rule->certificateHash);
+        // toJString() would turn a missing package name into ""
+        jstring package_name = rule->packageName != NULL ? toJString(env, rule->packageName) : NULL;
+        jobject access_rule = (*env)->NewObject(env, remote_profile_access_rule_class,
+                                                remote_profile_access_rule_constructor,
+                                                cert_hash, package_name);
+        (*env)->SetObjectArrayElement(env, metadata_access_rules, i, access_rule);
+        (*env)->DeleteLocalRef(env, access_rule);
+        (*env)->DeleteLocalRef(env, cert_hash);
+        if (package_name != NULL)
+            (*env)->DeleteLocalRef(env, package_name);
+    }
 
     metadata_iccid = toJString(env, profile_metadata->iccid);
     metadata_profile_name = toJString(env, profile_metadata->profileName);
@@ -145,8 +180,10 @@ static jobject create_remote_profile_info(JNIEnv *env,
                                             metadata_iccid,
                                             metadata_profile_name,
                                             metadata_provider_name,
-                                            profile_class);
+                                            profile_class,
+                                            metadata_access_rules);
 
+    (*env)->DeleteLocalRef(env, metadata_access_rules);
     if (metadata_iccid != NULL)
         (*env)->DeleteLocalRef(env, metadata_iccid);
     if (metadata_profile_name != NULL)
@@ -166,11 +203,13 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     struct es8p_metadata *profile_metadata = NULL;
     struct es10b_load_bound_profile_package_result es10b_load_bound_profile_package_result;
     const char *_confirmation_code = NULL;
+    const char *_late_confirmation_code = NULL;
     const char *_matching_id = NULL;
     const char *_smdp = NULL;
     const char *_imei = NULL;
     jobject remote_profile_info = NULL;
     jobject confirming_download_state = NULL;
+    jstring late_confirmation_code = NULL;
     jboolean confirmed = JNI_TRUE;
     int ret;
 
@@ -256,6 +295,15 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
 
     confirmed = (*env)->CallBooleanMethod(env, callback, on_state_update, confirming_download_state);
 
+    if (confirmed) {
+        // The callback may have set the confirmation code only now (EuiccService case)
+        // FIXME: This should probably be passed in through something that's not just a property.
+        late_confirmation_code = (*env)->CallObjectMethod(env, confirming_download_state,
+                                                          confirming_download_get_confirmation_code);
+        if (late_confirmation_code != NULL)
+            _late_confirmation_code = (*env)->GetStringUTFChars(env, late_confirmation_code, NULL);
+    }
+
     if (remote_profile_info != NULL) {
         (*env)->DeleteLocalRef(env, remote_profile_info);
         remote_profile_info = NULL;
@@ -276,7 +324,8 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
         goto out;
     }
 
-    ret = es10b_prepare_download(ctx, _confirmation_code);
+    ret = es10b_prepare_download(ctx, _late_confirmation_code != NULL ? _late_confirmation_code
+                                                                      : _confirmation_code);
     syslog(LOG_INFO, "es10b_prepare_download %d", ret);
     if (ret < 0) {
         ret = -ES10B_ERROR_REASON_UNDEFINED;
@@ -307,6 +356,10 @@ Java_net_typeblog_lpac_1jni_LpacJni_downloadProfile(JNIEnv *env, jobject thiz, j
     // This is so that Java side can access the last HTTP and/or APDU errors when we return.
     if (_confirmation_code != NULL)
         (*env)->ReleaseStringUTFChars(env, confirmation_code, _confirmation_code);
+    if (_late_confirmation_code != NULL)
+        (*env)->ReleaseStringUTFChars(env, late_confirmation_code, _late_confirmation_code);
+    if (late_confirmation_code != NULL)
+        (*env)->DeleteLocalRef(env, late_confirmation_code);
     if (_matching_id != NULL)
         (*env)->ReleaseStringUTFChars(env, matching_id, _matching_id);
     (*env)->ReleaseStringUTFChars(env, smdp, _smdp);

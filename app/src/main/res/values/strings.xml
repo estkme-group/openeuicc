@@ -23,6 +23,25 @@
     <string name="lui_skip">Skip</string>
     <string name="lui_download">Download eSIM</string>
 
+    <!-- eUICC resolution (user consent) dialogs, shown on behalf of apps using EuiccManager -->
+    <string name="euicc_resolution_unknown_app">Unknown app</string>
+    <string name="euicc_resolution_no_privileges_title">Allow \"%1$s\" to download an eSIM?</string>
+    <string name="euicc_resolution_no_privileges_message">\"%1$s\" wants to download a mobile network profile (eSIM) to this device and turn it on. This may turn off the profile currently in use on the eSIM.\n\nOnly allow this if you trust this app.</string>
+    <string name="euicc_resolution_no_privileges_switch_title">Allow \"%1$s\" to switch your eSIM?</string>
+    <string name="euicc_resolution_no_privileges_switch_message">\"%1$s\" wants to turn on another mobile network profile on your eSIM. The profile currently in use on the eSIM will be turned off.</string>
+    <string name="euicc_resolution_allow">Allow</string>
+    <string name="euicc_resolution_deny">Don\'t allow</string>
+    <string name="euicc_resolution_app_info">App info</string>
+    <string name="euicc_resolution_deactivate_sim_title">Turn off current mobile network?</string>
+    <string name="euicc_resolution_deactivate_sim_message">To continue, \"%1$s\" needs to turn off the mobile network profile currently in use on this SIM. You can turn it back on later.</string>
+    <string name="euicc_resolution_continue">Continue</string>
+    <string name="euicc_resolution_cancel">Cancel</string>
+    <string name="euicc_resolution_resolvable_errors_title">Additional confirmation needed</string>
+    <string name="euicc_resolution_confirmation_code_message">Enter the confirmation code provided by your carrier to download the eSIM requested by \"%1$s\".</string>
+    <string name="euicc_resolution_confirmation_code_retry">The confirmation code was incorrect. Please try again.</string>
+    <string name="euicc_resolution_confirmation_code_hint">Confirmation code</string>
+    <string name="euicc_resolution_policy_rules_message">This eSIM profile contains carrier policy rules, which may for example prevent turning it off or deleting it. Continue only if you agree.</string>
+
     <!-- Preference -->
     <string name="pref_advanced_telephony_manager_removable">Use TelephonyManager everywhere</string>
     <string name="pref_advanced_telephony_manager_removable_desc">By default, only OMAPI is attempted for removable eSIMs to match what is done in unprivileged mode (i.e. EasyEUICC). This may not work well on some devices. Select this option to force the use of TelephonyManager even for removable eSIMs.</string>

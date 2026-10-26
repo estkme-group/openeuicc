@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId = "im.angry.openeuicc"
-        minSdk = 30
+        minSdk = 31
         targetSdk = 37
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -35,6 +35,18 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+    testOptions {
+        unitTests {
+            // Robolectric needs real resources (task titles, dialog themes)
+            isIncludeAndroidResources = true
+        }
+    }
+
+    sourceSets {
+        // Reuse app-common's Robolectric mocks (EuiccChannel / EuiccChannelManager / test application)
+        getByName("test").java.srcDir("../app-common/src/test/java/im/angry/openeuicc/testutil")
+    }
 }
 
 kotlin {
@@ -48,7 +60,13 @@ dependencies {
     implementation(project(":libs:hidden-apis-shim"))
     implementation(project(":libs:lpac-jni"))
     implementation(project(":app-common"))
+    // This is a massiave hack. We need testImplementation because the test classes
+    // need to be loadable against only public android.jar. However, once Robolectic
+    // starts running tests, the real classes from android-all.jar take precedence.
+    // FIXME: Probably make it so that this is not utterly fragile...
+    testImplementation(project(":libs:hidden-apis-stub"))
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.17-beta-4")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 }

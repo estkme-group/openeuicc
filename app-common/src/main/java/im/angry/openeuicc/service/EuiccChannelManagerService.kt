@@ -403,9 +403,14 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
             .collect()
     }
 
+    /**
+     * The download waits at ProfileDownloadState.ConfirmingDownload for a Boolean on the
+     * backChannel, for at most confirmationTimeoutMillis. The backChannel is closed after that.
+     */
     open fun launchProfileDownloadTask(
         slotId: Int, portId: Int, seId: EuiccChannel.SecureElementId,
         input: ProfileDownloadInput,
+        confirmationTimeoutMillis: Long = 60 * 1000,
     ): ForegroundTaskHandle =
         launchForegroundTask(
             getString(R.string.task_profile_download),
@@ -435,13 +440,16 @@ open class EuiccChannelManagerService : LifecycleService(), OpenEuiccContextMark
                             // because we don't run download on the main thread; see withEuiccChannel.
                             return@downloadProfile runBlocking {
                                 try {
-                                    // We can't wait indefinitely; just time out after 1 minute.
-                                    withTimeout(60 * 1000) {
+                                    // We can't wait indefinitely; just time out.
+                                    withTimeout(confirmationTimeoutMillis) {
                                         backChannel.receive() as Boolean
                                     }
                                 } catch (_: TimeoutCancellationException) {
                                     // Default to cancelling / aborting here if we didn't receive a confirmation signal
                                     false
+                                } finally {
+                                    // Late confirmations fail to send instead of getting lost
+                                    backChannel.close()
                                 }
                             }
                         }

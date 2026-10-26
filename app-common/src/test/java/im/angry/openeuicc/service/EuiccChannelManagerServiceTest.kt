@@ -75,7 +75,8 @@ class EuiccChannelManagerServiceTest {
     private suspend fun awaitTaskDone(
         handle: EuiccChannelManagerService.ForegroundTaskHandle
     ): ForegroundTaskState.Done = coroutineScope {
-        val states = mutableListOf<ForegroundTaskState>()
+        // Written by the collector on Dispatchers.Default while awaitMainLooper() reads it
+        val states = java.util.concurrent.CopyOnWriteArrayList<ForegroundTaskState>()
         val collector = async(Dispatchers.Default) { handle.stateFlow.collect { states += it } }
         try {
             awaitMainLooper {
@@ -131,5 +132,22 @@ class EuiccChannelManagerServiceTest {
         // callback result, not an exception).
         val done = awaitTaskDone(handle)
         assertNull(done.error)
+    }
+
+    @Test
+    fun `download task cancels when no confirmation arrives within the timeout`() = runBlocking {
+        val handle = service.launchProfileDownloadTask(
+            1, 2, seId, input,
+            confirmationTimeoutMillis = 100
+        )
+        startService()
+
+        awaitMainLooper { lpa.downloadStarted.isCompleted }
+
+        // Nothing is sent on the back channel.
+        assertEquals(false, lpa.awaitDownloadResult())
+        // A late confirmation is refused
+        assertFalse(handle.backChannel.trySend(true).isSuccess)
+        assertNull(awaitTaskDone(handle).error)
     }
 }
