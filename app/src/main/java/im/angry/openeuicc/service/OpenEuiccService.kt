@@ -135,7 +135,7 @@ class OpenEuiccService : EuiccService(), OpenEuiccContextMarker {
             runBlocking {
                 // Wrapped in Result so that a legitimate null returned by fn() (e.g. onGetEid on
                 // an unmapped slot) is not confused with "fn() has not run yet".
-                var result: Result<T>? = null
+                var result: kotlin.Result<T>? = null
                 // THIS IS WHERE I GO TO HELL FOR KEEPING THIS HORRIBLE SECTION OF CODE.
                 // The main complexity here is that we need to serialize on both the mutex _in this class_,
                 // and also on the foreground task system managed by EuiccChannelManagerService.
