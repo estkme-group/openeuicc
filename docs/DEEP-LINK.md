@@ -2,7 +2,7 @@
 
 Since: OpenEUICC v1.3.0 or EasyEUICC v1.3.0
 
-## Web Intent
+## Web intent
 
 HTML example:
 
@@ -10,7 +10,7 @@ HTML example:
 <a href="lpa:1$rsp.example.com$matching-id">Open {Open/Easy}EUICC</a>
 ```
 
-## Android Intent
+## Android intent
 
 Kotlin example:
 
@@ -19,8 +19,7 @@ val lpaUri = Uri.parse("lpa:1\$rsp.example.com\$matching-id")
 startActivity(Intent(Intent.ACTION_VIEW, lpaUri))
 ```
 
-To check whether any installed app can handle this deep link, call [PackageManager#queryIntentActivities] before calling
-`startActivity`.
+Before calling `startActivity`, check whether any installed app can handle this deep link by calling [PackageManager#queryIntentActivities].
 
 [PackageManager#queryIntentActivities]: https://developer.android.com/reference/android/content/pm/PackageManager#queryIntentActivities(android.content.Intent,%20int)
 
