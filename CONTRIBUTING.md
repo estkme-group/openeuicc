@@ -1,7 +1,7 @@
 Contributing to OpenEUICC
 ---
 
-Thank you for your interest in conrtibuting to OpenEUICC. Before you start, please read this document _in full_.
+Thank you for your interest in conrtibuting to OpenEUICC. Before you start, please read this document _in full_ and make sure you understand it. We may close your issues, pull requests or ban you from this project for repeated violations of this document.
 
 Features
 ---
@@ -41,5 +41,12 @@ The following behaviors are explicitly __prohibited__:
   - If you find it valuable, it is okay to, for example, attach a LLM transcript for _your attempt at diagnosing the issue_. It cannot be the main bulk of your submission. You must describe what you understand of the issue and/or fix in your own words.
 - Unsolicited, automated issue or pull request creation with the help of LLM tools (or really any automation in general)
 
-Before submitting pull requests, we kindly ask you to understand that most of the maintainers also have access to the same tools as you do, and a purely LLM generated pull request offers no value without your expertise and input. If your contribution boils down to only token costs, it probably belongs to a discussion in the issue list instead. If you have the ability to test against some unique hardware configuration or carriers, it may be more effective to capture that behavior in tests (for which you _may_ ask LLM for assistance) for other maintainers to implement instead of implementing the feature in full that you could not understand and/or review. See an example of how this could be more effective in [this pull request](https://gitea.angry.im/PeterCxy/OpenEUICC/pulls/360) and how it was resolved. Again, get started with a discussion on our issue list, instead of submitting a pull request.
+Before submitting pull requests, we kindly ask you to understand that most of the maintainers also have access to the same tools as you do, and a purely LLM generated pull request offers no value without your expertise and input. If your contribution boils down to only token costs, it probably belongs to a discussion in the issue list instead.
+
+If you have the ability to test against some unique hardware configurations or carriers, it may be more effective to:
+
+- Capture that behavior in tests, possibly with an initial draft implementation (for which you _may_ ask LLM for assistance)
+- Start a discussion in the issue list, submit your expected behavior, the test suite that captures it, and possibly a draft implementation if your tests cannot be produced standalone (e.g. to proceed to a certain point you need to implement part of the feature you desire). Submit them __cleanly separated__ and describe what you want __in your own words__.
+
+See an example of how this could be done in [this pull request](https://gitea.angry.im/PeterCxy/OpenEUICC/pulls/360) and how it was resolved.
 
