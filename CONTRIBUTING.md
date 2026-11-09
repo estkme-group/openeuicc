@@ -43,7 +43,7 @@ The following behaviors are explicitly __prohibited__:
 
 Before submitting pull requests, we kindly ask you to understand that most of the maintainers also have access to the same tools as you do, and a purely LLM generated pull request offers no value without your expertise and input. If your contribution boils down to only token costs, it probably belongs to a discussion in the issue list instead.
 
-If you have the ability to test against some unique hardware configurations or carriers, it may be more effective to:
+If you have the ability to test against some unique hardware configurations or carriers, but you could not code or review code yourself, it may be more effective to:
 
 - Capture that behavior in tests, possibly with an initial draft implementation (for which you _may_ ask LLM for assistance)
 - Start a discussion in the issue list, submit your expected behavior, the test suite that captures it, and possibly a draft implementation if your tests cannot be produced standalone (e.g. to proceed to a certain point you need to implement part of the feature you desire). Submit them __cleanly separated__ and describe what you want __in your own words__.
