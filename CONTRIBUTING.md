@@ -37,6 +37,9 @@ The following behaviors are explicitly __prohibited__:
 
 - Submitting fully LLM-generated pull requests without understanding your code
   - If you do not have the means to review LLM code, submit an issue instead and describe what you want in your own words. You may attach the LLM-suggested patch to the issue. __Do not submit a pull request that you do not understand__.
+- Handling pull request review comments purely through LLMs
+  - We do not need meat proxies to address review comments. That is pure waste of time.
+  - __We expect the committer to be able to explain design decisions in their own words.__ Unexplanable and undefensible design will not be accepted. Discuss in the issue list if unsure.
 - Posting LLM-generated text in the issue list, pull requests, commit messages, or in responses to issues or pull request reviews
   - If you find it valuable, it is okay to, for example, attach a LLM transcript for _your attempt at diagnosing the issue_. It cannot be the main bulk of your submission. You must describe what you understand of the issue and/or fix in your own words.
 - Unsolicited, automated issue or pull request creation with the help of LLM tools (or really any automation in general)
