@@ -41,5 +41,5 @@ The following behaviors are explicitly __prohibited__:
   - If you find it valuable, it is okay to, for example, attach a LLM transcript for _your attempt at diagnosing the issue_. It cannot be the main bulk of your submission. You must describe what you understand of the issue and/or fix in your own words.
 - Unsolicited, automated issue or pull request creation with the help of LLM tools (or really any automation in general)
 
-Before submitting pull requests, we kindly ask you to understand that most of the maintainers also have access to the same tools as you do, and a purely LLM generated pull requests offers no value without your expertise and input. If your contribution boils down to only token costs, it probably belongs to a discussion in the issue list instead.
+Before submitting pull requests, we kindly ask you to understand that most of the maintainers also have access to the same tools as you do, and a purely LLM generated pull request offers no value without your expertise and input. If your contribution boils down to only token costs, it probably belongs to a discussion in the issue list instead.
 
