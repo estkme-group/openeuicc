@@ -17,6 +17,12 @@ There is currently no formal rotation plan or contingency. The design prioritize
 
 This approach provides a five-year migration window before the current signing key expires on 24 Dec 2043.
 
+## Authorization scope of signing key
+
+The current EasyEUICC signing key (SHA-1: `2A2FA878BC7C3354C2CF82935A5945A3EDAE4AFA`) is strictly for OpenEUICC, EasyEUICC and [JMP Adapter](https://jmp.chat/esim-adapter) signing.
+
+Commercial commissions are **NOT ACCEPTED**, and **DELEGATED SIGNING** of any kind is not provided.
+
 ## References
 
 - [UICC carrier privileges](https://source.android.com/docs/core/connect/uicc#rules_on_uicc)
