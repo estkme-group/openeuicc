@@ -1,20 +1,18 @@
-import com.android.build.gradle.internal.api.ApkVariantOutputImpl
-import im.angry.openeuicc.build.MagiskModuleDirTask
+import com.android.build.api.dsl.ApplicationExtension
+import im.angry.openeuicc.build.MyMagiskPlugin
 import im.angry.openeuicc.build.MySigningPlugin
 import im.angry.openeuicc.build.MyVersioningPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
-apply {
-    plugin<MyVersioningPlugin>()
-    plugin<MySigningPlugin>()
-}
+pluginManager.apply(MyVersioningPlugin::class.java)
+pluginManager.apply(MySigningPlugin::class.java)
+pluginManager.apply(MyMagiskPlugin::class.java)
 
-android {
+configure<ApplicationExtension> {
     namespace = "im.angry.openeuicc"
     compileSdk = 37
 
@@ -45,7 +43,13 @@ android {
 
     sourceSets {
         // Reuse app-common's Robolectric mocks (EuiccChannel / EuiccChannelManager / test application)
-        getByName("test").java.srcDir("../app-common/src/test/java/im/angry/openeuicc/testutil")
+        getByName("test").java.directories.add("../app-common/src/test/java")
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    if (name.contains("UnitTest")) {
+        source("../app-common/src/test/java")
     }
 }
 
@@ -56,6 +60,7 @@ kotlin {
 }
 
 dependencies {
+    @Suppress("AvoidDuplicateDependencies")
     compileOnly(project(":libs:hidden-apis-stub"))
     implementation(project(":libs:hidden-apis-shim"))
     implementation(project(":libs:lpac-jni"))
@@ -64,72 +69,11 @@ dependencies {
     // need to be loadable against only public android.jar. However, once Robolectic
     // starts running tests, the real classes from android-all.jar take precedence.
     // FIXME: Probably make it so that this is not utterly fragile...
+    @Suppress("AvoidDuplicateDependencies")
     testImplementation(project(":libs:hidden-apis-stub"))
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.17-beta-4")
-    androidTestImplementation("androidx.test.ext:junit:1.3.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+    testImplementation(libs.junit4)
+    testImplementation(libs.robolectric)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
 
-val modulePropsTemplate = mutableMapOf(
-    "id" to android.defaultConfig.applicationId!!,
-    "name" to "OpenEUICC",
-    "version" to android.defaultConfig.versionName!!,
-    "versionCode" to "${android.defaultConfig.versionCode}",
-    "author" to "OpenEUICC authors",
-    "description" to "OpenEUICC is an open-source app that provides system-level eSIM integration."
-)
-
-val moduleCustomizeScript = project.file("magisk/customize.sh").readText()
-    .replace("{APK_NAME}", "OpenEUICC")
-    .replace("{PKG_NAME}", android.defaultConfig.applicationId!!)
-
-val moduleUninstallScript = project.file("magisk/uninstall.sh").readText()
-    .replace("{PKG_NAME}", android.defaultConfig.applicationId!!)
-
-tasks.register<MagiskModuleDirTask>("assembleDebugMagiskModuleDir") {
-    variant = "debug"
-    appName = "OpenEUICC"
-    permsFile = project.rootProject.file("privapp_whitelist_im.angry.openeuicc.xml")
-    moduleInstaller = project.file("magisk/module_installer.sh")
-    moduleCustomizeScriptText = moduleCustomizeScript
-    moduleUninstallScriptText = moduleUninstallScript
-    moduleProp = modulePropsTemplate.let {
-        it["description"] = "(debug build) ${it["description"]}"
-        it["versionCode"] = (android.applicationVariants
-            .find { v -> v.name == "debug" }!!
-            .outputs
-            .first() as ApkVariantOutputImpl)
-            .versionCodeOverride.toString()
-        it["updateJson"] = "https://openeuicc.com/magisk/magisk-debug.json"
-        it
-    }
-    dependsOn("assembleDebug")
-}
-
-tasks.register<Zip>("assembleDebugMagiskModule") {
-    dependsOn("assembleDebugMagiskModuleDir")
-    from((tasks.getByName("assembleDebugMagiskModuleDir") as MagiskModuleDirTask).outputDir)
-    archiveFileName = "magisk-debug.zip"
-    destinationDirectory = project.layout.buildDirectory.dir("magisk")
-    entryCompression = ZipEntryCompression.STORED
-}
-
-tasks.register<MagiskModuleDirTask>("assembleReleaseMagiskModuleDir") {
-    variant = "release"
-    appName = "OpenEUICC"
-    permsFile = project.rootProject.file("privapp_whitelist_im.angry.openeuicc.xml")
-    moduleInstaller = project.file("magisk/module_installer.sh")
-    moduleCustomizeScriptText = moduleCustomizeScript
-    moduleUninstallScriptText = moduleUninstallScript
-    moduleProp = modulePropsTemplate
-    dependsOn("assembleRelease")
-}
-
-tasks.register<Zip>("assembleReleaseMagiskModule") {
-    dependsOn("assembleReleaseMagiskModuleDir")
-    from((tasks.getByName("assembleReleaseMagiskModuleDir") as MagiskModuleDirTask).outputDir)
-    archiveFileName = "magisk-release.zip"
-    destinationDirectory = project.layout.buildDirectory.dir("magisk")
-    entryCompression = ZipEntryCompression.STORED
-}

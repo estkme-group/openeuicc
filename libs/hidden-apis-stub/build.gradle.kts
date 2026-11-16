@@ -1,12 +1,15 @@
+import com.android.build.api.dsl.LibraryExtension
+import org.gradle.kotlin.dsl.configure
+
 plugins {
     id("com.android.library")
 }
 
-android {
+configure<LibraryExtension> {
     compileSdk = 37
     namespace = "im.angry.hidden.apis"
 }
 
 dependencies {
-    implementation("org.jetbrains:annotations:15.0")
+    implementation(libs.jetbrains.annotations)
 }

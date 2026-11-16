@@ -1,11 +1,11 @@
+import com.android.build.api.dsl.LibraryExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 
-android {
+configure<LibraryExtension> {
     namespace = "im.angry.openeuicc.common"
     compileSdk = 37
 
@@ -39,8 +39,8 @@ kotlin {
 dependencies {
     api(project(":libs:lpac-jni"))
     api(project(":app-deps"))
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.17-beta-4")
-    androidTestImplementation("androidx.test.ext:junit:1.3.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+    testImplementation(libs.junit4)
+    testImplementation(libs.robolectric)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

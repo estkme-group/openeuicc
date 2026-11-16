@@ -5,6 +5,12 @@ pluginManagement {
         mavenCentral()
     }
 }
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
+@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -15,11 +21,11 @@ dependencyResolutionManagement {
 
 buildscript {
     repositories {
-        maven("https://raw.githubusercontent.com/lineage-next/gradle-generatebp/4356136ecccc68cf6796a5dcd2388c66b80e0c11/.m2")
+        maven("https://raw.githubusercontent.com/lineage-next/gradle-generatebp/1e4404ddbdff066a2a95de77c1e7515f77c394cc/.m2")
     }
 
     dependencies {
-        classpath("org.lineageos:gradle-generatebp:+")
+        classpath("org.lineageos:gradle-generatebp:1.33")
     }
 }
 

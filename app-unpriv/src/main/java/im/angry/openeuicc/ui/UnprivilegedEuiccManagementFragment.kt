@@ -1,3 +1,5 @@
+@file:Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
+
 package im.angry.openeuicc.ui
 
 import android.content.pm.PackageManager

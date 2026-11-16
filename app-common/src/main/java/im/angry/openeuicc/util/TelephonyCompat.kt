@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package im.angry.openeuicc.util
 
 import android.os.Build

@@ -8,13 +8,15 @@ plugins {
 }
 
 tasks.register<Delete>("clean") {
+    description = "Cleans the build directory of the root project."
+    group = "build"
     delete = setOf(rootProject.layout.buildDirectory)
 }
 
 // Print per-test results (which tests ran, passed, failed, were skipped)
 // instead of Gradle's default summary-only output.
 subprojects {
-    tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+    tasks.withType<Test>().configureEach {
         testLogging {
             events("passed", "skipped", "failed")
             // Uncomment to also capture each test's stdout/stderr:

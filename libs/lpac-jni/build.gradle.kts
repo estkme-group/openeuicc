@@ -1,11 +1,12 @@
+import com.android.build.api.dsl.LibraryExtension
+import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 
-android {
+configure<LibraryExtension> {
     namespace = "net.typeblog.lpac_jni"
     compileSdk = 37
     ndkVersion = "26.1.10909125"
@@ -15,6 +16,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        @Suppress("UnstableApiUsage")
         externalNativeBuild {
             ndkBuild {
                 cFlags(
@@ -46,10 +48,10 @@ kotlin {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.19.0")
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation(libs.androidx.core.ktx)
+    implementation(platform(libs.kotlin.bom))
+    implementation(libs.androidx.appcompat)
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

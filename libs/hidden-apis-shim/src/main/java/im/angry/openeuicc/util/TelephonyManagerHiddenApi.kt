@@ -93,6 +93,7 @@ fun TelephonyManager.iccTransmitApduLogicalChannelByPort(
         this, slotId, portId, channel, cla, instruction, p1, p2, p3, data
     ) as String?
 
+@Suppress("UNCHECKED_CAST")
 var TelephonyManager.simSlotMapping: Collection<UiccSlotMapping>
     get() = getSimSlotMapping.invoke(this) as Collection<UiccSlotMapping>
     set(new) {

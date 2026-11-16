@@ -16,6 +16,7 @@ import im.angry.openeuicc.common.R
 import im.angry.openeuicc.core.EuiccChannel
 import im.angry.openeuicc.core.EuiccChannelManager
 import im.angry.openeuicc.util.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -92,7 +93,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
     }
 
     @SuppressLint("NotifyDataSetChanged", "MissingPermission")
-    @OptIn(kotlinx.coroutines.FlowPreview::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun init() {
         ensureEuiccChannelManager()
         showProgressBar(-1)
@@ -110,8 +111,8 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
                         channel.lpa.euiccInfo2?.freeNvram ?: 0,
                         try {
                             telephonyManager.getImei(channel.logicalSlotId) ?: ""
-                        } catch (e: Exception) {
-                            ""
+                        } catch (_: Exception) {
+                            "" // Ignore errors
                         },
                         channel.lpa.profiles.enabled?.displayName,
                     )
@@ -211,6 +212,7 @@ class DownloadWizardSlotSelectFragment : DownloadWizardActivity.DownloadWizardSt
         var slots: List<SlotInfo> = listOf()
         var currentSelectedIdx = -1
 
+        @Suppress("unused")
         val selected: SlotInfo
             get() = slots[currentSelectedIdx]
 

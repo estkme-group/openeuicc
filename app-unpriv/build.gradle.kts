@@ -1,9 +1,9 @@
+import com.android.build.api.dsl.ApplicationExtension
 import im.angry.openeuicc.build.*
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
 signingKeystoreProperties {
@@ -11,12 +11,10 @@ signingKeystoreProperties {
     keyPasswordField = "unprivKeyPassword"
 }
 
-apply {
-    plugin<MyVersioningPlugin>()
-    plugin<MySigningPlugin>()
-}
+pluginManager.apply(MyVersioningPlugin::class.java)
+pluginManager.apply(MySigningPlugin::class.java)
 
-android {
+configure<ApplicationExtension> {
     namespace = "im.angry.easyeuicc"
     compileSdk = 37
     ndkVersion = "26.1.10909125"
@@ -31,6 +29,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        resValues = true
     }
 
     buildTypes {
@@ -52,5 +51,5 @@ kotlin {
 
 dependencies {
     implementation(project(":app-common"))
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit4)
 }

@@ -1,25 +1,11 @@
 package im.angry.openeuicc.build
 
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import org.gradle.api.Action
+import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.invoke
-import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.util.Properties
-
-val Project.keystoreProperties: Properties?
-    get() {
-        try {
-            val keystorePropertiesFile = rootProject.file("keystore.properties")
-            return Properties().apply { load(FileInputStream(keystorePropertiesFile)) }
-        } catch (e: FileNotFoundException) {
-            return null
-        }
-    }
 
 interface KeystorePropertiesExtension {
     var storeFileField: String?
@@ -28,36 +14,49 @@ interface KeystorePropertiesExtension {
     var keyPasswordField: String?
 }
 
-fun Project.signingKeystoreProperties(_configure: Action<KeystorePropertiesExtension>) {
+fun Project.signingKeystoreProperties(action: KeystorePropertiesExtension.() -> Unit) {
     extensions.create<KeystorePropertiesExtension>("keystoreProperties")
-    configure<KeystorePropertiesExtension> {
-        _configure(this)
-    }
+    configure<KeystorePropertiesExtension>(action)
 }
 
 class MySigningPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        val ext = target.extensions.findByType(KeystorePropertiesExtension::class.java)
-        target.configure<BaseAppModuleExtension> {
-            target.keystoreProperties?.let { keystore ->
-                signingConfigs {
-                    create("config") {
-                        storeFile = target.file(keystore[ext?.storeFileField ?: "storeFile"]!!)
-                        storePassword = keystore[ext?.storePasswordField ?: "storePassword"] as String?
-                        keyAlias = keystore[ext?.keyAliasField ?: "keyAlias"] as String?
-                        keyPassword = keystore[ext?.keyPasswordField ?: "keyPassword"] as String?
-                    }
-                }
+    private val configName = "default"
 
-                buildTypes {
-                    debug {
-                        signingConfig = signingConfigs.getByName("config")
-                    }
-                    release {
-                        signingConfig = signingConfigs.getByName("config")
+    override fun apply(project: Project) {
+        val ext = project.extensions.findByType(KeystorePropertiesExtension::class.java)
+        project.configure<ApplicationExtension> {
+            signingConfigs {
+                create(configName) {
+                    project.keystoreProperties?.let {
+                        storeFile = project.file(it.getProperty(ext?.storeFileField ?: "storeFile"))
+                        storePassword = it.getProperty(ext?.storePasswordField ?: "storePassword")
+                        keyAlias = it.getProperty(ext?.keyAliasField ?: "keyAlias")
+                        keyPassword = it.getProperty(ext?.keyPasswordField ?: "keyPassword")
                     }
                 }
+            }
+
+            buildTypes.configureEach {
+                signingConfig = signingConfigs.getByName(configName)
             }
         }
     }
 }
+
+private val Project.keystoreProperties: Properties?
+    get() {
+        return try {
+            Properties().apply {
+                rootProject.file("keystore.properties").inputStream()
+                    .use { load(it) }
+                val storeFile = checkNotNull(getProperty("storeFile")) {
+                    "storeFile not found in keystore.properties"
+                }
+                check(rootProject.file(storeFile).exists()) {
+                    "Keystore file $storeFile does not exist"
+                }
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }

@@ -31,7 +31,7 @@ class DownloadWizardProgressFragment : DownloadWizardActivity.DownloadWizardStep
     }
 
     private data class ProgressItem(
-        @StringRes val titleRes: Int,
+        @param:StringRes val titleRes: Int,
         var state: ProgressState = ProgressState.NotStarted,
         var errorMessage: SimplifiedErrorMessages? = null,
     )

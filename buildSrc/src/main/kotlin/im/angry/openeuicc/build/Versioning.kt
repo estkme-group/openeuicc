@@ -1,11 +1,38 @@
 package im.angry.openeuicc.build
 
-import com.android.build.gradle.internal.api.ApkVariantOutputImpl
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import java.io.ByteArrayOutputStream
+
+class MyVersioningPlugin : Plugin<Project> {
+    override fun apply(project: Project) {
+        project.configure<ApplicationExtension> {
+            defaultConfig {
+                versionCode = project.gitVersionCode
+                // format: <tag>[-<commits>-g<hash>][-dirty][-suffix]
+                versionName = project.getGitVersionName()
+            }
+        }
+
+        val debugVersionNameSuffix = project.extensions
+            .findByType(ApplicationExtension::class.java)
+            ?.buildTypes?.findByName("debug")
+            ?.versionNameSuffix.orEmpty()
+
+        val androidComponents = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
+        androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
+            val versionCode = (System.currentTimeMillis() / 1000).toInt()
+            // format: <tag>-<commits>-g<hash>[-dirty][-suffix]
+            val versionName = project.getGitVersionName("--long")
+            variant.outputs.forEach { output ->
+                output.versionCode.set(versionCode)
+                output.versionName.set(versionName + debugVersionNameSuffix)
+            }
+        }
+    }
+}
 
 val Project.gitVersionCode: Int
     get() =
@@ -25,31 +52,3 @@ fun Project.getGitVersionName(vararg args: String): String =
     } catch (_: Exception) {
         "Unknown"
     }
-
-
-class MyVersioningPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        target.configure<BaseAppModuleExtension> {
-            defaultConfig {
-                versionCode = target.gitVersionCode
-                // format: <tag>[-<commits>-g<hash>][-dirty][-suffix]
-                versionName = target.getGitVersionName()
-            }
-
-            applicationVariants.all {
-                if (name == "debug") {
-                    val versionCode = (System.currentTimeMillis() / 1000).toInt()
-                    // format: <tag>-<commits>-g<hash>[-dirty][-suffix]
-                    val versionName = target.getGitVersionName("--long")
-                    val versionNameSuffix = mergedFlavor.versionNameSuffix
-                    outputs.forEach {
-                        with(it as ApkVariantOutputImpl) {
-                            versionCodeOverride = versionCode
-                            versionNameOverride = versionName + versionNameSuffix
-                        }
-                    }
-                }
-            }
-        }
-    }
-}

@@ -12,8 +12,8 @@ import java.net.UnknownHostException
 import javax.net.ssl.SSLException
 
 enum class SimplifiedErrorMessages(
-    @StringRes val titleResId: Int,
-    @StringRes val suggestResId: Int?
+    @param:StringRes val titleResId: Int,
+    @param:StringRes val suggestResId: Int?
 ) {
     ICCIDAlreadyInUse(
         R.string.download_wizard_error_iccid_already,
