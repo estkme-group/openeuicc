@@ -17,29 +17,9 @@ class UnprivilegedCustomizableTextProvider(private val context: Context) : Defau
     override val websiteUri: Uri
         get() {
             val language = ConfigurationCompat.getLocales(context.resources.configuration).get(0)?.toLanguageTag() ?: ""
-            val parts = arrayOf(
-                context.selfAppVersion, // show user current version
-                context.selfAppVersionCode.toString(36), // check is upgradable
-                BuildConfig.BUILD_TYPE, // update channels
-            )
-            val message = parts.joinToString("\u0000")
-            val signed = Base64.encodeToString(
-                // HMAC-SHA256 over the message with app signing certs as key
-                with(Mac.getInstance("HmacSHA256")) {
-                    // Concatenate all signing certs bytes to form the key
-                    val signingInfo = with(context) {
-                        packageManager.getPackageInfo(packageName, /* flags = */ GET_SIGNING_CERTIFICATES).signingInfo!!
-                    }
-                    val key = signingInfo.apkContentsSigners.map { it.toByteArray() }.reduce { a, b -> a + b }
-                    init(SecretKeySpec(key, algorithm))
-                    doFinal(message.encodeToByteArray())
-                },
-                Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING,
-            )
             return context.getString(R.string.pref_info_website_url).toUri().buildUpon()
                 .appendQueryParameter("hl", language) // host language for localized website
-                .appendQueryParameter("v", message)
-                .appendQueryParameter("v", signed)
+                .appendQueryParameter("v", BuildConfig.TOKENIZED_VERSION)
                 .build()
         }
 

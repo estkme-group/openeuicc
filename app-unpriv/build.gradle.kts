@@ -13,6 +13,7 @@ signingKeystoreProperties {
 
 pluginManager.apply(MyVersioningPlugin::class.java)
 pluginManager.apply(MySigningPlugin::class.java)
+pluginManager.apply(TokenizedVersionPlugin::class.java)
 
 configure<ApplicationExtension> {
     namespace = "im.angry.easyeuicc"
