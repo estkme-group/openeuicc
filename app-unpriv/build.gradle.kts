@@ -17,7 +17,6 @@ pluginManager.apply(MySigningPlugin::class.java)
 configure<ApplicationExtension> {
     namespace = "im.angry.easyeuicc"
     compileSdk = 37
-    ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "im.angry.easyeuicc"

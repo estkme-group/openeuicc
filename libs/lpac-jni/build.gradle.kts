@@ -9,7 +9,7 @@ plugins {
 configure<LibraryExtension> {
     namespace = "net.typeblog.lpac_jni"
     compileSdk = 37
-    ndkVersion = "26.1.10909125"
+    ndkVersion = "30.0.16248370" // from https://developer.android.com/ndk/downloads
 
     defaultConfig {
         minSdk = 27
