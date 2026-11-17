@@ -2,7 +2,8 @@ package im.angry.openeuicc.build
 
 import com.android.build.api.dsl.ApkSigningConfig
 import com.android.build.api.dsl.ApplicationExtension
-import groovy.json.StringEscapeUtils
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.BuildConfigField
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.ByteArrayOutputStream
@@ -16,18 +17,31 @@ import java.util.Base64
 class TokenizedVersionPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val applicationExt = project.extensions.getByType(ApplicationExtension::class.java)
-        val versionName = applicationExt.defaultConfig.versionName.orEmpty()
-        val versionNameSuffix = applicationExt.defaultConfig.versionNameSuffix.orEmpty()
-        val versionCode = checkNotNull(applicationExt.defaultConfig.versionCode) { "Version code is required." }
-        applicationExt.buildTypes.all {
-            val payload = buildPayload {
-                writeUTF(name) // flavor name
-                writeUTF(versionName + versionNameSuffix)
-                writeLong(versionCode.toLong()) // version code
+        val androidComponents = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
+        androidComponents.onVariants { variant ->
+            val buildType = checkNotNull(applicationExt.buildTypes.findByName(variant.buildType.orEmpty())) {
+                "The variant ${variant.name} has no build type"
             }
-            val message = buildMessage(signingConfig?.getKey(), payload)
+            val output = checkNotNull(variant.outputs.firstOrNull()) {
+                "The variant ${variant.name} has no outputs"
+            }
+            val versionCode = checkNotNull(output.versionCode.orNull) {
+                "The variant ${variant.name} has no version code"
+            }
+            val versionName = checkNotNull(output.versionName.orNull) {
+                "The variant ${variant.name} has no version name"
+            }
+            val payload = buildPayload {
+                writeUTF(buildType.name)
+                writeUTF(versionName)
+                writeLong(versionCode.toLong())
+            }
+            val message = buildMessage(buildType.signingConfig?.getKey(), payload)
             val token = Base64.getUrlEncoder().withoutPadding().encodeToString(message)
-            buildConfigField("String", "TOKENIZED_VERSION", "\"$token\"")
+            variant.buildConfigFields?.put(
+                "TOKENIZED_VERSION",
+                BuildConfigField("String", "\"$token\"", null),
+            )
         }
     }
 }
@@ -37,23 +51,17 @@ private fun buildPayload(builderAction: DataOutputStream.() -> Unit) = ByteArray
     out.toByteArray()
 }
 
-private fun buildMessage(key: Key?, payload: ByteArray): ByteArray {
-    if (key == null) {
-        return buildPayload {
-            writeByte(0)
-            writeBlock(payload)
-        }
-    }
-    val signature = Signature.getInstance("SHA256with${key.algorithm}").let {
-        it.initSign(checkNotNull(key as? PrivateKey) { "The key not is private key" })
+private fun buildMessage(key: Key?, payload: ByteArray) = buildPayload {
+    val privateKey = key as? PrivateKey
+    // 0x00: unsigned, 0x01: signed
+    writeByte(if (privateKey == null) 0 else 1)
+    writeBlock(payload)
+    if (privateKey == null) return@buildPayload
+    writeBlock(Signature.getInstance("SHA256with${key.algorithm}").let {
+        it.initSign(privateKey)
         it.update(payload)
         it.sign()
-    }
-    return buildPayload {
-        writeByte(1)
-        writeBlock(payload)
-        writeBlock(signature)
-    }
+    })
 }
 
 private fun DataOutputStream.writeBlock(block: ByteArray) {
