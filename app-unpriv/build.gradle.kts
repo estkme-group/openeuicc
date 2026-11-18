@@ -27,6 +27,15 @@ configure<ApplicationExtension> {
         emitAssetStatements("https://easyeuicc.org", "https://preview.easyeuicc.org")
     }
 
+    packaging {
+        jniLibs {
+            keepDebugSymbols += setOf(
+                "**/libdatastore_shared_counter.so",
+                "**/liblpac-jni.so"
+            )
+        }
+    }
+
     buildFeatures {
         buildConfig = true
         resValues = true
