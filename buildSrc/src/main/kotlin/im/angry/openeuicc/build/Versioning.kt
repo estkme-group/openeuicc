@@ -16,11 +16,6 @@ class MyVersioningPlugin : Plugin<Project> {
             }
         }
 
-        val debugVersionNameSuffix = project.extensions
-            .findByType(ApplicationExtension::class.java)
-            ?.buildTypes?.findByName("debug")
-            ?.versionNameSuffix.orEmpty()
-
         val androidComponents = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
         androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
             // FIXME: versionCode is a signed 32-bit int. Using Unix seconds here reaches (overflows in 2038).
@@ -32,27 +27,37 @@ class MyVersioningPlugin : Plugin<Project> {
             val versionName = project.getGitVersionName("--long")
             variant.outputs.forEach { output ->
                 output.versionCode.set(versionCode.toInt())
-                output.versionName.set(versionName + debugVersionNameSuffix)
+                output.versionName.set(versionName + project.getVersionNameSuffix(variant.name))
             }
         }
     }
 }
 
-val Project.gitVersionCode: Int
+private fun Project.getVersionNameSuffix(name: String): String {
+    val applicationExt = checkNotNull(project.extensions.findByType(ApplicationExtension::class.java)) {
+        "The versioning plugin SHOULD BE applied to an Android application project."
+    }
+    return applicationExt.buildTypes.findByName(name)?.versionNameSuffix
+        ?: applicationExt.defaultConfig.versionNameSuffix.orEmpty()
+}
+
+private val Project.gitVersionCode: Int
     get() =
         try {
-            providers.exec {
-                commandLine("git", "rev-list", "--first-parent", "--count", "HEAD")
-            }.standardOutput.asText.get().trim('\n').toInt()
+            providers
+                .exec { commandLine("git", "rev-list", "--first-parent", "--count", "HEAD") }
+                .standardOutput.asText.get()
+                .trim('\n').toInt()
         } catch (_: Exception) {
             0
         }
 
-fun Project.getGitVersionName(vararg args: String): String =
+private fun Project.getGitVersionName(vararg args: String): String =
     try {
-        providers.exec {
-            commandLine("git", "describe", "--always", "--tags", "--dirty", *args)
-        }.standardOutput.asText.get().trim('\n').removePrefix("unpriv-")
+        providers
+            .exec { commandLine("git", "describe", "--always", "--tags", "--dirty", *args) }
+            .standardOutput.asText.get()
+            .trim('\n').removePrefix("unpriv-")
     } catch (_: Exception) {
         "Unknown"
     }
