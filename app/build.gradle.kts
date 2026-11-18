@@ -34,6 +34,15 @@ configure<ApplicationExtension> {
         }
     }
 
+    packaging {
+        jniLibs {
+            keepDebugSymbols += setOf(
+                "**/libdatastore_shared_counter.so",
+                "**/liblpac-jni.so"
+            )
+        }
+    }
+
     testOptions {
         unitTests {
             // Robolectric needs real resources (task titles, dialog themes)
@@ -76,4 +85,3 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
-
