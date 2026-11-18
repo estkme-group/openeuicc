@@ -23,11 +23,15 @@ class MyVersioningPlugin : Plugin<Project> {
 
         val androidComponents = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
         androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
-            val versionCode = (System.currentTimeMillis() / 1000).toInt()
+            // FIXME: versionCode is a signed 32-bit int. Using Unix seconds here reaches (overflows in 2038).
+            val versionCode = System.currentTimeMillis() / 1000
+            check(versionCode < Int.MAX_VALUE) {
+                "versionCode is signed 32 bits number, but it is too big: $versionCode"
+            }
             // format: <tag>-<commits>-g<hash>[-dirty][-suffix]
             val versionName = project.getGitVersionName("--long")
             variant.outputs.forEach { output ->
-                output.versionCode.set(versionCode)
+                output.versionCode.set(versionCode.toInt())
                 output.versionName.set(versionName + debugVersionNameSuffix)
             }
         }
