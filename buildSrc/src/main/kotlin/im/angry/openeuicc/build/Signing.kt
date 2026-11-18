@@ -25,14 +25,14 @@ class MySigningPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val ext = project.extensions.findByType(KeystorePropertiesExtension::class.java)
         project.configure<ApplicationExtension> {
+            val properties = project.keystoreProperties ?: return@configure // Skip if not found
+
             signingConfigs {
                 create(configName) {
-                    project.keystoreProperties?.let {
-                        storeFile = project.file(it.getProperty(ext?.storeFileField ?: "storeFile"))
-                        storePassword = it.getProperty(ext?.storePasswordField ?: "storePassword")
-                        keyAlias = it.getProperty(ext?.keyAliasField ?: "keyAlias")
-                        keyPassword = it.getProperty(ext?.keyPasswordField ?: "keyPassword")
-                    }
+                    storeFile = project.file(properties.getProperty(ext?.storeFileField ?: "storeFile"))
+                    storePassword = properties.getProperty(ext?.storePasswordField ?: "storePassword")
+                    keyAlias = properties.getProperty(ext?.keyAliasField ?: "keyAlias")
+                    keyPassword = properties.getProperty(ext?.keyPasswordField ?: "keyPassword")
                 }
             }
 
