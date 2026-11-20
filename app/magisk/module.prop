@@ -1,0 +1,7 @@
+id={PKG_NAME}
+name={APP_NAME}
+description=({BUILD_TYPE} build) {APP_NAME} is an open-source app that provides system-level eSIM integration.
+version={VERSION_NAME}
+versionCode={VERSION_CODE}
+author={APP_NAME} authors
+updateJson=https://openeuicc.com/magisk/magisk-{BUILD_TYPE}.json

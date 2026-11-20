@@ -5,150 +5,122 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.FileSystemOperations
-import org.gradle.api.file.ProjectLayout
-import org.gradle.api.provider.MapProperty
+import org.gradle.api.file.*
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.bundling.Zip
-import org.gradle.api.tasks.bundling.ZipEntryCompression
-import java.io.File
+import org.gradle.api.tasks.*
+import org.gradle.api.tasks.bundling.*
+import java.io.Serializable
 import javax.inject.Inject
+import kotlin.text.replace
 
-class MyMagiskPlugin : Plugin<Project> {
+class MagiskModulePlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val appName = project.rootProject.name
-        val applicationExtension = project.extensions.getByType(ApplicationExtension::class.java)
+        val applicationExt = project.extensions.getByType(ApplicationExtension::class.java)
         val androidComponents = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
-
-        androidComponents.onVariants { variant ->
-            val buildType = variant.buildType ?: return@onVariants
-            val variantName = variant.name
-            val taskName = "assemble" + variantName.replaceFirstChar { it.uppercase() }
-
-            val defaultConfig = applicationExtension.defaultConfig
-            val applicationId = checkNotNull(defaultConfig.applicationId) {
-                "applicationId MUST BE configured before creating Magisk module metadata"
-            }
-            val versionName = checkNotNull(defaultConfig.versionName) {
-                "versionName MUST BE configured before creating Magisk module metadata"
-            }
-            val versionCode = project.objects
-                .property(String::class.java)
-                .convention(defaultConfig.versionCode?.toString() ?: "1")
-            variant.outputs.singleOrNull()?.let { output ->
-                versionCode.set(output.versionCode.map { it.toString() })
-            }
-
-            val moduleProperties = mapOf(
-                "id" to applicationId,
-                "name" to appName,
-                "description" to "($buildType build) $appName is an open-source app that provides system-level eSIM integration.",
-                "version" to versionName,
-                "versionCode" to versionCode.get(),
-                "author" to "$appName authors",
-                "updateJson" to "https://openeuicc.com/magisk/magisk-$buildType.json"
+        // Magisk Module are generated only for debug builds
+        // Release builds are intended for AOSP integration
+        androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
+            val assembleName = "assemble${variant.name.replaceFirstChar { it.uppercase() }}"
+            val taskName = "${assembleName}MagiskModule"
+            val dirName = "${taskName}Dir"
+            val output = checkNotNull(variant.outputs.firstOrNull()) { "The variant ${variant.name} has no outputs" }
+            val moduleConfiguration = MagiskModuleConfiguration(
+                appName = project.rootProject.name,
+                pkgName = checkNotNull(applicationExt.defaultConfig.applicationId),
+                versionName = checkNotNull(output.versionName.orNull) { "The variant ${variant.name} has no versionName" },
+                versionCode = checkNotNull(output.versionCode.orNull) { "The variant ${variant.name} has no versionCode" },
+                buildType = checkNotNull(variant.buildType),
             )
-
-            val moduleCustomizeScript = project.file("magisk/customize.sh").readText()
-                .replace("{APK_NAME}", appName)
-                .replace("{PKG_NAME}", applicationId)
-
-            val moduleUninstallScript = project.file("magisk/uninstall.sh").readText()
-                .replace("{PKG_NAME}", applicationId)
-
-            val moduleDirTask = project.tasks.register("${taskName}MagiskModuleDir", MagiskModuleDirTask::class.java) {
-                this.variant.set(variantName)
-                this.appName.set(appName)
-                permsFile.set(project.rootProject.file("privapp_whitelist_im.angry.openeuicc.xml"))
-                moduleInstaller.set(project.file("magisk/module_installer.sh"))
-                moduleCustomizeScriptText.set(moduleCustomizeScript)
-                moduleUninstallScriptText.set(moduleUninstallScript)
-                moduleProp.putAll(moduleProperties)
-                dependsOn(taskName)
+            val moduleDirTask = project.tasks.register(dirName, MagiskModuleDirTask::class.java) {
+                description = "Create Magisk module directory for ${variant.name} variant"
+                dependsOn(assembleName)
+                configuration.set(moduleConfiguration)
+                with(project.layout) {
+                    inputFile.set(buildDirectory.asFileTree.first { it.name == output.outputFileName.get() })
+                    outputDir.set(buildDirectory.dir("magisk/${variant.name}"))
+                    magiskDir.set(projectDirectory.dir("magisk"))
+                }
+                with(project.rootProject.layout) {
+                    whitelistFile.set(projectDirectory.file("privapp_whitelist_im.angry.openeuicc.xml"))
+                }
             }
-
-            project.tasks.register("${taskName}MagiskModule", Zip::class.java) {
+            project.tasks.register(taskName, Zip::class.java) {
+                description = "Create Magisk module for ${variant.name} variant"
                 dependsOn(moduleDirTask)
-                from(moduleDirTask.map { it.outputDir })
-                archiveFileName.set("magisk-$variantName.zip")
+                from(moduleDirTask.flatMap { it.outputDir })
+                archiveFileName.set("magisk-${variant.name}.zip")
                 destinationDirectory.set(project.layout.buildDirectory.dir("magisk"))
-                entryCompression = ZipEntryCompression.STORED
+                entryCompression = ZipEntryCompression.DEFLATED
             }
         }
     }
-
 }
 
-private abstract class MagiskModuleDirTask : DefaultTask() {
-    @get:Inject
-    abstract val layout: ProjectLayout
+private data class MagiskModuleConfiguration(
+    val appName: String,
+    val pkgName: String,
+    val versionName: String,
+    val versionCode: Int,
+    val buildType: String,
+) : Serializable
 
+private abstract class MagiskModuleDirTask : DefaultTask() {
     @get:Inject
     abstract val fs: FileSystemOperations
 
     @get:Input
-    abstract val variant: Property<String>
-
-    @get:Input
-    abstract val appName: Property<String>
+    abstract val configuration: Property<MagiskModuleConfiguration>
 
     @get:InputFile
-    abstract val permsFile: Property<File>
+    abstract val whitelistFile: RegularFileProperty
+
+    @get:InputDirectory
+    abstract val magiskDir: DirectoryProperty
 
     @get:InputFile
-    abstract val moduleInstaller: Property<File>
+    abstract val inputFile: RegularFileProperty
 
-    @get:Input
-    abstract val moduleCustomizeScriptText: Property<String>
-
-    @get:Input
-    abstract val moduleUninstallScriptText: Property<String>
-
-    @get:Input
-    abstract val moduleProp: MapProperty<String, String>
-
-    @InputDirectory
-    val inputDir = variant.flatMap { layout.buildDirectory.dir("outputs/apk/$it") }
-
-    @OutputDirectory
-    val outputDir = variant.flatMap { layout.buildDirectory.dir("magisk/$it") }
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
 
     @TaskAction
     fun build() {
-        val dir = outputDir.get().asFile
-        val systemExtDir = dir.resolve("system/system_ext")
-        val permDir = dir.resolve("system/system_ext/etc/permissions")
-        val appDir = systemExtDir.resolve("priv-app/${appName.get()}")
-        val metaInfDir = dir.resolve("META-INF/com/google/android")
+        // FIXME: Migrate to new overlay system
+        // See <https://topjohnwu.github.io/Magisk/guides.html#root-directory-overlay-system>
+        val config = configuration.get()
+        val rootDir = outputDir.get().asFile
+        val permPath = rootDir.resolve("system/system_ext/etc/permissions/privapp_whitelist_${config.pkgName}.xml")
+        val appPath = rootDir.resolve("system/system_ext/priv-app/${config.appName}/${config.appName}.apk")
+        val metaDir = rootDir.resolve("META-INF/com/google/android")
 
-        permDir.mkdirs()
-        appDir.mkdirs()
-        metaInfDir.mkdirs()
+        check(rootDir.deleteRecursively()) { "Failed to delete directory: $rootDir" }
+        val dirs = listOf(permPath.parentFile, appPath.parentFile, metaDir)
+        for (dir in dirs) check(dir.mkdirs()) { "Failed to create directory: $dir" }
 
         fs.copy {
-            into(appDir)
-            from(inputDir) {
-                include("app-${variant.get()}.apk")
-                rename("app-${variant.get()}.apk", "${appName.get()}.apk")
-            }
+            from(inputFile)
+            into(appPath)
         }
         fs.copy {
-            from(permsFile.get())
-            into(permDir)
+            from(whitelistFile)
+            into(permPath)
         }
         fs.copy {
-            from(moduleInstaller.get())
-            into(metaInfDir)
-            rename(".*", "update-binary")
+            from(magiskDir) { include("update-binary", "updater-script") }
+            into(metaDir)
         }
-        dir.resolve("customize.sh").writeText(moduleCustomizeScriptText.get())
-        dir.resolve("uninstall.sh").writeText(moduleUninstallScriptText.get())
-        metaInfDir.resolve("updater-script").writeText("#MAGISK\n")
-        dir.resolve("module.prop").writeText(moduleProp.get().map { (k, v) -> "$k=$v" }.joinToString("\n"))
+        for (name in listOf("module.prop", "customize.sh", "uninstall.sh")) {
+            val formatted = formatText(magiskDir.file(name).get().asFile.readText())
+            rootDir.resolve(name).writeText(formatted)
+        }
+    }
+
+    private fun formatText(text: String) = with(configuration.get()) {
+        text
+            .replace("{APP_NAME}", appName)
+            .replace("{PKG_NAME}", pkgName)
+            .replace("{BUILD_TYPE}", buildType)
+            .replace("{VERSION_NAME}", versionName)
+            .replace("{VERSION_CODE}", versionCode.toString())
     }
 }

@@ -1,5 +1,5 @@
 import com.android.build.api.dsl.ApplicationExtension
-import im.angry.openeuicc.build.MyMagiskPlugin
+import im.angry.openeuicc.build.MagiskModulePlugin
 import im.angry.openeuicc.build.MySigningPlugin
 import im.angry.openeuicc.build.MyVersioningPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -10,7 +10,7 @@ plugins {
 
 pluginManager.apply(MyVersioningPlugin::class.java)
 pluginManager.apply(MySigningPlugin::class.java)
-pluginManager.apply(MyMagiskPlugin::class.java)
+pluginManager.apply(MagiskModulePlugin::class.java)
 
 configure<ApplicationExtension> {
     namespace = "im.angry.openeuicc"
