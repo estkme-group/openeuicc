@@ -1,7 +1,9 @@
 package im.angry.openeuicc.build
 
+import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.BuiltArtifactsLoader
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -9,6 +11,7 @@ import org.gradle.api.file.*
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.bundling.*
+import java.io.File
 import java.io.Serializable
 import javax.inject.Inject
 import kotlin.text.replace
@@ -35,8 +38,9 @@ class MagiskModulePlugin : Plugin<Project> {
                 description = "Create Magisk module directory for ${variant.name} variant"
                 dependsOn(assembleName)
                 configuration.set(moduleConfiguration)
+                apkDir.set(variant.artifacts.get(SingleArtifact.APK))
+                artifactLoader = variant.artifacts.getBuiltArtifactsLoader()
                 with(project.layout) {
-                    inputFile.set(buildDirectory.asFileTree.first { it.name == output.outputFileName.get() })
                     outputDir.set(buildDirectory.dir("magisk/${variant.name}"))
                     magiskDir.set(projectDirectory.dir("magisk"))
                 }
@@ -77,8 +81,11 @@ private abstract class MagiskModuleDirTask : DefaultTask() {
     @get:InputDirectory
     abstract val magiskDir: DirectoryProperty
 
-    @get:InputFile
-    abstract val inputFile: RegularFileProperty
+    @get:InputDirectory
+    abstract val apkDir: DirectoryProperty
+
+    @get:Internal
+    abstract var artifactLoader: BuiltArtifactsLoader
 
     @get:OutputDirectory
     abstract val outputDir: DirectoryProperty
@@ -93,17 +100,18 @@ private abstract class MagiskModuleDirTask : DefaultTask() {
         val appPath = rootDir.resolve("system/system_ext/priv-app/${config.appName}/${config.appName}.apk")
         val metaDir = rootDir.resolve("META-INF/com/google/android")
 
-        check(rootDir.deleteRecursively()) { "Failed to delete directory: $rootDir" }
-        val dirs = listOf(permPath.parentFile, appPath.parentFile, metaDir)
-        for (dir in dirs) check(dir.mkdirs()) { "Failed to create directory: $dir" }
-
+        fs.delete {
+            delete(rootDir)
+        }
         fs.copy {
-            from(inputFile)
-            into(appPath)
+            val artifacts = artifactLoader.load(apkDir.get())
+                ?: throw RuntimeException("Cannot load APK artifacts")
+            from(artifacts.elements.first().outputFile) { rename { appPath.name } }
+            into(appPath.parentFile)
         }
         fs.copy {
             from(whitelistFile)
-            into(permPath)
+            into(permPath.parentFile)
         }
         fs.copy {
             from(magiskDir) { include("update-binary", "updater-script") }
