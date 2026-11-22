@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- NO ONE SHALL REMOVE THE `package` ATTRIBUTE -->
+<!-- IT IS IMPORTANT FOR AOSP BUILDS -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    package="im.angry.openeuicc"
     tools:ignore="ProtectedPermissions">
 
     <uses-feature
